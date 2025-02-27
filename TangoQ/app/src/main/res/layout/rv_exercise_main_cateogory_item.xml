@@ -10,12 +10,10 @@
 
     <ImageView
         android:id="@+id/ivMCThumbnail"
-        android:layout_width="0dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/effect_ibtn_12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="158dp"
         android:contentDescription="showExerciseDetail"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

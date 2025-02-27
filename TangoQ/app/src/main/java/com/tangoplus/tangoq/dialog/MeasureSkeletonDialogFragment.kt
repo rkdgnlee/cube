@@ -73,11 +73,12 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
     private fun setUI(isPose: Boolean) {
         when (isPose) {
             true -> {
-
                 binding.btnMSDConfirm.text = "확인했습니다"
             }
             false -> {
                 binding.btnMSDConfirm.text = "모두 이해했습니다"
+                val dialog1 = MeasureSetupDialogFragment.newInstance(0)
+                dialog1.show(requireActivity().supportFragmentManager, "MeasureSetupDialogFragment")
             }
         }
     }

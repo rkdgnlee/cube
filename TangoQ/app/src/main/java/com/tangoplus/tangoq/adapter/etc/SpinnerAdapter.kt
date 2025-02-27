@@ -42,11 +42,11 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
                 binding.root.setPadding(0, 2, 2, 0)
                 binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.transparentColor))
                 binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.transparentColor))
-                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.white))
+                binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.whiteText))
             }
         }
         binding.tvSpinner.text = list[position]
-        binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
+        binding.tvSpinner.textSize = if (isTablet(context)) 22f else 16f
 
         binding.tvSpinner.gravity = Gravity.CENTER
         return binding.root
@@ -66,15 +66,15 @@ class SpinnerAdapter(context:Context, resId: Int, private val list: List<String>
             }
             1 -> {
                 binding.tvSpinner.setTextColor(ContextCompat.getColor(context, R.color.secondWhiteColor))
-                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
-                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.whitebar))
+                binding.tvSpinner.setBackgroundColor(ContextCompat.getColor(context, R.color.whiteText))
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.whiteText))
                 binding.root.setPadding(6, 6, 6, 0)
             }
             2 -> {
 
             }
         }
-        binding.tvSpinner.textSize = if (isTablet(context)) 20f else 16f
+        binding.tvSpinner.textSize = if (isTablet(context)) 22f else 16f
         return binding.root
     }
 

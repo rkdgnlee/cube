@@ -5,30 +5,30 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:strokeColor="#FF47484C"
+        android:strokeColor="@color/subColor800"
         android:strokeWidth="1"
         android:pathData="M12 3.5A2.5 2.5 0 1 0 12 8.5 2.5 2.5 0 1 0 12 3.5z"/>
     <path
-        android:strokeColor="#FF47484C"
+        android:strokeColor="@color/subColor800"
         android:strokeWidth="1"
         android:pathData="M9.5 10c0-0.83 0.67-1.5 1.5-1.5h2c0.83 0 1.5 0.67 1.5 1.5v5c0 0.83-0.67 1.5-1.5 1.5h-2c-0.83 0-1.5-0.67-1.5-1.5z"/>
     <path
-        android:strokeColor="#FF47484C"
+        android:strokeColor="@color/subColor800"
         android:strokeWidth="1"
         android:strokeLineCap="round"
         android:pathData="M17 20.5l-0.93-2.78c-0.04-0.14-0.13-0.28-0.24-0.39L14.5 16"/>
     <path
-        android:strokeColor="#FF47484C"
+        android:strokeColor="@color/subColor800"
         android:strokeWidth="1"
         android:strokeLineCap="round"
         android:pathData="M7 18.59l2.12 0.28c0.45 0.06 0.89-0.2 1.06-0.62l0.5-1.25"/>
     <path
-        android:strokeColor="#FF47484C"
+        android:strokeColor="@color/subColor800"
         android:strokeWidth="1"
         android:strokeLineCap="round"
         android:pathData="M7.13 13l0.2-1.76c0.07-0.5 0.5-0.88 1-0.88h1.1"/>
     <path
-        android:strokeColor="#FF47484C"
+        android:strokeColor="@color/subColor800"
         android:strokeWidth="1"
         android:strokeLineCap="round"
         android:pathData="M14.5 10l1.3 1.3c0.13 0.13 0.3 0.22 0.47 0.27L18 12"/>

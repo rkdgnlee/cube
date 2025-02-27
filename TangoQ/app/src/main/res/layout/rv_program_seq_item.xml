@@ -7,25 +7,61 @@
     android:layout_height="wrap_content"
     android:background="@color/white">
 
-    <TextView
-        android:id="@+id/tvPSIName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
-        android:background="@drawable/effect_ibtn_20dp"
-        android:backgroundTint="@color/subColor100"
-        android:paddingLeft="10dp"
-        android:paddingTop="20dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="20dp"
-        android:text="Day 1"
-        android:textColor="@color/subColor400"
-        android:textSize="18dp"
+    <com.skydoves.progressview.ProgressView
+        android:id="@+id/hpvPSI"
+        android:layout_width="0dp"
+        android:layout_height="6dp"
+        android:layout_margin="8dp"
+        android:stateListAnimator="@null"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPSIName"
+        app:progressView_animation="decelerate"
+        app:progressView_colorBackground="@color/subColor400"
+        app:progressView_colorProgress="@color/secondaryColor"
+        app:progressView_radius="20dp" />
+
+    <TextView
+        android:id="@+id/tvPSIName"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/effect_ibtn_20dp"
+        android:backgroundTint="@color/subColor400"
+        android:gravity="center"
+        android:padding="2dp"
+        android:stateListAnimator="@null"
+        android:text="Day 1"
+        android:textColor="@color/whiteText"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivPSICheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-4dp"
+        android:layout_marginTop="-4dp"
+        app:layout_constraintStart_toStartOf="@+id/hpvPSI"
+        app:layout_constraintTop_toTopOf="@+id/tvPSIName"
+        app:srcCompat="@drawable/icon_check_bckgnd_white"
+        tools:visibility="invisible" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvPSI"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:cardBackgroundColor="@color/subColor400"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/hpvPSI"
+        app:layout_constraintEnd_toEndOf="@+id/hpvPSI"
+        app:layout_constraintStart_toStartOf="@+id/hpvPSI"
+        app:layout_constraintTop_toTopOf="@+id/hpvPSI" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

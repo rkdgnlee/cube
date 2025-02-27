@@ -40,7 +40,6 @@ import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivitySignInBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
-import com.tangoplus.tangoq.dialog.bottomsheet.SignInBSDialogFragment
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.api.NetworkUser.idDuplicateCheck
@@ -94,6 +93,7 @@ class SignInActivity : AppCompatActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         auth = FirebaseAuth.getInstance()
         auth.setLanguageCode("kr")
+        binding.ibtnSignInFinish.setOnClickListener { finish() }
         // -----! 초기 버튼 숨기기 및 세팅 시작 !-----
         binding.llPwCondition.visibility = View.GONE
         binding.etPw.visibility = View.GONE
@@ -138,12 +138,6 @@ class SignInActivity : AppCompatActivity() {
 
         // -----! progress bar 시작 !-----
         binding.pvSignIn.progress = 25f
-        // -----! progress bar 끝 !-----
-
-        // -----! 통신사 선택 시작 !-----
-        binding.tvTelecom.setOnSingleClickListener {
-            showTelecomBottomSheetDialog(this@SignInActivity)
-        } // -----! 통신사 선택 끝 !-----
 
         // -----! 회원가입 입력 창 anime 시작  !-----
         TransitionManager.beginDelayedTransition(binding.llSignIn, SignInTransition())
@@ -206,9 +200,26 @@ class SignInActivity : AppCompatActivity() {
         binding.btnAuthConfirm.setOnSingleClickListener {
             val credential = PhoneAuthProvider.getCredential(verificationId, binding.etAuthNumber.text.toString())
             signInWithPhoneAuthCredential(credential)
-
         }  // -----! 인증 문자 확인 끝 !-----
 
+        // 이름 조건
+        val nameRegex = "^[가-힣]{2,5}$|^[a-zA-Z]{2,20}$"
+        val namePatternCheck = Pattern.compile(nameRegex)
+        binding.etName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.nameCondition.value = namePatternCheck.matcher(binding.etName.text.toString()).find()
+                if (viewModel.nameCondition.value == true) {
+                    binding.tvNameCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
+                    binding.tvNameCondition.text = "올바른 형식입니다"
+
+                } else {
+                    binding.tvNameCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
+                    binding.tvNameCondition.text = "올바른 이름을 입력해주세요"
+                }
+            }
+        })
         binding.etName.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                 binding.etEmail.requestFocus()
@@ -216,6 +227,18 @@ class SignInActivity : AppCompatActivity() {
             }
             false
         }
+
+        // email id check
+        val emailRegex = "^[a-zA-Z0-9]{4,16}$"
+        val emailPatternCheck = Pattern.compile(emailRegex)
+        binding.etEmailId.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.emailCondition.value = emailPatternCheck.matcher(binding.etEmailId.text.toString()).find()
+//                Log.v("이메일컨디션", "${viewModel.emailCondition.value}")
+            }
+        })
         binding.etEmailId.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
                 val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
@@ -307,14 +330,18 @@ class SignInActivity : AppCompatActivity() {
             val id = binding.etId.text.toString()
             CoroutineScope(Dispatchers.IO).launch {
                 val responseCode = idDuplicateCheck(getString(com.tangoplus.tangoq.R.string.API_user), id)
-                when (responseCode) {
-                    201 -> {
-                        withContext(Dispatchers.Main) {
-                            MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                withContext(Dispatchers.Main) {
+                    when (responseCode) {
+                        201 -> {
+                            MaterialAlertDialogBuilder(
+                                this@SignInActivity,
+                                com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog
+                            ).apply {
                                 setTitle("알림")
                                 setMessage("사용가능한 아이디입니다.\n이 아이디를 사용하시겠습니까?")
                                 setPositiveButton("예") { _, _ ->
                                     binding.btnIdCondition.isEnabled = false
+                                    binding.btnIdCondition.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.subColor400, null))
                                     binding.etId.isEnabled = false
                                     viewModel.User.value?.put("user_id", id)
                                     Log.v("id들어감", "${viewModel.User.value?.getString("user_id")}")
@@ -328,19 +355,22 @@ class SignInActivity : AppCompatActivity() {
                                 }
                             }.show()
                         }
-
-                    }
-                    else -> {
-                        MaterialAlertDialogBuilder(this@SignInActivity, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                            setTitle("알림")
-                            setMessage("이미 사용중인 아이디입니다.")
-                            setNeutralButton("확인") { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                        }.show()
+                        else -> {
+                            MaterialAlertDialogBuilder(
+                                this@SignInActivity,
+                                com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog
+                            ).apply {
+                                setTitle("알림")
+                                setMessage("이미 사용중인 아이디입니다.")
+                                setNeutralButton("확인") { dialog, _ ->
+                                    binding.tvIdCondition.text = "사용중인 아이디입니다. 새로운 아이디를 만들어주세요"
+                                    binding.tvIdCondition.setTextColor(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.deleteColor))
+                                    dialog.dismiss()
+                                }
+                            }.show()
+                        }
                     }
                 }
-
             }
         }
 
@@ -375,19 +405,31 @@ class SignInActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+
                 if (isFormatting) return
                 isFormatting = true
-                val cleaned =s.toString().replace("-", "")
-                when {
-                    cleaned.length <= 3 -> s?.replace(0, s.length, cleaned)
-                    cleaned.length <= 7 -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3)}")
-                    else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
+                val cleaned = s.toString().replace("-", "")
+                val maxDigits = 11
+                val limited = if (cleaned.length > maxDigits) cleaned.substring(0, maxDigits) else cleaned
+
+
+                val formatted = when {
+                    limited.length <= 3 -> limited
+                    limited.length <= 7 -> "${limited.substring(0, 3)}-${limited.substring(3)}"
+                    else -> "${limited.substring(0, 3)}-${limited.substring(3, 7)}-${limited.substring(7)}"
                 }
+
+                // 기존 입력과 다를 때만 업데이트
+                if (s.toString() != formatted && s != null) {
+                    s.replace(0, s.length, formatted)
+                }
+
                 isFormatting = false
-                Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etMobile.text.toString()).find()}")
                 viewModel.mobileCondition.value = mobilePatternCheck.matcher(binding.etMobile.text.toString()).find()
                 if (viewModel.mobileCondition.value == true) {
                     binding.btnAuthSend.isEnabled = true
+                } else {
+                    binding.btnAuthSend.isEnabled = false
                 }
             }
         })
@@ -400,17 +442,24 @@ class SignInActivity : AppCompatActivity() {
                 if (viewModel.idCondition.value == true) {
                     binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvIdCondition.text = "사용 가능합니다"
-                    Log.v("아이디", "${binding.etId.text}")
+                    binding.btnIdCondition.apply {
+                        isEnabled = true
+                        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.mainColor))
+                    }
                 } else {
-                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                    binding.tvIdCondition.text = "영문, 숫자를 포함해서 4자리 이상 입력해주세요"
+                    binding.tvIdCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
+                    binding.tvIdCondition.text = "영문, 숫자를 포함해서 4자리~16자리를 입력해주세요"
+                    binding.btnIdCondition.apply {
+                        isEnabled = false
+                        backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.subColor400))
+                    }
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // ----- ! 비밀번호 조건 코드 ! -----
+        // ------# 비밀번호 조건 코드 #------
         binding.etPw.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
@@ -420,8 +469,8 @@ class SignInActivity : AppCompatActivity() {
                     binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwCondition.text = "사용 가능합니다"
                 } else {
-                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                    binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ?)를 모두 포함해서\n8~20자리를 입력해주세요"
+                    binding.tvPwCondition.setTextColor(binding.tvPwCondition.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
+                    binding.tvPwCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ?)를 모두 포함해서 8~20자리를 입력해주세요"
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -437,12 +486,9 @@ class SignInActivity : AppCompatActivity() {
                 if (viewModel.pwCompare.value == true) {
                     binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvPwRepeat.text = "일치합니다"
-                    binding.btnSignIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.mainColor))
-
                 } else {
-                    binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                    binding.tvPwRepeat.setTextColor(binding.tvPwRepeat.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
                     binding.tvPwRepeat.text = "올바르지 않습니다"
-                    binding.btnSignIn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.subColor400))
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----
 
@@ -453,8 +499,30 @@ class SignInActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }) //-----! 입력 문자 조건 끝 !-----
 
-        viewModel.pwBothTrue.observe(this) { pwBothCondition ->
-            binding.btnSignIn.isEnabled = pwBothCondition
+        viewModel.allTrueLiveData.observe(this) {
+            if (viewModel.pwBothTrue.value == true) {
+                binding.tvFinalCheck.visibility = View.VISIBLE
+            }
+            if (it) {
+                binding.tvFinalCheck.apply {
+                    text = "회원가입 버튼을 눌러주세요"
+                    setTextColor(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.successColor))
+                }
+                binding.btnSignIn.apply {
+                    isEnabled = it
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.mainColor))
+                }
+            } else {
+                binding.tvFinalCheck.apply {
+                    text = "이름, 이메일을 올바르게 입력해주세요"
+                    setTextColor(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.deleteColor))
+                }
+                binding.btnSignIn.apply {
+                    isEnabled = it
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.subColor400))
+                }
+            }
+
         }
     } // -----! 회원가입 입력 창 anime 끝 !-----
 
@@ -468,7 +536,15 @@ class SignInActivity : AppCompatActivity() {
                         viewModel.mobileAuthCondition.value = true
                         binding.etAuthNumber.isEnabled = false
                         binding.etMobile.isEnabled = false
-
+                        binding.btnAuthSend.apply {
+                            isEnabled = false
+                            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.subColor400))
+                        }
+                        binding.btnAuthConfirm.apply {
+                            isEnabled = false
+                            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignInActivity, com.tangoplus.tangoq.R.color.subColor400))
+                        }
+                        viewModel.phoneCondition.value = true
                         // ------! 번호 인증 완료 !------
                         val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                         alphaAnimation.duration = 600
@@ -504,6 +580,8 @@ class SignInActivity : AppCompatActivity() {
                             Log.v("모바일인증완료", mobile)
                             viewModel.User.value?.put("mobile", mobile)
                             binding.btnAuthSend.isEnabled = true
+                        } else {
+                            binding.btnAuthSend.isEnabled = false
                         }
                     }
                 } else {
@@ -513,16 +591,7 @@ class SignInActivity : AppCompatActivity() {
             }
     }
 
-    private fun showTelecomBottomSheetDialog(context: FragmentActivity) {
-        val bottomsheetfragment = SignInBSDialogFragment()
-        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.OnTelecomSelectedListener {
-            override fun onTelecomSelected(telecom: String) {
-                binding.tvTelecom.text = telecom
-            }
-        })
-        val fragmentManager = context.supportFragmentManager
-        bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
-    }
+
 
     private fun showAgreementBottomSheetDialog(context: FragmentActivity) {
         val bottomSheetFragment = AgreementBSDialogFragment()
@@ -547,24 +616,49 @@ class SignInActivity : AppCompatActivity() {
                     jsonObj?.put("device_sn" ,0)
                     jsonObj?.put("user_sn", 0)
                     // ------! 광고성 넣기 끝 !------
-                    Log.v("회원가입JSon", "$jsonObj")
+//                    Log.v("회원가입JSon", "$jsonObj")
                     if (jsonObj != null) {
-                        lifecycleScope.launch {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj ) { _ ->
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        val intent = Intent(this@SignInActivity, IntroActivity::class.java)
-                                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                        intent.putExtra("SignInFinished", 201)
-
-                                        finish()
-                                        startActivity(intent)
-
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj ) { status ->
+                                Log.v("insertStatus", "status: $status")
+                                when (status) {
+                                    201 -> {
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            val intent = Intent(this@SignInActivity, IntroActivity::class.java)
+                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                            intent.putExtra("SignInFinished", 201)
+                                            finish()
+                                            startActivity(intent)
+                                        }
+                                    }
+                                    423, 409, 404, 403 -> {
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            MaterialAlertDialogBuilder(context, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                                setTitle("회원 가입 실패")
+                                                setMessage("올바르지 않은 데이터가 존재합니다\n입력한 정보를 다시 확인해주세요")
+                                                setPositiveButton("예") { _, _ ->
+                                                    binding.etEmail.isEnabled = true
+                                                    binding.etPw.isEnabled = true
+                                                    binding.etPwRepeat.isEnabled = true
+                                                    binding.etId.isEnabled = true
+                                                    binding.etAuthNumber.isEnabled = true
+                                                    binding.etMobile.isEnabled = true
+                                                    binding.btnAuthConfirm.isEnabled = true
+                                                    binding.btnAuthSend.isEnabled = true
+                                                    binding.btnEmailNext.isEnabled = true
+                                                    binding.btnIdCondition.isEnabled = true
+                                                    binding.btnAuthConfirm.backgroundTintList  = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                    binding.btnAuthSend.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                    binding.btnEmailNext.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                    binding.btnIdCondition.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                }
+                                                show()
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-
                     }
                 }
             }

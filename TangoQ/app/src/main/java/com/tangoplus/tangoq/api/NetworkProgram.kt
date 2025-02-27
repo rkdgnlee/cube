@@ -22,7 +22,7 @@ object NetworkProgram {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("responseBody", "$responseBody")
+                    // Log.v("responseBody", "$responseBody")
                     val jsonInfo = responseBody?.let { JSONObject(it) }
                     val exercises = mutableListOf<ExerciseVO>()
                     var exerciseTimes = 0

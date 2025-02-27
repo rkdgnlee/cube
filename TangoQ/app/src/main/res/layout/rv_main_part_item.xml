@@ -3,87 +3,66 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clMPI"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp"
-    android:background="@drawable/bckgnd_2_sub100_12">
+    android:layout_width="90dp"
+    android:layout_height="90dp"
+    android:layout_marginEnd="10dp"
+    android:background="@drawable/bckgnd_rectangle_8"
+    android:backgroundTint="@color/white">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView27"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:padding="10dp"
-        app:cardCornerRadius="12dp"
+        android:id="@+id/cardView37"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="4dp"
+        app:cardBackgroundColor="@color/subColor400"
+        app:cardCornerRadius="48dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2">
 
         <ImageView
             android:id="@+id/ivMPI"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            app:srcCompat="@color/mainContainerColor" />
-
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/icon_part1" />
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/tvMPITitle"
+        android:id="@+id/tvMPI"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="20dp"
-        android:text="오버헤드 스쿼트"
+        android:text="좌측 어깨"
         android:textColor="@color/subColor800"
-        android:textSize="22dp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvMPISummary"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="5dp"
-        android:breakStrategy="simple"
-        android:gravity="center_vertical"
-        android:maxLines="2"
-        android:textColor="@color/subColor800"
-        android:textSize="14dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvMPIState"
-        app:layout_constraintEnd_toStartOf="@+id/cardView27"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMPITitle" />
-
-    <TextView
-        android:id="@+id/tvMPIState"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginBottom="15dp"
-        android:background="@drawable/bckgnd_rectangle_8"
-        android:backgroundTint="@color/deleteColor"
-        android:drawableEnd="@drawable/icon_arrow_right_small"
-        android:drawableTint="@color/whiteText"
-        android:elevation="1dp"
-        android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="4dp"
-        android:paddingBottom="4dp"
-        android:text="확인 필요"
-        android:textColor="@color/whiteText"
         android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView37" />
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvMPI"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="-4dp"
+        android:layout_marginEnd="-4dp"
+        app:cardBackgroundColor="@color/deleteColor"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="@+id/cardView37"
+        app:layout_constraintTop_toTopOf="@+id/cardView37">
+
+        <TextView
+            android:id="@+id/textView55"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="!"
+            android:textColor="@color/whiteText"
+            android:textSize="11dp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
-

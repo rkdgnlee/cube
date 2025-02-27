@@ -2,54 +2,45 @@ package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RawRes
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.skydoves.balloon.ArrowPositionRules
-import com.skydoves.balloon.Balloon
-import com.skydoves.balloon.BalloonAnimation
-import com.skydoves.balloon.BalloonSizeSpec
-import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
-import com.tangoplus.tangoq.function.MeasurementManager.setLabels
+import com.tangoplus.tangoq.function.MeasurementManager.matchedTripleIndexes
 import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import kotlin.math.abs
 
-class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: MutableList<MutableList<AnalysisVO>>?, private val analyzes2: MutableList<MutableList<AnalysisVO>>?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TrendRVAdapter(private val fragment: Fragment,
+                     private val leftAnalysises: MutableList<MutableList<AnalysisUnitVO>>?,
+                     private val rightAnalysises: MutableList<MutableList<AnalysisUnitVO>>?,
+                    private val filteredParts: List<String>?
+
+
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    // 그니까 정면을 누르면 -> 정면에 관련된 관절이 전부 나옴 -> 그러면 내가 adapter연결전에 이미 필터링해서 넣으면 되는 거 아님?
+    // 들어오는 analysises에는 01234567까지 seq별로 있는 값들이 들어가있음. 그 seq에는 unitVO로 3개의 값들이 들어가있는 거지.
+
     inner class TrendViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvMTIPart : TextView = view.findViewById(R.id.tvMTIPart)
         val ivMTI : ImageView = view.findViewById(R.id.ivMTI)
-        private val clMTI1 : ConstraintLayout = view.findViewById(R.id.clMTI1)
-        private val clMTI2 : ConstraintLayout = view.findViewById(R.id.clMTI2)
-        private val clMTI3 : ConstraintLayout = view.findViewById(R.id.clMTI3)
-        private val tvMTI1 : TextView = view.findViewById(R.id.tvMTI1)
-        private val tvMTI2 : TextView = view.findViewById(R.id.tvMTI2)
-        private val tvMTI3 : TextView = view.findViewById(R.id.tvMTI3)
-        private val tvMTISeq1 : TextView = view.findViewById(R.id.tvMTISeq1)
-        private val tvMTISeq2 : TextView = view.findViewById(R.id.tvMTISeq2)
-        private val tvMTISeq3 : TextView = view.findViewById(R.id.tvMTISeq3)
-        private val pvMTI1Left : ProgressView = view.findViewById(R.id.pvMTI1Left)
-        private val pvMTI1Right : ProgressView = view.findViewById(R.id.pvMTI1Right)
-        private val pvMTI2Left : ProgressView = view.findViewById(R.id.pvMTI2Left)
-        private val pvMTI2Right : ProgressView = view.findViewById(R.id.pvMTI2Right)
-        private val pvMTI3Left : ProgressView = view.findViewById(R.id.pvMTI3Left)
-        private val pvMTI3Right : ProgressView = view.findViewById(R.id.pvMTI3Right)
-        val cvMTI : CardView = view.findViewById(R.id.cvMTI)
-        val tvSeqs = listOf(tvMTISeq1, tvMTISeq2, tvMTISeq3)
-        val pvs = listOf(listOf(pvMTI1Left, pvMTI1Right), listOf(pvMTI2Left, pvMTI2Right), listOf(pvMTI3Left, pvMTI3Right))
-        val tvPoses = listOf(tvMTI1, tvMTI2, tvMTI3)
-        val cls = listOf(clMTI1, clMTI2, clMTI3)
+        val tvMTIPart : TextView = view.findViewById(R.id.tvMTIPart)
+        val tvMTIComment: TextView = view.findViewById(R.id.tvMTIComment)
+        val tvMTI1 : TextView = view.findViewById(R.id.tvMTI1)
+        val tvMTIScore1: TextView = view.findViewById(R.id.tvMTIScore1)
+        val tvMTI2 : TextView = view.findViewById(R.id.tvMTI2)
+        val tvMTIScore2 : TextView = view.findViewById(R.id.tvMTIScore2)
+        val ivMTIArrow: ImageView = view.findViewById(R.id.ivMTIArrow)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -59,195 +50,203 @@ class TrendRVAdapter(private val fragment: Fragment, private val analyzes1: Muta
     }
 
     override fun getItemCount(): Int {
-        return analyzes2?.size ?: 0
+        return rightAnalysises?.size ?: 0
     }
 
     @SuppressLint("DiscouragedApi")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is TrendViewHolder) {
-            if (analyzes2?.isNotEmpty() == true) {
-                val currentItemRight = analyzes2[position] // analysisVO가 들어가있는 부위 별임.
-                holder.tvMTIPart.text = matchedParts[position]
-                val jointIndex = if (position == 0) 1 else (position + 1) / 2 + 1
+            holder.tvMTIPart.text = filteredParts?.get(position) ?: ""
+            if (leftAnalysises.isNullOrEmpty() && !rightAnalysises.isNullOrEmpty()) {
+                val analysisUnits = rightAnalysises[position]
+                // 점수 넣기
+                val score = calculatePercent(analysisUnits)
+                holder.tvMTIScore2.text = "${String.format("%.1f 점", score)}"
 
-                // ------# 부위 drawable 좌우 반전 #------
-                val resourceName = "@drawable/icon_part$jointIndex"
-                val resourceId = holder.ivMTI.context.resources.getIdentifier(
-                    resourceName, "drawable", holder.ivMTI.context.packageName
-                )
+                // 설명 넣기
+                val collectedComment = createSummary(analysisUnits) + createAdvise(filteredParts?.get(position), score.toInt(), 2)
+                holder.tvMTIComment.text = collectedComment
 
-                holder.ivMTI.setImageResource(resourceId)
-                // 2~7에 해당하는 홀수 번째 항목일 때만 좌우 반전 적용
-                if (position != 0 && position % 2 != 0) {
-                    holder.ivMTI.scaleX = -1f // 좌우 반전
+            } else if (!leftAnalysises.isNullOrEmpty() && !rightAnalysises.isNullOrEmpty()) {
+                val leftAnalysisUnits = leftAnalysises[position]
+                val rightAnalysisUnits = rightAnalysises[position]
+//                Log.v("왼쪽", "$leftAnalysisUnits")
+                Log.v("오른쪽", "${rightAnalysisUnits.map { it.columnName }}")
+                Log.v("오른쪽", "${rightAnalysisUnits.map { it.rawData }}")
+                val leftScore = calculatePercent(leftAnalysisUnits)
+                val rightScore = calculatePercent(rightAnalysisUnits)
+                val state = if (leftScore == rightScore) {
+                    2
+                } else if (leftScore > rightScore){
+                    1
+                } else if (rightScore > leftScore) {
+                    3
                 } else {
-                    holder.ivMTI.scaleX = 1f // 원래 상태
+                    0
                 }
+                holder.tvMTIScore1.text = "${String.format("%.1f 점", leftScore)}"
+                holder.tvMTIScore2.text = "${String.format("%.1f 점", rightScore)}"
 
-                // -------# 부위 선택 #------
-                val selectAnalysisRight = matchedIndexs[position]
-                val normalCount = selectAnalysisRight.count { indexTriple ->
-                    currentItemRight[indexTriple.second].labels[indexTriple.third].state == 0 || currentItemRight[indexTriple.second].labels[indexTriple.third].state == 1
-                }
-                if (normalCount >= 2) { // 3개 중 2개 이상이 normal이면 true
-                    setPartState(holder, 1)
-                } else if (normalCount == 1) {
-                    setPartState(holder, 2)
-                } else {
-                    setPartState(holder, 3)
-                }
-                // 왼쪽 설정 안됐을 때 우측 비교
-                selectAnalysisRight.forEachIndexed { index, indexTriple -> // 3, 5, 5 //  0, 0, 1
-                    holder.tvSeqs[index].text = setSeqString(indexTriple.first)
-                    val unit = currentItemRight[indexTriple.second].labels[indexTriple.third]
-                    val score = calculateBoundedScore(abs(unit.rawData), unit.rawDataBound)
-                    holder.pvs[index][1].progress = score
-                    holder.tvPoses[index].text = unit.rawDataName
-                        .replace("양", "")
-                        .replace("과", "")
-                        .replace("와", "")
-                        .replace("에서", "-")
-                        .replace("좌측 ", "")
-                        .replace("우측 ", "")
+                val collectedComment = createSummary(rightAnalysisUnits) + createAdvise(filteredParts?.get(position), rightScore.toInt(), state)
+                holder.tvMTIComment.text = collectedComment
 
-                    setState(holder, index, splitState(score))
-                    // 오른쪽 balloon comment init
-                    val rightRawData = String.format("%.2f", unit.rawData) + if (unit.columnName.contains("angle")) "°" else "cm"
-                    val rightComment = "우측: $rightRawData\n${setLabels(unit)}"
-                    setBalloon(holder.cls[index], index, rightComment)
-                }
+                // 코멘트가 만들어진 후 코멘트와 같이 점수 state 설정
+                setStateFlavor(holder, state)
 
-                // 좌측 비교
-                if (analyzes1 != null) {
-                    val currentItemLeft = analyzes1[position] // analysisVO가 들어가있는 부위 별임.
-                    val selectAnalysisLeft = matchedIndexs[position]
-                    selectAnalysisRight.zip(selectAnalysisLeft).forEachIndexed { index, (rightTriple, leftTriple) ->
-                        // 오른쪽
-                        val rightUnit = currentItemRight[rightTriple.second].labels[rightTriple.third]
-                        val rightScore = calculateBoundedScore(rightUnit.rawData, rightUnit.rawDataBound)
-                        holder.pvs[index][1].progress = rightScore
-                        holder.tvPoses[index].text = rightUnit.rawDataName
-                            .replace("양", "")
-                            .replace("과", "")
-                            .replace("와", "")
-                            .replace("에서", "-")
-                            .replace("좌측 ", "")
-                            .replace("우측 ", "")
+            }
 
-                        setState(holder, index, splitState(rightScore))
-
-                        // 왼쪽
-                        val leftUnit = currentItemLeft[leftTriple.second].labels[leftTriple.third]
-                        val leftScore = calculateBoundedScore(leftUnit.rawData, leftUnit.rawDataBound)
-                        holder.pvs[index][0].progress = leftScore
-
-                        // balloon에 통합 comment 넣기
-                        val leftRawData = String.format("%.2f", leftUnit.rawData) + if (leftUnit.columnName.contains("angle")) "°" else "cm"
-                        val leftComment = "좌측: $leftRawData"
-
-                        // 오른쪽 balloon comment init
-                        val rightRawData = String.format("%.2f", rightUnit.rawData) + if (rightUnit.columnName.contains("angle")) "°" else "cm"
-                        val rightComment = "우측: $rightRawData\n${setLabels(rightUnit)}"
-                        setBalloon(holder.cls[index], index, "$leftComment $rightComment")
-                    }
-                }
+            // image
+            val drawableId = when (filteredParts?.get(position)) {
+                "목관절" -> R.drawable.drawable_joint_filled_1
+                "우측 어깨", "좌측 어깨" -> R.drawable.drawable_joint_filled_2
+                "우측 팔꿉", "좌측 팔꿉" -> R.drawable.drawable_joint_filled_3
+                "우측 손목", "좌측 손목" -> R.drawable.drawable_joint_filled_4
+                "우측 골반", "좌측 골반" -> R.drawable.drawable_joint_filled_5
+                "우측 무릎", "좌측 무릎" -> R.drawable.drawable_joint_filled_6
+                "우측 발목", "좌측 발목" -> R.drawable.drawable_joint_filled_7
+                else -> -1
+            }
+            val isRight = if (filteredParts?.get(position)?.contains("우측") == true) true else false
+            if (drawableId != -1) {
+                loadFlippedImage(holder, drawableId, isRight)
             }
         }
     }
-
-    private val matchedParts = listOf(
-        "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목")
-
-    // first: seq / second: matchedUris의 index / third: 가장 작은 index
-
-    private val matchedIndexs = listOf(
-        listOf(Triple(3,1,0), Triple(5, 3, 0), Triple(6, 4, 0)),
-        // 어깨
-        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 2, 1)),
-        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 2, 1)),
-        // 팔꿉
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 2)),
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 2)),
-        // 손목
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(3, 2, 0)),
-        listOf(Triple(0,0,1), Triple(2, 1, 0), Triple(4, 2, 0)),
-        // 골반
-        listOf(Triple(0, 0, 1), Triple(3,1,0), Triple(5, 2, 0)),
-        listOf(Triple(0, 0, 1), Triple(4,1,0), Triple(5, 2, 0)),
-        // 무릎
-        listOf(Triple(0,0,1), Triple(3, 1, 0), Triple(5, 1, 1)),
-        listOf(Triple(0,0,1), Triple(4, 1, 0), Triple(5, 1, 1)),
-        // 발목
-        listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
-        listOf(Triple(0,0,2), Triple(5, 1, 0), Triple(5, 1, 1)),
-    )
-
-    private fun setSeqString(seq: Int?) : String {
-        return when (seq) {
-            0 -> "정면 분석"
-            1 -> "동적 분석"
-            2 -> "팔꿉 분석"
-            3 -> "좌측 분석"
-            4 -> "우측 분석"
-            5 -> "후면 분석"
-            6 -> "앉아 후면"
-            else -> ""
-        }
-    }
-
-    private fun splitState(score : Float) : Boolean {
-        return when {
-            score in 66f .. 100f -> true
-            else -> false
-        }
-    }
-
-    private fun setState(holder: TrendViewHolder, index: Int,state: Boolean) {
+    private fun setStateFlavor(holder: TrendViewHolder, state: Int) {
+        val startIndex = holder.tvMTIComment.text.indexOfLast { it == '\n' }
+        val spannableString = SpannableString.valueOf(holder.tvMTIComment.text.toString())
         when (state) {
-            true -> {
-                holder.tvSeqs[index].backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
-                holder.pvs[index][1].highlightView.color = ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor)
+            1 -> {
+                holder.tvMTI2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                holder.tvMTIScore2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                holder.ivMTIArrow.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_arrow_board))
+                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                holder.ivMTIArrow.scaleY = 1f
+                spannableString.setSpan(ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            }
+            2 -> {
+                holder.tvMTI2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800))
+                holder.tvMTIScore2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800))
+                holder.ivMTIArrow.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_no_change))
+                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800))
+                spannableString.setSpan(ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800)), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            3 -> {
+                holder.tvMTI2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
+                holder.tvMTIScore2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
+                holder.ivMTIArrow.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_arrow_board))
+                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
+                holder.ivMTIArrow.scaleY = -1f
+                spannableString.setSpan(ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor)), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            }
+        }
+        holder.tvMTIComment.text = spannableString
+    }
+//    private fun createAnalysises(analysis: MutableList<MutableList<AnalysisVO>>, position: Int) : MutableList<List<AnalysisUnitVO>> {
+//        val processedData = mutableListOf<List<AnalysisUnitVO>>()
+//        matchedTripleIndexes.forEach { tripleList ->
+//            val analysisUnits = mutableListOf<AnalysisUnitVO>()
+//
+//            tripleList.forEach { (seq, index, unitIndex) ->
+//                // seq로 rightAnalysises에서 해당 리스트를 가져옴
+//                val analysisList = analysis.getOrNull(position)
+//                // index로 해당 AnalysisVO를 가져옴
+//                val analysisVO = analysisList?.getOrNull(index)
+//                // unitIndex로 AnalysisUnitVO를 가져옴
+//                val analysisUnitVO = analysisVO?.labels?.getOrNull(unitIndex)
+////                        Log.v("analysisUniVO", "${analysisUnitVO?.rawDataName}")
+//                // null이 아니면 리스트에 추가
+//                if (analysisUnitVO != null) {
+//                    analysisUnits.add(analysisUnitVO)
+//                }
+//            }
+//
+//            // 각 관절마다 추출한 AnalysisUnitVO 리스트를 최종 데이터에 추가
+//            processedData.add(analysisUnits)
+//        }
+//        return processedData
+//    }
+
+    private fun calculatePercent(processedData: MutableList<AnalysisUnitVO>) : Float {
+        val calculatePercent = processedData.map { calculateBoundedScore(it.columnName, abs(it.rawData), it.rawDataBound)}.map { if (it <= 50f) 50f else it }
+        return calculatePercent.average().toFloat()
+    }
+
+
+    private fun loadFlippedImage(holder: TrendViewHolder, resourceId: Int, isRight: Boolean) {
+        holder.ivMTI.setImageResource(resourceId)
+        if (!isRight) {
+            holder.ivMTI.scaleX = -1f
+        }
+    }
+    private fun createSummary(units: List<AnalysisUnitVO>) : String {
+        val rawDataNames = units.map { it.rawDataName }
+//        val bouncedScores = units.map { calculateBoundedScore(it.columnName, abs(it.rawData), it.rawDataBound) }
+        val rawData = units.map { it.rawData }
+        val bounds = units.map { it.rawDataBound }
+
+        // 3가지의 데이터 값 합치기 Triple<칼럼명, 백분위값, 경계범위(Triple)>
+        val zipDatas = rawDataNames.zip(rawData) { s, f -> Pair(s, f) }.zip(bounds) { (s, f), t -> Triple(s, f, t)}
+        val combineStrings = zipDatas.joinToString { "${it.first}(${String.format("%.1f${if (it.first.contains("거리")) "cm" else "°"}", it.second)})\n" }.replace(", ", "")
+        val resultString = "각 데이터를 백분위로 산출한 점수입니다.\n${combineStrings}"
+        return resultString
+    }
+    private fun createAdvise(part: String?, score: Int, state: Int) : String {
+        val string1 = when (part) {
+            "목관절" -> {
+                "거북목과 목관절 불균형"
+            }
+            "좌측 어깨", "우측 어깨" -> {
+                "어깨 불균형과 몸의 좌우 쏠림"
+            }
+            "좌측 팔꿉", "우측 팔꿉" -> {
+                "상완과 어깨 근육의 긴장"
+            }
+            "좌측 손목", "우측 손목" -> {
+                "하완과 손목 자세 불균형"
+            }
+            "좌측 골반", "우측 골반" -> {
+                "골반 불균형으로 인한 좌우 쏠림"
+            }
+            "좌측 무릎", "우측 무릎" -> {
+                "하지 부정렬과 발목, 골반의 긴장"
+            }
+            "좌측 발목", "우측 발목" -> {
+                "발의 불균형, 밸런스 무너짐"
             }
             else -> {
-                holder.tvSeqs[index].backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
-                holder.pvs[index][1].highlightView.color = ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)
+                ""
             }
         }
-    }
 
-    private fun setPartState(holder: TrendViewHolder, state: Int) {
-        when (state) {
-            1 -> { holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor500))) }
-            2 -> { holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.cautionColor))) }
-            3 -> { holder.cvMTI.setCardBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))) }
-        }
-    }
-
-    private fun setBalloon(cl: ConstraintLayout, index: Int, comment: String) {
-        val balloon = Balloon.Builder(fragment.requireContext())
-            .setWidthRatio(0.64f)
-            .setHeight(BalloonSizeSpec.WRAP)
-            .setText(comment)
-            .setTextColorResource(R.color.subColor800)
-            .setTextSize(14f)
-            .setTextLineSpacing(5f)
-            .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
-            .setArrowSize(0)
-            .setMargin(4)
-            .setPadding(12)
-            .setCornerRadius(12f)
-            .setBackgroundColorResource(R.color.subColor100)
-            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-            .setLifecycleOwner(fragment.viewLifecycleOwner)
-            .build()
-
-        cl.setOnClickListener {
-            when (index) {
-                0 -> balloon.showAlignEnd(cl)
-                1 -> balloon.showAlignBottom(cl)
-                2 -> balloon.showAlignStart(cl)
+        val string2 = when (state) {
+            1 -> {
+                when (score) {
+                    in 50 .. 65 -> "의 컨디션이 안좋을 수록 주변 근육과 관절에 긴장과 불편함이 올 수 있습니다. ${if (part in listOf("좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎")) "프로그램 진행을 통해 밸런스를 맞춰보세요" else "더욱 꾸준히 프로그램을 진행 해 주세요"}"
+                    in 66 .. 80 -> "의 상태가 안좋아질 수 있습니다. 정확한 자세로 프로그램을 다시 진행해주세요"
+                    else -> "의 좋은 컨디션을 프로그램을 통해 유지하세요"
+                }
             }
+            2 -> {
+                when (score) {
+                    in 50 .. 65 -> "을 위한 프로그램 동안 정확한 자세를 재조명해서 프로그램을 반복하세요"
+                    in 66 .. 80 -> "을 위해 강화 운동 프로그램 진행을 추천드립니다."
+                    else -> "의 좋은 컨디션을 유지중입니다. 꾸준히 진행해서 일상의 운동 능력을 유지시키세요"
+                }
+
+            }
+            3 -> {
+                when (score) {
+                    in 50 .. 65 -> "의 밸런스와 균형에 회복이 있습니다. 정확한 자세에 주목해서 프로그램을 다시 진행해보세요"
+                    in 66 .. 80 -> if (part in listOf("좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎")) "의 밸런스를 프로그램을 통해 유지하세요" else "의 꾸준한 운동을 유지해 주세요"
+                    else ->  "운동 프로그램을 꾸준히 반복해서 일상 능력을 키워보세요 "
+                }
+            }
+            else -> ""
         }
+        return string1+string2
     }
 
 }

@@ -30,7 +30,7 @@
                     android:id="@+id/sflPCD"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -139,18 +139,18 @@
                         android:id="@+id/etPCDTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="5dp"
                         android:layout_marginEnd="60dp"
                         android:background="@color/white"
                         android:text="_"
                         android:textColor="@color/subColor800"
                         android:textSize="18dp"
                         android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/ibtnPCDBack"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toEndOf="@+id/ibtnPCDBack"
+                        app:layout_constraintTop_toTopOf="@+id/ibtnPCDBack" />
 
                     <ImageButton
                         android:id="@+id/ibtnPCDTop"
@@ -190,11 +190,11 @@
                     <com.skydoves.progressview.ProgressView
                         android:id="@+id/hpvPCD"
                         android:layout_width="0dp"
-                        android:layout_height="6dp"
+                        android:layout_height="8dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
-                        app:layout_constraintEnd_toStartOf="@+id/tvPCDWeek"
+                        app:layout_constraintEnd_toStartOf="@id/tvPCDWeek"
                         app:layout_constraintStart_toEndOf="@+id/tvPCDSet"
                         app:layout_constraintTop_toTopOf="@+id/tvPCDSet"
                         app:progressView_colorBackground="@color/secondContainerColor"
@@ -213,7 +213,7 @@
                         android:paddingTop="4dp"
                         android:paddingEnd="10dp"
                         android:paddingBottom="4dp"
-                        android:text="1/4 주차"
+                        android:text="0/4 주차"
                         android:textColor="#FFFFFF"
                         android:textSize="16dp"
                         android:textStyle="bold"
@@ -336,7 +336,7 @@
                         android:id="@+id/rvPCD"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="15dp"
                         android:layout_marginBottom="90dp"
                         android:nestedScrollingEnabled="false"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -344,6 +344,20 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvPCDCount"
                         app:layout_constraintVertical_bias="0.0" />
+
+                    <ImageButton
+                        android:id="@+id/ibtnPCDBack"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/white"
+                        android:padding="4dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_arrow_left"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>

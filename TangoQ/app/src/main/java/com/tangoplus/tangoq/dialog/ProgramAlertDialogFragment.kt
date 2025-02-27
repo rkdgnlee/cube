@@ -26,7 +26,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
     private var alertMessage = ""
     private val pvm : ProgressViewModel by activityViewModels()
     companion object {
-        const val ALERT_KEY_CASE = "a"
+        const val ALERT_KEY_CASE = "alert_key_case"
         fun newInstance (parentDialog : ProgramCustomDialogFragment, case: Int) : ProgramAlertDialogFragment {
             val fragment = ProgramAlertDialogFragment()
             fragment.parentDialog = parentDialog
@@ -52,6 +52,8 @@ class ProgramAlertDialogFragment : DialogFragment() {
 
         when (case) {
             2 -> {
+                binding.btnPAD1.visibility = View.VISIBLE
+                binding.btnPAD2.visibility = View.VISIBLE
                 alertMessage = "프로그램이 완료되었습니다.\n정확한 운동 추천을 위하여\n키오스크, 모바일 앱으로 측정을 진행한 후\n운동 프로그램을 다시 진행해 주시기 바랍니다."
                 val spannableString = SpannableString(alertMessage)
                 val accentIndex = spannableString.indexOf("키오스크, 모바일 앱")
@@ -61,7 +63,6 @@ class ProgramAlertDialogFragment : DialogFragment() {
                 binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_finish_program))
                 binding.btnPAD1.setOnClickListener {
                     dismiss()
-                    parentDialog.dismissThisFragment()
                 }
                 binding.btnPAD2.setOnClickListener {
                     dismiss()
@@ -69,8 +70,6 @@ class ProgramAlertDialogFragment : DialogFragment() {
                     val bnb = requireActivity().findViewById<BottomNavigationView>(R.id.bnbMain)
                     bnb.selectedItemId = R.id.measure
                 }
-                binding.btnPAD1.visibility = View.GONE
-                binding.btnPAD2.visibility = View.VISIBLE
             }
             1 -> {
                 binding.btnPAD2.text = "확인"
@@ -81,7 +80,6 @@ class ProgramAlertDialogFragment : DialogFragment() {
                 binding.btnPAD2.visibility = View.VISIBLE
                 binding.btnPAD2.setOnClickListener {
                     dismiss()
-                    parentDialog.dismissThisFragment()
                 }
             }
             0 -> {
@@ -98,10 +96,11 @@ class ProgramAlertDialogFragment : DialogFragment() {
         dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.setCancelable(false)
+//        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f ,height = 0.4f)
+            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f , height = 0.35f)
         } else {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.475f)
+            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.45f)
         }
     }
 }

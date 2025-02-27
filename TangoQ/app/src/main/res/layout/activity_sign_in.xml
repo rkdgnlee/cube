@@ -12,14 +12,13 @@
         android:id="@+id/tvSignInGuide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
         android:text="회원가입을 시작할게요"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/ibtnSignInFinish"
+        app:layout_constraintStart_toEndOf="@+id/ibtnSignInFinish"
+        app:layout_constraintTop_toTopOf="@+id/ibtnSignInFinish" />
 
     <com.shuhart.stepview.StepView
         android:id="@+id/svSignIn"
@@ -37,7 +36,7 @@
         app:sv_doneCircleColor="@color/thirdColor"
         app:sv_doneStepLineColor="@color/white"
         app:sv_doneStepMarkColor="@color/white"
-        app:sv_doneTextColor="@color/thirdColor"
+        app:sv_doneTextColor="@color/secondaryColor"
         app:sv_nextStepCircleColor="@color/subColor100"
         app:sv_nextStepCircleEnabled="true"
         app:sv_nextStepLineColor="@color/white"
@@ -47,7 +46,7 @@
         app:sv_selectedTextColor="@color/secondaryColor"
         app:sv_stepsNumber="4"
         app:sv_textPadding="4dp"
-        app:sv_textSize="16sp" />
+        app:sv_textSize="16dp" />
 
 
     <com.skydoves.progressview.ProgressView
@@ -93,6 +92,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 android:visibility="visible">
 
@@ -100,23 +100,21 @@
                     android:id="@+id/tvAlarmMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:text="아이디"
                     android:textColor="@color/subColor800"
-                    android:textSize="20sp"
+                    android:textSize="18dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvIdCondition"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginBottom="8dp"
                     android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/conditionSuccessColor"
-                    android:textSize="10sp"
+                    android:textColor="@color/black"
+                    android:textSize="13dp"
                     android:visibility="visible" />
             </LinearLayout>
 
@@ -136,7 +134,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_1_sub200_12"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:ems="10"
                     android:hint="아이디"
                     android:inputType="text"
@@ -156,7 +154,8 @@
                     android:layout_marginStart="10dp"
                     android:layout_weight="2"
                     android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/mainColor"
+                    android:backgroundTint="@color/subColor400"
+                    android:enabled="false"
                     android:stateListAnimator="@null"
                     android:text="중복 확인"
                     android:textColor="@color/whiteText"
@@ -170,30 +169,33 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 android:visibility="visible">
 
                 <TextView
                     android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="2.5"
+                    android:gravity="center_vertical"
                     android:text="비밀번호 설정"
                     android:textColor="@color/subColor800"
-                    android:textSize="20sp"
+                    android:textSize="18dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvPwCondition"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:textSize="10sp"
+                    android:textSize="13dp"
                     android:visibility="visible" />
             </LinearLayout>
 
@@ -204,7 +206,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
-                android:background="@drawable/bckgnd_1_sub200_12"
+                android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:hint="비밀번호"
                 android:inputType="textPassword"
@@ -223,29 +225,31 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal"
                 android:visibility="visible">
 
                 <TextView
-                    android:id="@+id/tvMDDate"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/TextView80"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
+                    android:layout_weight="2.5"
                     android:text="비밀번호 확인"
                     android:textColor="@color/subColor800"
-                    android:textSize="20sp"
+                    android:textSize="18dp"
                     android:textStyle="bold"
                     android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvPwRepeat"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:textSize="10sp"
+                    android:textSize="13dp"
                     android:visibility="visible" />
 
             </LinearLayout>
@@ -256,7 +260,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/bckgnd_1_sub150_12"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:hint="비밀번호 확인"
                 android:inputType="textPassword"
@@ -269,6 +274,18 @@
                 android:textSize="18sp"
                 android:visibility="visible" />
 
+            <TextView
+                android:id="@+id/tvFinalCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:text="올바르지않습니다"
+                android:textColor="@color/deleteColor"
+                android:textSize="14dp"
+                android:visibility="invisible" />
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSignIn"
                 android:layout_width="match_parent"
@@ -279,7 +296,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="30dp"
                 android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/mainColor"
+                android:backgroundTint="@color/subColor400"
                 android:enabled="false"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
@@ -291,30 +308,43 @@
                 android:visibility="visible"
                 app:cornerRadius="12dp" />
 
-            <TextView
-                android:id="@+id/tvNameGuide"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="8dp"
-                android:text="이름"
-                android:textColor="@color/subColor800"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:visibility="visible" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvNameGuide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="이름"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvNameCondition"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/subColor800"
+                    android:textSize="13dp" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/etName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:layout_marginLeft="20dp"
-
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/bckgnd_1_sub150_12"
+                android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:hint="이름을 입력해주세요"
                 android:inputType="text"
@@ -341,11 +371,10 @@
                     android:id="@+id/etEmailId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_1_sub150_12"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:ems="10"
                     android:hint="이메일을 입력해주세요"
                     android:inputType="textEmailAddress"
@@ -359,7 +388,7 @@
                     android:visibility="visible" />
 
                 <ImageView
-                    android:id="@+id/ssivMDI"
+                    android:id="@+id/ImageView49"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -372,7 +401,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_1_sub150_12"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:visibility="visible">
 
                     <ImageView
@@ -465,12 +494,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+                    tools:layout_editor_absoluteY="45dp">
 
                     <EditText
                         android:id="@+id/etMobile"
@@ -478,10 +506,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
                         android:layout_weight="2"
-                        android:background="@drawable/bckgnd_1_sub150_12"
+                        android:background="@drawable/bckgnd_12_edit_text"
                         android:ems="10"
                         android:hint="휴대폰 번호를 입력해주세요"
                         android:inputType="phone"
+                        android:maxLength="13"
                         android:paddingLeft="12dp"
                         android:paddingTop="16dp"
                         android:paddingRight="12dp"
@@ -510,51 +539,6 @@
                         app:cornerRadius="12dp" />
                 </LinearLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/linearLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_1_sub150_12"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvMobile">
-
-                    <TextView
-                        android:id="@+id/tvTelecom"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:elevation="0dp"
-                        android:hint="통신사 선택"
-                        android:paddingLeft="12dp"
-                        android:paddingTop="16dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="16dp"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/subColor100"
-                        android:textSize="18sp"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/imageView2"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0" />
-
-                    <ImageView
-                        android:id="@+id/imageView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/icon_autocomplete_button"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvTelecom" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
                 <EditText
                     android:id="@+id/etAuthNumber"
                     android:layout_width="0dp"
@@ -562,10 +546,11 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_1_sub150_12"
+                    android:background="@drawable/bckgnd_12_edit_text"
                     android:ems="10"
                     android:hint="인증 번호를 입력해주세요"
                     android:inputType="number"
+                    android:maxLength="10"
                     android:paddingLeft="12dp"
                     android:paddingTop="16dp"
                     android:paddingRight="16dp"
@@ -592,7 +577,7 @@
                     android:padding="16dp"
                     android:stateListAnimator="@null"
                     android:text="인증번호 확인"
-                    android:textColor="@color/white"
+                    android:textColor="@color/whiteText"
                     android:textSize="16sp"
                     android:visibility="invisible"
                     app:cornerRadius="12dp"
@@ -605,5 +590,17 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <ImageButton
+        android:id="@+id/ibtnSignInFinish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:padding="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_arrow_left" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

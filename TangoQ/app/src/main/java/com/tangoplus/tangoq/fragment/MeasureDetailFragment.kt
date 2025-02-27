@@ -19,27 +19,45 @@ import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
-import com.tangoplus.tangoq.MainActivity
+import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.BalanceRVAdapter
+import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
+import com.tangoplus.tangoq.adapter.MainPartRVAdapter
+import com.tangoplus.tangoq.adapter.MeasureDetailRVAdapter
+import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
+import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
+import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
+import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
+import com.tangoplus.tangoq.listener.OnCategoryClickListener
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.AnalysisVO
+import org.apache.commons.math3.geometry.euclidean.twod.Line
+import org.json.JSONArray
 import java.io.File
 import java.io.FileOutputStream
 
 
-class MeasureDetailFragment : Fragment() {
+class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
     private lateinit var binding : FragmentMeasureDetailBinding
-
+    private var singletonMeasure : MutableList<MeasureVO>? = null
     private var measure : MeasureVO? = null
-    private val viewModel : MeasureViewModel by activityViewModels()
+    private val mvm : MeasureViewModel by activityViewModels()
+    private val avm : AnalysisViewModel by activityViewModels()
+    private lateinit var adapterAnalysises : List<AnalysisVO>
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,10 +69,9 @@ class MeasureDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
         val showMeasure = arguments?.getBoolean("showMeasure", false) ?: false
         if (showMeasure) {
-
             val balloonText = "측정 결과를 확인해보세요\n실제 자세도 함께 볼 수 있습니다."
             val balloonlc1 = Balloon.Builder(requireContext())
                 .setWidthRatio(0.5f)
@@ -79,11 +96,18 @@ class MeasureDetailFragment : Fragment() {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
-
+        binding.ibtnMDBack.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flMain, MeasureHistoryFragment())
+                commit()
+            }
+        }
         // ------# measure 에 맞게 UI 수정 #------
-        measure = viewModel.selectedMeasure
+        measure = mvm.selectedMeasure
+        avm.currentPart.value = "목관절"
+        avm.mdMeasureResult = measure?.measureResult?.getJSONArray(1) ?: JSONArray()
         updateUI()
-
+        setHorizonAdapter()
         // ------# 10각형 레이더 차트 #------
 
         val bodyParts = listOf("목관절", "우측 어깨", "좌측 어깨", "우측 팔꿉", "좌측 팔꿉","우측 손목","좌측 손목", "우측 골반","좌측 골반", "우측 무릎","좌측 무릎","우측 발목", "좌측 발목")
@@ -91,7 +115,7 @@ class MeasureDetailFragment : Fragment() {
 
         // 먼저 모든 점수를 95로 초기화
         val scores = MutableList(bodyParts.size) { 96f }
-        Log.v("raderScores", "${ measure?.dangerParts}")
+//        Log.v("raderScores", "${ measure?.dangerParts}")
         // measure.dangerParts에 있는 부위들의 점수만 업데이트
         measure?.dangerParts?.forEach { (part, danger) ->
             val index = bodyParts.indexOf(part)
@@ -108,13 +132,13 @@ class MeasureDetailFragment : Fragment() {
         // indices를 사용하여 올바른 순서로 raderScores 생성
         val raderScores = indices.map { scores[it] }
         val raderXParts = indices.map { bodyParts[it] }
-        Log.v("raderScores", raderScores.toString())
+//        Log.v("raderScores", raderScores.toString())
 
         val entries = mutableListOf<RadarEntry>()
         for (i in bodyParts.indices) {
             entries.add(RadarEntry(raderScores[i]))
         }
-        Log.v("재조정x축", "$raderXParts")
+//        Log.v("재조정x축", "$raderXParts")
         val dataSet = RadarDataSet(entries, "신체 부위").apply {
             color = resources.getColor(R.color.mainColor, null)
             setDrawFilled(true)
@@ -161,94 +185,69 @@ class MeasureDetailFragment : Fragment() {
             }
             invalidate() // 차트 갱신
         }
-
-//        val dangerParts = measure?.dangerParts?.map { it.first }?.toMutableList()
-        val stages = mutableListOf<MutableList<String>>()
-        val balanceParts1 = mutableListOf("어깨", "골반")
-        stages.add(balanceParts1)
-        val balanceParts2 = mutableListOf("어깨", "팔꿉", "좌측 전완")
-        stages.add(balanceParts2)
-        val balanceParts3 = mutableListOf("골반", "좌측 어깨", "목")
-        stages.add(balanceParts3)
-        val balanceParts4 = mutableListOf("허벅지",  "어깨")
-        stages.add(balanceParts4)
-        val balanceParts5 = mutableListOf("좌측 허벅지", "좌측 골반", "좌측 어깨")
-        stages.add(balanceParts5)
-
-        val degrees =  mutableListOf(Pair(1, 3), Pair(1,0), Pair(1, 2), Pair(2, -1), Pair(0 , -4))
-        setAdapter(stages, degrees)
-//        val dangerParts = measure.dangerParts.map { it.first }.toMutableList()
-//        val stages = mutableListOf<MutableList<String>>()
-//        stages.add( dangerParts.subList(0, 2))
-//        stages.add( dangerParts.subList(0, 2))
-//        stages.add( dangerParts.subList(0, 2))
-//        stages.add( dangerParts.subList(2, 3))
-//        stages.add( dangerParts.subList(2, 3))
-//
-//        val dangerDegree = measure.dangerParts.map { it.second }.toMutableList()
-//        val degrees = mutableListOf<Pair<Int,Int>>()
-//        Log.v("degreesss", "$dangerDegree")
-//        for (i in 0 until 5) {
-//            val degree = dangerDegree?.getOrNull(i) ?: -1  // null이면 기본값으로 -1 사용
-//            when (degree) {
-//                1 -> degrees.add(Pair(1, Random.nextInt(2, 4)))
-//                2 -> degrees.add(Pair(2, Random.nextInt(-1, 2)))
-//                else -> degrees.add(Pair(3, Random.nextInt(-2, -1)))  // 여기서 else는 null 또는 다른 값에 대한 처리
-//            }
-//        }
-
-
-        binding.fabtnMD.setOnClickListener {
-            (activity as? MainActivity)?.launchMeasureSkeletonActivity()
+//        val currentMeasureIndex = singletonMeasure?.indexOf(mvm.selectedMeasure)
+//        setAdapter(currentMeasureIndex ?: 0)
+        avm.currentPart.observe(viewLifecycleOwner) { part ->
+            setAdapter(part)
+            // 초기 상태
+            avm.currentIndex = matchedIndexs.indexOf(part)
+            Log.v("파트observe", "$part, ${avm.currentPart.value}")
         }
 
-        binding.btnMDShare.setOnClickListener {
-            // ------! 그래프 캡처 시작 !------
-            val bitmap = Bitmap.createBitmap(binding.rcMD.width, binding.rcMD.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            binding.rcMD.draw(canvas)
-
-            val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "shared_image.jpg")
-            val fileOutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
-            fileOutputStream.flush()
-            fileOutputStream.close()
-
-            val fileUri = FileProvider.getUriForFile(requireContext(), context?.packageName + ".provider", file)
-            // ------! 그래프 캡처 끝 !------
-            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/3")
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "image/png" // 이곳에서 공유 데이터 변경
-            intent.putExtra(Intent.EXTRA_STREAM, fileUri)
-            intent.putExtra(Intent.EXTRA_TEXT, "제 밸런스 그래프를 공유하고 싶어요 !\n$url")
-            startActivity(Intent.createChooser(intent, "밸런스 그래프"))
-        }
     }
+    private fun setAdapter(part: String) {
+//        val painPart = avm.currentParts?.find { it == part }
+        val seqs = matchedUris[part]
+        val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
 
-    private fun setAdapter(stages: MutableList<MutableList<String>>, degrees: MutableList<Pair<Int,Int>>) {
+        seqs?.forEach { seqIndex ->
+            val analyses = getAnalysisUnits(requireContext(), part, seqIndex, measure?.measureResult ?: JSONArray())
+            if (!groupedAnalyses.containsKey(seqIndex)) {
+                groupedAnalyses[seqIndex] = mutableListOf()
+            }
+            groupedAnalyses[seqIndex]?.add(analyses)
+
+        }
+
+        adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
+            AnalysisVO(
+                indexx = indexx,
+                labels = analysesList.flatten().toMutableList(),
+                url = measure?.fileUris?.get(indexx) ?: ""
+            )
+        }.sortedBy { it.indexx }
+
+//        Log.v("변환analysis", "${adapterAnalysises.map { it.labels.size }}, ${ adapterAnalysises.map { it } }")
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val adapter = MeasureDetailRVAdapter(this@MeasureDetailFragment, adapterAnalysises, avm) // avm.currentIndex가 2인데 adapterAnalysises에는 0, 5밖에없어서 indexOutOfBoundException이 나옴.
         binding.rvMD.layoutManager = layoutManager
-        val balanceAdapter = BalanceRVAdapter(this@MeasureDetailFragment)
-        binding.rvMD.adapter = balanceAdapter
+        binding.rvMD.adapter = adapter
     }
 
-//    private fun calculateBalanceScore(angle: Float, case: String): Int {
-//        val normalRange = when (case) {
-//            "목" -> 0.5
-//            "우측어깨", "좌측어깨","우측무릎", "좌측무릎" -> 1.0
-//            else -> 3.0
-//        }
-//        val deviationFromNormal = Math.abs(angle) - normalRange
-//
-//        return when {
-//            deviationFromNormal <= 0 -> 100
-//            else -> (100 - (deviationFromNormal * 10)).toInt().coerceAtLeast(0)
-//        }
-//    }
+    private fun setHorizonAdapter() {
+        val partStates = matchedIndexs.map { part ->
+            measure?.dangerParts?.find { it.first == part }  ?: (part to 0f)
+        }. toMutableList().apply {
+            val zeroItem = filter { it.second == 0f }
+            removeAll(zeroItem)
+            addAll(zeroItem)
+        }
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        val adapter = MainPartRVAdapter(this@MeasureDetailFragment, partStates, avm, "measureDetail")
+        adapter.onCategoryClickListener = this
+        binding.rvMDHorizon.layoutManager = layoutManager
+        binding.rvMDHorizon.adapter=  adapter
+
+    }
 
     private fun updateUI() {
         binding.tvMDScore.text = measure?.overall.toString()
-        binding.tvMDDate.text = measure?.regDate?.substring(0, 10)
-        binding.tvMDParts.text = "우려부위: ${measure?.dangerParts?.map { it.first }?.joinToString(", ")}"
+        binding.tvMDDate.text = "${measure?.regDate?.substring(0, 10)} ${measure?.userName}"
+//        binding.tvMDParts.text = "우려부위: ${measure?.dangerParts?.map { it.first }?.joinToString(", ")}"
+    }
+
+    override fun onCategoryClick(category: String) {
+        avm.currentPart.value = category
+        Log.v("커런트파트변경", "$category, ${avm.currentPart.value}")
     }
 }

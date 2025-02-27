@@ -114,6 +114,9 @@ interface MeasureDao {
 
     @Query("SELECT measure_seq, measure_server_json_name, measure_server_file_name FROM t_measure_static WHERE server_sn = :serverSn")
     fun getStaticUrl(serverSn: Int) : List<UrlTuple> // 조회하고 나서 꼭 데이터  정렬해야함 measure_seq로 1, 3, 4, 5, 6, 7 임.
+
+    @Query("SELECT * FROM t_measure_static WHERE server_sn = :serverSn ORDER BY measure_seq")
+    fun getStaticsBy1Info(serverSn: Int) : List<MeasureStatic>
     // -------------------------------# MeasureDynamic #-------------------------------
     @Insert
     suspend fun insertByDynamic(entity: MeasureDynamic)  : Long
@@ -176,6 +179,9 @@ interface MeasureDao {
 
     @Query("SELECT measure_seq, measure_server_json_name, measure_server_file_name FROM t_measure_dynamic WHERE server_sn = :serverSn")
     fun getDynamicUrl(serverSn: Int) : List<UrlTuple>
+
+    @Query("SELECT * FROM t_measure_dynamic WHERE server_sn = :serverSn")
+    fun getDynamicBy1Info(serverSn: Int) : MeasureDynamic
     // -----------------------------------------# sn 관리 #------------------------------------------
 
     fun MeasureStatic.toJson(): String {

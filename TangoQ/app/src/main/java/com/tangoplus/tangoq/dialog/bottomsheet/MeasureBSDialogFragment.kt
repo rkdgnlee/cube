@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
+import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationProgress
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureBSDialogBinding
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
@@ -43,38 +45,55 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
         val dates = measures?.let { measure ->
             List(measure.size) { i ->
                 measure.get(i).regDate
+            }.distinct()
+        } ?: emptyList()
+        val names = measures?.let { measure ->
+            List(measure.size) { i ->
+                measure.get(i).userName
             }
         } ?: emptyList()
-
+//        Log.v("MeasureBS", "$dates")
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMBSD.layoutManager = layoutManager
-        val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), "measure",  mvm)
+        val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), names.toMutableList(),"measure",  mvm)
         binding.rvMBSD.adapter = adapter
 
         setupButtons()
         binding.btnMBSD.setOnClickListener {
-            mvm.selectedMeasureDate.value = mvm.selectMeasureDate.value
+
             val dialog = LoadingDialogFragment.newInstance("측정파일")
             dialog.show(activity?.supportFragmentManager ?: return@setOnClickListener, "LoadingDialogFragment")
 
             // ------# 로딩을 통해 파일 가져오기 #------
+            /* 1. 선택 날짜(mvm.selectMeasureDate)를 통해 일단 measureVO를 받아옴
+            *  2. 다 받아와서 MeasureVO 객체가 생성되면 mvm.selectedMeasureDate를 mvm.selectMeasureDate로 바꿔서 관찰자에 반응 전달ㅅㄷ
+            * */
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val currentMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectedMeasureDate.value }
+                    val currentMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectMeasureDate.value}
                     val uriTuples = currentMeasure?.sn?.let { it -> ssm.get1MeasureUrls(it) }
                     if (uriTuples != null) {
-                        Log.v("리스너1", "$uriTuples")
                         ssm.downloadFiles(uriTuples)
                         val editedMeasure = ssm.insertUrlToMeasureVO(uriTuples, currentMeasure)
-                        Log.v("리스너2", "$editedMeasure")
-
                         // singleton의 인덱스 찾아서 ja와 값 넣기
-                        val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == mvm.selectedMeasureDate.value }
+                        val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == mvm.selectMeasureDate.value }
                         if (singletonIndex != null && singletonIndex >= 0) {
-                            singletonMeasure.measures?.set(singletonIndex, editedMeasure)
-                            mvm.selectedMeasure = editedMeasure
-                            Log.v("수정완료", "index: $singletonIndex, VO: $editedMeasure")
                             withContext(Dispatchers.Main) {
+                                singletonMeasure.measures?.set(singletonIndex, editedMeasure)
+                                mvm.selectedMeasure = editedMeasure
+                                mvm.selectedMeasureDate.value = mvm.selectMeasureDate.value
+                                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
+                                mvm.selectedMeasure?.recommendations = progressRec
+                                Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
+
+                                // selectedIndex도 초기화
+                                if (singletonIndex > 4) {
+                                    mvm.selectedMeasureIndex.value = 0
+                                } else {
+                                    mvm.selectedMeasureIndex.value = singletonIndex
+                                }
+//                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
+                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
                                 dialog.dismiss()
                             }
                         }
@@ -100,8 +119,8 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
                 }
 
             }
-            Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
-            Log.w("selectedMeasure", "${mvm.selectedMeasure}")
+//            Log.w("selectedMeasureDate", "selectedMeasure: ${mvm.selectedMeasureDate.value}, selectMeasure: ${mvm.selectMeasureDate.value}")
+//            Log.w("selectedMeasure", "${mvm.selectedMeasure}")
             dismiss()
         }
     }

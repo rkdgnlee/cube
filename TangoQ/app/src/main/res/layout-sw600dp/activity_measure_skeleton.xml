@@ -66,7 +66,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/icon_setting_gear" />
-
+        <ImageButton
+            android:id="@+id/ibtnMeasureSkeletonSetup"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="24dp"
+            android:backgroundTint="#00FFFFFF"
+            android:contentDescription="showEditDialog"
+            android:padding="6dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toStartOf="@+id/ibtnMeasureSkeletonInfo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/icon_profile" />
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonBack"
             android:layout_width="48dp"

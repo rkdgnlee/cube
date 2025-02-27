@@ -9,208 +9,226 @@
     android:stateListAnimator="@null"
     tools:context=".IntroActivity">
 
-    <ImageView
-        android:id="@+id/imageView43"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="-20dp"
-        android:layout_marginBottom="20dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/cardView19"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvIntroComment"
-        app:srcCompat="@drawable/intro_banner" />
-
-    <!--    <androidx.viewpager2.widget.ViewPager2-->
-    <!--        android:id="@+id/vpIntroBanner"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="296dp"-->
-    <!--        android:layout_marginTop="100dp"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout10">-->
-
-    <!--    </androidx.viewpager2.widget.ViewPager2>-->
-
-
-    <!--    <com.tomlecollegue.progressbars.HorizontalProgressView-->
-    <!--        android:id="@+id/hpvIntro"-->
-    <!--        android:layout_width="128dp"-->
-    <!--        android:layout_height="2dp"-->
-    <!--        android:layout_marginBottom="32dp"-->
-    <!--        android:background="#00FFFFFF"-->
-    <!--        android:visibility="gone"-->
-    <!--        app:colorBackground="@color/subColor100"-->
-    <!--        app:colorProgress="@color/mainColor"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@+id/vpIntroBanner"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="@+id/vpIntroBanner" />-->
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView18"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:cardCornerRadius="36dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView19"
-        app:layout_constraintEnd_toStartOf="@+id/cardView19"
-        app:layout_constraintHorizontal_bias="0.6"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/cardView19">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ibtnGoogleLogin."
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/effect_ibtn_20dp"
-            android:contentDescription="구글로그인버튼"
-            android:src="@drawable/icon_api_google_logo" />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView19"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:cardCornerRadius="36dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.65">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/ibtnKakaoLogin"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/effect_ibtn_20dp"
-            android:contentDescription="카카오로그인버튼"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/icon_api_kakao_logo" />
-    </androidx.cardview.widget.CardView>
+            android:layout_height="wrap_content">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView20"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:cardCornerRadius="36dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView19"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
-        app:layout_constraintStart_toEndOf="@+id/cardView19"
-        app:layout_constraintTop_toTopOf="@+id/cardView19">
+            <ImageView
+                android:id="@+id/imageView43"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="50dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvIntroComment"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/intro_banner" />
 
-        <ImageButton
-            android:id="@+id/btnOAuthLoginImg"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:contentDescription="네이버로그인버튼"
-            android:scaleType="fitCenter"
-            android:src="@drawable/icon_api_naver_logo" />
-    </androidx.cardview.widget.CardView>
+            <!--    <androidx.viewpager2.widget.ViewPager2-->
+            <!--        android:id="@+id/vpIntroBanner"-->
+            <!--        android:layout_width="match_parent"-->
+            <!--        android:layout_height="296dp"-->
+            <!--        android:layout_marginTop="100dp"-->
+            <!--        app:layout_constraintEnd_toEndOf="parent"-->
+            <!--        app:layout_constraintStart_toStartOf="parent"-->
+            <!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout10">-->
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnIntroLogin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/effect_ibtn_12dp"
-        android:backgroundTint="@color/mainColor"
-        android:elevation="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="20dp"
-        android:stateListAnimator="@null"
-        android:text="로그인"
-        android:textColor="@color/whiteText"
-        android:textSize="18dp"
-        app:cornerRadius="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView125" />
+            <!--    </androidx.viewpager2.widget.ViewPager2>-->
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnIntroSignIn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/effect_ibtn_12dp"
-        android:backgroundTint="@color/mainContainerColor"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="20dp"
-        android:stateListAnimator="@null"
-        android:text="회원가입"
-        android:textColor="@color/mainDeepColor"
-        android:textSize="18dp"
-        app:cornerRadius="12dp"
-        app:layout_constraintEnd_toEndOf="@+id/btnIntroLogin"
-        app:layout_constraintStart_toStartOf="@+id/btnIntroLogin"
-        app:layout_constraintTop_toBottomOf="@+id/btnIntroLogin" />
 
-    <View
-        android:id="@+id/view3"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/gradient_top_white_90"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView43"
-        app:layout_constraintEnd_toEndOf="@+id/imageView43"
-        app:layout_constraintHeight_percent="0.2"
-        app:layout_constraintStart_toStartOf="@+id/imageView43"
-        app:layout_constraintTop_toTopOf="@+id/imageView43"
-        app:layout_constraintVertical_bias="0.0" />
+            <!--    <com.tomlecollegue.progressbars.HorizontalProgressView-->
+            <!--        android:id="@+id/hpvIntro"-->
+            <!--        android:layout_width="128dp"-->
+            <!--        android:layout_height="2dp"-->
+            <!--        android:layout_marginBottom="32dp"-->
+            <!--        android:background="#00FFFFFF"-->
+            <!--        android:visibility="gone"-->
+            <!--        app:colorBackground="@color/subColor100"-->
+            <!--        app:colorProgress="@color/mainColor"-->
+            <!--        app:layout_constraintBottom_toBottomOf="@+id/vpIntroBanner"-->
+            <!--        app:layout_constraintEnd_toEndOf="parent"-->
+            <!--        app:layout_constraintStart_toStartOf="@+id/vpIntroBanner" />-->
 
-    <View
-        android:id="@+id/view5"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/gradient_bottom_white_90"
-        app:layout_constraintBottom_toBottomOf="@id/imageView43"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView43"
-        app:layout_constraintVertical_bias="1.0" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView18"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:cardCornerRadius="36dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView19"
+                app:layout_constraintEnd_toStartOf="@+id/cardView19"
+                app:layout_constraintHorizontal_bias="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/cardView19">
 
-    <TextView
-        android:id="@+id/textView125"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="SNS 로그인 / 회원가입"
-        android:textColor="@color/subColor300"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/cardView20"
-        app:layout_constraintStart_toStartOf="@+id/cardView18"
-        app:layout_constraintTop_toBottomOf="@+id/cardView19" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ibtnGoogleLogin."
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:contentDescription="구글로그인버튼"
+                    android:src="@drawable/icon_api_google_logo" />
+            </androidx.cardview.widget.CardView>
 
-    <ImageView
-        android:id="@+id/ivIntroLogo"
-        android:layout_width="64dp"
-        android:layout_height="52dp"
-        android:layout_marginTop="40dp"
-        android:transitionName="transLogo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/app_logo" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView19"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:cardCornerRadius="36dp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView43"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
-    <TextView
-        android:id="@+id/tvIntroComment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="정확한 운동은\nTango Body와 함께"
-        android:textColor="@color/black"
-        android:textSize="28dp"
-        android:textStyle="bold"
-        android:transitionName="transComment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivIntroLogo" />
+                <ImageButton
+                    android:id="@+id/ibtnKakaoLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/effect_ibtn_20dp"
+                    android:contentDescription="카카오로그인버튼"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/icon_api_kakao_logo" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView20"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:cardCornerRadius="36dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView19"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.4"
+                app:layout_constraintStart_toEndOf="@+id/cardView19"
+                app:layout_constraintTop_toTopOf="@+id/cardView19">
+
+                <ImageButton
+                    android:id="@+id/btnOAuthLoginImg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:contentDescription="네이버로그인버튼"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_api_naver_logo" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnIntroLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/mainColor"
+                android:elevation="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="20dp"
+                android:stateListAnimator="@null"
+                android:text="로그인"
+                android:textColor="@color/whiteText"
+                android:textSize="18dp"
+                app:cornerRadius="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView125" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnIntroSignIn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/mainContainerColor"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="20dp"
+                android:stateListAnimator="@null"
+                android:text="회원가입"
+                android:textColor="@color/mainDeepColor"
+                android:textSize="18dp"
+                app:cornerRadius="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/btnIntroLogin"
+                app:layout_constraintStart_toStartOf="@+id/btnIntroLogin"
+                app:layout_constraintTop_toBottomOf="@+id/btnIntroLogin"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/gradient_top_white_90"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView43"
+                app:layout_constraintEnd_toEndOf="@+id/imageView43"
+                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintStart_toStartOf="@+id/imageView43"
+                app:layout_constraintTop_toTopOf="@+id/imageView43"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <View
+                android:id="@+id/view5"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/gradient_bottom_white_90"
+                app:layout_constraintBottom_toBottomOf="@id/imageView43"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imageView43"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/textView125"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="SNS 로그인 / 회원가입"
+                android:textColor="@color/subColor300"
+                android:textSize="16dp"
+                app:layout_constraintEnd_toEndOf="@+id/cardView20"
+                app:layout_constraintStart_toStartOf="@+id/cardView18"
+                app:layout_constraintTop_toBottomOf="@+id/cardView19" />
+
+            <ImageView
+                android:id="@+id/ivIntroLogo"
+                android:layout_width="64dp"
+                android:layout_height="52dp"
+                android:layout_marginTop="30dp"
+                android:transitionName="transLogo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/app_logo" />
+
+            <TextView
+                android:id="@+id/tvIntroComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="정확한 운동은\nTango Body와 함께"
+                android:textColor="@color/black"
+                android:textSize="28dp"
+                android:textStyle="bold"
+                android:transitionName="transComment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivIntroLogo" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

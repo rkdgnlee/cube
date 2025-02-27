@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.IntroActivity
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentWithdrawalBinding
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
@@ -47,7 +48,6 @@ class WithdrawalFragment : Fragment() {
 
 
         // ------# 화면 확장 및 세팅 & 싱글턴 초기화 #------
-
         binding.btnWd.isEnabled = false
         singletonUserInstance = Singleton_t_user.getInstance(requireContext())
         singletonMeasureInstance = Singleton_t_measure.getInstance(requireContext())
@@ -78,7 +78,7 @@ class WithdrawalFragment : Fragment() {
         val endIndex = message.indexOf("회원 계정")
         message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 42, 44, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        message.setSpan(StyleSpan(Typeface.BOLD), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        message.setSpan(StyleSpan(Typeface.BOLD), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         binding.btnWd.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("경고⚠️")

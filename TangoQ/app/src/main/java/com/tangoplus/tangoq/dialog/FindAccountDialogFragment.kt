@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -19,9 +20,12 @@ import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -31,10 +35,13 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
-import com.tangoplus.tangoq.dialog.bottomsheet.SignInBSDialogFragment
 import com.tangoplus.tangoq.api.NetworkUser.findUserId
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 //import com.tangoplus.tangoq.`object`.NetworkUser.verifyBeforeResetPw
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
@@ -80,7 +87,7 @@ class FindAccountDialogFragment : DialogFragment() {
         binding.btnFADAuthSend.isEnabled = false
 
         // ------! 탭으로 아이디 비밀번호 레이아웃 나누기 시작 !------
-        binding.tlFAD.addOnTabSelectedListener(object : OnTabSelectedListener{
+        binding.tlFAD.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
                 imm?.hideSoftInputFromWindow(view.windowToken, 0)
@@ -90,13 +97,14 @@ class FindAccountDialogFragment : DialogFragment() {
                 binding.etFADAuthNumber.isEnabled = false
                 binding.btnFADAuthSend.isEnabled = false
                 binding.btnFADConfirm.text = "인증 하기"
-                binding.tvFADTelecom.text = ""
                 binding.etFADMobile.setText("")
                 binding.etFADId.setText("")
+                binding.etFADName.setText("")
 
                 removeAuthInstance() // 파이어베이스 인증 상태 제거
                 when(tab?.position) {
                     0 -> {
+                        svm.pwBothTrue.removeObservers(viewLifecycleOwner)
                         binding.clFADMobile.visibility = View.VISIBLE
                         binding.clFADId.visibility = View.GONE
                         binding.clFADIdResult.visibility = View.GONE
@@ -106,6 +114,18 @@ class FindAccountDialogFragment : DialogFragment() {
 
                     }
                     1 -> {
+                        // ------# 비밀번호 확인 여부 체크 #------
+                        svm.pwBothTrue.observe(viewLifecycleOwner) {
+                            binding.btnFADConfirm.isEnabled = it
+                            if (it) {
+                                enabledButton()
+                                svm.pw.value = binding.etFADResetPassword.text.toString()
+                            } else {
+                                disabledButton()
+                                svm.pw.value = ""
+                            }
+                        }
+
                         binding.clFADMobile.visibility = View.VISIBLE
                         binding.clFADId.visibility = View.VISIBLE
                         binding.clFADIdResult.visibility = View.GONE
@@ -125,7 +145,7 @@ class FindAccountDialogFragment : DialogFragment() {
         // ------! 인증 문자 확인 시작 !------
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-                Log.v("verifyComplete", "PhoneAuthCredential: $p0")
+//                Log.v("verifyComplete", "PhoneAuthCredential: $p0")
             }
             override fun onVerificationFailed(p0: FirebaseException) {
                 Log.e("failedAuth", "$p0")
@@ -134,7 +154,7 @@ class FindAccountDialogFragment : DialogFragment() {
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 verifyId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId ,token: $token")
+//                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId ,token: $token")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireView(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
                 binding.btnFADConfirm.isEnabled = true
@@ -160,7 +180,7 @@ class FindAccountDialogFragment : DialogFragment() {
                     else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
                 }
                 isFormatting = false
-                Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()}")
+//                Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()}")
                 svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etFADMobile.text.toString()).find()
                 if (svm.mobileCondition.value == true) {
                     svm.User.value?.put("user_mobile", s.toString() )
@@ -177,7 +197,7 @@ class FindAccountDialogFragment : DialogFragment() {
                 .setMessage("$transformMobile 로 인증 하시겠습니까?")
                 .setPositiveButton("예") { _, _ ->
                     transformMobile = transformMobile.replace("-", "")
-                    Log.w("전화번호", transformMobile)
+//                    Log.w("전화번호", transformMobile)
 
                     val optionsCompat = PhoneAuthOptions.newBuilder(auth)
                         .setPhoneNumber(transformMobile)
@@ -200,6 +220,38 @@ class FindAccountDialogFragment : DialogFragment() {
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
         }
 
+        // 비밀번호 재설정 patternCheck
+        val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&^])[A-Za-z[0-9]$@$!%*#?&^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
+        val pwPatternCheck = Pattern.compile(pwPattern)
+        binding.etFADResetPassword.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                svm.pwCondition.value = pwPatternCheck.matcher(binding.etFADResetPassword.text.toString()).find()
+                if (svm.pwCondition.value == true) {
+                    binding.tvFADPWCondition.setTextColor(binding.tvFADPWCondition.resources.getColor(R.color.subColor400, null))
+                    binding.tvFADPWCondition.text = "사용 가능합니다"
+                } else {
+                    binding.tvFADPWCondition.setTextColor(binding.tvFADPWCondition.resources.getColor(R.color.deleteColor, null))
+                    binding.tvFADPWCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ?)를 모두 포함해서 8~20자리를 입력해주세요"
+                }
+            }
+        })
+
+        binding.etFADResetPasswordConfirm.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                svm.pwCompare.value = (binding.etFADResetPassword.text.toString() == binding.etFADResetPasswordConfirm.text.toString())
+                if (svm.pwCompare.value == true) {
+                    binding.tvFADPWVerifyCondition.setTextColor(binding.tvFADPWVerifyCondition.resources.getColor(R.color.subColor400, null))
+                    binding.tvFADPWVerifyCondition.text = "일치합니다"
+                } else {
+                    binding.tvFADPWVerifyCondition.setTextColor(binding.tvFADPWVerifyCondition.resources.getColor(R.color.deleteColor, null))
+                    binding.tvFADPWVerifyCondition.text = "일치하지 않습니다"
+                }
+            }
+        })
         binding.btnFADConfirm.setOnClickListener{
             when (binding.btnFADConfirm.text) {
                 "인증 하기" -> {
@@ -212,7 +264,7 @@ class FindAccountDialogFragment : DialogFragment() {
                         put("mobile", binding.etFADMobile.text.toString().replace("-", ""))
                         put("mobile_check", if (svm.mobileAuthCondition.value == true) "checked" else "nonChecked")
                     }
-                    Log.v("찾기>핸드폰번호", "$jo")
+//                    Log.v("찾기>핸드폰번호", "$jo")
                     findUserId(requireContext(), getString(R.string.API_user), jo.toString()) { resultString ->
                         if (resultString == "") {
                             requireActivity().runOnUiThread {
@@ -239,43 +291,18 @@ class FindAccountDialogFragment : DialogFragment() {
                     binding.btnFADConfirm.text= "초기 화면으로"
                 }
 
-                "인증 하기" -> {
-                    val credential = PhoneAuthProvider.getCredential(verifyId, binding.etFADAuthNumber.text.toString())
-                    signInWithPhoneAuthCredential(credential)
-                }
                 "비밀번호 재설정" -> {
 //                    val jo = JSONObject().apply {
-//                        put("user_id", binding.etFADId.text)
-//                        put("mobile", binding.etFADMobile.text.toString().replace("-", ""))
+//                        put("password", svm.pw.value)
 //                    }
-//                    verifyBeforeResetPw(getString(R.string.API_user), jo.toString()) { result ->
-//                        when (result) {
-//                            true -> {
-//
-//                            }
-//                            false -> {
-//
-//                            }
-//                        }
-//
-//                    }
-
-                    // ------! 비밀번호를 찾기를 하면 아이디와 핸드폰 번호를 맞혀서 일치한다는 번호만 있으면 재설정하는 update하기.
-//                    val email = when (binding.FADSpinner.selectedItemPosition) {
-//                        0, 1, 2 -> {
-//                            "${binding.etFADEmailId.text}@${binding.FADSpinner.selectedItem as String}"
-//
-//                        }
-//                        else -> {
-//                            "${binding.etFADEmailId.text}@${binding.etFADEmail.text}"
-//                        }
-//                    }
-//                    if (binding.etFADEmailId.text.length != 0) {
-//                        firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener{ task ->
-//                            if (task.isSuccessful) {
-//                                binding.tvFADPw.visibility = View.VISIBLE
-//                                binding.clFADPw.visibility = View.GONE
-//                                binding.btnFADConfirm.text = "초기 화면으로"
+//                    // TODO 여기서 아이디가 진짜 있는지에 대한 검증이 필요함 -> 검증에 대한 API에는 전화번호와 아이디가 매치 했을 때 맞을 경우 userSn만 보내줌.
+//                    lifecycleScope.launch(Dispatchers.IO) {
+//                        val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
+//                        if (isUpdateFinished == true) {
+//                            withContext(Dispatchers.Main) {
+//                                if (isAdded) {
+//                                    dismiss()
+//                                }
 //                            }
 //                        }
 //                    }
@@ -286,49 +313,8 @@ class FindAccountDialogFragment : DialogFragment() {
             }
         }
         // ------! 비밀번호 재설정 끝 !------
-
-//        val domainList = listOf("gmail.com", "naver.com", "kakao.com", "직접입력")
-//        binding.FADSpinner.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, domainList)
-//        binding.FADSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-//            @SuppressLint("SetTextI18n")
-//            override fun onItemSelected(
-//                parent: AdapterView<*>?,
-//                view: View?,
-//                position: Int,
-//                id: Long
-//            ) {
-//                binding.FADSpinner.getItemAtPosition(position).toString()
-//                if (position == 3) {
-//                    binding.etFADEmail.visibility = View.VISIBLE
-//                    binding.FADSpinner.visibility = View.GONE
-//                    binding.ivFADSpinner.setOnClickListener{
-//                        binding.FADSpinner.performClick()
-//                        binding.FADSpinner.visibility = View.VISIBLE
-//                    }
-//                } else {
-//                    binding.etFADEmail.visibility = View.GONE
-//                    binding.etFADEmail.setText("")
-//                    binding.FADSpinner.visibility = View.VISIBLE
-//                }
-//            }
-//            override fun onNothingSelected(parent: AdapterView<*>?) {}
-//        }
-        binding.tvFADTelecom.setOnClickListener {
-            showTelecomBottomSheetDialog(requireActivity())
-        } // -----! 통신사 선택 끝 !-----
-
     }
 
-    private fun showTelecomBottomSheetDialog(context: FragmentActivity) {
-        val bottomsheetfragment = SignInBSDialogFragment()
-        bottomsheetfragment.setOnCarrierSelectedListener(object : SignInBSDialogFragment.OnTelecomSelectedListener {
-            override fun onTelecomSelected(telecom: String) {
-                binding.tvFADTelecom.text = telecom
-            }
-        })
-        val fragmentManager = context.supportFragmentManager
-        bottomsheetfragment.show(fragmentManager, bottomsheetfragment.tag)
-    }
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)
@@ -343,14 +329,30 @@ class FindAccountDialogFragment : DialogFragment() {
 
                         // ------! 번호 인증 완료 !------
 
-                        val snackbar = Snackbar.make(requireView(), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
-                        snackbar.setAction("확인") { snackbar.dismiss() }
-                        snackbar.setActionTextColor(Color.WHITE)
-                        snackbar.show()
+
+                        if (svm.isFindId) {
+                            binding.btnFADConfirm.text = "아이디 찾기"
+                        } else {
+                            // TODO 여기서 바로 전화번호와 아이디가 맞는지에 대한 값을 보내줌. -> 바로 검증 실행
+//                            // snack bar 내용을 확인하고
+//                            val snackbar = Snackbar.make(requireView(), "인증에 성공했습니다 !", Snackbar.LENGTH_SHORT)
+//                            snackbar.setAction("확인") { snackbar.dismiss() }
+//                            snackbar.setActionTextColor(Color.WHITE)
+//                            snackbar.show()
+                            // 인증에 실패했을 경우 dialogBuilder를 통해 알리고 다시 시작하게 끔 하기
+                            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                setTitle("알림")
+                                setMessage("존재하지 않는 ID입니다. 다시 확인해주세요")
+                                setPositiveButton("예") { _, _ ->
+                                    removeAuthInstance()
+                                    dismiss()
+                                }
+                            }.show()
+                        }
                         binding.btnFADConfirm.text = if (svm.isFindId) "아이디 찾기" else "비밀번호 재설정"
                     }
                 } else {
-                    Log.w(ContentValues.TAG, "mobile auth failed.")
+                    Log.e(ContentValues.TAG, "mobile auth failed.")
                 }
             }
     }
@@ -387,5 +389,14 @@ class FindAccountDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
-
+    private fun enabledButton() {
+        binding.btnFADConfirm.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
+        binding.btnFADConfirm.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white)))
+        binding.btnFADConfirm.isEnabled = true
+    }
+    private fun disabledButton() {
+        binding.btnFADConfirm.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
+        binding.btnFADConfirm.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400)))
+        binding.btnFADConfirm.isEnabled = false
+    }
 }

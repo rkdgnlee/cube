@@ -51,7 +51,9 @@ data class MeasureInfo(
     var risk_knee_right: String? = "0",
     var risk_ankle_left: String? = "0",
     var risk_ankle_right: String? = "0",
-    var risk_result_ment: String? = ""
+    var risk_result_ment: String? = "",
+    var kakao_send_count: Int? = 0,
+    var kakao_send_date : String? = "0000-00-00 00:00:00"
     ) {
     companion object {
         fun getCurrentDateTime(): String =

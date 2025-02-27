@@ -22,15 +22,15 @@
                 android:id="@+id/textView135"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginStart="5dp"
                 android:text="내정보 변경"
                 android:textColor="@color/black"
                 android:textSize="32dp"
                 android:textStyle="bold"
                 android:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnPEDBack"
+                app:layout_constraintStart_toEndOf="@+id/ibtnPEDBack"
+                app:layout_constraintTop_toTopOf="@+id/ibtnPEDBack" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clKakao"
@@ -299,15 +299,23 @@
                     android:visibility="visible">
 
                     <include
-                        layout="@layout/rv_shimmer_exercise_item"
+                        layout="@layout/rv_shimmer_profile_item"
                         android:visibility="visible" />
 
                     <include
-                        layout="@layout/rv_shimmer_exercise_item"
+                        layout="@layout/rv_shimmer_profile_item"
                         android:visibility="visible" />
 
                     <include
-                        layout="@layout/rv_shimmer_exercise_item"
+                        layout="@layout/rv_shimmer_profile_item"
+                        android:visibility="visible" />
+
+                    <include
+                        layout="@layout/rv_shimmer_profile_item"
+                        android:visibility="visible" />
+
+                    <include
+                        layout="@layout/rv_shimmer_profile_item"
                         android:visibility="visible" />
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>
@@ -448,6 +456,19 @@
                     app:trackTint="@color/tint_main_sub200"
                     app:useMaterialThemeColors="false" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageButton
+                android:id="@+id/ibtnPEDBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

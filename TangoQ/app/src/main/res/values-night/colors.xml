@@ -18,8 +18,8 @@
     <color name="thirdColor">#2C4FD0</color>
     <color name="thirdWhiteColor">#FFFFFF</color>
 
-    <color name="deleteColor">#4556AA</color>
-    <color name="deleteContainerColor">#12181E</color>
+    <color name="deleteColor">#C85449</color>
+    <color name="deleteContainerColor">#641E1A</color>
     <color name="deleteTextColor">#AEAEAE</color>
     <color name="cautionColor">#FF981D</color>
     <color name="cautionContainerColor">#503D24</color>

@@ -17,7 +17,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView23"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             app:cardCornerRadius="0dp"
             app:cardElevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -26,20 +26,19 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="86dp"
+                android:layout_height="match_parent"
                 android:background="@color/whitebar">
 
                 <ImageButton
                     android:id="@+id/ibtnMAlarm"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="36dp"
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/white"
                     android:contentDescription="알림창버튼"
-                    android:padding="8dp"
-                    android:scaleType="centerCrop"
+                    android:padding="4dp"
                     android:src="@drawable/icon_alarm"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -49,8 +48,8 @@
                     android:layout_width="36dp"
                     android:layout_height="38dp"
 
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginTop="12dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -61,9 +60,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:text="메인"
+                    android:text="Home"
                     android:textColor="@color/black"
-                    android:textSize="32sp"
+                    android:textSize="32dp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView19"
                     app:layout_constraintStart_toEndOf="@+id/imageView19"
@@ -71,12 +70,11 @@
 
                 <ImageButton
                     android:id="@+id/ibtnMQRCode"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginEnd="24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
                     android:background="@drawable/effect_ibtn_12dp"
                     android:contentDescription="QR코드스캔버튼"
-                    android:scaleType="centerCrop"
                     android:src="@drawable/icon_qr_code"
                     app:layout_constraintBottom_toBottomOf="@+id/ibtnMAlarm"
                     app:layout_constraintEnd_toStartOf="@+id/ibtnMAlarm"
@@ -101,24 +99,28 @@
                 android:background="@color/white">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraintLayout2"
+                    android:id="@+id/clM2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/secondBgContainerColor"
+                    android:background="@color/white"
+                    android:paddingStart="40dp"
+                    android:paddingEnd="40dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/tvMTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="40dp"
-                        android:layout_marginTop="30dp"
-                        android:text="측정 정보"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginEnd="10dp"
+                        android:text="_"
                         android:textColor="@color/subColor800"
                         android:textSize="30dp"
                         android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvMMeasureDate"
+                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -126,232 +128,177 @@
                         android:id="@+id/tvMMeasureDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="40dp"
-                        android:background="@drawable/bckgnd_rectangle_20"
-                        android:backgroundTint="@color/secondaryColor"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/effect_ibtn_20dp"
+                        android:backgroundTint="@color/subColor400"
                         android:drawableEnd="@drawable/icon_arrow_right_small"
                         android:gravity="center|center_vertical"
                         android:paddingStart="20dp"
-                        android:paddingTop="6dp"
+                        android:paddingTop="8dp"
                         android:paddingEnd="15dp"
-                        android:paddingBottom="6dp"
-                        android:textColor="#FFFFFF"
+                        android:paddingBottom="8dp"
+                        android:textColor="@color/whiteText"
                         android:textSize="20dp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/tvMTitle"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tvMTitle"
                         app:layout_constraintTop_toTopOf="@+id/tvMTitle" />
 
-                    <LinearLayout
-                        android:id="@+id/linearLayout5"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/clMMeasure"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="40dp"
                         android:layout_marginTop="30dp"
-                        android:layout_marginEnd="40dp"
-                        android:layout_marginBottom="30dp"
-                        android:background="@drawable/bckgnd_2_main_horizon_white"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:background="@drawable/bckgnd_rectangle_12"
+                        android:backgroundTint="@color/subColor100"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:paddingBottom="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvMTitle"
-                        app:layout_constraintVertical_bias="0.0">
+                        app:layout_constraintTop_toBottomOf="@+id/tvMTitle">
+
 
                         <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/clMMeasure"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:id="@+id/constraintLayout"
-                                android:layout_width="0dp"
-                                android:layout_height="80dp"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginEnd="10dp"
-                                android:background="@drawable/bckgnd_rectangle_12"
-                                android:backgroundTint="@color/subColor100"
-                                app:layout_constraintBottom_toBottomOf="@+id/tvMOverall"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/tvMOverall"
-                                app:layout_constraintTop_toTopOf="@+id/tvMOverall">
-
-                                <TextView
-                                    android:id="@+id/tvMMeasureResult1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginEnd="10dp"
-                                    android:text="_"
-                                    android:textColor="@color/subColor800"
-                                    android:textSize="22dp"
-                                    android:textStyle="bold"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintHorizontal_bias="0.0"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintVertical_bias="0.35" />
-
-                                <TextView
-                                    android:id="@+id/tvMMeasureResult2"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginTop="5dp"
-                                    android:layout_marginEnd="10dp"
-                                    android:layout_marginBottom="10dp"
-                                    android:singleLine="true"
-                                    android:text="주의 부위: _"
-                                    android:textColor="@color/subColor800"
-                                    android:textSize="18dp"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintHorizontal_bias="0.0"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/tvMMeasureResult1" />
-                            </androidx.constraintlayout.widget.ConstraintLayout>
+                            android:id="@+id/clM1"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="20dp"
+                            android:background="@drawable/bckgnd_rectangle_8"
+                            android:backgroundTint="@color/white"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvMOverall"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/tvMOverall"
+                            app:layout_constraintTop_toTopOf="@+id/tvMOverall">
 
                             <TextView
-                                android:id="@+id/tvMOverall"
-                                android:layout_width="100dp"
-                                android:layout_height="100dp"
-                                android:background="@drawable/bckgnd_2_third_main_top_left_bottom_right"
-                                android:gravity="center"
-                                android:text="100"
-                                android:textColor="#FFFFFF"
-                                android:textSize="36dp"
-                                android:textStyle="bold"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/rvM1"
+                                android:id="@+id/tvMMeasureResult1"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginTop="20dp"
+                                android:layout_marginStart="20dp"
                                 android:layout_marginEnd="10dp"
-                                android:layout_marginBottom="20dp"
+                                android:textColor="@color/subColor800"
+                                android:textSize="22dp"
+                                android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintVertical_bias="0.3333" />
+
+                            <TextView
+                                android:id="@+id/tvMMeasureResult2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginBottom="15dp"
+                                android:singleLine="true"
+                                android:textColor="@color/subColor800"
+                                android:textSize="20dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/tvMMeasureResult1" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvMOverall"
+                            android:layout_width="110dp"
+                            android:layout_height="110dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/bckgnd_rectangle_8"
+                            android:backgroundTint="@color/white"
+                            android:gravity="center"
+                            android:text="_"
+                            android:textColor="@color/mainColor"
+                            android:textSize="36dp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvM1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvMOverall" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
-                        android:id="@+id/textView"
+                        android:id="@+id/tvM2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="40dp"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="50dp"
                         android:text="진행 프로그램"
                         android:textColor="@color/subColor800"
                         android:textSize="30dp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+                        app:layout_constraintTop_toBottomOf="@+id/clMMeasure" />
 
                     <TextView
                         android:id="@+id/tvMProgram"
-                        android:layout_width="wrap_content"
+                        android:layout_width="120dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="40dp"
-                        android:background="@drawable/bckgnd_rectangle_20"
+                        android:background="@drawable/effect_ibtn_20dp"
                         android:backgroundTint="@color/secondaryColor"
                         android:drawableEnd="@drawable/icon_arrow_right_small"
                         android:gravity="center|center_vertical"
-                        android:paddingStart="20dp"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="15dp"
-                        android:paddingBottom="6dp"
-                        android:text="리스트 보기"
-                        android:textColor="#FFFFFF"
-                        android:textSize="20dp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/textView" />
-
-                    <androidx.viewpager2.widget.ViewPager2
-                        android:id="@+id/vpM"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_marginTop="30dp"
-                        android:background="@color/subColor100"
-                        android:clipChildren="false"
-                        android:clipToPadding="false"
-                        android:paddingStart="10dp"
+                        android:paddingStart="15dp"
+                        android:paddingTop="4dp"
                         android:paddingEnd="10dp"
+                        android:paddingBottom="4dp"
+                        android:text="리스트 보기"
+                        android:textColor="@color/whiteText"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvM2"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/textView" />
+                        app:layout_constraintTop_toTopOf="@+id/tvM2" />
 
-                    <LinearLayout
-                        android:id="@+id/llM"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="@+id/vpM"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/vpM">
-                        <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/sflM"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                            <include layout="@layout/rv_shimmer_exercise_horizon_item" />
-
-                        </com.facebook.shimmer.ShimmerFrameLayout>
-                    </LinearLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMProgram"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="40dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="40dp"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="80dp"
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/mainColor"
-                        android:padding="20dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
+                        android:drawableStart="@drawable/icon_play_filled"
+                        android:drawablePadding="0dp"
+                        android:drawableTint="@color/whiteText"
+                        android:paddingStart="200dp"
+                        android:paddingTop="20dp"
+                        android:paddingEnd="200dp"
+                        android:paddingBottom="20dp"
                         android:stateListAnimator="@null"
                         android:text="프로그램 선택하기"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/whiteText"
                         android:textSize="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/vpM" />
+                        app:layout_constraintTop_toBottomOf="@+id/rvM2" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvM2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvM2" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-                <TextView
-                    android:id="@+id/tvMCustom"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginTop="30dp"
-                    android:text="밸런스 체크"
-                    android:textColor="@color/subColor800"
-                    android:textSize="30dp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvM3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvMCustom" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

@@ -14,8 +14,8 @@ android {
         minSdk = 27
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
-        versionCode = 25
-        versionName = "1.34"
+        versionCode = 37
+        versionName = "1.46"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -52,11 +52,11 @@ android {
 //noinspection UseTomlInstead
 dependencies {
 
-    // test
+    // 무결성 검증
     implementation("com.google.android.play:integrity:1.4.0")
 
     // 스켈레톤
-    implementation("com.google.mediapipe:tasks-vision:0.20230731")
+    implementation("com.google.mediapipe:tasks-vision:0.10.0")
 
     // 외부 라이브러리
     implementation("com.github.shuhart:StepView:v1.5.1")
@@ -79,24 +79,24 @@ dependencies {
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
-    implementation("com.arthenica:mobile-ffmpeg-full:4.4")
+    implementation("com.arthenica:ffmpeg-kit-full-gpl:4.5.LTS")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     // api
     implementation("com.navercorp.nid:oauth:5.10.0")
     implementation("com.kakao.sdk:v2-common:2.19.0")
-    implementation("com.kakao.sdk:v2-user:2.19.0")
+    implementation("com.kakao.sdk:v2-user:2.20.6")
     implementation("com.kakao.sdk:v2-auth:2.19.0")
     implementation("com.google.gms:google-services:4.4.2")
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
     implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
-    implementation("com.google.firebase:firebase-analytics:22.1.2")
+    implementation("com.google.firebase:firebase-analytics:22.2.0")
     implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation("androidx.security:security-crypto:1.0.0")
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
 
     // 통신
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
@@ -106,7 +106,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 //    implementation("com.android.volley:volley:1.2.1")
     implementation("com.github.yuriy-budiyev:code-scanner:2.3.0")
-    implementation("androidx.work:work-runtime:2.9.0")
+    implementation("androidx.work:work-runtime:2.10.0")
 
     // room
     val roomVersion = "2.6.1"
@@ -137,7 +137,7 @@ dependencies {
 
     // 내부 라이브러리
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
-    implementation("androidx.fragment:fragment-ktx:1.8.5")
+    implementation("androidx.fragment:fragment-ktx:1.8.6")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")

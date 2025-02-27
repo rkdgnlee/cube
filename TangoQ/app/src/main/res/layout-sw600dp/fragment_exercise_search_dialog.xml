@@ -21,7 +21,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="40dp"
                 android:background="@drawable/bckgnd_rectangle_20"
                 android:backgroundTint="@color/secondContainerColor"
@@ -32,7 +32,7 @@
                 android:paddingBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/materialDivider12">
 
                 <ImageView
                     android:id="@+id/imageView25"
@@ -53,21 +53,18 @@
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="#00FFFFFF"
                     android:hint="운동이름을 검색하세요"
+                    android:imeOptions="actionDone"
                     android:singleLine="true"
                     android:textColor="@color/subColor800"
                     android:textColorHint="@color/subColor400"
-                    android:textSize="22dp" />
+                    android:textSize="18dp" />
 
                 <ImageButton
                     android:id="@+id/ibtnESDClear"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_weight="1"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="#00FAFAFA"
                     android:contentDescription="clearEtESDSearch"
-                    android:scaleType="centerCrop"
                     android:src="@drawable/icon_text_clear" />
             </LinearLayout>
 
@@ -75,11 +72,11 @@
                 android:id="@+id/materialDivider12"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="16dp"
                 app:dividerColor="@color/subColor100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+                app:layout_constraintTop_toBottomOf="@+id/ibtnESDBack" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv1"
@@ -88,7 +85,7 @@
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider12" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clESDEmpty"
@@ -120,8 +117,8 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/bckgnd_2_main_20"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
                     android:stateListAnimator="@null"
                     android:text="카테고리 보기"
                     android:textColor="@color/subColor800"
@@ -172,13 +169,40 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="40dp"
                 android:background="@drawable/effect_ibtn_12dp"
-                android:padding="4dp"
+                android:padding="6dp"
                 android:text="기록 전부 삭제"
                 android:textColor="@color/subColor400"
                 android:textSize="18dp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView56"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView56" />
+
+            <ImageButton
+                android:id="@+id/ibtnESDBack"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/white"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView32"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="운동 검색"
+                android:textColor="@color/subColor800"
+                android:textSize="28dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnESDBack"
+                app:layout_constraintStart_toEndOf="@+id/ibtnESDBack"
+                app:layout_constraintTop_toTopOf="@+id/ibtnESDBack" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

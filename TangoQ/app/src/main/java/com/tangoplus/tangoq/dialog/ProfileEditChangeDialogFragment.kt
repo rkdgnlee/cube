@@ -95,7 +95,9 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         val value = arguments?.getString(ARG_EDIT_BS_VALUE).toString()
         Log.v("arg", "$arg, $value")
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
-
+        auth = FirebaseAuth.getInstance()
+        auth.setLanguageCode("kr")
+        disabledButton()
         // ------# 키보드 #------
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         Handler(Looper.getMainLooper()).postDelayed({
@@ -157,6 +159,20 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
             }
 
             "몸무게" -> {
+                val weightPattern = "^(2\\d|[3-9]\\d|[1]\\d{2}|200)\$"
+                val weightPatternCheck = Pattern.compile(weightPattern)
+                binding.etPCD1.addTextChangedListener(object: TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        svm.weightCondition.value = weightPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        if (svm.weightCondition.value == true) {
+                            enabledButton()
+                        } else {
+                            disabledButton()
+                        }
+                    }
+                })
                 setUIVisibility(1)
                 binding.tvPCD.text = "몸무게 재설정"
                 binding.tvPCDGuide.text = "몸무게을 다시 설정해주세요"
@@ -167,6 +183,20 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 }
             }
             "신장" -> {
+                val heightPattern = "^(8\\d|[9]\\d|[1-2]\\d{2}|250)\$"
+                val heightPatternCheck = Pattern.compile(heightPattern)
+                binding.etPCD1.addTextChangedListener(object: TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        svm.heightCondition.value = heightPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        if (svm.heightCondition.value == true) {
+                            enabledButton()
+                        } else {
+                            disabledButton()
+                        }
+                    }
+                })
                 setUIVisibility(1)
                 binding.tvPCD.text = "신장 재설정"
                 binding.tvPCDGuide.text = "신장을 다시 설정해주세요"
@@ -185,7 +215,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     filters = arrayOf(InputFilter.LengthFilter(25))
                 }
 
-                val emailPattern = "^[\\w.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$"
+                val emailPattern = "^[a-z0-9]{4,16}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
                 val emailPatternCheck = Pattern.compile(emailPattern)
                 binding.etPCD1.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int, ) {}
@@ -195,20 +225,38 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                         if (svm.editChangeCondition.value == true) {
                             binding.tvPCD1Condition.text = "올바른 이메일 형식입니다"
                             binding.btnPCDFinish.isEnabled = true
+                            enabledButton()
                         } else {
                             binding.tvPCD1Condition.text = "올바르지 않은 이메일 형식입니다. 다시 확인해 주세요"
                             binding.btnPCDFinish.isEnabled = false
+                            disabledButton()
                         }
                     }
                 })
             }
             "생년월일" -> {
+                binding.etPCD1.hint = "19950812"
+                binding.etPCD1.setHintTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400)))
+                val birthdayPattern = "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])\$"
+                val birthdayPatternCheck = Pattern.compile(birthdayPattern)
+                binding.etPCD1.addTextChangedListener(object: TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        svm.birthdayCondition.value = birthdayPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        if (svm.birthdayCondition.value == true) {
+                            enabledButton()
+                        } else {
+                            disabledButton()
+                        }
+                    }
+                })
                 setUIVisibility(1)
                 binding.tvPCD.text = "생년월일 설정"
                 binding.tvPCDGuide.text = "생년월일을 설정해주세요"
                 binding.etPCD1.apply {
                     inputType = InputType.TYPE_CLASS_NUMBER
-                    filters = arrayOf(InputFilter.LengthFilter(25))
+                    filters = arrayOf(InputFilter.LengthFilter(8))
                 }
             }
             "전화번호" -> {
@@ -220,7 +268,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCDGuide.text = "전화번호 재설정을 위해 인증을 진행합니다"
                 binding.etPCD1.apply {
                     inputType = InputType.TYPE_CLASS_NUMBER
-                    filters = arrayOf(InputFilter.LengthFilter(25))
+                    filters = arrayOf(InputFilter.LengthFilter(12))
                 }
                 val mobilePattern = "^010-\\d{4}-\\d{4}\$"
                 val mobilePatternCheck = Pattern.compile(mobilePattern)
@@ -239,7 +287,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                             else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
                         }
                         isFormatting = false
-                        Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etPCDMobile.text.toString()).find()}")
+//                        Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etPCDMobile.text.toString()).find()}")
                         svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etPCDMobile.text.toString()).find()
                         if (svm.mobileCondition.value == true) {
                             binding.btnPCDAuthSend.isEnabled = true
@@ -253,17 +301,17 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 
                 val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                     override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-                        Log.v("verifyComplete", "PhoneAuthCredential: $p0")
+//                        Log.v("verifyComplete", "PhoneAuthCredential: $p0")
 
                     }
                     override fun onVerificationFailed(p0: FirebaseException) {
-                        Log.e("failedAuth", "$p0")
+                        Log.e("failedAuth", "verify failed")
                     }
                     @RequiresApi(Build.VERSION_CODES.P)
                     override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                         super.onCodeSent(verificationId, token)
                         svm.verificationId = verificationId
-                        Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId} ,token: ${token}")
+//                        Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId} ,token: ${token}")
                         // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                         Toast.makeText(requireContext(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
                         binding.btnPCDAuthConfirm.isEnabled = true
@@ -277,7 +325,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                         .setMessage("${transformMobile}로 인증 하시겠습니까?")
                         .setPositiveButton("예") { _, _ ->
                             transformMobile = transformMobile.replace("-", "").replace(" ", "")
-                            Log.w("전화번호", transformMobile)
+//                            Log.w("전화번호", transformMobile)
 
                             val optionsCompat = PhoneAuthOptions.newBuilder(auth)
                                 .setPhoneNumber(transformMobile)
@@ -306,10 +354,21 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.btnPCDAuthConfirm.setOnSingleClickListener {
                     val credential = PhoneAuthProvider.getCredential(svm.verificationId, binding.etPCDAuth.text.toString())
                     signInWithPhoneAuthCredential(credential)
-
+                    enabledButton()
                 }
             }
-            else -> "미설정"
+            "성별" -> {
+                setUIVisibility(3)
+                binding.tvPCD.text = "성별 선택"
+                binding.tvPCDGuide.text = "성별을 선택해주세요."
+                setGenderButton( if (svm.setGender.value == 0) false else true)
+                binding.ivPCDMale.setOnSingleClickListener { setGenderButton(true) }
+                binding.mrbPCDMale.setOnSingleClickListener { setGenderButton(true) }
+                binding.ivPCDFemale.setOnSingleClickListener { setGenderButton(false) }
+                binding.mrbPCDFemale.setOnSingleClickListener { setGenderButton(false) }
+                enabledButton()
+            }
+
         }
 
         // ------# 키보드 올라오기 #------
@@ -342,7 +401,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     "신장" -> put("height", updatedItem)
                     "이메일" -> put("email", updatedItem)
                     "생년월일" -> put("birthday", updatedItem)
-
+                    "성별" -> put("gender", svm.setGender.value)
                 }
             }
             lifecycleScope.launch(Dispatchers.IO) {
@@ -358,8 +417,10 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                         "전화번호" -> {
                             userJson.put("mobile", binding.etPCDMobile.text.toString())
                             withContext(Dispatchers.Main) {
-                                svm.setMobile.value = updatedItem
-                            }                        }
+                                svm.setMobile.value = binding.etPCDMobile.text.toString()
+                                Log.v("svm.setMobile", "${svm.setMobile.value}")
+                            }
+                        }
                         "신장" -> {
                             userJson.put("height", updatedItem)
                             withContext(Dispatchers.Main) {
@@ -374,6 +435,12 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                         }
                         "생년월일" -> {
                             userJson.put("birthday", updatedItem)
+                            withContext(Dispatchers.Main) {
+                                svm.setBirthday.value = updatedItem
+                            }
+                        }
+                        "성별" -> {
+                            userJson.put("gender", svm.setGender)
                             withContext(Dispatchers.Main) {
                                 svm.setBirthday.value = updatedItem
                             }
@@ -394,14 +461,37 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         binding.ibtnPCD3Clear.setOnClickListener{ binding.etPCD3.setText("") }
 
     }
+    private fun setGenderButton(isMale: Boolean) {
+        when {
+            isMale -> {
+                binding.mrgPCD.check(binding.mrbPCDMale.id)
+                binding.mrbPCDMale.isSelected = true
+                binding.mrbPCDFemale.isSelected = false
+                binding.ivPCDMale.isSelected = true
+                binding.ivPCDFemale.isSelected = false
+                svm.setGender.value = 1
+            }
+            !isMale -> {
+                binding.mrgPCD.check(binding.mrbPCDFemale.id)
+                binding.mrbPCDMale.isSelected = false
+                binding.mrbPCDFemale.isSelected = true
+                binding.ivPCDMale.isSelected = false
+                binding.ivPCDFemale.isSelected = true
+                svm.setGender.value = 0
+            }
+        }
+    }
+
 
     private fun enabledButton() {
         binding.btnPCDFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
         binding.btnPCDFinish.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white)))
+        binding.btnPCDFinish.isEnabled = true
     }
     private fun disabledButton() {
         binding.btnPCDFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
         binding.btnPCDFinish.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400)))
+        binding.btnPCDFinish.isEnabled = false
     }
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
         val listener = View.OnClickListener { action(it) }
@@ -410,7 +500,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 
     private fun setUIVisibility(case: Int) {
         when (case) {
-            // 0 -> 비밀번호 1 -> 그 외 수정 2 -> 휴대폰 인증
+            // 0 -> 비밀번호,  1 -> 그 외 수정, 2 -> 휴대폰 인증 3 -> 젠더
             0 -> {
                 binding.etPCD1.visibility = View.VISIBLE
                 binding.etPCD2.visibility = View.VISIBLE
@@ -420,10 +510,11 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCD3.visibility = View.VISIBLE
                 binding.tvPCDPWCondition.visibility = View.VISIBLE
                 binding.tvPCDPWVerifyCondition.visibility = View.VISIBLE
-                binding.tvPCDSkip.visibility = View.VISIBLE
+                binding.tvPCDSkip.visibility = View.GONE
                 binding.clPCDMobile.visibility = View.GONE
                 binding.ibtnPCD2Clear.visibility = View.VISIBLE
                 binding.ibtnPCD3Clear.visibility = View.VISIBLE
+                binding.clPCDGender.visibility = View.GONE
             }
             1 -> {
                 binding.etPCD1.visibility = View.VISIBLE
@@ -438,6 +529,8 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.clPCDMobile.visibility = View.GONE
                 binding.ibtnPCD2Clear.visibility = View.GONE
                 binding.ibtnPCD3Clear.visibility = View.GONE
+                binding.clPCDGender.visibility = View.GONE
+
             }
             2 -> {
                 binding.etPCD1.visibility = View.GONE
@@ -456,6 +549,27 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.btnPCDAuthSend.isEnabled = false
                 binding.btnPCDAuthConfirm.isEnabled = false
                 binding.btnPCDFinish.isEnabled = false
+                binding.clPCDGender.visibility = View.GONE
+
+            }
+            3 -> {
+                binding.etPCD1.visibility = View.GONE
+                binding.etPCD2.visibility = View.GONE
+                binding.etPCD3.visibility = View.GONE
+                binding.tvPCD1.visibility = View.GONE
+                binding.tvPCD2.visibility = View.GONE
+                binding.tvPCD3.visibility = View.GONE
+                binding.tvPCDPWCondition.visibility = View.GONE
+                binding.tvPCDPWVerifyCondition.visibility = View.GONE
+                binding.tvPCDSkip.visibility = View.GONE
+                binding.clPCDMobile.visibility = View.GONE
+                binding.ibtnPCD2Clear.visibility = View.GONE
+                binding.ibtnPCD3Clear.visibility = View.GONE
+                binding.etPCDMobile.isEnabled = false
+                binding.btnPCDAuthSend.isEnabled = false
+                binding.btnPCDAuthConfirm.isEnabled = false
+                binding.clPCDGender.visibility = View.VISIBLE
+
             }
         }
         binding.tvPCD1Condition.text = ""
@@ -473,5 +587,31 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     Log.w(ContentValues.TAG, "mobile auth failed.")
                 }
             }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                FirebaseAuth.getInstance().signOut()
+                val user = FirebaseAuth.getInstance().currentUser
+                Log.v("user", "$user")
+                user?.delete()
+            }
+        }
+        auth.signOut()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                FirebaseAuth.getInstance().signOut()
+                val user = FirebaseAuth.getInstance().currentUser
+                Log.v("user", "$user")
+                user?.delete()
+            }
+        }
+        auth.signOut()
     }
 }

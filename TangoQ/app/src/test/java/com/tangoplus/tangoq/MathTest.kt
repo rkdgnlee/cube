@@ -1,8 +1,10 @@
 package com.tangoplus.tangoq
 
+import android.util.Log
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.Math.toDegrees
+import java.time.LocalDate
 import kotlin.math.abs
 import kotlin.math.atan2
 
@@ -10,22 +12,38 @@ class MathTest {
     @Test
     fun getAngle() {
         // 앉아 후면 어깨 코 삼각형의 기울기 만들기
-        val result1 = calculateSlope( 316f, 317f, 380f, 386f,)
-        val result2 = calculateSlope(616f, 217f, 634f, 265f)
-        val result3 = calculateSlope( 297f, 332f, 349f, 416f,)
-        println("1205, 52.13: $result1")
-        println("1030, 69.44: $result2")
-        println("1204, 69.44: $result3")
-        assertEquals(90, 40 + 40) // 예상 결과를 넣어줌 (74는 예시)
+//        val result1 = calculateSlope( 450f, 488f, 280f, 482f)
+//        val result2 = calculateSlope(291f, 473f, 466f, 472f)
+//
+//        println("front, $result1")
+//        println("back, $result2")
+        val result1 = calculateSlope( 287.02985f, 481.2249f, 457.20618f, 480.0976f)
+        val result2 = calculateSlope(434.58414f, 466.1927f, 266.95728f, 470.476f)
+
+        println("front, $result1")
+        println("후면")
+        println("back어깨, $result2")
+
+        val result3 = calculateSlope( 459.60547f, 608.5799f, 235.98128f, 613.73126f)
+        val result4 = calculateSlope(452.9229f, 710.3057f, 225.02202f, 720.5872f)
+        val result5 = calculateSlope( 392.82767f, 730.6516f, 302.51285f, 733.3984f)
+        val result6 = calculateSlope(391.3203f, 921.23047f, 306.8647f, 921.87427f)
+        println("back팔꿉, $result3")
+        println("back손목, $result4")
+        println("back골반, $result5")
+        println("back무릎, $result6")
+
+//        assertEquals(90, 40 + 40) // 예상 결과를 넣어줌 (74는 예시)
     }
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val radians = atan2(y2 -  y1, x2  - x1)
+        val radians =  atan2(y1 - y2, x1 - x2) // atan2(y2 -  y1, x2  - x1)
         val degrees = toDegrees(radians.toDouble()).toFloat()
         println("$degrees")
         return  if (degrees > 180) degrees % 180 else degrees
     }
+
     // ------# 수평 초기화 기울기 계산 #------
     fun calculateSlope180(x1: Float, y1: Float, x2: Float, y2: Float): Float {
         val radians = atan2(y2 - y1, x2 - x1)
@@ -262,4 +280,61 @@ class MathTest {
 //        }
 //    }
 
+    @Test
+    fun getTrim() {
+        val list1 = listOf(1, 2, 3)
+        val list2  = listOf(6, 7, 8, 9)
+        println("list1: $list1, list2: $list2")
+
+        val transList1 = list1.toString().replace(" ", "").replace("[", "").replace("]", "")
+        val transList2= list2.toString().replace(" ", "").replace("[", "").replace("]", "")
+        println("list1: $transList1, list2: $transList2")
+
+    }
+    @Test
+    fun current() {
+        val list1 = LocalDate.now()
+        println("list1: $list1")
+
+    }
+
+    @Test
+    fun calculateWeekSeq() {
+        val result = listOf(listOf(3, 2, 3, 2), listOf(0, 0, 0, 0), listOf(0, 0, 0, 0), listOf(0, 0, 0, 0))
+        val adjustedWeek = 1 - 1
+        val adjustedSeq = 3 - 1
+//        Log.v("포스트getProgress", "callback: ($adjustedWeek, $adjustedSeq, $week, $seq,) result: $result")
+        val countSets = result[adjustedWeek]
+        val isMaxSeq = countSets.map { it == 3 }.all { it }
+        val isMinSeq = countSets.min()
+        val isSeqFinish = countSets.distinct().size == 1
+        val setWeek : Int
+        val setSeq : Int
+//                    val serverLastItem = result[adjustedWeek].last()
+//                    Log.v("포스트getLast팡", "$serverLastItem $adjustedSeq, $week, $seq")
+        if (isMaxSeq && isSeqFinish) {
+            // 모든 회차가 끝남 ( 주차가 넘어가야하는 상황 )
+            setWeek = adjustedWeek + 1
+            setSeq = 0
+            // 회차 진행중
+            println("0")
+        } else if (!isMaxSeq && isSeqFinish && isMinSeq > 0) { // 3회차가 아니고, 전부 끝났고, 현재 회차가 1이상임 -> 여기서 그럼 전부 안끝냈을 때의 조건이 있어야 함.
+            setWeek = adjustedWeek
+            setSeq = adjustedSeq + 1
+            // 회차가 끝남
+            println("1")
+
+        } else if (isMinSeq > 0) { // 현재 회차가 1 이상임 그리고
+            setWeek = adjustedWeek
+            setSeq = adjustedSeq
+            // 회차가 끝남
+            println("2")
+
+        } else {
+            setWeek = adjustedWeek
+            setSeq = adjustedSeq
+            println("3")
+        }
+        print("week: $setWeek, seq: $setSeq")
+    }
 }

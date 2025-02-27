@@ -1,125 +1,143 @@
 package com.tangoplus.tangoq.adapter
 
-import android.annotation.SuppressLint
-import android.content.res.ColorStateList
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.vo.AnalysisVO
-import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.databinding.RvMainPartItemBinding
-import com.tangoplus.tangoq.dialog.MainPartPoseDialogFragment
-import java.security.MessageDigest
+import com.tangoplus.tangoq.databinding.RvPartItemBinding
+import com.tangoplus.tangoq.fragment.MainAnalysisFragment
+import com.tangoplus.tangoq.listener.OnCategoryClickListener
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 
-class MainPartRVAdapter(private val fragment: Fragment, private val analysizes : MutableList<AnalysisVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MainPartRVAdapter(private val fragment: Fragment, private val dangerParts:  MutableList<Pair<String, Float>>?, private val avm: AnalysisViewModel, private val xmlName: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var onCategoryClickListener: OnCategoryClickListener? = null
+    private var selectedPosition = 0
 
-    inner class MPViewHolder(view:View) : RecyclerView.ViewHolder(view) {
-        val clMPI : ConstraintLayout = view.findViewById(R.id.clMPI)
-        val ivMPI: ImageView = view.findViewById(R.id.ivMPI)
-        val tvMPITitle: TextView = view.findViewById(R.id.tvMPITitle)
-        val tvMPISummary: TextView = view.findViewById(R.id.tvMPISummary)
-        val tvMPIState : TextView = view.findViewById(R.id.tvMPIState)
+    inner class MainPartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvPI : TextView = view.findViewById(R.id.tvMPI)
+        val cvPI : CardView = view.findViewById(R.id.cvMPI)
+        val ivPI : ImageView = view.findViewById(R.id.ivMPI)
+        val clPI : ConstraintLayout = view.findViewById(R.id.clMPI)
     }
-
-    var avm : ViewModel? = null
+    inner class PartViewHolder(view:View) : RecyclerView.ViewHolder(view) {
+        val clPI : ConstraintLayout = view.findViewById(R.id.clPI)
+        val tvPIPart : TextView = view.findViewById(R.id.tvPIPart)
+        val cvPIPartCheck: CardView = view.findViewById(R.id.cvPIPartCheck)
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = RvMainPartItemBinding.inflate(inflater, parent, false)
-        return MPViewHolder(binding.root)
+        return when (viewType) {
+            0 -> {
+                val binding = RvMainPartItemBinding.inflate(inflater, parent, false)
+                MainPartViewHolder(binding.root)
+            }
+
+            1 -> {
+                val binding = RvPartItemBinding.inflate(inflater, parent, false)
+                PartViewHolder(binding.root)
+            }
+            else -> throw IllegalArgumentException("Invaild View Type")
+        }
+    }
+    override fun getItemViewType(position: Int): Int {
+        return when (xmlName) {
+            "main" -> 0
+            "measureDetail" -> 1
+            else -> throw IllegalArgumentException("Invalid View Type")
+        }
+    }
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val currentItem = dangerParts?.get(position)
+        if (holder is MainPartViewHolder) {
+            holder.tvPI.text = currentItem?.first
+            val state = when (currentItem?.second) {
+                1f -> true
+                else -> false
+            }
+            setPartItem(state, holder.cvPI)
+
+            val drawableId = when (currentItem?.first) {
+                "목관절" -> R.drawable.icon_part1
+                "우측 어깨", "좌측 어깨" -> R.drawable.icon_part2
+                "우측 팔꿉", "좌측 팔꿉" -> R.drawable.icon_part3
+                "우측 손목", "좌측 손목" -> R.drawable.icon_part4
+                "우측 골반", "좌측 골반" -> R.drawable.icon_part5
+                "우측 무릎", "좌측 무릎" -> R.drawable.icon_part6
+                "우측 발목", "좌측 발목" -> R.drawable.icon_part7
+                else -> -1
+            }
+            val isRight = if (currentItem?.first?.contains("우측") == true) true else false
+            if (drawableId != -1) {
+                loadFlippedImage(holder, drawableId, isRight)
+            }
+
+            holder.clPI.setOnClickListener {
+                avm.currentPart.value = currentItem?.first
+                fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flMain, MainAnalysisFragment.newInstance(currentItem?.first ?: ""))
+                    addToBackStack(null)
+                    commit()
+                }
+            }
+        } else if (holder is PartViewHolder) {
+            holder.tvPIPart.text = currentItem?.first
+            val adapterPosition = holder.adapterPosition
+
+            val state = when (currentItem?.second) {
+                1f -> 1
+                2f -> 2
+                else -> 0
+            }
+            updatePartBadge(holder, state)
+            if (adapterPosition == selectedPosition) {
+                holder.clPI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.mainColor)
+            } else {
+                holder.clPI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor200)
+            }
+            holder.clPI.setOnClickListener {
+                if (currentItem != null) {
+                    onCategoryClickListener?.onCategoryClick(currentItem.first.toString())
+                }
+                val previousPosition = selectedPosition
+                selectedPosition = adapterPosition
+                notifyItemChanged(previousPosition) // 이전 선택된 아이템 갱신
+                notifyItemChanged(selectedPosition) // 새로 선택된 아이템 갱신
+            }
+        }
+    }
+
+    private fun updatePartBadge(holder: PartViewHolder, state: Int) {
+        holder.cvPIPartCheck.visibility = View.VISIBLE
+        when (state) {
+            0 -> holder.cvPIPartCheck.visibility = View.INVISIBLE
+            1 -> holder.cvPIPartCheck.setCardBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.cautionColor))
+            2 -> holder.cvPIPartCheck.setCardBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+        }
     }
 
     override fun getItemCount(): Int {
-        return analysizes.size
+        return dangerParts?.size ?: 0
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = analysizes[position]
-
-        if (holder is MPViewHolder) {
-
-            holder.tvMPITitle.text = matchedSeq[currentItem.seq]
-            setState(holder, currentItem.isNormal)
-            Glide.with(fragment.requireContext())
-                .load(currentItem.url)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .apply(RequestOptions.bitmapTransform(MultiTransformation(
-                    CenterCrop(),
-                    RoundedCorners(20),
-                    FlipHorizontalTransformation()
-                )))
-                .into(holder.ivMPI)
-
-
-            holder.clMPI.setOnClickListener{
-                (avm as AnalysisViewModel).selectedSeq = currentItem.seq
-                val dialog = MainPartPoseDialogFragment.newInstance(currentItem.seq)
-                dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartPoseDialogFragment")
-            }
-
-            holder.tvMPISummary.text = currentItem.summary
+    private fun setPartItem(isWarning: Boolean, cv: CardView){
+        if (isWarning) {
+            cv.setCardBackgroundColor(fragment.resources.getColor(R.color.cautionColor, null))
+        } else {
+            cv.setCardBackgroundColor(fragment.resources.getColor(R.color.deleteColor, null))
         }
     }
-
-    // ------# 좌우 반전 #------
-    inner class FlipHorizontalTransformation : BitmapTransformation() {
-        override fun updateDiskCacheKey(messageDigest: MessageDigest) {
-            messageDigest.update("flip_horizontal".toByteArray())
-        }
-        override fun transform(
-            pool: BitmapPool,
-            toTransform: Bitmap,
-            outWidth: Int,
-            outHeight: Int
-        ): Bitmap {
-            val matrix = Matrix().apply { postScale(-1f, 1f, toTransform.width / 2f, toTransform.height / 2f) }
-            return Bitmap.createBitmap(toTransform, 0, 0, toTransform.width, toTransform.height, matrix, true)
+    private fun loadFlippedImage(holder: MainPartViewHolder, resourceId: Int, isRight: Boolean) {
+        holder.ivPI.setImageResource(resourceId)
+        if (!isRight) {
+            holder.ivPI.scaleX = -1f
         }
     }
-
-    private val matchedSeq = mapOf(
-        0 to "정면 측정",
-        1 to "동적 측정",
-        2 to "팔꿉 측정",
-        3 to "좌측 측정",
-        4 to "우측 측정",
-        5 to "후면 측정",
-        6 to "앉아 후면"
-    )
-
-    @SuppressLint("UseCompatTextViewDrawableApis")
-    private fun setState(holder: MPViewHolder, isNormal: Int) {
-        when (isNormal) {
-            2, 3 -> {
-                holder.tvMPIState.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
-                holder.tvMPIState.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.white))
-                holder.tvMPIState.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.white))
-                holder.tvMPIState.text = "확인 필요"
-            }
-            else -> {
-                holder.tvMPIState.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
-                holder.tvMPIState.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor700))
-                holder.tvMPIState.compoundDrawableTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor700))
-                holder.tvMPIState.text = "평균 수치"
-            }
-        }
-    }
-
 }

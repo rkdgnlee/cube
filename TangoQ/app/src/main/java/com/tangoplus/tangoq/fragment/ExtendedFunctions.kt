@@ -49,7 +49,7 @@ object ExtendedFunctions {
             return {
                 BadgeUtils.detachBadgeDrawable(badgeDrawable, badgeView)
                 sharedPref.edit().putBoolean(badgeKey, false).apply()
-                Log.v("clickBadge", "badgekey : $badgeKey, clickBadge: ${sharedPref.getBoolean(badgeKey, false)}")
+//                Log.v("clickBadge", "badgekey : $badgeKey, clickBadge: ${sharedPref.getBoolean(badgeKey, false)}")
             }
         }
         return null

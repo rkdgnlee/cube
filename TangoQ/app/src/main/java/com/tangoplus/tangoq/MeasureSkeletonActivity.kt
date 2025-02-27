@@ -21,17 +21,20 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.ExifInterface
 import android.net.Uri
+import android.net.http.NetworkException
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.os.NetworkOnMainThreadException
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -53,12 +56,15 @@ import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
+import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
 import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
@@ -90,11 +96,13 @@ import com.tangoplus.tangoq.mediapipe.PoseLandmarkAdapter
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
 import com.tangoplus.tangoq.api.NetworkMeasure.resendMeasureFile
 import com.tangoplus.tangoq.api.NetworkMeasure.sendMeasureData
+import com.tangoplus.tangoq.db.FileStorageUtil.getPathFromUri
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateAngleBySlope
 import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceX
 import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceY
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.dialog.MeasureSetupDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -143,11 +151,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         private const val REQUEST_CODE_PERMISSIONS = 1001
         // 버전별 필요 권한 정의
         fun hasPermissions(context: Context): Boolean {
+            Log.d("PermissionCheck", "Context type: ${context::class.java.name}")
             return getRequiredPermissions().all {
                 ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
             }
         }
     }
+    private var permissionDialog: AlertDialog? = null
     private lateinit var binding : ActivityMeasureSkeletonBinding
     private lateinit var poseLandmarkerHelper: PoseLandmarkerHelper
     private val viewModel: SkeletonViewModel by viewModels()
@@ -187,8 +197,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     var latestResult: PoseLandmarkerHelper.ResultBundle? = null
     private val mvm : MeasureViewModel by viewModels()
 
-    private var repeatCount = MutableLiveData(0)
-    private val maxRepeats = 6
+    private var seqStep = MutableLiveData(0)
+    private val maxSeq = 6
     private var progress = 12
     private var timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
     private val startTime = LocalDateTime.now()
@@ -209,7 +219,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
-        object : CountDownTimer((if (repeatCount.value == 5) 7000 else 5000), 1000) {
+        object : CountDownTimer((if (seqStep.value == 5) 7000 else 5000), 1000) {
             @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 runOnUiThread{
@@ -236,13 +246,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                             dynamicStartTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                             startVideoRecording {
                                 // 녹화 종료 시점
-                                Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture")
                                 dynamicEndTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                                isRecording = false // 녹화 완료
-                                startRecording = false
                                 updateUI()
                                 Log.v("dynamicJa총길이", "${mvm.dynamicJa.length()}")
-
                                 // ------# dynamic의 프레임들에서 db에 넣을 값을 찾는 곳 #------
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     try {
@@ -311,11 +317,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         hideViews(600)
                         Log.v("사진service", "isCapture: ${isCapture}, isRecording: $isRecording")
                         // ------! 종료 후 다시 세팅 !------
-                        latestResult?.let { resultBundleToJson(it, repeatCount.value ?: -1) }
-                        if (repeatCount.value != null) {
-                            captureImage(repeatCount.value ?: -1)
+                        latestResult?.let { resultBundleToJson(it, seqStep.value ?: -1) }
+                        if (seqStep.value != null) {
+                            captureImage(seqStep.value ?: -1)
                         }
-                        Log.v("캡쳐종료시점", "step: ${repeatCount.value}")
+                        Log.v("캡쳐종료시점", "step: ${seqStep.value}")
                         updateUI()
                         isCapture = false
                     }
@@ -385,6 +391,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         binding = ActivityMeasureSkeletonBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         // ------# room(DB) & singleton & uuid init #------
         md = MeasureDatabase.getDatabase(this)
         mDao = md.measureDao()
@@ -432,13 +439,14 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         // ------! 안내 문구 사라짐 시작 !------
 
         /** 사진 및 동영상 촬영 순서
-         * 1. isLooping true -> repeatCount확인 -> count에 맞게 isCapture및 isRecord 선택
+         * 1. isLooping true -> seqStep확인 -> count에 맞게 isCapture및 isRecord 선택
          * 2. mCountdown.start() -> 카운트 다운이 종료될 때 isCapture, isRecording에 따라 service 함수 실행 */
         binding.ibtnMeasureSkeletonBack.setOnClickListener {
             MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("알림")
                 setMessage("측정을 종료하시겠습니까 ?")
                 setPositiveButton("예") { _, _ ->
+                    Log.v("mvm이름잘", "name: ${mvm.setupName}")
                     val activityIntent = Intent(this@MeasureSkeletonActivity, MainActivity::class.java)
                     intent.putExtra("showMeasureFragment", true)
                     startActivity(activityIntent)
@@ -472,7 +480,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         binding.pvMeasureSkeleton.progress = 14f
 
         // ------# 버튼 촬영 #------
-        binding.btnMeasureSkeletonStep.setOnClickListener {
+        binding.btnMeasureSkeletonStep.setOnSingleClickListener {
             binding.tvMeasureSkeletonDefault.visibility = View.GONE
             if (binding.btnMeasureSkeletonStep.text == "완료하기") {
                 endTime = LocalDateTime.now()
@@ -521,7 +529,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         user_uuid = userUUID,
                         mobile_device_uuid = decryptedUUID,
                         user_sn = userJson?.optString("user_sn")?.toInt() ?: -1,
-                        user_name = userJson?.optString("user_name"),
+                        user_name = mvm.setupName, // userJson?.optString("user_name"),
                         measure_date = measureDate,
                         elapsed_time = elapsedTime,
                         t_score = calculateOverall(parts).toString(),
@@ -684,7 +692,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                             // ------# 측정 완료 && 업로드 후 싱글턴 저장 #------
                                             finishMeasure(mobileInfoSn, mobileStaticSns, mobileDynamicSn)
                                         }
-                                        return@sendMeasureData
+                                        return@sendMeasureData // 여기서 최초 1회 전송 완료 코루틴 밖으로 나감.
                                     }
 
                                     val uploadJobs = mutableListOf<Deferred<Result<Pair<String, String>>>>()
@@ -824,21 +832,24 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
 
         binding.ibtnMeasureSkeletonInfo.setOnSingleClickListener {
-            dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+            dialog1.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.fabtnMeasureSkeleton.setOnSingleClickListener {
-            val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
-            dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+            val dialog3 = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
+            dialog3.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
-
+        binding.ibtnMeasureSkeletonSetup.setOnSingleClickListener {
+            val dialog4 = MeasureSetupDialogFragment.newInstance(1)
+            dialog4.show(supportFragmentManager, "MeasureSkeletonSetup")
+        }
         // ------! 다시 찍기 관리 시작 !------
-        repeatCount.observe(this@MeasureSkeletonActivity) { count ->
+        seqStep.observe(this@MeasureSkeletonActivity) { count ->
             binding.btnMeasureSkeletonStepPrevious.visibility = if (count.compareTo(0) == 0) {
                 View.GONE
             } else {
                 View.VISIBLE
             }
-            Log.v("visible", "repeatCount: ${repeatCount.value}")
+            Log.v("visible", "seqStep: ${seqStep.value}")
         }
 
         binding.btnMeasureSkeletonStepPrevious.setOnSingleClickListener {
@@ -938,8 +949,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     // ------# 측정 seq가 종료될 때 실행되는 함수 #------
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
-        when (repeatCount.value) {
-            maxRepeats -> {
+        when (seqStep.value) {
+            maxSeq -> {
                 binding.pvMeasureSkeleton.progress = 100f
                 binding.clMeasureSkeletonCount.visibility = View.VISIBLE
 
@@ -953,23 +964,23 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             else -> {
                 Log.v("dynamic잘들어갔", "${mvm.dynamic}, ${mvm.dynamicJa.length()}")
                 binding.tvMeasureSkeletonGuide.text = "다음 동작을 준비해주세요"
-                repeatCount.value = repeatCount.value?.plus(1)
+                seqStep.value = seqStep.value?.plus(1)
                 progress += 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
-                Log.v("몇단계?", "repeatCount: ${repeatCount.value}, progress: $progress")
+                Log.v("몇단계?", "seqStep: ${seqStep.value}, progress: $progress")
                 binding.clMeasureSkeletonCount.visibility = View.INVISIBLE
-                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
+                binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
 
-                Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, repeatCount.value?.toInt() ?: -1)
+                Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
                     dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment") }, 1000)
 
-                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
+                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${seqStep.value!!.toInt()}", "drawable", packageName))
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
                 }, 1100)
             }
         }
-        Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}")
+        Log.v("updateUI", "progressbar: ${progress}, seqStep: ${seqStep.value}")
     }
 
 
@@ -977,45 +988,60 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private fun setPreviousStep() {
 
         /*  이전 버튼 시 동작해야할 사항
-        *   1. repeatCount.value
+        *   1. seqStep.value
         *   2. media file -> jpg, mp4
         *   3. json file -> json
         *   4. comment와 progress들
         * */
 
-        when (repeatCount.value) {
-            maxRepeats -> {
-                mvm.statics.removeAt(repeatCount.value?.minus(1)  ?: 0)
-                mvm.staticFiles.removeAt(repeatCount.value ?: 0)
-                mvm.staticJsonFiles.removeAt(repeatCount.value ?: 0)
+        when (seqStep.value) {
+            maxSeq -> {
+                mvm.statics.removeAt(seqStep.value?.minus(1)  ?: 0)
+                mvm.staticFiles.removeAt(seqStep.value ?: 0)
+                mvm.staticJsonFiles.removeAt(seqStep.value ?: 0)
                 binding.pvMeasureSkeleton.progress -= 16  // 마지막 남은 2까지 전부 빼기
                 binding.tvMeasureSkeletonGuide.text = "프레임에 맞춰 서주세요"
                 binding.btnMeasureSkeletonStep.text = "측정하기"
-                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
+                binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
                 binding.tvMeasureSkeletonCount.visibility = View.VISIBLE
                 binding.clMeasureSkeletonCount.visibility = View.INVISIBLE
                 // 1 3 4 5 6 7
             }
+            // 0번 스텝이 완료됐을 때
             1 -> {
-                repeatCount.value = repeatCount.value?.minus(1)
+                seqStep.value = seqStep.value?.minus(1)
                 progress -= 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
-                Log.v("녹화종료되나요?", "repeatCount: ${repeatCount.value} / 6")
-                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
-                mvm.statics.removeAt(repeatCount.value ?: 0) // static을
-                mvm.staticFiles.removeAt(repeatCount.value ?: 0)
-                mvm.staticJsonFiles.removeAt(repeatCount.value ?: 0)
+                Log.v("녹화종료되나요?", "seqStep: ${seqStep.value} / 6")
+                binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
+                mvm.statics.removeAt(seqStep.value ?: 0) // static을
+                mvm.staticFiles.removeAt(seqStep.value ?: 0)
+                mvm.staticJsonFiles.removeAt(seqStep.value ?: 0)
+                val mirroredVideoFile = File(cacheDir, "mirrored_video.mp4")
+                if (mirroredVideoFile.exists()) {
+                    // 파일 삭제
+                    val isDeleted = mirroredVideoFile.delete()
+                    if (isDeleted) {
+                        Log.v("MPEGLog","mirrored_video.mp4 파일이 성공적으로 삭제되었습니다.")
+                    } else {
+                        Log.v("MPEGLog","mirrored_video.mp4 파일 삭제에 실패했습니다.")
+                    }
+                } else {
+                    Log.v("MPEGLog","mirrored_video.mp4 파일이 존재하지 않습니다.")
+                }
             }
+            // 1번 이상 (dynamic, static 들)
             2, 3, 4, 5, 6 -> {
-                repeatCount.value = repeatCount.value?.minus(1)
+                seqStep.value = seqStep.value?.minus(1)
                 progress -= 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
-                Log.v("촬영중단되나요?", "repeatCount: ${repeatCount.value} / 6")
-                binding.svMeasureSkeleton.go(repeatCount.value?.toInt() ?: 0, true)
-                if (repeatCount.value != 1) {
-                    mvm.statics.removeAt(repeatCount.value?.minus(1) ?: 0) // static을
-                    mvm.staticFiles.removeAt(repeatCount.value?.minus(1)?: 0)
-                    mvm.staticJsonFiles.removeAt(repeatCount.value?.minus(1) ?: 0)
+                Log.v("촬영중단되나요?", "seqStep: ${seqStep.value} / 6")
+                binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
+                // 이곳이 1인 이유는 minus를 한 값기준으로 세기 때문임 when 절의 2, 3, 4, 5, 6 은 이제 할 seqSteps임.
+                if (seqStep.value != 1) {
+                    mvm.statics.removeAt(seqStep.value?.minus(1) ?: 0) // static을
+                    mvm.staticFiles.removeAt(seqStep.value?.minus(1)?: 0)
+                    mvm.staticJsonFiles.removeAt(seqStep.value?.minus(1) ?: 0)
                 } else {
                     mvm.dynamic = null
                     mvm.dynamicJa = JSONArray()
@@ -1024,9 +1050,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 }
             }
         }
-        val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${repeatCount.value!!.toInt()}", "drawable", packageName))
+        val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${seqStep.value!!.toInt()}", "drawable", packageName))
         binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
-        Log.v("updateUI", "progressbar: ${progress}, repeatCount: ${repeatCount.value}, staticsSize: ${mvm.statics.size} / 6 ")
+        Log.v("updateUI", "progressbar: ${progress}, seqStep: ${seqStep.value}, staticsSize: ${mvm.statics.size} / 6 ")
     }
 
     // ------! 촬영 시 view 즉시 가리고 -> 서서히 보이기 !-----
@@ -1035,7 +1061,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         binding.fabtnMeasureSkeleton.visibility = View.INVISIBLE
         binding.llMeasureSkeletonBottom.visibility = View.INVISIBLE
         binding.clMeasureSkeletonCount.visibility = View.INVISIBLE
-        if (repeatCount.value != 1) startCameraShutterAnimation()
+        if (seqStep.value != 1) startCameraShutterAnimation()
 
         setAnimation(binding.clMeasureSkeletonTop, 850, delay, true) {}
         setAnimation(binding.fabtnMeasureSkeleton, 850, delay, true) {}
@@ -1047,7 +1073,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private fun startTimer() {
         // 시작 버튼 후 시작
         binding.btnMeasureSkeletonStep.isEnabled = false
-        when (repeatCount.value) {
+        when (seqStep.value) {
             1 -> {
                 isCapture = false
                 isRecording = true
@@ -1057,7 +1083,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 isRecording = false
             }
         }
-        Log.v("repeatCount", "${repeatCount.value} / 6")
+        Log.v("seqStep", "${seqStep.value} / 6")
         mCountDown.start()
         // ------! 타이머 control 끝 !------
     }
@@ -1077,45 +1103,42 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
-        preview?.surfaceProvider = binding.viewFinder.surfaceProvider
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
 
         val cameraSelector =
             CameraSelector.Builder().requireLensFacing(cameraFacing).build()
 
-        // 미리보기. 4:3 비율만 사용합니다. 이것이 우리 모델에 가장 가깝기 때문입니다.
+        // 회전 정보 가져오기
+        val rotation = binding.viewFinder.display?.rotation ?: Surface.ROTATION_0
+        Log.d("RotationDebug", "Display Rotation: $rotation")
 
-        binding.viewFinder.display?.let { display ->
-            preview = Preview.Builder()
-//            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
-                .setTargetResolution(Size(720, 1280))
-                .setTargetRotation(display.rotation)
-                .build()
-        } ?: run {
-            Log.e(TAG, "Display is null")
-        }
-        val rotation = binding.viewFinder.display?.rotation
-            ?: Surface.ROTATION_0
-        // 이미지 분석. RGBA 8888을 사용하여 모델 작동 방식 일치
-        imageAnalyzer =
-            ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9)
-                .setTargetRotation(rotation)
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                .build()
-                // The analyzer can then be assigned to the instance
-                .also {
-                    it.setAnalyzer(backgroundExecutor) { image ->
-                        detectPose(image)
-                    }
+        // 미리보기 설정
+        preview = Preview.Builder()
+            .setTargetResolution(Size(720, 1280))
+            .setTargetRotation(rotation)
+            .build()
+
+        // 중요: 이 시점에서 surfaceProvider 설정
+        preview?.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+
+        // 이미지 분석 설정
+        imageAnalyzer = ImageAnalysis.Builder()
+            .setTargetResolution(Size(720, 1280)) // aspectRatio 대신 resolution 사용
+            .setTargetRotation(rotation)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+            .build()
+            .also {
+                it.setAnalyzer(backgroundExecutor) { image ->
+                    detectPose(image)
                 }
+            }
 
         // 이미지 캡처 설정
         imageCapture = ImageCapture.Builder()
-//            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .setTargetResolution(Size(720, 1280))
-            .setTargetRotation(Surface.ROTATION_0)
+            .setTargetRotation(rotation)
             .build()
 
         videoCapture = VideoCapture.withOutput(
@@ -1128,9 +1151,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
         try {
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageAnalyzer, imageCapture, videoCapture
+                this, cameraSelector, imageAnalyzer, imageCapture, videoCapture, preview
             )
-            preview?.surfaceProvider = binding.viewFinder.surfaceProvider
         } catch (e: IndexOutOfBoundsException) {
             Log.e("MSCameraIndex", "${e.message}")
         } catch (e: IllegalArgumentException) {
@@ -1151,7 +1173,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 isFrontCamera = cameraFacing == CameraSelector.LENS_FACING_FRONT
             )
             if (startRecording && isRecording && latestResult != null) {
-                resultBundleToJson(latestResult, repeatCount.value?: -1)
+                resultBundleToJson(latestResult, seqStep.value?: -1)
             }
         }
         imageProxy.close()
@@ -1165,31 +1187,37 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                setUpCamera()
-                Log.v("스켈레톤 Init", "모든 권한 승인 완료")
+
+        if (requestCode != REQUEST_CODE_PERMISSIONS) return  // 잘못된 요청 코드 방지
+
+        if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+            setUpCamera()
+            Log.v("스켈레톤 Init", "모든 권한 승인 완료")
+        } else {
+            val deniedPermissions = permissions.filterIndexed { index, _ ->
+                grantResults[index] == PackageManager.PERMISSION_DENIED
+            }
+            Log.v("스켈레톤 Init", "거부된 권한: ${deniedPermissions.joinToString()}")
+
+            // "다시 묻지 않음"을 체크한 경우 -> 앱 종료
+            if (deniedPermissions.all { !shouldShowRequestPermissionRationale(it) }) {
+                finish()
+                Toast.makeText(this, "권한을 모두 허용한 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             } else {
-                val deniedPermissions = permissions.filterIndexed { index, _ ->
-                    grantResults[index] == PackageManager.PERMISSION_DENIED
-                }
-                Log.v("스켈레톤 Init", "거부된 권한: ${deniedPermissions.joinToString()}")
-                if (deniedPermissions.any { shouldShowRequestPermissionRationale(it) }) {
-                    showPermissionExplanationDialog()
-                } else {
-                    // 다시 묻지 않기를 선택한 경우
-                    showSettingsDialog()
-                }
+                // 한 번 거부한 경우 -> 설명 다이얼로그 표시
+                showPermissionExplanationDialog()
             }
         }
     }
 
+
     private fun showPermissionExplanationDialog() {
-        AlertDialog.Builder(this)
+        if (permissionDialog?.isShowing == true) return  // 이미 다이얼로그가 떠 있으면 return
+
+        permissionDialog = AlertDialog.Builder(this)
             .setTitle("권한 필요")
-            .setMessage("앱의 정상적인 동작을 위해서는 모든 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+            .setMessage("측정을 위해서는 사진 및 갤러리 권한을 모두 허용해야 합니다.")
             .setPositiveButton("설정으로 이동") { _, _ ->
-                // 앱 설정 화면으로 이동
                 startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts("package", packageName, null)
                 })
@@ -1199,7 +1227,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             }
             .show()
     }
-
     private fun showSettingsDialog() {
         AlertDialog.Builder(this)
             .setTitle("권한 설정 필요")
@@ -1271,25 +1298,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 val jo = JSONObject().apply {
                     put("index", index)
                     put("isActive", true)
-                    if (index == 0) { // 코는 아주 유명한 몸에서 1개만 있는 부위임
-                        put("sx", calculateScreenX(poseLandmark.x()).roundToInt())
-                        put("sy", calculateScreenY(poseLandmark.y()).roundToInt())
-                        put("wx", poseLandmark.x())
-                        put("wy", poseLandmark.y())
-                        put("wz", poseLandmark.z())
-                    } else {
-                        // 좌우반전 값들 계산해서 넣기
-                        val mirrorIndex = if (index % 2 == 0 ) index - 1 else index + 1
-                        val mirrorLandmark = tempLandmarks[mirrorIndex]
-
-                        if (mirrorLandmark != null) {
-                            put("sx", calculateScreenX(mirrorLandmark.first).roundToInt())
-                            put("sy", calculateScreenY(mirrorLandmark.second).roundToInt())
-                            put("wx", mirrorLandmark.first)
-                            put("wy", mirrorLandmark.second)
-                            put("wz", mirrorLandmark.third)
-                        }
-                    }
+//                    if (index == 0) { // 코는 아주 유명한 몸에서 1개만 있는 부위임
+                    put("sx", calculateScreenX(poseLandmark.x()).roundToInt())
+                    put("sy", calculateScreenY(poseLandmark.y()).roundToInt())
+                    put("wx", poseLandmark.x())
+                    put("wy", poseLandmark.y())
+                    put("wz", poseLandmark.z())
                 }
                 poseLandmarks.put(jo)
             }
@@ -1297,40 +1311,43 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             mvm.apply {
                 noseData = Pair(calculateScreenX(plr[0].x()), calculateScreenY(plr[0].y()))
                 earData = listOf(
-                    Pair(calculateScreenX(plr[8].x()), calculateScreenY(plr[8].y())),
-                    Pair(calculateScreenX(plr[7].x()), calculateScreenY(plr[7].y()))
+                    Pair(calculateScreenX(plr[7].x()), calculateScreenY(plr[7].y())),
+                    Pair(calculateScreenX(plr[8].x()), calculateScreenY(plr[8].y()))
+
                 )
                 shoulderData = listOf(
-                    Pair(calculateScreenX(plr[12].x()), calculateScreenY(plr[12].y())),
-                    Pair(calculateScreenX(plr[11].x()), calculateScreenY(plr[11].y()))
+                    Pair(calculateScreenX(plr[11].x()), calculateScreenY(plr[11].y())),
+                    Pair(calculateScreenX(plr[12].x()), calculateScreenY(plr[12].y()))
                 )
                 elbowData = listOf(
-                    Pair(calculateScreenX(plr[14].x()), calculateScreenY(plr[14].y())),
-                    Pair(calculateScreenX(plr[13].x()), calculateScreenY(plr[13].y()))
+                    Pair(calculateScreenX(plr[13].x()), calculateScreenY(plr[13].y())),
+                    Pair(calculateScreenX(plr[14].x()), calculateScreenY(plr[14].y()))
                 )
                 wristData = listOf(
-                    Pair(calculateScreenX(plr[16].x()), calculateScreenY(plr[16].y())),
-                    Pair(calculateScreenX(plr[15].x()), calculateScreenY(plr[15].y()))
+                    Pair(calculateScreenX(plr[15].x()), calculateScreenY(plr[15].y())),
+                    Pair(calculateScreenX(plr[16].x()), calculateScreenY(plr[16].y()))
                 )
                 hipData = listOf(
-                    Pair(calculateScreenX(plr[24].x()), calculateScreenY(plr[24].y())),
-                    Pair(calculateScreenX(plr[23].x()), calculateScreenY(plr[23].y()))
+                    Pair(calculateScreenX(plr[23].x()), calculateScreenY(plr[23].y())),
+                    Pair(calculateScreenX(plr[24].x()), calculateScreenY(plr[24].y()))
                 )
                 kneeData = listOf(
-                    Pair(calculateScreenX(plr[26].x()), calculateScreenY(plr[26].y())),
-                    Pair(calculateScreenX(plr[25].x()), calculateScreenY(plr[25].y()))
+                    Pair(calculateScreenX(plr[25].x()), calculateScreenY(plr[25].y())),
+                    Pair(calculateScreenX(plr[26].x()), calculateScreenY(plr[26].y()))
                 )
                 ankleData = listOf(
-                    Pair(calculateScreenX(plr[28].x()), calculateScreenY(plr[28].y())),
-                    Pair(calculateScreenX(plr[27].x()), calculateScreenY(plr[27].y()))
+                    Pair(calculateScreenX(plr[27].x()), calculateScreenY(plr[27].y())),
+                    Pair(calculateScreenX(plr[28].x()), calculateScreenY(plr[28].y()))
+
                 )
                 heelData = listOf(
-                    Pair(calculateScreenX(plr[30].x()), calculateScreenY(plr[30].y())),
-                    Pair(calculateScreenX(plr[29].x()), calculateScreenY(plr[29].y()))
+                    Pair(calculateScreenX(plr[29].x()), calculateScreenY(plr[29].y())),
+                    Pair(calculateScreenX(plr[30].x()), calculateScreenY(plr[30].y()))
                 )
                 toeData = listOf(
-                    Pair(calculateScreenX(plr[32].x()), calculateScreenY(plr[32].y())),
-                    Pair(calculateScreenX(plr[31].x()), calculateScreenY(plr[31].y()))
+                    Pair(calculateScreenX(plr[31].x()), calculateScreenY(plr[31].y())),
+                    Pair(calculateScreenX(plr[32].x()), calculateScreenY(plr[32].y()))
+
                 )
             }
             val ankleAxis : Pair<Float ,Float> = Pair( (mvm.ankleData[1].first + mvm.ankleData[0].first) / 2, (mvm.ankleData[1].second + mvm.ankleData[0].second) / 2 )
@@ -1360,19 +1377,19 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val ankleSubDistanceByX : Pair<Float, Float> = Pair(getRealDistanceX(mvm.ankleData[0], ankleAxis), getRealDistanceX(mvm.ankleData[1], ankleAxis))
                     val toeSubDistanceByX : Pair<Float, Float> = Pair(getRealDistanceX(mvm.toeData[0], ankleAxis), getRealDistanceX(mvm.toeData[1], ankleAxis))
 
-                    val shoulderElbowLean: Pair<Float, Float> = Pair(calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second) % 180 ,
-                        calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second) % 180 )
+                    val shoulderElbowLean: Pair<Float, Float> = Pair(abs(calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second)) % 180 ,
+                        abs(calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second)) % 180 )
 
-                    val elbowWristLean: Pair<Float, Float> = Pair(calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second) % 180 ,
-                        calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second) % 180 )
+                    val elbowWristLean: Pair<Float, Float> = Pair(abs(calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second)) % 180 ,
+                        abs(calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second)) % 180 )
 
-                    val hipKneeLean : Pair<Float, Float> = Pair(calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second) % 180 ,
-                        calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second) % 180 )
+                    val hipKneeLean : Pair<Float, Float> = Pair(abs(calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second)) % 180 ,
+                        abs(calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second)) % 180 )
 
-                    val kneeAnkleLean : Pair<Float, Float> = Pair(calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.ankleData[0].first, mvm.ankleData[0].second) % 180 ,
-                        calculateSlope(mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.ankleData[1].first, mvm.ankleData[1].second) % 180 )
-                    val ankleToeLean : Pair<Float, Float> = Pair(calculateSlope(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.toeData[0].first, mvm.toeData[0].second) % 180 ,
-                        calculateSlope(mvm.ankleData[1].first, mvm.ankleData[1].second, mvm.toeData[1].first, mvm.toeData[1].second) % 180 )
+                    val kneeAnkleLean : Pair<Float, Float> = Pair(abs(calculateSlope(mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.ankleData[0].first, mvm.ankleData[0].second)) % 180 ,
+                        abs(calculateSlope(mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.ankleData[1].first, mvm.ankleData[1].second)) % 180 )
+                    val ankleToeLean : Pair<Float, Float> = Pair(abs(calculateSlope(mvm.ankleData[0].first, mvm.ankleData[0].second, mvm.toeData[0].first, mvm.toeData[0].second)) % 180 ,
+                        abs(calculateSlope(mvm.ankleData[1].first, mvm.ankleData[1].second, mvm.toeData[1].first, mvm.toeData[1].second)) % 180 )
 
                     val shoulderElbowWristAngle : Pair<Float, Float> = Pair(calculateAngle(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second) % 180 ,
                         calculateAngle(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second) % 180 )
@@ -1424,6 +1441,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_vertical_angle_hip_knee_ankle_right", safePut(hipKneeAnkleAngle.second))
                     }
                     Log.v("전면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
+                    Log.v("전면각도들", "손목거리: $wristSubDistanceByX, 무릎거리: $kneeSubDistanceByX, 어깨팔꿉: $shoulderElbowLean, 팔꿉손목: $elbowWristLean, 골반무릎: $hipKneeLean, 무릎발목: $kneeAnkleLean, ")
                     saveJson(mvm.staticjo, step)
                 }
                 1 -> {  // 스쿼트
@@ -1563,6 +1581,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_elbow_align_distance_center_wrist_right", wristDistanceByX.second)
                     }
                     Log.v("팔꿉", "ear: ${mvm.earData} shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}")
+                    Log.v("팔꿉각도들", "어깨팔꿉손목각: $shoulderElbowWristAngle")
+
                     saveJson(mvm.staticjo, step)
                 }
                 3 -> { // 왼쪽보기 (오른쪽 팔)
@@ -1572,12 +1592,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val sideLeftWristDistance : Float = getRealDistanceX(mvm.wristData[0], ankleAxis)
                     val sideLeftHipDistance : Float = getRealDistanceX(mvm.hipData[0], ankleAxis)
 
-                    val sideLeftShoulderElbowLean : Float = calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second) % 180
-                    val sideLeftElbowWristLean: Float = calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second) % 180
-                    val sideLeftHipKneeLean : Float = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second) % 180
-                    val sideLeftEarShoulderLean : Float = calculateSlope(mvm.earData[0].first, mvm.earData[0].second, mvm.shoulderData[0].first, mvm.shoulderData[0].second) % 180
+                    val sideLeftShoulderElbowLean : Float = 180 + (calculateSlope(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second) % 180)
+                    val sideLeftElbowWristLean: Float = 180 + (calculateSlope(mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second) % 180)
+                    val sideLeftHipKneeLean : Float = 180 + (calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second) % 180)
+                    val sideLeftEarShoulderLean : Float = 180 + (calculateSlope(mvm.earData[0].first, mvm.earData[0].second, mvm.shoulderData[0].first, mvm.shoulderData[0].second) % 180)
 
-                    val sideLeftNoseShoulderLean : Float = calculateSlope(mvm.noseData.first, mvm.noseData.second, mvm.shoulderData[0].first, mvm.shoulderData[0].second)
+                    val sideLeftNoseShoulderLean : Float = 180 + (calculateSlope(mvm.noseData.first, mvm.noseData.second, mvm.shoulderData[0].first, mvm.shoulderData[0].second))
 
                     val sideLeftShoulderElbowWristAngle : Float = calculateAngle(mvm.shoulderData[0].first, mvm.shoulderData[0].second, mvm.elbowData[0].first, mvm.elbowData[0].second, mvm.wristData[0].first, mvm.wristData[0].second) % 180
                     val sideLeftHipKneeAnkleAngle : Float = calculateAngle(mvm.hipData[0].first, mvm.hipData[0].second, mvm.kneeData[0].first, mvm.kneeData[0].second, mvm.ankleData[0].first, mvm.ankleData[0].second) % 180
@@ -1597,6 +1617,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     }
 
                     Log.v("좌측 데이터", "코: ${mvm.noseData}, 어깨: ${mvm.shoulderData[1]}, 팔꿉: ${mvm.elbowData[1]}, 손목: ${mvm.wristData[1]}, 골반: ${mvm.hipData[1]}, 무릎: ${mvm.kneeData[1]}, 발목: ${mvm.ankleData[1]}")
+                    Log.v("좌측각도들", "어깨팔꿉: $sideLeftShoulderElbowLean, 팔꿉손목: $sideLeftElbowWristLean, 골반무릎: $sideLeftHipKneeLean, 귀어깨: $sideLeftEarShoulderLean ")
+
                     saveJson(mvm.staticjo, step)
                 }
                 4 -> { // 오른쪽보기 (왼쪽 팔)
@@ -1606,12 +1628,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val sideRightWristDistance : Float = getRealDistanceX(mvm.wristData[1], ankleAxis)
                     val sideRightHipDistance : Float = getRealDistanceX(mvm.hipData[1], ankleAxis)
                     // ------! 측면 기울기  - 오른쪽 !------
-                    val sideRightShoulderElbowLean : Float = calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second) % 180
-                    val sideRightElbowWristLean: Float = calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second) % 180
-                    val sideRightHipKneeLean : Float = calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second) % 180
-                    val sideRightEarShoulderLean : Float = calculateSlope(mvm.earData[1].first, mvm.earData[1].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second) % 180
+                    val sideRightShoulderElbowLean : Float = abs(calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second)) % 180
+                    val sideRightElbowWristLean: Float = abs(calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second)) % 180
+                    val sideRightHipKneeLean : Float = abs(calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second)) % 180
+                    val sideRightEarShoulderLean : Float = abs(calculateSlope(mvm.earData[1].first, mvm.earData[1].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)) % 180
 
-                    val sideRightNoseShoulderLean : Float = calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.noseData.first, mvm.noseData.second )
+                    val sideRightNoseShoulderLean : Float = abs(calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.noseData.first, mvm.noseData.second ))
 
                     val sideRightShoulderElbowWristAngle : Float = calculateAngle(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second) % 180
                     val sideRightHipKneeAnkleAngle : Float = calculateAngle(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second, mvm.ankleData[1].first, mvm.ankleData[1].second) % 180
@@ -1630,6 +1652,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     }
 
                     Log.v("우측 데이터", "코: ${mvm.noseData}, 어깨: ${mvm.shoulderData[0]}, 팔꿉: ${mvm.elbowData[0]}, 손목: ${mvm.wristData[0]}, 골반: ${mvm.hipData[0]}, 무릎: ${mvm.kneeData[0]}, 발목: ${mvm.ankleData[0]}")
+                    Log.v("우측각도들", "어깨팔꿉: $sideRightShoulderElbowLean, 팔꿉손목: $sideRightElbowWristLean, 골반무릎: $sideRightHipKneeLean, 귀어깨: $sideRightEarShoulderLean ")
 
                     saveJson(mvm.staticjo, step)
                 }
@@ -1693,6 +1716,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("back_horizontal_distance_wrist_right", backWristDistanceByX.second)
                     }
                     Log.v("후면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
+                    Log.v("후면각도들", "어깨: $backShoulderAngle, 팔꿉: $backElbowAngle, 손목: $backWristAngle, 골반: $backHipAngle, 무릎: $backKneeAngle, 발목: $backAnkleAngle 팔꿉손목: $backShoulderHipLean, 코골반: $backNoseHipLean, 무릎뒷꿈치: $backKneeHeelLean,")
+
                     saveJson(mvm.staticjo, step)
                 }
                 6 -> { // ------! 앉았을 때 !------
@@ -1707,12 +1732,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     val sitBackHipAngle = calculateSlope(mvm.hipData[0].first, mvm.hipData[0].second, mvm.hipData[1].first, mvm.hipData[1].second) % 180
                     // -------# 삼각형 계산을 위한 scale 적용 #------
                     mvm.apply {
-                        mvm.noseData = Pair(calculateScreenX(mvm.noseData.first).toFloat(), calculateScreenY(mvm.noseData.second).toFloat())
+                        mvm.noseData = Pair(calculateScreenX(mvm.noseData.first), calculateScreenY(mvm.noseData.second))
                         mvm.shoulderData = listOf(
-                            Pair(calculateScreenX(mvm.shoulderData[0].first).toFloat(), calculateScreenY(mvm.shoulderData[0].second).toFloat()),
-                            Pair(calculateScreenX(mvm.shoulderData[1].first).toFloat(), calculateScreenY(mvm.shoulderData[1].second).toFloat())
+                            Pair(calculateScreenX(mvm.shoulderData[0].first), calculateScreenY(mvm.shoulderData[0].second)),
+                            Pair(calculateScreenX(mvm.shoulderData[1].first), calculateScreenY(mvm.shoulderData[1].second))
                         )
-                        middleHip = Pair(calculateScreenX((mvm.hipData[0].first + mvm.hipData[1].first) / 2).toFloat(), calculateScreenY((mvm.hipData[0].second + mvm.hipData[1].second) / 2).toFloat())
+                        middleHip = Pair(calculateScreenX((mvm.hipData[0].first + mvm.hipData[1].first) / 2), calculateScreenY((mvm.hipData[0].second + mvm.hipData[1].second) / 2))
                     }
 
                     val shoulderNoseTriangleAngle : Triple<Float, Float, Float> = Triple(
@@ -1744,6 +1769,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip", shoulderHipTriangleAngle.third)
                         put("back_sit_vertical_angle_shoulder_center_hip", shoulderHipRadian)
                     }
+                    Log.v("앉아후면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
+                    Log.v("앉아후면각도들", "귀각도: $sitBackEarAngle, 어깨: $sitBackShoulderAngle, 골반: $sitBackHipAngle, 어깨코삼각형: $shoulderNoseTriangleAngle, 골반어깨 삼각형: $shoulderHipTriangleAngle")
                     saveJson(mvm.staticjo, step)
                 }
             }
@@ -1751,8 +1778,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
 
+    // 공통 인적사항ㅅ
     private fun saveJson(jsonObj: JSONObject, step: Int) {
-
         jsonObj.apply {
             put("measure_seq", step + 1)
             put("measure_type", when (step) {
@@ -1767,7 +1794,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             put("device_sn", 0)
             put("mobile_device_uuid", decryptedUUID)
             put("user_uuid", singletonUser.jsonObject?.getString("user_uuid"))
-            put("user_name", singletonUser.jsonObject?.getString("user_name") ?: "")
+            put("user_name", mvm.setupName) // singletonUser.jsonObject?.getString("user_name") ?: ""
             put("user_sn", singletonUser.jsonObject?.getInt("user_sn") ?: -1)
             put("measure_start_time", timestamp)
             put("measure_end_time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
@@ -1879,13 +1906,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 .build()
 
             // Start recording video with audio
-            recording = videoCapture.output.prepareRecording(this@MeasureSkeletonActivity, mediaStoreOutputOptions).apply {
-                if (PermissionChecker.checkSelfPermission(
-                        this@MeasureSkeletonActivity, Manifest.permission.RECORD_AUDIO
-                    ) == PermissionChecker.PERMISSION_GRANTED) {
-                    withAudioEnabled()
-                }
-            }.start(ContextCompat.getMainExecutor(this@MeasureSkeletonActivity)) { recordEvent ->
+            recording = videoCapture.output.prepareRecording(this@MeasureSkeletonActivity, mediaStoreOutputOptions)
+//                .apply {
+//                    if (PermissionChecker.checkSelfPermission(
+//                            this@MeasureSkeletonActivity, Manifest.permission.RECORD_AUDIO
+//                        ) == PermissionChecker.PERMISSION_GRANTED) {
+//                        withAudioEnabled()
+//                    }
+//                }
+                .start(ContextCompat.getMainExecutor(this@MeasureSkeletonActivity)) { recordEvent ->
                 when (recordEvent) {
                     is VideoRecordEvent.Start -> {
                         CoroutineScope(Dispatchers.Main).launch {
@@ -1895,9 +1924,23 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     }
                     is VideoRecordEvent.Finalize -> {
                         if (!recordEvent.hasError()) {
+                            Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture")
+                            isRecording = false
+                            startRecording = false
                             val savedUri = recordEvent.outputResults.outputUri
-                            saveMediaToCache(this@MeasureSkeletonActivity, savedUri, videoFileName, false)
-                            callback()
+                            val inputPath = getPathFromUri(this@MeasureSkeletonActivity, savedUri) // URI를 파일 경로로 변환
+                            val outputPath = File(this@MeasureSkeletonActivity.cacheDir, "mirrored_video.mp4").absolutePath
+
+                            if (inputPath != null) {
+                                flipVideoHorizontally(inputPath, outputPath) { success ->
+                                    if (success) {
+                                        saveMediaToCache(this@MeasureSkeletonActivity, Uri.fromFile(File(outputPath)), videoFileName, false)
+                                        callback()
+                                    } else {
+                                        Log.e(TAG, "Failed to apply mirror effect to video.")
+                                    }
+                                }
+                            }
                         } else {
                             CoroutineScope(Dispatchers.Main).launch  {
                                 isRecording = false
@@ -1946,7 +1989,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 // EXIF 데이터 읽기
                 val exif = ExifInterface(tempFile.absolutePath)
                 val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-
+                Log.d("ExifDebug", "Exif Orientation: $orientation")
                 // 비트맵 디코딩
                 val options = BitmapFactory.Options().apply {
                     inJustDecodeBounds = true
@@ -1970,15 +2013,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 var bitmap = BitmapFactory.decodeFile(tempFile.absolutePath, options)
                 val matrix = Matrix()
 
-                // ★★★ 좌우반전 ★★★
-                matrix.postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
-
                 // 회전 적용
                 when (orientation) {
-                    ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-                    ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                    ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                    ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)   // 시계 방향 90도
+                    ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f) // 시계 방향 180도
+                    ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f) // 시계 방향 270도
                 }
+
+                // ★★★ 좌우반전 ★★★
+                matrix.postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
 
                 // 모든 변환을 한번에 적용
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
@@ -2237,5 +2280,34 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     }
     private fun safePut(value: Float) : Float {
         return if (value.isNaN()) 0f else value
+    }
+
+    private fun flipVideoHorizontally(inputPath: String, outputPath: String, callback: (Boolean) -> Unit) {
+        val command = "-i $inputPath -vf hflip -y -c:v libx264 -crf 18 -preset veryfast -c:a copy $outputPath"
+        lifecycleScope.launch(Dispatchers.Main) {
+            val dialog = LoadingDialogFragment.newInstance("동영상").apply {
+                show(supportFragmentManager, "LoadingDialogFragment")
+            }
+
+            withContext(Dispatchers.IO) {
+                // FFmpeg 명령 실행
+                FFmpegKit.executeAsync(command) { session ->
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        val returnCode = session.returnCode
+                        if (!isFinishing && !isDestroyed) {
+                            dialog.dismiss()
+                        }
+                        if (ReturnCode.isSuccess(returnCode)) {
+                            Log.d("FFMPEGAlert", "Video successfully mirrored and saved to: $outputPath")
+                            callback(true)
+                        } else {
+                            Log.e("FFMPEGAlert", "Error occurred while mirroring video: ${session.getLogsAsString()}")
+                            callback(false)
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

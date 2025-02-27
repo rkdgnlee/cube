@@ -19,7 +19,7 @@ import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 
 class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
-                                private val subCategorys: List<String>,
+                                private val subCategorys: List<Pair<String, Int?>>, // subCategory는 Pair<관절이름, 운동 갯수>
                                 private val fragment: Fragment,
                                 private val sn : Int,
                                 private var xmlname: String
@@ -87,7 +87,8 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
             }
             is SubCategoryViewHolder -> {
                 val currentItem = subCategorys[position]
-                holder.tvSCName.text = currentItem
+                val categoryName=  currentItem.first + " (${currentItem.second})"
+                holder.tvSCName.text = categoryName
                 val adapterPosition = holder.adapterPosition
                 holder.tvSCName.setBackgroundResource(R.drawable.bckgnd_rectangle_20)
                 if (adapterPosition == selectedPosition) {
@@ -99,7 +100,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                 }
 
                 holder.tvSCName.setOnClickListener {
-                    onCategoryClickListener?.onCategoryClick(currentItem)
+                    onCategoryClickListener?.onCategoryClick(currentItem.first)
                     val previousPosition = selectedPosition
                     selectedPosition = adapterPosition
                     notifyItemChanged(previousPosition) // 이전 선택된 아이템 갱신
@@ -110,11 +111,10 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
     }
 
     private fun goExerciseDetail(category : ArrayList<Int>) {
-        Log.v("ClickIndex", "category: $category")
-        Log.v("EDsn", "$sn")
+//        Log.v("ClickIndex", "category: $category")
+//        Log.v("EDsn", "$sn")
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
-            addToBackStack(null)
             commit()
         }
     }

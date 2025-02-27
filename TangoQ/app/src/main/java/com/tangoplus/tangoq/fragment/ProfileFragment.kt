@@ -27,6 +27,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -36,6 +37,8 @@ import com.tangoplus.tangoq.databinding.FragmentProfileBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.sendProfileImage
+import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,7 +54,7 @@ import java.util.TimeZone
 
 class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener {
     lateinit var binding : FragmentProfileBinding
-    val viewModel : SignInViewModel by activityViewModels()
+    val svm : SignInViewModel by activityViewModels()
     private var userJson : JSONObject? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,17 +70,27 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+        // profile쪽 VM 값 세팅
+        svm.snsCount = 0
+        // ------! 싱글턴에서 가져오기 !------
+        svm.User.value = userJson
+        svm.setHeight.value = svm.User.value?.optInt("height")
+        svm.setWeight.value = svm.User.value?.optInt("weight")
+        svm.setEmail.value = svm.User.value?.optString("email")
+        svm.setBirthday.value = svm.User.value?.optInt("birthday").toString()
+        svm.setMobile.value = svm.User.value?.optString("mobile").toString()
+        svm.setGender.value = svm.User.value?.optInt("gender")
 
 //        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
 
-        binding.ibtnPAlarm.setOnClickListener {
+        binding.ibtnPAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
         // ------! 프로필 사진 관찰 시작 !------
-        viewModel.ivProfile.observe(viewLifecycleOwner) {
+        svm.ivProfile.observe(viewLifecycleOwner) {
             if (it != null) {
                 Glide.with(this)
                     .load(it)
@@ -85,44 +98,8 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                     .into(binding.civP)
             }
         }
-        binding.civP.setOnClickListener {
-            when {
-                // Android 14
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
-                    if (hasPermissions(
-                            Manifest.permission.READ_MEDIA_IMAGES,
-                            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
-                        navigateGallery()
-                    } else {
-                        requestPermissions(
-                            arrayOf(
-                                Manifest.permission.READ_MEDIA_IMAGES,
-                                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-                            ), 1000)
-                    }
-                }
-                // Android 13
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                    if (hasPermission(Manifest.permission.READ_MEDIA_IMAGES)) {
-                        navigateGallery()
-                    } else {
-                        requestPermissions(
-                            arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 1000)
-                    }
-                }
-                // Android 12 이하
-                else -> {
-                    if (hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        navigateGallery()
-                    } else {
-                        requestPermissions(
-                            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                            1000
-                        )
-                    }
-                }
-            }
-        }
+        binding.civP.setOnSingleClickListener { navigateImage() }
+        binding.ivPfEdit.setOnSingleClickListener { navigateImage() }
 
         // ------! 정보 목록 recyclerView 연결 시작 !------
         val profilemenulist = mutableListOf(
@@ -146,6 +123,35 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         setAdapter(profilemenulist.subList(3,6), binding.rvPHelp, 1)
         setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
+
+
+        svm.setWeight.observe(viewLifecycleOwner) { weight ->
+            binding.tvPWeight.text = weight.toString() + "kg"
+        }
+        svm.setHeight.observe(viewLifecycleOwner) { height ->
+            binding.tvPHeight.text = height.toString() + "cm"
+        }
+        svm.setBirthday.observe(viewLifecycleOwner) { birthday ->
+            if (birthday.length >= 8) {
+                Log.v("버스데이", "$birthday")
+                val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
+                binding.tvPAge.text = (c.get(Calendar.YEAR) - birthday.substring(0, 4).toInt()).toString() + "세"
+            }
+        }
+        binding.tvPHeight.setOnSingleClickListener {
+            val dialog = ProfileEditChangeDialogFragment.newInstance("신장", svm.setHeight.value.toString())
+            dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+        }
+        binding.tvPWeight.setOnSingleClickListener {
+            val dialog = ProfileEditChangeDialogFragment.newInstance("몸무게", svm.setWeight.value.toString())
+            dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+        }
+        binding.tvPAge.setOnSingleClickListener {
+            if (binding.tvPAge.text == "미설정") {
+                val dialog = ProfileEditChangeDialogFragment.newInstance("생년월일", svm.setBirthday.value.toString())
+                dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+            }
+        }
     }
 
     // ------! 프로필 사진 관찰 끝 !------
@@ -187,12 +193,12 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
     private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
         if (index != 0 ) {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", viewModel)
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", svm)
             adapter.profileMenuList = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         } else {
-            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", viewModel)
+            val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", svm)
             adapter.profileMenuList = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -258,22 +264,24 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         Log.v("Singleton>updateUserData", "$userJson")
+        val heightJo = userJson?.optDouble("height")
+        val weightJo = userJson?.optDouble("weight")
         requireActivity().runOnUiThread {
             if (userJson != null) {
+                if (heightJo != null && weightJo != null) {
+                    val height = when (userJson.optDouble("height")) {
+                        in 80.0 .. 250.0 -> { userJson.optDouble("height").toInt().toString() + "cm" }
+                        else -> { "미설정" }
+                    }
+                    binding.tvPHeight.text = height
+
+                    val weight = when(userJson.optDouble("weight")) {
+                        in 20.0 .. 200.0 -> { userJson.optDouble("weight").toInt().toString() + "kg" }
+                        else -> { "미설정" }
+                    }
+                    binding.tvPWeight.text = weight
+                }
                 binding.tvPfName.text = userJson.optString("user_name")
-
-                val height = when (userJson.optDouble("height")) {
-                    in 1.0 .. 250.0 -> { userJson.optDouble("height").toInt().toString() + "cm" }
-                    else -> { "미설정" }
-                }
-                binding.tvPHeight.text = height
-
-                val weight = when(userJson.optDouble("weight")) {
-                    in 1.0 .. 150.0 -> { userJson.optDouble("weight").toInt().toString() + "kg" }
-                    else -> { "미설정" }
-                }
-                binding.tvPWeight.text = weight
-
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = try {
                     if (userJson.optString("birthday") != "0000-00-00") {
@@ -283,19 +291,19 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                     }
 
                 } catch (e: IndexOutOfBoundsException) {
-                    Log.e("EDetailIndex", "${e.message}")
+                    Log.e("ProfileError", "IndexOutOfBounds: ${e.message}")
                     "미설정"
                 } catch (e: IllegalArgumentException) {
-                    Log.e("EDetailIllegal", "${e.message}")
+                    Log.e("ProfileError", "IllegalArgument: ${e.message}")
                     "미설정"
                 } catch (e: IllegalStateException) {
-                    Log.e("EDetailIllegal", "${e.message}")
+                    Log.e("ProfileError", "IllegalState: ${e.message}")
                     "미설정"
                 } catch (e: NullPointerException) {
-                    Log.e("EDetailNull", "${e.message}")
+                    Log.e("ProfileError", "NullPointer: ${e.message}")
                     "미설정"
                 } catch (e: java.lang.Exception) {
-                    Log.e("EDetailException", "${e.message}")
+                    Log.e("ProfileError", "Exception: ${e.message}")
                     "미설정"
                 }
 
@@ -339,5 +347,49 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             }
         }
         return file
+    }
+
+    private fun navigateImage() {
+        when {
+            // Android 14
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                if (hasPermissions(
+                        Manifest.permission.READ_MEDIA_IMAGES,
+                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
+                    navigateGallery()
+                } else {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                        ), 1000)
+                }
+            }
+            // Android 13
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                if (hasPermission(Manifest.permission.READ_MEDIA_IMAGES)) {
+                    navigateGallery()
+                } else {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 1000)
+                }
+            }
+            // Android 12 이하
+            else -> {
+                if (hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    navigateGallery()
+                } else {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        1000
+                    )
+                }
+            }
+        }
+    }
+
+    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
     }
 }

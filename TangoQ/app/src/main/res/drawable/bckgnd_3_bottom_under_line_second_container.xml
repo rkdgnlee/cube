@@ -7,7 +7,7 @@
             <solid android:color="@color/white" />
             <stroke
                 android:width="3dp"
-                android:color="@color/secondContainerColor" />
+                android:color="@color/secondHalfColor" />
         </shape>
     </item>
 

@@ -3,312 +3,161 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="136dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    android:background="@color/white">
-
-    <TextView
-        android:id="@+id/tvMTIPart"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/subColor100"
-        android:paddingStart="50dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="4dp"
-        android:text="좌측 어깨"
-        android:textColor="@color/subColor800"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="20dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bckgnd_rectangle_12"
+    android:backgroundTint="@color/subColor100">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cvMTI"
-        android:layout_width="22dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginBottom="3dp"
-        android:background="@color/subColor500"
-        app:cardBackgroundColor="@color/subColor500"
+        android:id="@+id/cardView27"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvMTIPart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.45"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <ImageView
             android:id="@+id/ivMTI"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:srcCompat="@drawable/icon_part1" />
+            android:background="@color/white"
+            app:srcCompat="@color/secondBgContainerColor" />
     </androidx.cardview.widget.CardView>
 
-    <ImageView
-        android:id="@+id/imageView37"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout14"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout14"
-        app:layout_constraintHeight_percent="0.6"
-        app:layout_constraintHorizontal_bias="0.25"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout14"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout14"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintWidth_percent="0.3"
-        app:srcCompat="@drawable/line_dash_vertical" />
+    <TextView
+        android:id="@+id/tvMTIPart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="팔꿉"
+        android:textColor="@color/subColor800"
+        android:textSize="20dp"
+        app:layout_constraintStart_toEndOf="@+id/cardView27"
+        app:layout_constraintTop_toTopOf="@+id/cardView27" />
 
-    <ImageView
-        android:id="@+id/imageView38"
+    <TextView
+        android:id="@+id/tvMTIComment"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout14"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout14"
-        app:layout_constraintHeight_percent="0.6"
-        app:layout_constraintHorizontal_bias="0.75"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout14"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout14"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintWidth_percent="0.3"
-        app:srcCompat="@drawable/line_dash_vertical" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout14"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="5dp"
-        android:orientation="horizontal"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:lineSpacingExtra="4dp"
+        android:text="비교 일자를 선택하면 변화값이 표시됩니다."
+        android:textColor="@color/subColor400"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView27" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/bckgnd_rectangle_12"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView27"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvMTIPart"
         app:layout_constraintTop_toBottomOf="@+id/tvMTIPart">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clMTI1"
-            android:layout_width="match_parent"
+            android:id="@+id/constraintLayout22"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <com.skydoves.progressview.ProgressView
-                android:id="@+id/pvMTI1Left"
-                android:layout_width="9dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="-2dp"
-                app:layout_constraintBottom_toTopOf="@+id/tvMTI1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.35"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq1"
-                app:progressView_colorBackground="@color/white"
-                app:progressView_colorProgress="@color/subColor200"
-                app:progressView_orientation="vertical"
-                app:progressView_radius="2dp" />
-
-            <com.skydoves.progressview.ProgressView
-                android:id="@+id/pvMTI1Right"
-                android:layout_width="9dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="-2dp"
-                app:layout_constraintBottom_toTopOf="@+id/tvMTI1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.65"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq1"
-                app:progressView_animation="accelerateDecelerate"
-                app:progressView_colorBackground="@color/white"
-                app:progressView_colorProgress="@color/thirdColor"
-                app:progressView_orientation="vertical"
-                app:progressView_radius="2dp" />
+            android:background="@drawable/bckgnd_left_delete_8"
+            android:backgroundTint="@color/subColor150"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.5">
 
             <TextView
                 android:id="@+id/tvMTI1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center|center_horizontal"
-                android:padding="4dp"
-                android:singleLine="true"
-                android:text="양 손목 거리"
-                android:textColor="@color/subColor800"
-                android:textSize="13dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/tvMTISeq1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bckgnd_righttop_0_4"
-                android:paddingStart="4dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="2dp"
-                android:text="00측정"
-                android:textColor="@color/whiteText"
-                android:textSize="14dp"
+                android:text="기존"
+                android:textColor="@color/subColor400"
+                android:textSize="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tvMTIScore1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="- 점"
+                android:textColor="@color/subColor400"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clMTI2"
-            android:layout_width="match_parent"
+            android:id="@+id/constraintLayout"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <com.skydoves.progressview.ProgressView
-                android:id="@+id/pvMTI2Left"
-                android:layout_width="9dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="-2dp"
-                app:layout_constraintBottom_toTopOf="@+id/tvMTI2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.35"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq2"
-                app:progressView_colorBackground="@color/white"
-                app:progressView_colorProgress="@color/subColor200"
-                app:progressView_orientation="vertical"
-                app:progressView_radius="2dp" />
-
-            <com.skydoves.progressview.ProgressView
-                android:id="@+id/pvMTI2Right"
-                android:layout_width="9dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="-2dp"
-                app:layout_constraintBottom_toTopOf="@+id/tvMTI2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.65"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq2"
-                app:progressView_animation="accelerateDecelerate"
-                app:progressView_colorBackground="@color/white"
-                app:progressView_colorProgress="@color/thirdColor"
-                app:progressView_orientation="vertical"
-                app:progressView_radius="2dp" />
+            android:background="@drawable/bckgnd_right_8"
+            android:backgroundTint="@color/white"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.5">
 
             <TextView
                 android:id="@+id/tvMTI2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center|center_horizontal"
-                android:padding="4dp"
-                android:singleLine="true"
-                android:text="높이 차"
-                android:textColor="@color/subColor800"
-                android:textSize="13dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/tvMTISeq2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bckgnd_righttop_0_4"
-                android:paddingStart="4dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="2dp"
-                android:text="00측정"
-                android:textColor="@color/whiteText"
-                android:textSize="14dp"
+                android:text="최근"
+                android:textColor="@color/subColor800"
+                android:textSize="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clMTI3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <com.skydoves.progressview.ProgressView
-                android:id="@+id/pvMTI3Left"
-                android:layout_width="9dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="-2dp"
-                app:layout_constraintBottom_toTopOf="@+id/tvMTI3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.35"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq3"
-                app:progressView_colorBackground="@color/white"
-                app:progressView_colorProgress="@color/subColor200"
-                app:progressView_orientation="vertical"
-                app:progressView_radius="2dp" />
-
-            <com.skydoves.progressview.ProgressView
-                android:id="@+id/pvMTI3Right"
-                android:layout_width="9dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="-2dp"
-                app:layout_constraintBottom_toTopOf="@+id/tvMTI3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.65"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMTISeq3"
-                app:progressView_animation="accelerateDecelerate"
-                app:progressView_colorBackground="@color/white"
-                app:progressView_colorProgress="@color/thirdColor"
-                app:progressView_orientation="vertical"
-                app:progressView_radius="2dp" />
-
             <TextView
-                android:id="@+id/tvMTI3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center|center_horizontal"
-                android:padding="4dp"
-                android:singleLine="true"
-                android:text="양 손목 거리"
-                android:textColor="@color/subColor800"
-                android:textSize="13dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/tvMTISeq3"
+                android:id="@+id/tvMTIScore2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bckgnd_righttop_0_4"
-                android:paddingStart="4dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="2dp"
-                android:text="00측정"
-                android:textColor="@color/whiteText"
-                android:textSize="14dp"
+                android:text="80점"
+                android:textColor="@color/subColor800"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageView
+                android:id="@+id/ivMTIArrow"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvMTIScore2"
+                app:layout_constraintEnd_toStartOf="@+id/tvMTIScore2"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+                app:layout_constraintTop_toTopOf="@+id/tvMTIScore2"
+                app:srcCompat="@drawable/icon_no_change" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/imageView27"
-        android:layout_width="0dp"
-        android:layout_height="10dp"
-        android:tint="@color/deleteContainerColor"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout14"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout14"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout14"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout14"
-        app:srcCompat="@drawable/line_dash_horizontal" />
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

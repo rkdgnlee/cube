@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clMItem"
+    android:id="@+id/clEI"
     android:layout_width="match_parent"
     android:layout_height="128dp"
+    android:layout_marginBottom="10dp"
     android:background="@color/white">
 
     <View
@@ -27,8 +28,8 @@
         android:layout_width="106dp"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="15dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -50,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="4dp"
         android:gravity="center_vertical"
         android:singleLine="true"
         android:text="목 관절 운동 프로그램"
@@ -58,7 +59,7 @@
         android:textSize="17dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ibtnEILike"
+        app:layout_constraintEnd_toStartOf="@+id/tvEIFinish"
         app:layout_constraintStart_toEndOf="@+id/cardView8"
         app:layout_constraintTop_toTopOf="@+id/cardView8"
         app:layout_constraintVertical_bias="0.0" />
@@ -68,10 +69,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
+        android:layout_marginEnd="10dp"
         android:singleLine="true"
         android:text="증상들 생략.."
-        android:textColor="@color/subColor500"
 
+        android:textColor="@color/subColor500"
         android:textSize="14dp"
         app:layout_constraintEnd_toStartOf="@+id/ibtnEILike"
         app:layout_constraintStart_toStartOf="@+id/tvEIName"
@@ -131,7 +133,7 @@
         android:background="@drawable/effect_ibtn_20dp"
         android:contentDescription="즐겨찾기저장버튼"
         android:padding="4dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/tvEIName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvEIName"
@@ -163,19 +165,20 @@
     <com.skydoves.progressview.ProgressView
         android:id="@+id/hpvEI"
         android:layout_width="0dp"
-        android:layout_height="6dp"
+        android:layout_height="4dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="1.04"
         app:progressView_colorBackground="@color/secondContainerColor"
-        app:progressView_colorProgress="@color/thirdColor" />
+        app:progressView_colorProgress="@color/thirdColor"
+        app:progressView_radius="0dp" />
+
     <TextView
         android:id="@+id/tvEIFinish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginEnd="10dp"
         android:background="@drawable/bckgnd_rectangle_8"
         android:backgroundTint="@color/thirdColor"
         android:paddingStart="10dp"
@@ -186,8 +189,8 @@
         android:textColor="@color/white"
         android:textSize="14dp"
         android:textStyle="bold"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/tvEIName"
-        app:layout_constraintStart_toEndOf="@+id/tvEIName"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvEIName" />
 </androidx.constraintlayout.widget.ConstraintLayout>

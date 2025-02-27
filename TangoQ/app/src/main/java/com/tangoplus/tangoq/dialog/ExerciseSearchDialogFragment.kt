@@ -18,7 +18,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.tangoplus.tangoq.adapter.ExerciseHistoryRVAdapter
+import com.tangoplus.tangoq.adapter.ExerciseSearchHistoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
@@ -58,6 +58,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         imm?.hideSoftInputFromWindow(view.windowToken, 0)
         isKeyboardVisible = true
 
+        binding.ibtnESDBack.setOnClickListener { dismiss() }
 
         binding.ibtnESDClear.setOnClickListener{
             binding.etESDSearch.setText("")
@@ -67,15 +68,15 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         for (i in prefsManager.getLastSn() downTo 1) {
             if (prefsManager.getStoredHistory(i) != "") {
                 evm.searchHistory.value?.add(Pair(i ,prefsManager.getStoredHistory(i)))
-                Log.v("storedHistory", prefsManager.getStoredHistory(i))
+//                Log.v("storedHistory", prefsManager.getStoredHistory(i))
             }
 
         }
-        Log.v("searchHistory", "${evm.searchHistory.value}")
-        var adapter2 : ExerciseHistoryRVAdapter
+//        Log.v("searchHistory", "${evm.searchHistory.value}")
+        var adapter2 : ExerciseSearchHistoryRVAdapter
         val searchHistory = evm.searchHistory.value
         if (searchHistory != null) {
-            adapter2 = ExerciseHistoryRVAdapter(searchHistory, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
+            adapter2 = ExerciseSearchHistoryRVAdapter(searchHistory, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
             setAdapter(adapter2, binding.rv2)
         }
 
@@ -96,15 +97,16 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
                         }
                     }
 
-                    val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, null, null,"main")
+                    val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, null,null,"E")
                     setAdapter(adapter1, binding.rv1)
                     if (filteredList.isEmpty()) binding.clESDEmpty.visibility = View.VISIBLE else binding.clESDEmpty.visibility = View.GONE
+//                    binding.clESDHistory.visibility = View.GONE
                 }
             }
         })
 
         evm.searchHistory.observe(viewLifecycleOwner) {
-            adapter2 = ExerciseHistoryRVAdapter(it, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
+            adapter2 = ExerciseSearchHistoryRVAdapter(it, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
             setAdapter(adapter2, binding.rv2)
         }
 
@@ -119,7 +121,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
 
             if (isKeyboardVisible && !isKeyboardNowVisible && binding.etESDSearch.text.isNotEmpty()) {
                 prefsManager.setStoredHistory(binding.etESDSearch.text.toString())
-                Log.v("saveHistory", "sn: ${prefsManager.getLastSn()}, history: ${prefsManager.getStoredHistory(prefsManager.getLastSn())}")
+//                Log.v("saveHistory", "sn: ${prefsManager.getLastSn()}, history: ${prefsManager.getStoredHistory(prefsManager.getLastSn())}")
 
             }
 

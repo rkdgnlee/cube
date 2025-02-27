@@ -1,17 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorlayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/white"
     tools:context=".dialog.QRCodeDialogFragment">
 
-    <FrameLayout
-        android:id="@+id/frameLayout4"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tlLSD"
         android:layout_width="match_parent"
-        android:layout_height="680dp">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bckgnd_3_bottom_under_line_second_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ibtnLSDBack"
+        app:tabIndicatorAnimationDuration="400"
+        app:tabIndicatorColor="@color/secondWhiteColor"
+        app:tabIndicatorFullWidth="true"
+        app:tabPaddingEnd="0dp"
+        app:tabPaddingStart="0dp"
+        app:tabRippleColor="#20FFFFFF"
+        app:tabSelectedTextColor="@color/secondWhiteColor"
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
+        app:tabTextColor="@color/secondHalfColor">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PIN 번호" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="QR 코드" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <FrameLayout
+        android:id="@+id/flLSD"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tlLSD"
+        app:layout_constraintVertical_bias="0.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -23,6 +62,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:contentDescription="qrCodeScan"
+                android:visibility="visible"
                 app:autoFocusButtonColor="#00FFFFFF"
                 app:autoFocusButtonVisible="false"
                 app:flashButtonVisible="false"
@@ -31,31 +71,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-<!--            <com.journeyapps.barcodescanner.DecoratedBarcodeView-->
-<!--                android:id="@+id/bvLSD"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="0dp"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent">-->
+            <!--            <com.journeyapps.barcodescanner.DecoratedBarcodeView-->
+            <!--                android:id="@+id/bvLSD"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="0dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="parent">-->
 
-<!--            </com.journeyapps.barcodescanner.DecoratedBarcodeView>-->
-
-            <ImageButton
-                android:id="@+id/ibtnLSDBack1"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="26dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="#00FFFFFF"
-                android:contentDescription="dismissDialog"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <!--            </com.journeyapps.barcodescanner.DecoratedBarcodeView>-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
@@ -63,9 +88,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clLSD"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bckgnd_top_16"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tlLSD"
+        app:layout_constraintVertical_bias="0.0">
 
         <TextView
             android:id="@+id/textView20"
@@ -113,19 +143,20 @@
             app:layout_constraintVertical_bias="0.25"
             app:length="6" />
 
-        <ImageButton
-            android:id="@+id/ibtnLSDBack2"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:padding="4dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/icon_arrow_left"
-            app:layout_constraintBottom_toBottomOf="@+id/textView20"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView20" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <ImageButton
+        android:id="@+id/ibtnLSDBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:backgroundTint="@color/white"
+        android:padding="4dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/icon_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

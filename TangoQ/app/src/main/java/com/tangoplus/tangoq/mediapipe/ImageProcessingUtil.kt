@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.mediapipe
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -10,20 +11,20 @@ import android.graphics.RadialGradient
 import android.graphics.Shader
 import android.util.Log
 import android.util.TypedValue
+import android.view.View
 import androidx.core.graphics.scale
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
+import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 
 object ImageProcessingUtil {
+    private val strokeWidths = 2.5f
     fun combineImageAndOverlay(
         originalBitmap: Bitmap,
         poseLandmarkResult: PoseLandmarkResult,
-        scaleFactorX: Float,
-        scaleFactorY: Float,
-        offSetX: Float,
-        offSetY: Float,
         sequence: Int,
         painParts: MutableList<Pair<String, Float>>,
+        context: Context
     ) : Bitmap {
 //        Log.v("스케일과오프셋", "scaleFactor: (${scaleFactorX}, ${scaleFactorY}), offset: ($offSetX, $offSetY)")
 
@@ -41,34 +42,29 @@ object ImageProcessingUtil {
         } else {
             poseLandmarkResult.landmarks
         }
-//        val plr = reverseLeftRight(poseLandmarkResult.landmarks, originalBitmap.width.toFloat())
-//        val plr = poseLandmarkResult.landmarks
-//        Log.v("landmarks", "${poseLandmarkResult.landmarks}")
-//        Log.v("plr", "${plr}")
-
         val flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
         val resultBitmap = flippedBitmap .copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(resultBitmap)
         val axisPaint = Paint().apply {
             color = Color.parseColor("#FF5449")
-            strokeWidth = 4f
+            strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
         val axisSubPaint = Paint().apply {
             color = Color.parseColor("#FF981D")
-            strokeWidth = 4f
+            strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
 
         val paint = Paint().apply {
             color = Color.parseColor("#2EE88B")
-            strokeWidth = 4f
+            strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
 
         val borderPaint = Paint().apply {
             color = Color.parseColor("#2EE88B") // 테두리 색
-            strokeWidth = 4f
+            strokeWidth = strokeWidths
             style = Paint.Style.STROKE // 테두리만 그리기
             isAntiAlias = true
             setShadowLayer(10f, 0f, 0f, Color.parseColor("#1A2EE88B")) // 반지름, x-offset, y-offset, 그림자 색상
@@ -78,34 +74,39 @@ object ImageProcessingUtil {
             style = Paint.Style.FILL // 내부만 채우기
         }
         val textPaint = Paint().apply {
-            color = Color.parseColor("#FFFFFF")
+            color = Color.parseColor("#000000")
             textSize = 48f
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
+
         }
-        val circlePaint = Paint().apply {
+        val outerCirclePaint = Paint().apply {
             color = Color.parseColor("#41000000")
+            style = Paint.Style.FILL
+        }
+        val innerCirclePaint = Paint().apply {
+            color = Color.parseColor("#FFFFFF")
             style = Paint.Style.FILL
         }
         val nose = plr.getOrNull(0)
         val leftEar = plr.getOrNull(7)
         val rightEar = plr.getOrNull(8)
-        val leftShoulder = plr.getOrNull(11)
-        val rightShoulder = plr.getOrNull(12)
-        val leftElbow = plr.getOrNull(13)
-        val rightElbow = plr.getOrNull(14)
-        val leftWrist = plr.getOrNull(15)
-        val rightWrist = plr.getOrNull(16)
-        val leftHip = plr.getOrNull(23)
-        val rightHip = plr.getOrNull(24)
-        val leftKnee = plr.getOrNull(25)
-        val rightKnee = plr.getOrNull(26)
-        val leftAnkle = plr.getOrNull(27)
-        val rightAnkle = plr.getOrNull(28)
-        val leftHeel = plr.getOrNull(29)
-        val rightHeel = plr.getOrNull(30)
-        val leftFoot = plr.getOrNull(31) // 왼발 좌표
-        val rightFoot = plr.getOrNull(32) // 오른발 좌표
+        val leftShoulder = plr.getOrNull(12)
+        val rightShoulder = plr.getOrNull(11)
+        val leftElbow = plr.getOrNull(14)
+        val rightElbow = plr.getOrNull(13)
+        val leftWrist = plr.getOrNull(16)
+        val rightWrist = plr.getOrNull(15)
+        val leftHip = plr.getOrNull(24)
+        val rightHip = plr.getOrNull(23)
+        val leftKnee = plr.getOrNull(26)
+        val rightKnee = plr.getOrNull(25)
+        val leftAnkle = plr.getOrNull(28)
+        val rightAnkle = plr.getOrNull(27)
+        val leftHeel = plr.getOrNull(30)
+        val rightHeel = plr.getOrNull(29)
+        val leftFoot = plr.getOrNull(32) // 왼발 좌표
+        val rightFoot = plr.getOrNull(31) // 오른발 좌표
 
         val noseX = nose?.x
         val noseY = nose?.y
@@ -136,6 +137,8 @@ object ImageProcessingUtil {
                     canvas.drawLine(leftAnkle.x ,leftAnkle.y, rightAnkle.x, rightAnkle.y, axisSubPaint)
                     canvas.drawLine(midShoulderX, midShoulderY, midHipX, midHipY , axisSubPaint)
                     canvas.drawLine(midShoulderX, midShoulderY, nose.x, nose.y , axisSubPaint)
+                    canvas.drawLine(leftKnee.x, leftKnee.y - 50 ,  leftKnee.x, leftAnkle.y + 100, axisPaint)
+                    canvas.drawLine(rightKnee.x, rightKnee.y - 50 , rightKnee.x, rightAnkle.y + 100, axisPaint)
                 }
                 3 -> {
                     canvas.drawLine(leftAnkle.x, leftAnkle.y + 50, leftAnkle.x, nose.y - 200, axisPaint)
@@ -208,15 +211,15 @@ object ImageProcessingUtil {
                     Pair(16, 22), // 오른팔
                     Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
                 )
-                3 ->listOf(
-                    Pair(15, 19), Pair(11, 13), Pair(13, 15),
-                    Pair(11, 23), Pair(23, 25), Pair(25, 27),
-                    Pair(27, 31), Pair(27, 29),
-                )
-                4 -> listOf(
+                3 -> listOf(
                     Pair(16, 20), Pair(12, 14), Pair(14, 16),
                     Pair(12, 24), Pair(24, 26), Pair(26, 28),
                     Pair(28, 32), Pair(28, 30)
+                )
+                4 ->listOf(
+                    Pair(15, 19), Pair(11, 13), Pair(13, 15),
+                    Pair(11, 23), Pair(23, 25), Pair(25, 27),
+                    Pair(27, 31), Pair(27, 29),
                 )
                 5 -> listOf(
                     Pair(11, 13), Pair(13, 15), Pair(12, 14), Pair(14, 16), // 팔 연결
@@ -247,8 +250,8 @@ object ImageProcessingUtil {
             val pointAccentRange = when (sequence) {
                 0 -> listOf(0, 11, 12, 23, 24, 25, 26)
                 2 -> listOf(0, 11, 12)
-                3 -> listOf(0, 11, 23, 25)
-                4 -> listOf(0, 12, 24, 26)
+                3 -> listOf(0, 12, 24, 26)
+                4 -> listOf(0, 11, 23, 25)
                 5 -> listOf(0, 11, 12, 23, 24, 25, 26)
                 6 -> listOf(11, 12, 23, 24)
                 else -> listOf()
@@ -256,8 +259,8 @@ object ImageProcessingUtil {
             val pointRange = when (sequence) {
                 0 -> listOf(7, 8, 13, 14, 15, 16, 27, 28)
                 2 -> listOf(13, 14, 15, 16)
-                3 -> listOf(13, 15, 27)
-                4 -> listOf(14, 16, 28)
+                3 -> listOf(14, 16, 28)
+                4 -> listOf(13, 15, 27)
                 5 -> listOf(13, 14, 15, 16, 27, 28)
                 6 -> listOf(0)
                 else -> listOf()
@@ -294,15 +297,15 @@ object ImageProcessingUtil {
                 11 to leftAnkle,
                 12 to rightAnkle,
             )
-            partIndexes.forEach { index, string ->
+            partIndexes.forEach { (index, string) ->
                 val columnNames = painParts.map { it.first }
                 if (columnNames.contains(string)) {
                     val selectParts = painParts.find { it.first == string }
                     when (index) {
-                        0 -> setCircleColor(canvas, selectParts?.second?.toInt(), (noseX + midShoulderX) / 2, (noseY + midShoulderY) / 2)
+                        0 -> setPartCircle(canvas, selectParts?.second?.toInt(), (noseX + midShoulderX) / 2, (noseY + midShoulderY) / 2)
                         else -> {
                             if (filterIndexAndSequence(index, sequence)) {
-                                setCircleColor(canvas, selectParts?.second?.toInt(), allPartsValue[index]?.x, allPartsValue[index]?.y)
+                                setPartCircle(canvas, selectParts?.second?.toInt(), allPartsValue[index]?.x, allPartsValue[index]?.y)
                             }
                         }
                     }
@@ -315,10 +318,23 @@ object ImageProcessingUtil {
         val leftCircleX = 100f
         val leftCircleY = 100f
         val circleRadius = 48f
-        canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, circlePaint)
-        canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
-        canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, circlePaint)
-        canvas.drawText("R", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+        val innerRadius = 10f
+        if (sequence in listOf(5, 6)) {
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("R", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("L", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+        } else if (sequence !in listOf(3, 4)) {
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("R", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+        }
+
         return resultBitmap
     }
 
@@ -360,10 +376,10 @@ object ImageProcessingUtil {
 
         return Bitmap.createBitmap(original, x, y, cropWidth, cropHeight)
     }
+
     fun reverseLeftRight(landmarks: List<PoseLandmarkResult.PoseLandmark>, screenWidth: Float): List<PoseLandmarkResult.PoseLandmark> {
         println("Before swap - First 3 landmarks:")
         landmarks.take(3).forEachIndexed { index, landmark ->
-            println("Position $index: X: ${landmark.x}, Y: ${landmark.y}")
         }
 
         val result = landmarks.map { landmark ->
@@ -372,8 +388,6 @@ object ImageProcessingUtil {
                 y = landmark.y  // y 좌표는 그대로 유지
             )
         }
-
-        println("\nAfter swap - First 3 landmarks:")
         result.take(3).forEachIndexed { index, landmark ->
             println("Position $index: X: ${landmark.x}, Y: ${landmark.y}")
         }
@@ -381,7 +395,7 @@ object ImageProcessingUtil {
         return result
     }
 
-    fun setCircleColor(canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
+    private fun setPartCircle(canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
         val dangerPart = Paint().apply {
             isDither = true
             isAntiAlias = true

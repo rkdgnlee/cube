@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureStatic
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -16,10 +17,12 @@ class MeasureViewModel : ViewModel() {
     val parts = MutableLiveData(mutableListOf<MeasureVO>())
     val feedbackParts = MutableLiveData(mutableListOf<MeasureVO>())
 
-    /// MD1 측정 날짜 선택 담을 공간 index임
+    // 메인 측정 날짜 선택 담을 공간 index임
     var selectMeasureDate = MutableLiveData<String>()
     var selectedMeasureDate = MutableLiveData<String>()
     var currentMeasureDate = 0
+    var selectedMeasureIndex = MutableLiveData<Int>()
+    var previousMeasureIndex = 4
 
     // 서버에서 받은 측졍 결과 받는 곳
     var measures = mutableListOf<MeasureVO>()
@@ -44,6 +47,16 @@ class MeasureViewModel : ViewModel() {
     val staticJsonFiles = mutableListOf<File>()
     var dynamicJsonFile : File? = null
 
+    // 핸드폰번호, 이름 세팅 vm
+    var setupName = ""
+    var setupNameCondition = MutableLiveData(true)
+    var setupAgreement1 = MutableLiveData(true)
+    var setupAgreement2 = MutableLiveData(true)
+
+    // measureDetail
+    val recentAnalysisUnits = mutableListOf<MutableList<AnalysisUnitVO>>()
+
+
     // ------# 각 부위 데이터들 #------
     var noseData : Pair<Float, Float> = Pair(0f, 0f)
     var earData = listOf<Pair<Float, Float>>()
@@ -61,7 +74,7 @@ class MeasureViewModel : ViewModel() {
 
     init {
         selectedMeasureDate.value = ""
-        selectedMeasure = MeasureVO(-1,-1, "", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
+        selectedMeasure = MeasureVO(-1,-1, "","", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
     }
 
     // ------# JSONObject로 변경 전 앞에 접두사 안생기게끔 하기 #------

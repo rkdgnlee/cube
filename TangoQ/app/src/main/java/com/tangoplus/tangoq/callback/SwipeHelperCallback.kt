@@ -137,7 +137,7 @@ class SwipeHelperCallback : ItemTouchHelper.Callback() {
     fun removePreviousClamp(recyclerView: RecyclerView) {
         previousPosition?.let {
             val viewHolder = recyclerView.findViewHolderForAdapterPosition(it) ?: return
-            Log.d("SwipeHelperCallback", "removePreviousClamp - clearing clamp for position: $it")
+
             getView(viewHolder).translationX = 0f
             setTag(viewHolder, false)
             previousPosition = null

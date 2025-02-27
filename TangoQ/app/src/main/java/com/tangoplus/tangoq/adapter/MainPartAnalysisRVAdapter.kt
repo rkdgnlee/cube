@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +16,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.databinding.RvMainPartAnalysisItemBinding
-import kotlin.math.abs
+import com.tangoplus.tangoq.vo.AnalysisUnitVO
 
-class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val analysisUnits : MutableList<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    inner class AnalysisViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var analyzeUnits : List<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class MPAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPAITitle : TextView = view.findViewById(R.id.tvMPAITitle)
         val vMPAILeft : View = view.findViewById(R.id.vMPAILeft)
         val vMPAIMiddle: View = view.findViewById(R.id.vMPAIMiddle)
@@ -38,18 +38,18 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val anal
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvMainPartAnalysisItemBinding.inflate(inflater, parent, false)
-        return AnalysisViewHolder(binding.root)
+        return MPAViewHolder(binding.root)
     }
 
     override fun getItemCount(): Int {
-        return analysisUnits?.size ?: 0
+        return analyzeUnits?.size ?: 0
     }
 
     @SuppressLint("DefaultLocale")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        if (holder is AnalysisViewHolder) {
-            val currentItem = analysisUnits?.get(position)
+        if (holder is MPAViewHolder) {
+            val currentItem = analyzeUnits?.get(position)
             if (currentItem != null) {
 
                 holder.tvMPAITitle.text = currentItem.rawDataName
@@ -72,7 +72,7 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private val anal
         }
     }
 
-    private fun setState(holder: AnalysisViewHolder, isNormal: Int) {
+    private fun setState(holder: MPAViewHolder, isNormal: Int) {
         val params = holder.ivMPAIArrow.layoutParams as ConstraintLayout.LayoutParams
         when (isNormal) {
             3 -> {

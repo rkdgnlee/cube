@@ -51,7 +51,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
 
         pm = PreferencesManager(requireContext())
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-
+        binding.ibtnAlarmBack.setOnClickListener { dismiss() }
         userSn = userJson?.optInt("sn") ?:0
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {

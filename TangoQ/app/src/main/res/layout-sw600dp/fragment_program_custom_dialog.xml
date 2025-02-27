@@ -29,7 +29,8 @@
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/sflPCD"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -138,7 +139,7 @@
                         android:id="@+id/etPCDTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="40dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="30dp"
                         android:layout_marginEnd="80dp"
                         android:background="@color/white"
@@ -148,7 +149,7 @@
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/ibtnPCDBack"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageButton
@@ -189,9 +190,9 @@
                     <com.skydoves.progressview.ProgressView
                         android:id="@+id/hpvPCD"
                         android:layout_width="0dp"
-                        android:layout_height="8dp"
+                        android:layout_height="10dp"
                         android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginEnd="20dp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvPCDSet"
                         app:layout_constraintEnd_toStartOf="@+id/tvPCDWeek"
                         app:layout_constraintStart_toEndOf="@+id/tvPCDSet"
@@ -336,13 +337,27 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:layout_marginBottom="80dp"
+                        android:layout_marginBottom="120dp"
                         android:nestedScrollingEnabled="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvPCDCount"
                         app:layout_constraintVertical_bias="0.0" />
+
+                    <ImageButton
+                        android:id="@+id/ibtnPCDBack"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="36dp"
+                        android:layout_marginTop="26dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/white"
+                        android:padding="4dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_arrow_left"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>

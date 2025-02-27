@@ -4,42 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clPI"
     android:layout_width="wrap_content"
-    android:layout_height="42dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
     android:layout_marginEnd="20dp"
-    android:background="@drawable/bckgnd_rectangle_20"
-    android:backgroundTint="@color/deleteContainerColor">
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cvPI"
-        android:layout_width="36dp"
-        android:layout_height="0dp"
-        android:layout_margin="4dp"
-        app:cardBackgroundColor="@color/deleteColor"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/ivPI"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/icon_part1" />
-    </androidx.cardview.widget.CardView>
+    android:layout_marginBottom="20dp"
+    android:background="@drawable/effect_ibtn_20dp"
+    android:backgroundTint="@color/mainColor"
+    android:paddingStart="36dp"
+    android:paddingTop="5dp"
+    android:paddingEnd="36dp"
+    android:paddingBottom="5dp">
 
     <TextView
-        android:id="@+id/tvPI"
+        android:id="@+id/tvPIPart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:text="좌측 어깨"
-        android:textColor="@color/deleteColor"
-        android:textSize="18dp"
+        android:gravity="center"
+        android:text="목관절"
+        android:textColor="@color/whiteText"
+        android:textSize="17dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cvPI"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvPIPartCheck"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="-4dp"
+        android:layout_marginBottom="-4dp"
+        app:cardBackgroundColor="@color/deleteTextColor"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvPIPart"
+        app:layout_constraintStart_toEndOf="@+id/tvPIPart" />
 </androidx.constraintlayout.widget.ConstraintLayout>

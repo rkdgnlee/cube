@@ -29,8 +29,8 @@
                     android:id="@+id/ibtnPSAlarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/white"
                     android:contentDescription="showAlarm"
@@ -45,7 +45,7 @@
                     android:layout_height="38dp"
 
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="12dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -108,7 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:background="@drawable/bckgnd_rectangle_20"
-            android:backgroundTint="@color/secondaryColor"
+            android:backgroundTint="@color/subColor400"
             android:drawableEnd="@drawable/icon_arrow_right_small"
             android:gravity="center|center_vertical"
             android:paddingStart="15dp"
@@ -121,5 +121,23 @@
             app:layout_constraintBottom_toBottomOf="@id/TextView8"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/TextView8" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnPSSelect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/mainColor"
+            android:stateListAnimator="@null"
+            android:text="선택하기"
+            android:textColor="@color/whiteText"
+            android:textSize="16dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rvPSD" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

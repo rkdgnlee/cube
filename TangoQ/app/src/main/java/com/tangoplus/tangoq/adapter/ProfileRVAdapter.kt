@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
+import com.tangoplus.tangoq.dialog.InputDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
@@ -42,7 +44,6 @@ class ProfileRVAdapter(private val fragment: Fragment,
     private val viewTypeNormal = 0
     private val viewTypeSpecial = 1
     var userJson = JSONObject()
-
     inner class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val tvPfSettingsName : TextView = view.findViewById(R.id.tvPfSettingsName)
         val tvPfInfo: TextView = view.findViewById(R.id.tvPfInfo)
@@ -164,7 +165,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                                         setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                                         replace(R.id.flMain, WithdrawalFragment())
-                                        addToBackStack(null)
+
                                         commit()
                                     }
                                 }
@@ -180,10 +181,11 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         when (holder.tvPfSettingsName.text) {
                             "이름" -> {
                                 val userName = userJson.optString("user_name")
-                                if (isKorean(userName)) holder.tvPfInfo.text = userName.replaceRange(userName.length - 1, userName.length, "*")
-                                else holder.tvPfInfo.text = maskedProfileData(userName)
-
+//                                if (isKorean(userName)) holder.tvPfInfo.text = userName.replaceRange(userName.length - 1, userName.length, "*")
+//                                else holder.tvPfInfo.text = maskedProfileData(userName)
+                                holder.tvPfInfo.text = userName
                                 holder.ivPf.setImageResource(R.drawable.icon_profile)
+                                holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                             }
                             "이메일" -> {
                                 (vm as SignInViewModel).setEmail.observe(fragment.viewLifecycleOwner) { email ->
@@ -198,31 +200,48 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "전화번호" -> {
                                 (vm as SignInViewModel).setMobile.observe(fragment.viewLifecycleOwner) { mobile ->
-                                    holder.tvPfInfo.text = "${maskedProfileData(mobile.toString())}"
+                                    holder.tvPfInfo.text = "010${maskedProfileData(mobile.toString())}"
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_phone)
                             }
                             "몸무게" -> {
                                 (vm as SignInViewModel).setWeight.observe(fragment.viewLifecycleOwner) { weight ->
-                                    holder.tvPfInfo.text = "$weight kg"
+                                    holder.tvPfInfo.text = when (weight) {
+                                        0 -> "미설정"
+                                        else -> "$weight kg"
+                                    }
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_weight)
                             }
 
                             "신장" -> {
                                 (vm as SignInViewModel).setHeight.observe(fragment.viewLifecycleOwner) { height ->
-                                    holder.tvPfInfo.text = "$height cm"
+                                    holder.tvPfInfo.text = when (height) {
+                                        0 -> "미설정"
+                                        else -> "$height cm"
+                                    }
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_height)
                             }
                             "생년월일" -> {
                                 (vm as SignInViewModel).setBirthday.observe(fragment.viewLifecycleOwner) { birthday ->
-                                    holder.tvPfInfo.text = if (birthday == "0") "미설정" else "$birthday"
+                                    holder.tvPfInfo.text = if (birthday == "0" || birthday == "") "미설정" else birthday
                                 }
+                                if (holder.tvPfInfo.text != "미설정") holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                                 holder.ivPf.setImageResource(R.drawable.icon_cake)
                             }
                             "성별" -> {
-                                holder.tvPfInfo.text = if (userJson.optString("gender")== "0") "여자" else "남자"
+                                (vm as SignInViewModel).setGender.observe(fragment.viewLifecycleOwner) { genderInt ->
+                                    if (genderInt == null) {
+                                        holder.tvPfInfo.text = "미설정"
+                                    } else if (genderInt == 0) {
+                                        holder.tvPfInfo.text = "여자"
+                                        holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
+                                    } else if (genderInt == 1) {
+                                        holder.tvPfInfo.text = "남자"
+                                        holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
+                                    }
+                                }
                                 holder.ivPf.setImageResource(R.drawable.icon_gender)
                             }
                         }
@@ -235,8 +254,8 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "비밀번호" -> {
-                                    val dialog = ProfileEditChangeDialogFragment.newInstance("비밀번호", "")
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                    val dialog = InputDialogFragment()
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
                                 }
                                 "전화번호" -> {
                                     val dialog = ProfileEditChangeDialogFragment.newInstance("전화번호", "")
@@ -251,8 +270,14 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "생년월일" -> {
-                                    if (holder.tvPfSettingsName.text != "미설정") {
+                                    if (holder.tvPfInfo.text == "미설정") {
                                         val dialog = ProfileEditChangeDialogFragment.newInstance("생년월일", (vm as SignInViewModel).setBirthday.value.toString())
+                                        dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                                    }
+                                }
+                                "성별" -> {
+                                    if (holder.tvPfInfo.text == "미설정") {
+                                        val dialog = ProfileEditChangeDialogFragment.newInstance("성별", (vm as SignInViewModel).setBirthday.value.toString())
                                         dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                     }
                                 }
@@ -294,7 +319,8 @@ class ProfileRVAdapter(private val fragment: Fragment,
     private fun maskedProfileData(resultString: String) : String {
         val atIndex = resultString.indexOf('@')
         if (atIndex == -1) {
-            val maskedString = resultString.mapIndexed{ index, char ->
+            val except010String = resultString.substring(3, resultString.length).replace("-", "")
+            val maskedString = except010String.mapIndexed{ index, char ->
                 when {
                     index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
                     index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'

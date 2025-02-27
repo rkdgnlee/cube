@@ -17,11 +17,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -41,6 +44,7 @@ import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
+import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -49,11 +53,18 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     private var videoUrl = ""
     val evm: ExerciseViewModel by activityViewModels()
     val pvm: PlayViewModel by activityViewModels()
+    val progressVm: ProgressViewModel by activityViewModels()
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var playbackPosition = 0L
     private lateinit var prefs : PreferencesManager
     private lateinit var wm : WifiManager
-
+    private var exoPlay: ImageButton? = null
+    private var exoPause: ImageButton? = null
+    private var llSpeed: LinearLayout? = null
+    private var btnSpeed: ImageButton? = null
+    private var exo05: ImageButton? = null
+    private var exo075: ImageButton? = null
+    private var exo10: ImageButton? = null
     interface DialogCloseListener {
         fun onDialogClose()
     }
@@ -72,32 +83,63 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val bundle = arguments
+
+        // 값 받아오기
         val exerciseData = bundle?.getParcelable<ExerciseVO>("ExerciseUnit")
+        pvm.isProgram = false
+        pvm.isProgram = bundle?.getBoolean("isProgram") ?: false
+        pvm.uvpSn = bundle?.getInt("uvpSn") ?: 0
         wm = WifiManager(requireContext())
 
         // ------# like 있는지 판단 #------
         prefs = PreferencesManager(requireContext())
-        var isLike = false
-        if (prefs.existLike(exerciseData?.exerciseId.toString())) {
-            isLike = true
-            binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
-        }
+//        var isLike = false
+//        if (prefs.existLike(exerciseData?.exerciseId.toString())) {
+//            isLike = true
+//            binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
+//        }
 
-        binding.ibtnPTDLike.setOnClickListener {
-            if (isLike) {
-                prefs.deleteLike(exerciseData?.exerciseId.toString())
-                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_disabled))
-                isLike = false
-            } else {
-                prefs.storeLike(exerciseData?.exerciseId.toString())
-                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
-                isLike = true
+        // playerview 넣기
+        exoPlay = view.findViewById(R.id.btnPlay)
+        exoPause = view.findViewById(R.id.btnPause)
+        llSpeed = view.findViewById(R.id.llSpeed)
+        btnSpeed = view.findViewById(R.id.btnSpeed)
+
+        exo05 = view.findViewById(R.id.btn05)
+        exo075 = view.findViewById(R.id.btn075)
+        exo10 = view.findViewById(R.id.btn10)
+
+        exoPlay?.visibility = View.GONE
+
+        exoPause?.setOnClickListener {
+            if (simpleExoPlayer?.isPlaying == true) {
+                simpleExoPlayer?.pause()
+                exoPause?.visibility = View.GONE
+                exoPlay?.visibility = View.VISIBLE
             }
         }
+        exoPlay?.setOnClickListener {
+            if (simpleExoPlayer?.isPlaying == false) {
+                simpleExoPlayer?.play()
+                exoPause?.visibility = View.VISIBLE
+                exoPlay?.visibility = View.GONE
+            }
+        }
+//        binding.ibtnPTDLike.setOnClickListener {
+//            if (isLike) {
+//                prefs.deleteLike(exerciseData?.exerciseId.toString())
+//                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_disabled))
+//                isLike = false
+//            } else {
+//                prefs.storeLike(exerciseData?.exerciseId.toString())
+//                binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
+//                isLike = true
+//            }
+//        }
 
         // -----! 각 설명들 textView에 넣기 !-----
         videoUrl = exerciseData?.videoFilepath.toString()
-        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData?.exerciseName}")
+//        Log.v("videoUrl", "videoUrl: ${videoUrl}, exerciseName: ${exerciseData?.exerciseName}")
         binding.tvPTDName.text = exerciseData?.exerciseName.toString()
         binding.tvPTDRelatedJoint.text = exerciseData?.relatedJoint.toString()
 
@@ -110,7 +152,11 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         binding.tvPTDCaution.text = exerciseData?.exerciseCaution.toString()
         binding.tvPTDRelatedMuscle.text = exerciseData?.relatedMuscle.toString()
 //        binding.tvPTDIntensity.text = exerciseData?.exerciseIntensity.toString()
-
+        Glide.with(requireContext())
+            .load("${exerciseData?.imageFilePath}")
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .override(1080)
+            .into(binding.ivPTD)
 //        playbackPosition = intent.getLongExtra("current_position", 0L)
         val networkType = wm.checkNetworkType()
         Log.v("networkType", networkType)
@@ -119,29 +165,25 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                 initPlayer()
             }
             else -> {
-                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                    setTitle("데이터 사용 알림")
-                    setMessage("셀룰러 네트워크 데이터를 사용하면 추가 요금이 부과될 수 있습니다.")
-                    setPositiveButton("재생") { _, _ ->
-                        initPlayer()
-                    }
-                    setNegativeButton("취소") { _, _ ->
-
-                    }
-                }.show()
+//                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+//                    setTitle("데이터 사용 알림")
+//                    setMessage("셀룰러 네트워크 데이터를 사용하면 추가 요금이 부과될 수 있습니다.")
+//                    setPositiveButton("재생") { _, _ ->
+//                        initPlayer()
+//                    }
+//                    setNegativeButton("취소") { _, _ ->
+//
+//                    }
+//                }.show()
             }
         }
         // ------! 관련 관절, 근육 recyclerview 시작 !------
-        val fullmuscleList = exerciseData?.relatedMuscle?.replace("(", ", ")
+        val fullMuscleList = exerciseData?.relatedMuscle?.replace("(", ", ")
             ?.replace(")", "")
             ?.split(", ")
             ?.toMutableList()
 
-        val displayMuscleList = fullmuscleList?.chunked(2)
-            ?.map { it.first() }
-            ?.toMutableList()
-
-        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullmuscleList, "muscle", evm)
+        val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullMuscleList, null,"muscle", evm)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rvPTMuscle.layoutManager = layoutManager
@@ -153,7 +195,22 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             intent.putExtra("video_url", videoUrl)
             intent.putExtra("exercise_id", exerciseData?.exerciseId)
             intent.putExtra("total_duration", exerciseData?.duration?.toInt())
-            intent.putExtra("isUnit", true)
+
+            when (pvm.isProgram) {
+                true -> {
+                    intent.putExtra("isEVP", false)
+                    intent.putExtra("isProgram", true)
+                    intent.putExtra("uvpSn", pvm.uvpSn)
+                    intent.putExtra("current_position", progressVm.currentProgresses.find { it.uvpSn == pvm.uvpSn }?.cycleProgress?.toLong())
+                    intent.putExtra("currentWeek", progressVm.currentWeek + 1)
+                    intent.putExtra("currentSeq", progressVm.currentSequence + 1)
+                }
+                false -> {
+                    intent.putExtra("isEVP", true)
+                    intent.putExtra("isProgram", false)
+                    intent.putExtra("uvpSn", 0)
+                }
+            }
             startActivityForResult(intent, 8080)
 
             // ------! 운동 하나 전부 다 보고 나서 feedback한개만 켜지게 !------
@@ -168,48 +225,9 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         } // ------! 하단 운동 시작 버튼 끝 !------
 
-//        // ------# 전체화면 구현 로직 시작 #------
-        val exitButton = binding.pvPTD.findViewById<ImageButton>(R.id.exo_exit)
-        exitButton.setOnClickListener {
+        binding.ibtnPTDExit.setOnClickListener {
             dismiss()
         }
-
-        val exoPlay = binding.pvPTD.findViewById<ImageButton>(R.id.btnPlay)
-        val exoPause = binding.pvPTD.findViewById<ImageButton>(R.id.btnPause)
-        exoPause?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == true) {
-                simpleExoPlayer?.pause()
-                exoPause.visibility = View.GONE
-                exoPlay.visibility = View.VISIBLE
-            }
-        }
-        exoPlay?.setOnClickListener {
-            if (simpleExoPlayer?.isPlaying == false) {
-                simpleExoPlayer?.play()
-                exoPause.visibility = View.VISIBLE
-                exoPlay.visibility = View.GONE
-            }
-        }
-        // ------! 앞으로 감기 뒤로 감기 시작 !------
-        val replay5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_replay_5)
-        val forward5 = binding.pvPTD.findViewById<ImageButton>(R.id.exo_forward_5)
-        replay5.setOnClickListener {
-            val replayPosition = simpleExoPlayer?.currentPosition?.minus(5000)
-            if (replayPosition != null) {
-                simpleExoPlayer?.seekTo((if (replayPosition < 0) 0 else replayPosition))
-            }
-        }
-        forward5.setOnClickListener {
-            val forwardPosition = simpleExoPlayer?.currentPosition?.plus(5000)
-            if (forwardPosition != null) {
-                if (forwardPosition < (simpleExoPlayer?.duration?.minus(5000) ?: 0)) {
-                    simpleExoPlayer?.seekTo(forwardPosition)
-                } else {
-                    simpleExoPlayer?.pause()
-                }
-            }
-        } // ------! 앞으로 감기 뒤로 감기 끝 !------
-
         // ------! 관련 운동 횡 rv 시작 !------
         lifecycleScope.launch {
             val responseArrayList = evm.allExercises
@@ -218,7 +236,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                     it.relatedJoint?.contains(exerciseData?.relatedJoint?.split(", ")?.get(0) ?: "") == true
                 }
                 val shuffledList = verticalDataList.shuffled().take(10.coerceAtMost(verticalDataList.size)).toMutableList()
-                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, shuffledList, null, null, null,"recommend")
+                val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, shuffledList, null, null,  null,"PTD")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 binding.rvPTn.layoutManager = linearLayoutManager
@@ -236,28 +254,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         }
 
         // ------! 관련 운동 횡 rv 끝 !------
-
-        // ------! ai코칭 시작 !------
-//        if (exerciseData?.exerciseId in listOf("74", "129", "133", "134", "171", "197", "202") ) {
-//            binding.btnPTDAIPlay.visibility = View.VISIBLE
-//        } else {
-//            binding.btnPTDAIPlay.visibility = View.GONE
-//        }
-//        binding.btnPTDAIPlay.setOnClickListener {
-//            if (isTablet(requireContext())) {
-//                val intent = Intent(requireContext(), PlaySkeletonActivity::class.java)
-//
-//                val exerciseIds = mutableListOf(exerciseData?.exerciseId)
-//                val videoUrls = mutableListOf(videoUrl)
-//                intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
-//                intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-//                intent.putExtra("total_time", exerciseData?.duration?.toInt())
-//                startActivity(intent)
-//            } else {
-//                context.let { Toast.makeText(it, "태블릿 기기에서 운동을 추천드립니다", Toast.LENGTH_SHORT).show() }
-//            }
-//        }
-        // ------! ai코칭 끝 !------
 
         // ------# share #------
         binding.ibtnPTDShare.setOnClickListener {
@@ -278,12 +274,12 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     }
 
     private fun initPlayer(){
-        simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        binding.pvPTD.player = simpleExoPlayer
-        buildMediaSource().let {
-            simpleExoPlayer?.prepare(it)
-        }
-        simpleExoPlayer?.seekTo(playbackPosition)
+//        simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
+//        binding.pvPTD.player = simpleExoPlayer
+//        buildMediaSource().let {
+//            simpleExoPlayer?.prepare(it)
+//        }
+//        simpleExoPlayer?.seekTo(playbackPosition)
     }
 
     private fun buildMediaSource() : MediaSource {
@@ -345,7 +341,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     val pendingIntent = PendingIntent.getBroadcast(requireContext(), requestCode, intent, PendingIntent.FLAG_IMMUTABLE)
     alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
 
-    Log.v("현재 시간", "${calendar.time}, intent: ${intent.getStringExtra("title")}, ${intent.getStringExtra("text")}")
+//    Log.v("현재 시간", "${calendar.time}, intent: ${intent.getStringExtra("title")}, ${intent.getStringExtra("text")}")
     }
 
     fun setDialogCloseListener(listener: DialogCloseListener) {

@@ -6,7 +6,9 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefres
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
 import com.tangoplus.tangoq.db.Singleton_t_user
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
@@ -21,6 +23,54 @@ import java.io.IOException
 
 object NetworkUser {
     const val TAG = "NetworkUser"
+
+    // 아이디 비밀번호 자체 로그인
+    suspend fun trySelfLogin(myUrl: String, context: Context, refreshToken: String?, callback: (JSONObject?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body =
+            JSONObject().put("refresh_token", refreshToken).toString().toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("${myUrl}auto_login.php")
+            .post(body)
+            .build()
+        return withContext(Dispatchers.IO) {
+            OkHttpClient().newCall(request).enqueue(object : Callback{
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.e("Token응답실패", "Failed to execute request")
+                    callback(null)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    try {
+                        val responseBody = response.body?.string()
+//                        Log.v("trySelfLogin", "$responseBody")
+                        val bodyJo = JSONObject(responseBody.toString())
+                        if (bodyJo.optJSONObject("login_data") == null) {
+                            callback(null)
+                        } else {
+                            val jwtJo = JSONObject().apply {
+                                put("access_jwt", bodyJo.optString("access_jwt"))
+                                put("refresh_jwt", bodyJo.optString("refresh_jwt"))
+                            }
+                            saveEncryptedJwtToken(context, jwtJo)
+                            callback(bodyJo)
+                        }
+                    } catch (e: IndexOutOfBoundsException) {
+                        Log.e("autoSelfLogin", "IndexError: ${e.message}")
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("autoSelfLogin", "IllegalArgumentError: ${e.message}")
+                    } catch (e: IllegalStateException) {
+                        Log.e("autoSelfLogin", "IllegalStateError: ${e.message}")
+                    } catch (e: NullPointerException) {
+                        Log.e("autoSelfLogin", "NullPointerError: ${e.message}")
+                    } catch (e: java.lang.Exception) {
+                        Log.e("autoSelfLogin", "Exception: ${e.message}")
+                    }
+                }
+            })
+        }
+    }
+
     // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------
     // (각 플랫폼 sdk를 통해서 자동 로그인까지 동작)
     fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
@@ -39,7 +89,7 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()?.substringAfter("response: ")
-                Log.v("SDK>Server>User", "$responseBody")
+                // Log.v("SDK>Server>User", "$responseBody")
 
                 if (response.code == 401) {
                     callback(null)
@@ -73,11 +123,14 @@ object NetworkUser {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     Log.e("자체로그인Failed", "Failed to execute request!")
+                    CoroutineScope(Dispatchers.Main).launch {
+                        callback(null)
+                    }
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-                    Log.v("자체로그인Success", "$responseBody")
+                     Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     callback(jo)
@@ -104,7 +157,7 @@ object NetworkUser {
                 val response = client.newCall(request).execute()
                 withContext(Dispatchers.Main) {
                     callback(response.code)
-                    Log.v("logout", "${response.code}")
+                    // Log.v("logout", "${response.code}")
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("UserIndex", "refresh: ${e.message}")
@@ -120,7 +173,27 @@ object NetworkUser {
         }
     }
 
-
+    suspend fun verifyPW(context: Context, myUrl: String, pw: JSONObject, callback: (Int) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = pw.toString().toRequestBody(mediaType)
+        val client = getClient(context)
+        val request = Request.Builder()
+            .url("${myUrl}pwd_check.php")
+            .post(body)
+            .build()
+        return withContext(Dispatchers.IO) {
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string()
+                // Log.v("verifyPW", "$responseBody")
+                val status = responseBody?.let { JSONObject(it).optInt("status") }
+                if (status != null) {
+                    withContext(Dispatchers.Main) {
+                        callback(status)
+                    }
+                }
+            }
+        }
+    }
 
     suspend fun insertUser(myUrl: String,  idPw: JSONObject, callback: (Int) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -141,7 +214,7 @@ object NetworkUser {
 
                     override fun onResponse(call: Call, response: Response) {
                         val responseBody = response.body?.string()
-                        Log.v("응답성공", "code: ${response.code}, body: $responseBody")
+                         Log.v("응답성공", "code: ${response.code}, body: $responseBody")
 
                         if (response.isSuccessful) {
                             Log.v("회원가입로그", "${response.code}")
@@ -187,7 +260,7 @@ object NetworkUser {
                     }
 
                     response.body?.string()?.let { responseString ->
-                        Log.v("중복확인로그", "code: ${response.code}, body: $responseString")
+                        // Log.v("중복확인로그", "code: ${response.code}, body: $responseString")
                         val bodyJo = JSONObject(responseString)
                         return@withContext bodyJo.optInt("status")
                     }
@@ -228,7 +301,7 @@ object NetworkUser {
                         return@withContext null
                     }
                     val responseBody = response.body?.string()
-                    Log.v("회원update", "$responseBody")
+                    // Log.v("회원update", "$responseBody")
                     return@withContext true
                 }
             } catch (e: IllegalStateException) {
@@ -266,7 +339,7 @@ object NetworkUser {
                         return@withContext null
                     }
                     val responseCode = response.code
-                    Log.v("회원탈퇴Success", "$responseCode")
+                    // Log.v("회원탈퇴Success", "$responseCode")
                     return@withContext responseCode
                 }
             } catch (e: IllegalStateException) {
@@ -293,7 +366,8 @@ object NetworkUser {
 
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = joBody.toRequestBody(mediaType)
-        val client = getClient(context)
+//        val client = getClient(context)
+        val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}find_user_id.php")
             .post(body)
@@ -305,7 +379,7 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.v("userId", "$responseBody")
+                // Log.v("userId", "$responseBody")
                 val jo = responseBody?.let { JSONObject(it) }
                 val id = jo?.optString("user_id")
                 if (id != null) {
@@ -331,7 +405,7 @@ object NetworkUser {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     if (responseBody != null) {
-                        Log.w("profileImage", "Success to execute request: $responseBody")
+                        // Log.w("profileImage", "Success to execute request: $responseBody")
                         callback(extractProfileImageUrl(responseBody))
                     }
                 }
@@ -367,7 +441,7 @@ object NetworkUser {
             client.newCall(request).execute().use { response ->
                 val code = response.code
                 val responseBody = response.body?.string()
-                Log.v("PIN>ResponseBody", "$responseBody")
+                // Log.v("PIN>ResponseBody", "$responseBody")
                 code
             }
         }
@@ -386,7 +460,7 @@ object NetworkUser {
             client.newCall(request).execute().use { response ->
                 val statusCode = response.code
                 val responseBody = response.body?.string()
-                Log.v("QRcode>ResponseBody", "$responseBody")
+                // Log.v("QRcode>ResponseBody", "$responseBody")
                 statusCode
             }
         }

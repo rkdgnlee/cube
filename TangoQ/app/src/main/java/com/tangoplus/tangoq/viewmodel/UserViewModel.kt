@@ -29,15 +29,13 @@ class UserViewModel: ViewModel() {
 
     // ------# connected 날짜 담기 #------
 
-    val connectedCenters = mutableListOf<Pair<String, String>>()
+//    val connectedCenters = mutableListOf<Pair<String, String>>()
 
-    var existedProgramData : ProgramVO? = null
 
     init {
         User.value = JSONObject()
         setupProgress = 34
         setupStep = 0
-        existedProgramData = null
     }
 
     private fun updateStep2() {

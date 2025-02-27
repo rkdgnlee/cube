@@ -7,6 +7,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.tangoplus.tangoq.MyApplication
 
 class BiometricManager(private val fragment: Fragment) {
     private val biometricManager: BiometricManager = BiometricManager.from(fragment.requireContext())
@@ -50,9 +51,6 @@ class BiometricManager(private val fragment: Fragment) {
         onError: (String) -> Unit,
         fallbackToDeviceCredential: Boolean = true
     ) {
-        Log.v("BiometricAuth", "Authentication started")
-        Log.v("BiometricAuth", "Device secure: ${isDeviceSecure()}")
-
         // 디바이스에 보안 설정이 전혀 없는 경우 바로 성공 처리
         if (!isDeviceSecure()) {
             Log.v("BiometricAuth", "No device security, bypassing authentication")
@@ -60,29 +58,37 @@ class BiometricManager(private val fragment: Fragment) {
             return
         }
 
-        // 디바이스 자격 증명 상태 확인
-        val deviceCredentialStatus = checkDeviceCredentialStatus()
-        Log.v("BiometricAuth", "Device credential status: $deviceCredentialStatus")
-
-        when (deviceCredentialStatus) {
-            BiometricManager.BIOMETRIC_SUCCESS -> {
-                promptDeviceCredential(onSuccess, onError)
+        val application = fragment.activity?.applicationContext as MyApplication
+        when (application.verifyBiometric()) {
+            true -> {
+                Log.v("BiometricAuth", "Already passed. bypassing authentication")
+                onSuccess()
+                return
             }
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                onError("기기 인증 하드웨어가 없습니다.")
-            }
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                onError("기기 인증 하드웨어를 사용할 수 없습니다.")
-            }
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                if (fallbackToDeviceCredential) {
-                    onError("기기 인증 방법이 등록되지 않았습니다.")
-                } else {
-                    onError("기기 인증을 사용할 수 없습니다.")
+            false -> {
+                // 디바이스 자격 증명 상태 확인
+                val deviceCredentialStatus = checkDeviceCredentialStatus()
+                when (deviceCredentialStatus) {
+                    BiometricManager.BIOMETRIC_SUCCESS -> {
+                        promptDeviceCredential(onSuccess, onError)
+                    }
+                    BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                        onError("기기 인증 하드웨어가 없습니다.")
+                    }
+                    BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                        onError("기기 인증 하드웨어를 사용할 수 없습니다.")
+                    }
+                    BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                        if (fallbackToDeviceCredential) {
+                            onError("기기 인증 방법이 등록되지 않았습니다.")
+                        } else {
+                            onError("기기 인증을 사용할 수 없습니다.")
+                        }
+                    }
+                    else -> {
+                        onError("알 수 없는 오류가 발생했습니다.")
+                    }
                 }
-            }
-            else -> {
-                onError("알 수 없는 오류가 발생했습니다.")
             }
         }
     }
@@ -106,8 +112,8 @@ class BiometricManager(private val fragment: Fragment) {
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    Log.e("BiometricAuth", "Device credential authentication error: $errorCode - $errString")
-                    onError("기기 인증 중 오류가 발생했습니다: $errString")
+                    Log.e("BiometricAuth", "Device credential authentication error")
+                    onError("기기 인증 중 오류가 발생했습니다")
                 }
             }
         )

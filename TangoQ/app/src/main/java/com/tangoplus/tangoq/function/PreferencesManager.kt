@@ -131,32 +131,32 @@ class PreferencesManager(private val context: Context) {
         likePrefs.edit().remove("likes_$exerciseId").apply()
     }
 
-    private val loginFailedPrefs : SharedPreferences
-        get() = getPrefs("loginId")
-
-
-    fun storeLoginId(loginId: String, tryCount: Int) {
-        Log.d("PrefsManager", "Storing loginId for: $loginId")
-        loginFailedPrefs.edit()
-            .putInt("loginId_${loginId}", tryCount)
-            .putLong("loginId_${loginId}_timestamp", System.currentTimeMillis())
-            .apply()
-    }
-    fun getLoginCount(loginId: String) : Int {
-        val storedTimestamp = loginFailedPrefs.getLong("loginId_${loginId}_timestamp", 0)
-        val currentTime = System.currentTimeMillis()
-
-        // 일주일(7일) 후 만료 체크
-        if (currentTime - storedTimestamp > 7 * 24 * 60 * 60 * 1000L) {
-            // 만료된 경우 데이터 삭제
-            loginFailedPrefs.edit()
-                .remove("loginId_${loginId}")
-                .remove("loginId_${loginId}_timestamp")
-                .apply()
-            return 0
-        }
-
-        // 만료되지 않은 경우 저장된 로그인 시도 횟수 반환
-        return loginFailedPrefs.getInt("loginId_${loginId}", 0)
-    }
+//    private val loginFailedPrefs : SharedPreferences
+//        get() = getPrefs("loginId")
+//
+//
+//    fun storeLoginId(loginId: String, tryCount: Int) {
+//        Log.d("PrefsManager", "Storing loginId for: $loginId")
+//        loginFailedPrefs.edit()
+//            .putInt("loginId_${loginId}", tryCount)
+//            .putLong("loginId_${loginId}_timestamp", System.currentTimeMillis())
+//            .apply()
+//    }
+//    fun getLoginCount(loginId: String) : Int {
+//        val storedTimestamp = loginFailedPrefs.getLong("loginId_${loginId}_timestamp", 0)
+//        val currentTime = System.currentTimeMillis()
+//
+//        // 일주일(7일) 후 만료 체크
+//        if (currentTime - storedTimestamp > 1 * 24 * 60 * 60 * 1000L) {
+//            // 만료된 경우 데이터 삭제
+//            loginFailedPrefs.edit()
+//                .remove("loginId_${loginId}")
+//                .remove("loginId_${loginId}_timestamp")
+//                .apply()
+//            return 0
+//        }
+//
+//        // 만료되지 않은 경우 저장된 로그인 시도 횟수 반환
+//        return loginFailedPrefs.getInt("loginId_${loginId}", 0)
+//    }
 }

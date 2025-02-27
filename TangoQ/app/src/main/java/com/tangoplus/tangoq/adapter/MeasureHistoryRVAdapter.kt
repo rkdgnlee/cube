@@ -28,6 +28,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
     inner class MHViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMIName: TextView = view.findViewById(R.id.tvMIName)
         val tvMIScore : TextView = view.findViewById(R.id.tvMIScore)
+        val tvMISub : TextView = view.findViewById(R.id.tvMISub)
         val clMI : ConstraintLayout = view.findViewById(R.id.clMI)
     }
 
@@ -44,42 +45,42 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = measures[position]
         if (holder is MHViewHolder) {
-            holder.tvMIName.text = "${currentItem.regDate.substring(0, 10)} 측정 기록"
+            holder.tvMIName.text = "${currentItem.regDate.substring(0, 10)}, ${currentItem.userName}"
+            holder.tvMISub.text = "위험부위: ${currentItem.dangerParts.map { it.first }.joinToString()}"
             holder.tvMIScore.text = currentItem.overall.toString()
             val hideBadgeFunction = fragment.hideBadgeOnClick(holder.tvMIName, holder.clMI, "${holder.tvMIName.text}", ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 
             holder.clMI.setOnClickListener {
                 try {
-                    // measure 선택하기
                     viewModel.selectedMeasure = currentItem
-                    val dialog = LoadingDialogFragment.newInstance("측정파일")
-                    dialog.show(fragment.requireActivity().supportFragmentManager, "LoadingDialogFragment")
 
                     ssm = SaveSingletonManager(fragment.requireContext(), fragment.requireActivity())
                     CoroutineScope(Dispatchers.IO).launch {
+                        ssm.setRecent5MeasureResult(position)
+
                         val currentMeasure = viewModel.selectedMeasure
                         val uriTuples = currentMeasure?.sn?.let { ssm.get1MeasureUrls(it) }
                         if (uriTuples != null) {
                             ssm.downloadFiles(uriTuples)
                             val editedMeasure = ssm.insertUrlToMeasureVO(uriTuples, currentMeasure)
-                            Log.v("리스너", "$editedMeasure")
+//                            Log.v("리스너", "$editedMeasure")
 
                             // 파일 다운로드 후 url과 data (JSONARRAY) 넣기
                             val singletonMeasure = Singleton_t_measure.getInstance(fragment.requireContext()).measures
                             val singletonIndex = singletonMeasure?.indexOfLast { it.regDate == currentMeasure.regDate }
-                            if (singletonIndex != null && singletonIndex >= 0) {
-                                singletonMeasure.set(singletonIndex, editedMeasure)
-                                viewModel.selectedMeasure = editedMeasure
-                                Log.v("수정완료", "index: $singletonIndex, VO: $editedMeasure")
-                                withContext(Dispatchers.Main) {
-                                    dialog.dismiss()
+
+                            withContext(Dispatchers.Main) {
+                                if (singletonIndex != null && singletonIndex >= 0) {
+                                    singletonMeasure.set(singletonIndex, editedMeasure)
+                                    viewModel.selectedMeasure = editedMeasure
+                                    viewModel.selectedMeasureDate.value = editedMeasure.regDate
+//                                        Log.v("수정완료", "뷰모델변경: ${viewModel.selectedMeasure!!.regDate} index: $singletonIndex, VO: $editedMeasure")
+
                                     // 뱃지 제거
                                     hideBadgeFunction?.invoke()
                                     // 다운로드 후 이동
                                     fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                                        setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
                                         replace(R.id.flMain, MeasureDetailFragment())
-                                        addToBackStack(null)
                                         commit()
                                     }
                                 }

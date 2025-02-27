@@ -4,22 +4,68 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="40dp"
+    android:layout_marginEnd="40dp"
     android:background="@color/white">
 
     <TextView
         android:id="@+id/tvDDAITitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:text="00 이동 안전성"
         android:textColor="@color/subColor800"
         android:textSize="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/llDDAILegend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/tvDDAITitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvDDAITitle">
+
+        <TextView
+            android:id="@+id/textView46"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bckgnd_rectangle_12"
+            android:backgroundTint="@color/secondBgContainerColor"
+            android:drawableStart="@drawable/icon_circle"
+            android:drawablePadding="4dp"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:text="시작 부분"
+            android:textColor="@color/thirdWhiteColor"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/textView49"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bckgnd_rectangle_12"
+            android:backgroundTint="@color/deleteContainerColor"
+            android:drawableStart="@drawable/icon_circle"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/deleteColor"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:text="끝나는 부분"
+            android:textColor="@color/deleteTextColor"
+            android:textSize="16dp" />
+    </LinearLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
-        android:layout_height="110dp"
+        android:layout_height="128dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/bckgnd_rectangle_12"
@@ -30,12 +76,12 @@
         app:layout_constraintTop_toBottomOf="@+id/tvDDAITitle">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout22"
-            android:layout_width="86dp"
+            android:id="@+id/clDDAI2"
+            android:layout_width="120dp"
             android:layout_height="0dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="6dp"
             android:background="@drawable/bckgnd_2_main_20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -70,9 +116,9 @@
                 app:srcCompat="@drawable/line_dash_horizontal" />
 
             <com.tangoplus.tangoq.view.TrendCurveView
-                android:id="@+id/cvDDAILeft"
-                android:layout_width="60dp"
-                android:layout_height="57dp"
+                android:id="@+id/cvDDAI2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -83,11 +129,11 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout20"
-            android:layout_width="86dp"
+            android:id="@+id/clDDAI1"
+            android:layout_width="120dp"
             android:layout_height="0dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
             android:background="@drawable/bckgnd_2_main_20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -124,40 +170,41 @@
                 app:srcCompat="@drawable/line_dash_horizontal" />
 
             <com.tangoplus.tangoq.view.TrendCurveView
-                android:id="@+id/cvDDAIRight"
-                android:layout_width="61dp"
-                android:layout_height="63dp"
-                android:layout_margin="10dp"
+                android:id="@+id/cvDDAI1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/tvDDAIRight"
+            android:id="@+id/tvDDAI2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:text="우측 00"
             android:textColor="@color/subColor800"
-            android:textSize="18dp"
-            app:layout_constraintEnd_toStartOf="@+id/constraintLayout22"
+            android:textSize="20dp"
+            app:layout_constraintEnd_toStartOf="@+id/clDDAI2"
             app:layout_constraintHorizontal_bias="0.058"
-            app:layout_constraintStart_toEndOf="@+id/constraintLayout20"
+            app:layout_constraintStart_toEndOf="@+id/clDDAI1"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvDDAILeft"
+            android:id="@+id/tvDDAI1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:text="좌측 00"
             android:textColor="@color/subColor800"
-            android:textSize="18dp"
+            android:textSize="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

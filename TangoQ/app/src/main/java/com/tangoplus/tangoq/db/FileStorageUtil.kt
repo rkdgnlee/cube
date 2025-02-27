@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.db
 
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.SecurePreferencesManager
@@ -32,13 +34,14 @@ object FileStorageUtil {
     suspend fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
         return withContext(Dispatchers.IO) {
             val url = context.getString(R.string.file_url) + fileName  // url 형식 + 파일 이름
-            Log.v("url에서파일저장", url)
+//            Log.v("url에서파일저장", url)
             val dir = getDirectory(context, fileType)
             val file = File(dir, fileName)  // 파일 이름을 그대로 사용
 
             // 파일있으면 다운로드 생략
             if (file.exists()) {
-                Log.v("SaveFileFromUrl", "File already exists: ${file.absolutePath}")
+//                Log.v("SaveFileFromUrl", "File already exists: ${file.absolutePath}")
+                Log.v("SaveFileFromUrl", "File already exists !")
                 return@withContext true
             }
             try {
@@ -53,31 +56,44 @@ object FileStorageUtil {
                         }
                     }
 
+
                     encryptFile(tempFile, file, generateAESKey(context))
                     tempFile.delete()
 
-                    Log.v("SaveFileFromUrl", "Success To Save File : ${file.absolutePath}")
+//                    Log.v("SaveFileFromUrl", "Success To Save File : ${file.absolutePath}")
                     true
                 } else {
-                    Log.e("SaveFileFromUrl", "HTTP error code: ${connection.responseCode}")
+//                    Log.e("SaveFileFromUrl", "HTTP error code: ${connection.responseCode}")
                     false
                 }
             } catch (e: IndexOutOfBoundsException) {
-                Log.e("StorageIndex", "${e.message}")
+                Log.e("saveURLError", "indexOutOfBound: ${e.message}")
                 false
             } catch (e: IllegalArgumentException) {
-                Log.e("StorageIllegal", "${e.message}")
+                Log.e("saveURLError", "illegalArgument: ${e.message}")
                 false
             } catch (e: NullPointerException) {
-                Log.e("StorageNull", "${e.message}")
+                Log.e("saveURLError", "nullPointer: ${e.message}")
                 false
             } catch (e: java.lang.Exception) {
-                Log.e("StorageException", "${e.message}")
+                Log.e("saveURLError", "exception: ${e.message}")
                 false
             }
         }
     }
 
+    fun getPathFromUri(context: Context, uri: Uri): String? {
+        var path: String? = null
+        val projection = arrayOf(MediaStore.MediaColumns.DATA)
+        val cursor = context.contentResolver.query(uri, projection, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
+                path = it.getString(columnIndex)
+            }
+        }
+        return path
+    }
     fun saveJo(context: Context, fileName: String, jsonObject: JSONObject, mViewModel: MeasureViewModel): Boolean {
         val dir = context.cacheDir
         val file = File(dir, fileName)
@@ -99,7 +115,6 @@ object FileStorageUtil {
         return try {
             val fileContent = jsonArray.toString().toByteArray() // JSONObject를 String으로 변환 후 ByteArray로 변환
             file.outputStream().use { it.write(fileContent) }
-            Log.v("영상JSON주소", file.absolutePath)
             mViewModel.dynamicJsonFile = file
             true
         } catch (e: IOException) {
@@ -133,20 +148,45 @@ object FileStorageUtil {
                 cache?.put(fileName, decryptedData)
                 saveToInternalStorage(context, fileName, decryptedData)
             } catch (e: IndexOutOfBoundsException) {
-                Log.e("StorageIndex", "${e.message}")
+                Log.e("getFileError", "indexOutOfBounds: ${e.message}")
                 null
             } catch (e: IllegalArgumentException) {
-                Log.e("StorageIllegal", "${e.message}")
+                Log.e("getFileError", "illegalArgument: ${e.message}")
                 null
             } catch (e: NullPointerException) {
-                Log.e("StorageNull", "${e.message}")
+                Log.e("getFileError", "nullPointer: ${e.message}")
                 null
             } catch (e: IllegalStateException) {
-                Log.e("StorageException", "${e.message}")
+                Log.e("getFileError", "illegalState: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
-                Log.e("StorageException", "${e.message}")
+                Log.e("getFileError", "exception: ${e.message}")
                 null
+            }
+        }
+    }
+
+    // 손상된 파일 삭제 함수
+    suspend fun deleteCorruptedFile(context: Context, fileName: String) {
+        withContext(Dispatchers.IO) {
+            // 캐시에서 삭제
+            val cache = SecurePreferencesManager.DecryptedFileCache.getInstance()
+            cache?.clear()
+
+            // 암호화된 파일 삭제
+            val fileType = getFileTypeFromExtension(fileName)
+            val dir = getDirectory(context, fileType)
+            val encryptedFile = File(dir, fileName)
+            if (encryptedFile.exists()) {
+                encryptedFile.delete()
+                Log.v("DeleteFile", "Deleted encrypted file")
+            }
+
+            // 내부 저장소의 복호화된 파일 삭제
+            val internalFile = File(context.filesDir, fileName)
+            if (internalFile.exists()) {
+                internalFile.delete()
+                Log.v("DeleteFile", "Deleted internal storage file")
             }
         }
     }
@@ -169,16 +209,16 @@ object FileStorageUtil {
             val jsonContent = file.readText(Charsets.UTF_8)
             JSONObject(jsonContent)
         } catch (e: IndexOutOfBoundsException) {
-            Log.e("StorageIndex", "${e.message}")
+            Log.e("readJsonError", "index: ${e.message}")
             null
         } catch (e: IllegalArgumentException) {
-            Log.e("StorageIllegal", "${e.message}")
+            Log.e("readJsonError", "illegalArgument: ${e.message}")
             null
         } catch (e: NullPointerException) {
-            Log.e("StorageNull", "${e.message}")
+            Log.e("readJsonError", "nullPointer: ${e.message}")
             null
         } catch (e: java.lang.Exception) {
-            Log.e("StorageException", "${e.message}")
+            Log.e("readJsonError", "exception: ${e.message}")
             null
         }
     }
@@ -188,16 +228,16 @@ object FileStorageUtil {
             val jsonContent = file.readText(Charsets.UTF_8)
             JSONArray(jsonContent)
         } catch (e: IndexOutOfBoundsException) {
-            Log.e("StorageIndex", "${e.message}")
+            Log.e("readJsonArrError", "index: ${e.message}")
             null
         } catch (e: IllegalArgumentException) {
-            Log.e("StorageIllegal", "${e.message}")
+            Log.e("readJsonArrError", "illegalArgument: ${e.message}")
             null
         } catch (e: NullPointerException) {
-            Log.e("StorageNull", "${e.message}")
+            Log.e("readJsonArrError", "NullPointer: ${e.message}")
             null
         } catch (e: java.lang.Exception) {
-            Log.e("StorageException", "${e.message}")
+            Log.e("readJsonArrError", "exception: ${e.message}")
             null
         }
     }

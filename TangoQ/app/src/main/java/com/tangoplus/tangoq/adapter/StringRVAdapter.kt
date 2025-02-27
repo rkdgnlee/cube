@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,10 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.collection.intListOf
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -16,14 +21,21 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
+import com.tangoplus.tangoq.databinding.RvPartBSItemBinding
+import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
+import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnDisconnectListener
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 
 class StringRVAdapter(private val fragment: Fragment,
                       private val stringList: MutableList<String>?,
+                      private val nameList : MutableList<String>?,
                       private val xmlName: String,
                       private val vm: ViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var onDisconnectListener: OnDisconnectListener? = null
+
+
+
     inner class MuscleViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         val ivMI : ImageView = view.findViewById(R.id.ivMI)
         val tvMIName : TextView = view.findViewById(R.id.tvMIName)
@@ -31,6 +43,12 @@ class StringRVAdapter(private val fragment: Fragment,
 
     inner class CbViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cbWI : CheckBox = view.findViewById(R.id.cbWI)
+    }
+    inner class MainPartBSViewHolder(view:View) : RecyclerView.ViewHolder(view) {
+        val cbPBSI : CheckBox = view.findViewById(R.id.cbPBSI)
+        val cvPBSI : CardView = view.findViewById(R.id.cvPBSI)
+        val ivPBSI : ImageView = view.findViewById(R.id.ivPBSI)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -45,7 +63,10 @@ class StringRVAdapter(private val fragment: Fragment,
                 val binding = RvWeeklyItemBinding.inflate(inflater, parent, false)
                 CbViewHolder(binding.root)
             }
-
+            2 -> {
+                val binding = RvPartBSItemBinding.inflate(inflater, parent, false)
+                MainPartBSViewHolder(binding.root)
+            }
             else -> throw IllegalArgumentException("Invaild View Type")
         }
     }
@@ -53,10 +74,8 @@ class StringRVAdapter(private val fragment: Fragment,
     override fun getItemViewType(position: Int): Int {
         return when (xmlName) {
             "muscle" -> 0
-
-            "measure" -> 1
-            "week" -> 1
-//            "connect" -> 3
+            "measure", "week" -> 1
+            "seq" -> 2
             else -> throw IllegalArgumentException("Invalid View Type")
         }
     }
@@ -122,7 +141,8 @@ class StringRVAdapter(private val fragment: Fragment,
 
             is CbViewHolder -> {
                 if (xmlName == "measure") {
-                    holder.cbWI.text = "${currentItem?.substring(0, 10)}"
+                    val currentItem2 = nameList?.get(position)
+                    holder.cbWI.text = "${currentItem?.substring(0, 10)} ${currentItem2}"
                     val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
                     holder.cbWI.isChecked = isInitiallyChecked
                     updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
@@ -137,7 +157,9 @@ class StringRVAdapter(private val fragment: Fragment,
                         vm.selectMeasureDate.value = currentItem
                         Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
                     }
-                } else {
+
+
+                }  else {
                     val isInitiallyChecked = position == (vm as ProgressViewModel).selectedWeek.value
                     holder.cbWI.apply {
                         isChecked = isInitiallyChecked
@@ -159,24 +181,30 @@ class StringRVAdapter(private val fragment: Fragment,
                     }
                 }
             }
-//            is ConnectViewHolder -> {
-//                holder.tvCIDate.text = "등록일자: ${(vm as UserViewModel).connectedCenters[position].second}"
-//                holder.tvCIName.text = currentItem
-//                holder.btnCI.setOnClickListener {
-//                    MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-//                        setTitle("연결 해제")
-//                        setMessage("${currentItem}와(과) 연결을 해제하시겠습니까?")
-//                        setPositiveButton("예") { _, _ ->
-//                            if (currentItem != null) {
-//                                onDisconnectListener?.onDisconnect(currentItem)
-//                            }
-//                        }
-//                        setNegativeButton("아니오") { dialog, _ ->
-//                            dialog.dismiss()
-//                        }
-//                    }.show()
-//                }
-//            }
+            is MainPartBSViewHolder -> {
+
+                holder.cbPBSI.text = if (currentItem != "목관절") "$currentItem 관절" else currentItem
+                holder.ivPBSI.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), getImageResourceId(currentItem.toString())))
+
+                val isInitiallyChecked = position == (vm as AnalysisViewModel).currentParts?.indexOf(vm.currentPart.value)
+                holder.cbPBSI.isChecked = isInitiallyChecked
+                updateCheckbox(holder, holder.cbPBSI, isInitiallyChecked)
+
+                vm.selectPart.observe(fragment.viewLifecycleOwner) { part ->
+                    val isChecked = currentItem == part
+                    holder.cbPBSI.isChecked = isChecked
+                    updateCheckbox(holder ,holder.cbPBSI, isChecked)
+                }
+
+                holder.cbPBSI.setOnClickListener {
+                    if (currentItem != null) {
+                        vm.selectPart.value = currentItem
+                        Log.v("selectedDate", "현재: ${vm.currentPart.value}, 선택값: ${vm.selectPart}")
+                    }
+                }
+            }
+
+
         }
     }
 
@@ -189,6 +217,27 @@ class StringRVAdapter(private val fragment: Fragment,
         checkbox.setTextColor(ContextCompat.getColor(fragment.requireContext(), colorResId))
     }
 
+    private fun updateCheckbox(holder: MainPartBSViewHolder, checkbox: CheckBox, isChecked: Boolean = checkbox.isChecked) {
+        val cvBackgroundColor = if (isChecked) R.color.secondaryColor else R.color.subColor400
+        val cbBackgroundClor = if (isChecked) R.color.secondContainerColor else R.color.white
+        checkbox.setTextColor(ContextCompat.getColor(fragment.requireContext(), cvBackgroundColor))
+        checkbox.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), cbBackgroundClor))
+        holder.cvPBSI.setCardBackgroundColor(ContextCompat.getColor(fragment.requireContext(), cvBackgroundColor))
+    }
+
+
+    private fun getImageResourceId(currentItem: String): Int {
+        return when (currentItem) {
+            "목관절" -> R.drawable.icon_part1
+            "우측 어깨", "좌측 어깨" -> R.drawable.icon_part2
+            "우측 팔꿉", "좌측 팔꿉" -> R.drawable.icon_part3
+            "우측 손목", "좌측 손목" -> R.drawable.icon_part4
+            "우측 골반", "좌측 골반" -> R.drawable.icon_part5
+            "우측 무릎", "좌측 무릎" -> R.drawable.icon_part6
+            "우측 발목", "좌측 발목" -> R.drawable.icon_part7
+            else -> R.drawable.icon_part1
+        }
+    }
     @SuppressLint("DiscouragedApi")
     private fun setIV(name: String, imageView: ImageView) {
         imageView.setImageResource(fragment.resources.getIdentifier("drawable_muscle_${name}", "drawable", fragment.requireActivity().packageName))

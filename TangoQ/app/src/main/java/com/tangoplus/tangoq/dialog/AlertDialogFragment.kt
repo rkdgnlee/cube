@@ -58,12 +58,14 @@ class AlertDialogFragment : DialogFragment() {
                 binding.tvMkContent.text = message
             }
             "logout" -> {
+                binding.tvMkTitle.textSize = 18f
+                binding.tvMkContent.textSize = 18f
                 val title = "다른 환경에서 로그인 시도"
                 val message = "다른 환경에서 로그인하려고 합니다.\n현재 기기에서 로그아웃합니다."
                 binding.tvMkTitle.text = title
                 binding.tvMkContent.text = message
 
-                logout(requireActivity(), 4)
+                logout(requireActivity(), 5)
                 binding.tvMkConfirm.visibility = View.GONE
             }
         }

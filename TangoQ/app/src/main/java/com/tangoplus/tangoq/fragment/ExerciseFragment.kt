@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 
 class ExerciseFragment : Fragment(), OnCategoryClickListener {
     lateinit var binding : FragmentExerciseBinding
-    private val viewModel : ExerciseViewModel by activityViewModels()
+    private val evm : ExerciseViewModel by activityViewModels()
 
     // ------! 블루투스 변수 !------
 
@@ -54,24 +54,15 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
         binding.rvEMainCategory.overScrollMode = 0
         val sn = arguments?.getInt(ARG_SN) ?: -1
 
-        binding.ibtnEAlarm.setOnClickListener {
-            val dialog = AlarmDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
-        }
-        binding.ibtnEQRCode.setOnClickListener{
-            val dialog = QRCodeDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
-        }
         CoroutineScope(Dispatchers.Main).launch {
-
-            val categoryArrayList = mutableListOf<ArrayList<Int>>()
-            categoryArrayList.add(arrayListOf(1, 2)) // 기본 밸런스, 스트레칭
-            categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 하지근육 강화, 기본 스트레칭 의자 활용, 기본 유산소 운동
-            categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 상지 하지 스트레칭 근육 운동
-            categoryArrayList.add(arrayListOf(10, 11)) // 근골격계질환 개선 위한 스트레칭 운동
-            categoryArrayList.add(arrayListOf(12)) // 기본 밸런스, 스트레칭
-
             try { // ------! rv vertical 시작 !------
+                // 상단 최근 한 운동 cardView 보이기
+                val categoryArrayList = mutableListOf<ArrayList<Int>>()
+                categoryArrayList.add(arrayListOf(1, 2)) // 기본 밸런스, 기본 스트레칭
+                categoryArrayList.add(arrayListOf(3, 4, 5)) // 기본 하지 근육 강화운동 , 기본 스트레칭 의자활용 운동, 기본 유산소 운동
+                categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 상지 하지  근육 스트레칭 운동, 상지 하지  근육 강화 운동
+                categoryArrayList.add(arrayListOf(10, 11)) // 근골격계질환 개선 위한 강화운동, 근골격계질환 개선 위한 스트레칭 운동
+//            categoryArrayList.add(arrayListOf(12)) // 큐브
                 val adapter = ExerciseCategoryRVAdapter(categoryArrayList, listOf(),this@ExerciseFragment,  sn, "mainCategory" )
                 binding.rvEMainCategory.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -79,9 +70,9 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                 // ------! rv vertical 끝 !------
 
                 // ------# exercise 전부 미리 다운받아 VM에 넣기  #------
-                if (viewModel.allExercises.isEmpty()) {
-                    viewModel.allExercises = fetchExerciseJson(getString(R.string.API_exercise)).toMutableList()
-                    Log.v("VM>AllExercises", "${viewModel.allExercises.size}")
+                if (evm.allExercises.isEmpty()) {
+                    evm.allExercises = fetchExerciseJson(getString(R.string.API_exercise)).toMutableList()
+                    Log.v("VM>AllExercises", "${evm.allExercises.size}")
                 }
 
             } catch (e: IndexOutOfBoundsException) {
@@ -101,9 +92,17 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                 dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
             }
         }
+
+        binding.ibtnEAlarm.setOnClickListener {
+            val dialog = AlarmDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
+        }
+        binding.ibtnEQRCode.setOnClickListener{
+            val dialog = QRCodeDialogFragment()
+            dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
+        }
     }
 
-    override fun onCategoryClick(category: String) {
+    override fun onCategoryClick(category: String) { }
 
-    }
 }

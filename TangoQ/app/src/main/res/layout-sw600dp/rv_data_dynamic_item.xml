@@ -3,32 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="160dp"
     android:layout_marginTop="20dp"
+    android:layout_marginEnd="40dp"
     android:layout_marginBottom="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="40dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="0dp"
         android:layout_weight="1"
         android:background="@drawable/bckgnd_1_sub150_20">
 
         <TextView
             android:id="@+id/tvDDI1"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
             android:text="_"
             android:textColor="@color/subColor800"
-            android:textSize="18dp"
+            android:textSize="24dp"
+            app:layout_constraintEnd_toStartOf="@+id/clDDI1In"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="100dp"
+            android:id="@+id/clDDI1In"
+            android:layout_width="135dp"
             android:layout_height="0dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
@@ -36,6 +40,8 @@
             android:background="@drawable/bckgnd_2_main_20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -79,27 +85,30 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clDDI2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
         android:layout_weight="1"
         android:background="@drawable/bckgnd_1_sub150_20">
 
         <TextView
             android:id="@+id/tvDDI2"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
             android:text="_"
             android:textColor="@color/subColor800"
-            android:textSize="18dp"
+            android:textSize="24dp"
+            app:layout_constraintEnd_toStartOf="@+id/constraintLayout6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="100dp"
+            android:id="@+id/constraintLayout6"
+            android:layout_width="135dp"
             android:layout_height="0dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"

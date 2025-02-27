@@ -12,22 +12,22 @@
         android:id="@+id/tvSignInGuide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginStart="5dp"
         android:text="회원가입을 시작할게요"
         android:textColor="@color/black"
-        android:textSize="24sp"
+        android:textSize="28dp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/ibtnSignInFinish"
+        app:layout_constraintStart_toEndOf="@+id/ibtnSignInFinish"
+        app:layout_constraintTop_toTopOf="@+id/ibtnSignInFinish" />
 
     <com.shuhart.stepview.StepView
         android:id="@+id/svSignIn"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSignInGuide"
@@ -53,15 +53,15 @@
         android:id="@+id/pvSignIn"
         android:layout_width="0dp"
         android:layout_height="4dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="40dp"
         android:background="@color/white"
-        app:progressView_colorBackground="@color/secondContainerColor"
-        app:progressView_colorProgress="@color/thirdColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/svSignIn"
+        app:progressView_colorBackground="@color/secondContainerColor"
+        app:progressView_colorProgress="@color/thirdColor"
         app:strokeWidth="4dp" />
 
     <androidx.core.widget.NestedScrollView
@@ -87,10 +87,11 @@
                 android:id="@+id/llId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
-                android:layout_marginRight="20dp"
-                android:orientation="horizontal">
+                android:layout_marginRight="40dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/tvAlarmMessage"
@@ -100,7 +101,8 @@
                     android:text="아이디"
                     android:textColor="@color/subColor800"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvIdCondition"
@@ -111,57 +113,60 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textColor="@color/conditionSuccessColor"
-                    android:textSize="10sp" />
+                    android:textSize="14dp"
+                    android:visibility="visible" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/llIdCondition"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="30dp"
-                android:orientation="horizontal">
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginBottom="60dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <EditText
                     android:id="@+id/etId"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="74dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bckgnd_2_main_20"
+                    android:layout_weight="2"
+                    android:background="@drawable/bckgnd_20_edit_text"
                     android:ems="10"
                     android:hint="아이디"
                     android:inputType="text"
-                    android:paddingLeft="12dp"
-                    android:paddingTop="16dp"
+                    android:padding="20dp"
                     android:paddingRight="16dp"
-                    android:paddingBottom="16dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/subColor100"
-                    android:textSize="18sp" />
+                    android:textSize="18dp"
+                    android:visibility="visible" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnIdCondition"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
-                    android:layout_weight="2"
-                    android:background="@drawable/effect_ibtn_12dp"
+                    android:layout_weight="3"
+                    android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/mainColor"
                     android:stateListAnimator="@null"
                     android:text="중복 확인"
-                    android:textColor="@color/white"
-                    android:textSize="16dp" />
+                    android:textColor="@color/whiteText"
+                    android:textSize="20dp"
+                    android:visibility="visible" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/llPwCondition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:orientation="horizontal">
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/textView2"
@@ -171,7 +176,8 @@
                     android:text="비밀번호 설정"
                     android:textColor="@color/subColor800"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvPwCondition"
@@ -182,35 +188,36 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:textSize="10sp" />
+                    android:textSize="14dp"
+                    android:visibility="visible" />
             </LinearLayout>
 
             <EditText
                 android:id="@+id/etPw"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bckgnd_2_main_20"
+                android:layout_height="74dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/bckgnd_20_edit_text"
                 android:ems="10"
                 android:hint="비밀번호"
                 android:inputType="textPassword"
-                android:paddingLeft="12dp"
-                android:paddingTop="16dp"
+                android:padding="20dp"
                 android:paddingRight="16dp"
-                android:paddingBottom="16dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/subColor100"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/llPwRepeat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="40dp"
                 android:layout_marginRight="20dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/tvMDDate"
@@ -220,7 +227,8 @@
                     android:text="비밀번호 확인"
                     android:textColor="@color/subColor800"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvPwRepeat"
@@ -230,108 +238,134 @@
                     android:layout_marginBottom="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/black"
-                    android:textSize="10sp" />
+                    android:textSize="14dp"
+                    android:visibility="visible" />
 
             </LinearLayout>
 
             <EditText
                 android:id="@+id/etPwRepeat"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/bckgnd_2_main_20"
+                android:layout_height="74dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:background="@drawable/bckgnd_20_edit_text"
                 android:ems="10"
                 android:hint="비밀번호 확인"
                 android:inputType="textPassword"
-                android:paddingLeft="12dp"
-                android:paddingTop="16dp"
+                android:padding="20dp"
                 android:paddingRight="16dp"
-                android:paddingBottom="16dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/subColor100"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvFinalCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="40dp"
+                android:text="올바르지않습니다"
+                android:textColor="@color/deleteColor"
+                android:textSize="18dp"
+                android:visibility="invisible" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSignIn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="30dp"
-                android:background="@drawable/effect_ibtn_12dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="60dp"
+                android:background="@drawable/effect_ibtn_20dp"
                 android:backgroundTint="@color/mainColor"
                 android:enabled="false"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:padding="16dp"
+                android:padding="24dp"
                 android:stateListAnimator="@null"
                 android:text="회원가입 완료하기"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                app:cornerRadius="12dp" />
+                android:textColor="@color/whiteText"
+                android:textSize="20dp"
+                android:visibility="visible"
+                app:cornerRadius="20dp" />
 
-            <TextView
-                android:id="@+id/tvNameGuide"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="8dp"
-                android:text="이름"
-                android:textColor="@color/subColor800"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginBottom="30dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvNameGuide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="이름"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvNameCondition"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/conditionSuccessColor"
+                    android:textSize="14dp"
+                    android:visibility="visible" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/etName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:layout_marginLeft="20dp"
-
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/bckgnd_2_main_20"
+                android:layout_height="74dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/bckgnd_20_edit_text"
                 android:ems="10"
                 android:hint="이름을 입력해주세요"
                 android:inputType="text"
-                android:paddingLeft="12dp"
-                android:paddingTop="16dp"
+                android:padding="20dp"
                 android:paddingRight="16dp"
-                android:paddingBottom="16dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/subColor100"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/llEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="20dp"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/etEmailId"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
+                    android:layout_height="74dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_2_main_20"
+                    android:background="@drawable/bckgnd_20_edit_text"
                     android:ems="10"
                     android:hint="이메일을 입력해주세요"
                     android:inputType="textEmailAddress"
-                    android:paddingLeft="12dp"
-                    android:paddingTop="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="16dp"
+                    android:padding="20dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/subColor100"
                     android:textSize="18sp" />
@@ -349,7 +383,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bckgnd_2_main_20">
+                    android:background="@drawable/bckgnd_20_edit_text">
 
                     <ImageView
                         android:id="@+id/ivSpinner"
@@ -396,33 +430,34 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnEmailNext"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
                 android:layout_weight="1"
-                android:background="@drawable/effect_ibtn_12dp"
+                android:background="@drawable/effect_ibtn_20dp"
                 android:backgroundTint="@color/mainColor"
-                android:padding="16dp"
+                android:padding="24dp"
                 android:stateListAnimator="@null"
                 android:text="다음으로"
-                android:textColor="@color/white"
+                android:textColor="@color/whiteText"
                 android:textSize="18dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clMobile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginTop="60dp"
+                android:layout_marginBottom="32dp">
 
                 <TextView
                     android:id="@+id/tvMobile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="40dp"
                     android:text="휴대폰 인증"
                     android:textColor="@color/black"
                     android:textSize="20sp"
@@ -434,30 +469,27 @@
                     android:id="@+id/linearLayout3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="40dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+                    tools:layout_editor_absoluteY="66dp">
 
                     <EditText
                         android:id="@+id/etMobile"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="74dp"
                         android:layout_marginRight="10dp"
                         android:layout_weight="2"
-                        android:background="@drawable/bckgnd_2_main_20"
+                        android:background="@drawable/bckgnd_20_edit_text"
                         android:ems="10"
                         android:hint="휴대폰 번호를 입력해주세요"
                         android:inputType="phone"
-                        android:paddingLeft="12dp"
-                        android:paddingTop="16dp"
+                        android:padding="20dp"
                         android:paddingRight="12dp"
-                        android:paddingBottom="16dp"
                         android:textColorHint="@color/subColor100"
-                        android:textSize="18sp" />
+                        android:textSize="18dp" />
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnAuthSend"
@@ -466,81 +498,34 @@
                         android:layout_gravity="bottom"
                         android:layout_marginLeft="10dp"
                         android:layout_weight="3"
-                        android:background="@drawable/effect_ibtn_12dp"
+                        android:background="@drawable/effect_ibtn_20dp"
                         android:backgroundTint="@color/mainColor"
                         android:enabled="false"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:paddingLeft="16dp"
-                        android:paddingRight="16dp"
+                        android:padding="24dp"
                         android:stateListAnimator="@null"
                         android:text="인증번호 전송"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
+                        android:textColor="@color/whiteText"
+                        android:textSize="18dp"
                         app:cornerRadius="12dp" />
                 </LinearLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/linearLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_2_main_20"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvMobile">
-
-                    <TextView
-                        android:id="@+id/tvTelecom"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:elevation="0dp"
-                        android:hint="통신사 선택"
-                        android:paddingLeft="12dp"
-                        android:paddingTop="16dp"
-                        android:paddingRight="16dp"
-                        android:paddingBottom="16dp"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/subColor100"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/imageView2"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0" />
-
-                    <ImageView
-                        android:id="@+id/imageView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/icon_autocomplete_button"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvTelecom" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <EditText
                     android:id="@+id/etAuthNumber"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_2_main_20"
+                    android:layout_height="74dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/bckgnd_20_edit_text"
                     android:ems="10"
                     android:hint="인증 번호를 입력해주세요"
                     android:inputType="number"
-                    android:paddingLeft="12dp"
-                    android:paddingTop="16dp"
+                    android:padding="20dp"
                     android:paddingRight="16dp"
-                    android:paddingBottom="16dp"
                     android:textColorHint="@color/subColor100"
-                    android:textSize="18sp"
+                    android:textSize="18dp"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -550,19 +535,19 @@
                     android:id="@+id/btnAuthConfirm"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/effect_ibtn_12dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/effect_ibtn_20dp"
                     android:backgroundTint="@color/mainColor"
                     android:enabled="false"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:padding="16dp"
+                    android:padding="24dp"
                     android:stateListAnimator="@null"
                     android:text="인증번호 확인"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
+                    android:textColor="@color/whiteText"
+                    android:textSize="18dp"
                     android:visibility="invisible"
                     app:cornerRadius="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -574,5 +559,19 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <ImageButton
+        android:id="@+id/ibtnSignInFinish"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="56dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:backgroundTint="@color/white"
+        android:padding="4dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/icon_arrow_left" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
