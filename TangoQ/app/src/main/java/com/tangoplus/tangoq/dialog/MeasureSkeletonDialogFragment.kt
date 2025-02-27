@@ -56,9 +56,12 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             false -> listOf(
                 R.layout.measure_skeleton_caution1,
                 R.layout.measure_skeleton_caution2,
-                R.layout.measure_skeleton_caution3,)
+                R.layout.measure_skeleton_caution3,
+                R.layout.measure_skeleton_caution4,
+                R.layout.measure_skeleton_caution5,)
         }
         binding.vpMSD.adapter = CautionVPAdapter(requireContext(), layouts, isPose, seq)
+        binding.vpMSD.currentItem = 0
         binding.btnMSDConfirm.setOnClickListener {
             Log.v("resumePoseLandmarker", "btnMSDConfirm")
             dismiss()
@@ -77,8 +80,7 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             }
             false -> {
                 binding.btnMSDConfirm.text = "모두 이해했습니다"
-                val dialog1 = MeasureSetupDialogFragment.newInstance(0)
-                dialog1.show(requireActivity().supportFragmentManager, "MeasureSetupDialogFragment")
+
             }
         }
     }

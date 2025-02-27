@@ -335,11 +335,11 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("회원탈퇴Error", "ResponseCode: ${response.code}")
+                        Log.e("회원탈퇴Error", "ResponseCode: ${response.body.toString()} ${response.code}")
                         return@withContext null
                     }
                     val responseCode = response.code
-                    // Log.v("회원탈퇴Success", "$responseCode")
+                     Log.v("회원탈퇴Success", "${response.body} $responseCode")
                     return@withContext responseCode
                 }
             } catch (e: IllegalStateException) {

@@ -6,14 +6,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -26,14 +24,12 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.databinding.FragmentMainAnalysisBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.SequenceBSDialogFragment
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
-import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.function.MeasurementManager.createSummary
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
@@ -67,7 +63,6 @@ class MainAnalysisFragment : Fragment() {
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var videoUrl = ""
     private lateinit var jsonArray: JSONArray
-    private lateinit var biometricManager : BiometricManager
 
     private var exoPlay: ImageButton? = null
     private var exoPause: ImageButton? = null

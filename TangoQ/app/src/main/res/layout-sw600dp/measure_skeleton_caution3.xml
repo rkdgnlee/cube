@@ -59,6 +59,18 @@
         app:layout_constraintTop_toBottomOf="@+id/textView102" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView47"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        app:cardBackgroundColor="@color/subColor200"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/cardView22"
+        app:layout_constraintTop_toBottomOf="@id/lavSC3" />
+
+    <androidx.cardview.widget.CardView
         android:id="@+id/cardView22"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -71,25 +83,39 @@
         app:layout_constraintTop_toTopOf="@+id/cardView6" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView46"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="20dp"
-        app:cardBackgroundColor="@color/mainColor"
+        android:layout_marginTop="20dp"
+        app:cardBackgroundColor="@color/subColor200"
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView6"
         app:layout_constraintStart_toEndOf="@+id/cardView6"
-        app:layout_constraintTop_toTopOf="@+id/cardView6" />
+        app:layout_constraintTop_toBottomOf="@id/lavSC3" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView6"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginTop="20dp"
-        app:cardBackgroundColor="@color/subColor200"
+        app:cardBackgroundColor="@color/mainColor"
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lavSC3" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView52"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="20dp"
+        app:cardBackgroundColor="@color/subColor200"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView6"
+        app:layout_constraintStart_toEndOf="@+id/cardView46"
+        app:layout_constraintTop_toTopOf="@+id/cardView6" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

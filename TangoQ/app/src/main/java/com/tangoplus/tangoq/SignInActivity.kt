@@ -622,7 +622,7 @@ class SignInActivity : AppCompatActivity() {
                             insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj ) { status ->
                                 Log.v("insertStatus", "status: $status")
                                 when (status) {
-                                    201 -> {
+                                    200, 201 -> {
                                         CoroutineScope(Dispatchers.Main).launch {
                                             val intent = Intent(this@SignInActivity, IntroActivity::class.java)
                                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

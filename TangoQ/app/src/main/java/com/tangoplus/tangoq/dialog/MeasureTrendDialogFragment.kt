@@ -17,7 +17,6 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -27,16 +26,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
-import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
 import com.tangoplus.tangoq.adapter.TrendRVAdapter
-import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
@@ -44,8 +39,6 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.db.Singleton_t_measure
-import com.tangoplus.tangoq.function.BiometricManager
-import com.tangoplus.tangoq.function.MeasurementManager.exceptDynamicMatchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
@@ -82,7 +75,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private var simpleExoPlayer2: SimpleExoPlayer? = null
     private lateinit var leftJa: JSONArray
     private lateinit var rightJa: JSONArray
-    private lateinit var biometricManager : BiometricManager
+
 
     private var exoPlay1: ImageButton? = null
     private var exoPause1: ImageButton? = null

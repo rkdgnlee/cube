@@ -832,15 +832,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
 
         binding.ibtnMeasureSkeletonInfo.setOnSingleClickListener {
-            dialog1.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+            dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.fabtnMeasureSkeleton.setOnSingleClickListener {
             val dialog3 = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
             dialog3.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.ibtnMeasureSkeletonSetup.setOnSingleClickListener {
-            val dialog4 = MeasureSetupDialogFragment.newInstance(1)
-            dialog4.show(supportFragmentManager, "MeasureSkeletonSetup")
+            val dialog4 = MeasureSetupDialogFragment.newInstance(0)
+            dialog4.show(supportFragmentManager, "MeasureSetupDialogFragment")
         }
         // ------! 다시 찍기 관리 시작 !------
         seqStep.observe(this@MeasureSkeletonActivity) { count ->

@@ -138,6 +138,7 @@ class AnalyzeFragment : Fragment() {
             // 상단 프로그레스 받아오기
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
             if (progressResult != null) {
+                Log.v("progressResult", "$progressResult")
                 evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
                 evm.latestProgram = progressResult.second
 //            Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
@@ -149,51 +150,56 @@ class AnalyzeFragment : Fragment() {
                     binding.cvAProgress.visibility = View.GONE
                 }
 //                val currentIndex = findCurrentIndex(evm.latestUVP)
-                val currentEId = evm.latestUVP?.get(0)?.exerciseId
-                val currentExerciseItem = evm.latestProgram?.exercises?.find { it.exerciseId?.toInt() == currentEId }
-                val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
+                if (!evm.latestUVP.isNullOrEmpty()) {
+                    val currentEId = evm.latestUVP?.get(0)?.exerciseId
+                    val currentExerciseItem = evm.latestProgram?.exercises?.find { it.exerciseId?.toInt() == currentEId }
+                    val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
 
-                // 받아온 데이터로 cvEProgress 채우기
-                Glide.with(requireContext())
-                    .load("${currentExerciseItem?.imageFilePath}")
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(180)
-                    .into(binding.ivAThumbnail)
-                binding.tvAExerciseName.text = currentExerciseItem?.exerciseName
-                binding.tvAExerciseTime.text = second
+                    // 받아온 데이터로 cvEProgress 채우기
+                    Glide.with(requireContext())
+                        .load("${currentExerciseItem?.imageFilePath}")
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .override(180)
+                        .into(binding.ivAThumbnail)
+                    binding.tvAExerciseName.text = currentExerciseItem?.exerciseName
+                    binding.tvAExerciseTime.text = second
 
-                when (currentExerciseItem?.exerciseStage) {
-                    "초급" -> {
-                        binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
-                        binding.tvAExerciseStage.text = "초급자"
+                    when (currentExerciseItem?.exerciseStage) {
+                        "초급" -> {
+                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
+                            binding.tvAExerciseStage.text = "초급자"
+                        }
+                        "중급" -> {
+                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
+                            binding.tvAExerciseStage.text = "중급자"
+                        }
+                        "고급" -> {
+                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
+                            binding.tvAExerciseStage.text = "상급자"
+                        }
                     }
-                    "중급" -> {
-                        binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
-                        binding.tvAExerciseStage.text = "중급자"
+                    val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
+                    evpItem.let {
+                        if (it != null) {
+                            binding.hpvA.progress = (it.progress * 100 / it.duration).toFloat()
+                        }
                     }
-                    "고급" -> {
-                        binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
-                        binding.tvAExerciseStage.text = "상급자"
+                    binding.cvAProgress.setOnSingleClickListener {
+                        val programSn = evm.latestProgram?.programSn ?: -1
+                        val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
+                        ProgramCustomDialogFragment.newInstance(programSn, recSn)
+                            .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
                     }
-                }
-                val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
-                evpItem.let {
-                    if (it != null) {
-                        binding.hpvA.progress = (it.progress * 100 / it.duration).toFloat()
-                    }
-                }
-                setShimmer(false)
-                binding.cvAProgress.setOnSingleClickListener {
-                    val programSn = evm.latestProgram?.programSn ?: -1
-                    val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
-                    ProgramCustomDialogFragment.newInstance(programSn, recSn)
-                        .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
-                }
 //                Log.v("현재날짜", "${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
-                updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
-                avm.existedMonthProgresses.collectLatest { dates ->
-                    binding.cvACalendar.notifyCalendarChanged()
+                    updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
+                    avm.existedMonthProgresses.collectLatest { dates ->
+                        binding.cvACalendar.notifyCalendarChanged()
+                    }
+
                 }
+
+                setShimmer(false)
+
 
 
             } else {

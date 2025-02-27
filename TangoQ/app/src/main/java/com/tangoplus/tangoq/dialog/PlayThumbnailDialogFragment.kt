@@ -30,7 +30,6 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.PlayFullScreenActivity
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.R
@@ -39,9 +38,7 @@ import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
-
 import com.tangoplus.tangoq.databinding.FragmentPlayThumbnailDialogBinding
-import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel

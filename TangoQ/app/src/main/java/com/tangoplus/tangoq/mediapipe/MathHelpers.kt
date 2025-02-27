@@ -16,7 +16,7 @@ object MathHelpers {
 
     // ------# 기울기 계산 #------
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val radians = atan2(y1 - y2, x1 - x2) // atan2(y2 -  y1, x2  - x1)
+        val radians = atan2(y1 - y2, x1 - x2)
         val degrees = toDegrees(radians.toDouble()).toFloat()
         return  if (degrees > 180) degrees % 180 else degrees
     }
@@ -37,28 +37,21 @@ object MathHelpers {
 
     // ------! 선과 점의 X 각도 !------
     fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Float {
-        // 중간값 계산
         val x4 = (x1 + x2) / 2
         val y4 = (y1 + y2) / 2
-
         // 벡터1: (x1, y1) -> (x4, y4)
         val dx1 = x4 - x1
         val dy1 = y4 - y1
-
         // 벡터2: (x4, y4) -> (x3, y3)
         val dx2 = x3 - x4
         val dy2 = y3 - y4
-
         // 내적 계산
         val dotProduct = dx1 * dx2 + dy1 * dy2
-
         // 벡터 크기 계산
         val magnitude1 = sqrt(dx1.pow(2) + dy1.pow(2))
         val magnitude2 = sqrt(dx2.pow(2) + dy2.pow(2))
-
         // 코사인 값 계산
         val cosTheta = dotProduct / (magnitude1 * magnitude2)
-
         // 라디안 -> 도 변환
         val angleRadians = acos(cosTheta)
         return toDegrees(angleRadians.toDouble()).toFloat()

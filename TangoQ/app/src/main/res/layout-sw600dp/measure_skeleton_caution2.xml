@@ -93,15 +93,27 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
         app:cardBackgroundColor="@color/mainColor"
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cardView3"
         app:layout_constraintTop_toBottomOf="@id/lavSC2" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView3"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:cardBackgroundColor="@color/subColor200"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cardView4" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView48"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="20dp"
@@ -109,7 +121,19 @@
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView4"
-        app:layout_constraintStart_toEndOf="@+id/cardView4"
+        app:layout_constraintStart_toEndOf="@+id/cardView3"
         app:layout_constraintTop_toTopOf="@+id/cardView4" />
-    " />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView49"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="20dp"
+        app:cardBackgroundColor="@color/subColor200"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView4"
+        app:layout_constraintStart_toEndOf="@+id/cardView48"
+        app:layout_constraintTop_toTopOf="@+id/cardView4" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

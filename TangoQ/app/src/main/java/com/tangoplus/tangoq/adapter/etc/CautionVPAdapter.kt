@@ -22,6 +22,8 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
         val cvMSC10: CardView? = itemView.findViewById(R.id.cvMSC10)
         val cvMSC11: CardView? = itemView.findViewById(R.id.cvMSC11)
         val cvMSC12: CardView? = itemView.findViewById(R.id.cvMSC12)
+        val cvMSC13: CardView? = itemView.findViewById(R.id.cvMSC13)
+        val cvMSC14: CardView? = itemView.findViewById(R.id.cvMSC14)
         val ivMSC1Frame : ImageView? = itemView.findViewById(R.id.ivSC1Frame)
 
         fun bind(animationName: String, lottieViewId: Int, isPose: Boolean) {
@@ -52,7 +54,9 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
     private val lottieViewIds = listOf(
         R.id.lavSC1,
         R.id.lavSC2,
-        R.id.lavSC3
+        R.id.lavSC3,
+        R.id.lavSC4,
+        R.id.lavSC5
     )
     private val lottieSeqAnimations = listOf<String>(
 //        "measure_seq_anime_1.json","measure_seq_anime_2.json","measure_seq_anime_3.json","measure_seq_anime_4.json","measure_seq_anime_5.json","measure_seq_anime_6.json","measure_seq_anime_7.json"
@@ -63,7 +67,9 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
     private val lottieAnimations = listOf(
         "measure_guide_anime_1.json",
         "measure_guide_anime_2.json",
-        "measure_guide_anime_3.json"
+        "measure_guide_anime_3.json",
+        "measure_guide_anime_4.json",
+        "measure_guide_anime_5.json"
     )
     override fun onBindViewHolder(holder: CautionViewHolder, position: Int) {
         if (isPose) {
@@ -87,6 +93,8 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
         holder?.cvMSC10?.visibility = View.GONE
         holder?.cvMSC11?.visibility = View.GONE
         holder?.cvMSC12?.visibility = View.GONE
+        holder?.cvMSC13?.visibility = View.GONE
+        holder?.cvMSC14?.visibility = View.GONE
         val imageResource = context.resources.getIdentifier("drawable_measure_$seq", "drawable", context.packageName)
         holder?.ivMSC1Frame?.setImageResource(imageResource)
         holder?.ivMSC1Frame?.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.black))
