@@ -66,7 +66,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:text="* 옷 색이 배경색과 대비되지 않는다거나\n치마를 입은 경우 정확한 측정이 어려울 수 있습니다."
+        android:text="* 옷 색이 배경색과 유사하거나 사이즈가 큰 옷, 치마를 입은 경우 정확한 측정이 어려울 수 있습니다."
         android:textColor="@color/subColor500"
         android:textSize="16dp"
         android:textStyle="bold"

@@ -134,4 +134,19 @@
         app:layout_constraintStart_toEndOf="@+id/cvMSC13"
         app:layout_constraintTop_toTopOf="@+id/cvMSC11" />
 
+    <TextView
+        android:id="@+id/tvMSC1Caution"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:text="* 원활한 측정을 위해 인터넷 연결이 안정적인 환경에서 진행해주세요. "
+        android:textColor="@color/subColor500"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvMSC1Explain" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

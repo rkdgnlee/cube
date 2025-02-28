@@ -16,6 +16,8 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureBSDialogBinding
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,10 +61,10 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
         binding.rvMBSD.adapter = adapter
 
         setupButtons()
-        binding.btnMBSD.setOnClickListener {
+        binding.btnMBSD.setOnSingleClickListener {
 
             val dialog = LoadingDialogFragment.newInstance("측정파일")
-            dialog.show(activity?.supportFragmentManager ?: return@setOnClickListener, "LoadingDialogFragment")
+            dialog.show(activity?.supportFragmentManager ?: return@setOnSingleClickListener, "LoadingDialogFragment")
 
             // ------# 로딩을 통해 파일 가져오기 #------
             /* 1. 선택 날짜(mvm.selectMeasureDate)를 통해 일단 measureVO를 받아옴
@@ -129,4 +131,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
         binding.ibtnMBSDExit.setOnClickListener { dismiss() }
 
     }
+
+
+
 }

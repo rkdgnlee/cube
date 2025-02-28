@@ -53,6 +53,7 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
@@ -102,12 +103,12 @@ class AnalyzeFragment : Fragment() {
         pvm.selectedDate = LocalDate.now()
 
         // 클릭 리스너 달기
-        binding.ibtnAAlarm.setOnClickListener {
+        binding.ibtnAAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
-        binding.ibtnAQRCode.setOnClickListener {
+        binding.ibtnAQRCode.setOnSingleClickListener {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
@@ -365,7 +366,7 @@ class AnalyzeFragment : Fragment() {
             }
         } // ------! calendar 끝 !------
 
-        binding.btnAExercise.setOnClickListener {
+        binding.btnAExercise.setOnSingleClickListener {
             if (evm.latestUVP != null) {
                 val programSn = evm.latestProgram?.programSn ?: -1
                 val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
@@ -547,10 +548,6 @@ class AnalyzeFragment : Fragment() {
             }
         }
 
-    }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 
     private fun setGraph() {

@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 
 object ExtendedFunctions {
 
@@ -84,5 +85,10 @@ object ExtendedFunctions {
     fun isKorean(str: String): Boolean {
         val koreanRegex = Regex("[ㄱ-ㅎㅏ-ㅣ가-힣]+")
         return koreanRegex.containsMatchIn(str)
+    }
+
+    fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
     }
 }

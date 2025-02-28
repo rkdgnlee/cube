@@ -10,6 +10,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
@@ -65,15 +66,16 @@ object HttpClientProvider {
         val body =
             JSONObject().put("refresh_token", refreshToken).toString().toRequestBody(mediaType)
         val request = Request.Builder()
-            .url("https://gym.tangoplus.co.kr/api/refresh.php")
+            .url(context.getString(R.string.API_refresh))
             .post(body)
             .build()
 
         return OkHttpClient().newCall(request).execute().use { response ->
+            Log.v("TryAccessToken", "accessToken시도")
             try {
                 if (!response.isSuccessful) {
                     val code = response.code
-                    Log.e("RefreshTokenFail", "Failed to refresh token: $code")
+                    Log.e("RefreshTokenFail", "Failed to access token: $code")
                     code
                 } else if (response.isSuccessful) {
                     val responseBody = response.body?.string()
@@ -82,7 +84,7 @@ object HttpClientProvider {
                     saveEncryptedJwtToken(context, newToken)
                     200
                 } else {
-                    Log.e("RefreshTokenElse", "Failed to refresh token: ${response.code}")
+                    Log.e("RefreshTokenElse", "Failed to access token: ${response.code}")
                     400
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -105,8 +107,8 @@ object HttpClientProvider {
     }
 
     fun scheduleTokenCheck(context: Context) {
-        val tokenCheckRequest = OneTimeWorkRequestBuilder<TokenCheckWorker>()
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST) // 강제 실행
+        val tokenCheckRequest = PeriodicWorkRequestBuilder<TokenCheckWorker>(15, TimeUnit.MINUTES)
+//            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST) // 강제 실행
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // 네트워크 필요 없음
@@ -116,9 +118,9 @@ object HttpClientProvider {
             )
             .build()
 
-        WorkManager.getInstance(context).enqueueUniqueWork(
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "TokenCheckWork",
-            ExistingWorkPolicy.REPLACE
+            ExistingPeriodicWorkPolicy.UPDATE
             ,tokenCheckRequest)
     }
 }

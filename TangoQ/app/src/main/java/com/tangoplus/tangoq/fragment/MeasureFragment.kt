@@ -37,7 +37,9 @@ import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.vo.MeasureVO
@@ -65,12 +67,12 @@ class MeasureFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.ibtnMsAlarm.setOnClickListener {
+        binding.ibtnMsAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
-        binding.ibtnMsQRCode.setOnClickListener {
+        binding.ibtnMsQRCode.setOnSingleClickListener {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
@@ -113,9 +115,9 @@ class MeasureFragment : Fragment() {
                         binding.tvMMeasureHistory.text =
                             "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)?.replace("-", ". ")}"
                         binding.tvMName.text = "${userJson?.optString("user_name")}님의 기록"
-                        binding.clMPredictDicease.setOnClickListener {
+                        binding.clMPredictDicease.setOnSingleClickListener {
                             val dialog = LoadingDialogFragment.newInstance("측정파일")
-                            dialog.show(activity?.supportFragmentManager ?: return@setOnClickListener, "LoadingDialogFragment")
+                            dialog.show(activity?.supportFragmentManager ?: return@setOnSingleClickListener, "LoadingDialogFragment")
 
                             hideBadgeFunction?.invoke()
                             ssm = SaveSingletonManager(requireContext(), requireActivity())
@@ -207,14 +209,14 @@ class MeasureFragment : Fragment() {
             }
         }
 
-        binding.btnM2.setOnClickListener {
+        binding.btnM2.setOnSingleClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MeasureHistoryFragment())
                 commit()
             }
         }
         // ------# 자세히 보기 #------
-        binding.tvM1Trend.setOnClickListener {
+        binding.tvM1Trend.setOnSingleClickListener {
             val dialog = MeasureTrendDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
         }
@@ -578,5 +580,4 @@ class MeasureFragment : Fragment() {
             tvMDates[i].textSize = if (isTablet(requireContext())) 18f else 15f
         }
     }
-
 }

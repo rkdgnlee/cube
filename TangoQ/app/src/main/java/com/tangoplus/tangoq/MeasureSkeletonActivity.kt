@@ -103,6 +103,7 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceX
 import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceY
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.MeasureSetupDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -564,6 +565,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     }
                     Log.v("measure빈칼럼여부", "$measureInfo")
 
+                    // Room에 넣기
                     val mobileInfoSn = mDao.insertInfo(measureInfo).toInt()
                     var mobileDynamicSn = 0
                     val mobileStaticSns = mutableListOf<Int>()
@@ -805,6 +807,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                             finish()
                                         }
                                     }
+                                    // 연결이 실패됐을 때? 빈 JSONObject()가 옴
+                                } else {
+
                                 }
                             }
                         } catch (e: IndexOutOfBoundsException) {
@@ -2104,11 +2109,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 }
             })
         }, 150)
-    }
-
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 
     private fun calculateScreenX(xx: Float): Float {

@@ -19,6 +19,7 @@ import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.databinding.RvProgressHistoryItemBinding
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -82,9 +83,5 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
 
     override fun getItemCount(): Int {
         return data.size
-    }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 }

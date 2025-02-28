@@ -56,7 +56,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
 
                     ssm = SaveSingletonManager(fragment.requireContext(), fragment.requireActivity())
                     CoroutineScope(Dispatchers.IO).launch {
-                        ssm.setRecent5MeasureResult(position)
+//                        ssm.setRecent5MeasureResult(position)
 
                         val currentMeasure = viewModel.selectedMeasure
                         val uriTuples = currentMeasure?.sn?.let { ssm.get1MeasureUrls(it) }

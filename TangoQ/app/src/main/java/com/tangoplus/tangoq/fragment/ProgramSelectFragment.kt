@@ -17,6 +17,7 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 
 class ProgramSelectFragment : Fragment() {
@@ -46,17 +47,17 @@ class ProgramSelectFragment : Fragment() {
             }
 
         }
-        binding.tvPSMeasureDate.setOnClickListener {
+        binding.tvPSMeasureDate.setOnSingleClickListener {
             val dialog = MeasureBSDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "MeasureBSDialogFragment")
         }
 
-        binding.ibtnPSAlarm.setOnClickListener {
+        binding.ibtnPSAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
-        binding.ibtnPSQRCode.setOnClickListener {
+        binding.ibtnPSQRCode.setOnSingleClickListener {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
@@ -106,8 +107,4 @@ class ProgramSelectFragment : Fragment() {
         binding.rvPSD.adapter = adapter
     }
 
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
-    }
 }

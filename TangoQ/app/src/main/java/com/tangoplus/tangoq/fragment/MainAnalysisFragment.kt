@@ -29,6 +29,7 @@ import com.tangoplus.tangoq.adapter.DataDynamicRVAdapter
 import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.databinding.FragmentMainAnalysisBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.SequenceBSDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.function.MeasurementManager.createSummary
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
@@ -566,9 +567,5 @@ class MainAnalysisFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         simpleExoPlayer?.playWhenReady = true
-    }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 }

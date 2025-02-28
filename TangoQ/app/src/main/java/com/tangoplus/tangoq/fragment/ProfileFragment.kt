@@ -38,6 +38,7 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.sendProfileImage
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -386,10 +387,5 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                 }
             }
         }
-    }
-
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 }

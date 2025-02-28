@@ -19,6 +19,7 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
         val tvMSC1Num: TextView? = itemView.findViewById(R.id.tvMSC1Num)
         val tvMSC1Title: TextView? = itemView.findViewById(R.id.tvMSC1Title)
         val tvMSC1Explain: TextView? = itemView.findViewById(R.id.tvMSC1Explain)
+        val tvMSC1Caution : TextView? = itemView.findViewById(R.id.tvMSC1Caution)
         val cvMSC10: CardView? = itemView.findViewById(R.id.cvMSC10)
         val cvMSC11: CardView? = itemView.findViewById(R.id.cvMSC11)
         val cvMSC12: CardView? = itemView.findViewById(R.id.cvMSC12)
@@ -95,6 +96,7 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
         holder?.cvMSC12?.visibility = View.GONE
         holder?.cvMSC13?.visibility = View.GONE
         holder?.cvMSC14?.visibility = View.GONE
+        holder?.tvMSC1Caution?.visibility = View.GONE
         val imageResource = context.resources.getIdentifier("drawable_measure_$seq", "drawable", context.packageName)
         holder?.ivMSC1Frame?.setImageResource(imageResource)
         holder?.ivMSC1Frame?.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.black))

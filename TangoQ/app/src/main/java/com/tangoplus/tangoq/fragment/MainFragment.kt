@@ -34,6 +34,7 @@ import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -109,21 +110,6 @@ class MainFragment : Fragment() {
             dialog.show(requireActivity().supportFragmentManager, "GuideDialogFragment")
         }
 
-        binding.clM1.setOnClickListener{
-
-            ssm = SaveSingletonManager(requireContext(), requireActivity())
-            lifecycleScope.launch(Dispatchers.IO) {
-                ssm.setRecent5MeasureResult(0)
-                withContext(Dispatchers.Main) {
-                    (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
-                    // 다운로드 후 이동
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flMain, MeasureDetailFragment())
-                        commit()
-                    }
-                }
-            }
-        }
 
         when (isNetworkAvailable(requireContext())) {
             true -> {
@@ -137,6 +123,26 @@ class MainFragment : Fragment() {
                     }
                     if (mvm.selectMeasureDate.value == null) {
                         mvm.selectMeasureDate.value = measures?.get(0)?.regDate
+                    }
+                    binding.clM1.setOnSingleClickListener{
+//                        ssm = SaveSingletonManager(requireContext(), requireActivity())
+//                        lifecycleScope.launch(Dispatchers.IO) {
+//                            ssm.setRecent5MeasureResult(0)
+//                            withContext(Dispatchers.Main) {
+//                                (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
+//                                // 다운로드 후 이동
+//                                requireActivity().supportFragmentManager.beginTransaction().apply {
+//                                    replace(R.id.flMain, MeasureDetailFragment())
+//                                    commit()
+//                                }
+//                            }
+//                        }
+                        (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
+                        // 다운로드 후 이동
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
+                            replace(R.id.flMain, MeasureDetailFragment())
+                            commit()
+                        }
                     }
 
                     // ------# 측정결과 있을 때 도움말 툴팁 #------
@@ -192,7 +198,7 @@ class MainFragment : Fragment() {
 
             binding.btnMProgram.apply {
                 text = "측정 시작하기"
-                setOnClickListener{
+                setOnSingleClickListener{
                     (activity as? MainActivity)?.launchMeasureSkeletonActivity()
                 }
             }
@@ -205,7 +211,7 @@ class MainFragment : Fragment() {
                     binding.rvM1.visibility = View.VISIBLE
                     binding.tvMTitle.text = "최근 측정 정보"
 //                    binding.tvMProgram.visibility = View.VISIBLE
-                    binding.btnMProgram.setOnClickListener {
+                    binding.btnMProgram.setOnSingleClickListener {
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flMain, ProgramSelectFragment())
                             commit()
@@ -333,4 +339,9 @@ class MainFragment : Fragment() {
             }
         )
     }
+    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
+    }
+
 }

@@ -45,6 +45,7 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -412,10 +413,6 @@ class IntroActivity : AppCompatActivity() {
             }
 
         }
-    }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 
     private fun disabledSNSLogin(case : Int) {

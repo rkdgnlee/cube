@@ -25,6 +25,7 @@ import com.tangoplus.tangoq.databinding.FragmentWithdrawalBinding
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,10 +56,10 @@ class WithdrawalFragment : Fragment() {
 
 
         // ------! spinner !------
-        val withDrawalList = listOf("선택해주세요" ,"앱을 너무 많이 사용해요", "원하는 서비스가 없어요", "서비스가 어려워요","개인 정보를 너무 많이 사용하는 것 같아요","단순 변심이에요", "기타(개인 사정)")
-        val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, withDrawalList)
+        val withdrawalList = listOf("선택해주세요" ,"앱을 너무 많이 사용해요", "원하는 서비스가 없어요", "서비스가 어려워요","개인 정보를 너무 많이 사용하는 것 같아요","단순 변심이에요", "기타(개인 사정)")
+        val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, withdrawalList)
         binding.actvW.setAdapter(adapter)
-        binding.actvW.setText(withDrawalList.firstOrNull(), false)
+        binding.actvW.setText(withdrawalList.firstOrNull(), false)
         binding.actvW.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -79,7 +80,7 @@ class WithdrawalFragment : Fragment() {
         message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), 42, 44, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         message.setSpan(StyleSpan(Typeface.BOLD), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        binding.btnWd.setOnClickListener {
+        binding.btnWd.setOnSingleClickListener {
             MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("경고⚠️")
                 setMessage(message)

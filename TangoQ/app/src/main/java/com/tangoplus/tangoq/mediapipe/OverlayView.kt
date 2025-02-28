@@ -232,13 +232,12 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 // 가로축
                 canvas.drawLine(leftIndexX - 200  , leftIndexY, rightIndexX+ 200, rightIndexY, axisPaint)
                 canvas.drawLine(leftKneeX - 200, leftKneeY, rightKneeX + 200, rightKneeY, axisPaint)
-                //세로축
                 canvas.drawLine(leftHipX - 200, leftHipY, rightHipX + 200, rightHipY, axisPaint)
                 canvas.drawLine(leftKneeX - 100, leftKneeY, rightKneeX + 100, rightKneeY, axisPaint)
                 canvas.drawLine((leftAnkleX + rightAnkleX) / 2, leftAnkleY + 200, (leftAnkleX + rightAnkleX) / 2, noseY - 300, axisPaint)
-
-                canvas.drawLine(leftHipX, leftHipY - 100, leftHipX, leftAnkleY + 200, axisPaint)
-                canvas.drawLine(rightHipX, rightHipY - 100, rightHipX, rightAnkleY + 200, axisPaint)
+                //세로축
+                canvas.drawLine(leftHipX, leftHipY - 100, leftHipX, leftAnkleY + 150, axisPaint)
+                canvas.drawLine(rightHipX, rightHipY - 100, rightHipX, rightAnkleY + 150, axisPaint)
             }
             val connections = listOf(
                 Pair(11, 13), Pair(12, 14), Pair(13, 15), Pair(14, 16),
