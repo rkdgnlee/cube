@@ -55,7 +55,7 @@ class ProgressViewModel : ViewModel() {
     fun calculateCurrentSeq(weekIndex: Int): Int {
         return if (weekIndex <= currentWeek) {
             // 현재 1~4주차 까지 다들어간 곳에서 seq를 찾는데, 여기서 해당 값을 통해 받아와야함
-            Log.v("주차에서seq", "$weekIndex, ${currentProgresses},${currentProgresses.minOfOrNull { it.countSet } ?: 0}")
+//            Log.v("주차에서seq", "$weekIndex, ${currentProgresses},${currentProgresses.minOfOrNull { it.countSet } ?: 0}")
             return currentProgresses.minOfOrNull { it.countSet } ?: 0
         } else {
             0
@@ -63,7 +63,7 @@ class ProgressViewModel : ViewModel() {
     }
     suspend fun getProgressData(context: Context) {
         val sns = Triple(recommendationSn, selectedWeek.value?.plus(1) ?: 1, selectedSequence.value?.plus(1) ?: 1)
-        Log.v("현재주차가져오기", "$sns")
+//        Log.v("현재주차가져오기", "$sns")
         postProgressInCurrentProgram(context.getString(R.string.API_progress), sns, context) { pv3s, progressUnits -> // MutableList<ProgressUnitVO>
             currentProgresses = progressUnits
             // pv3도 넘겨줘야함

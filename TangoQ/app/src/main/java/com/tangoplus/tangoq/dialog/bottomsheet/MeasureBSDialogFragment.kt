@@ -95,7 +95,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
                                     mvm.selectedMeasureIndex.value = singletonIndex
                                 }
 //                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
-                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
+//                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
                                 dialog.dismiss()
                             }
                         }

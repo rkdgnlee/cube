@@ -130,7 +130,7 @@ object NetworkUser {
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-                     Log.v("자체로그인Success", "$responseBody")
+//                     Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     callback(jo)
@@ -214,7 +214,7 @@ object NetworkUser {
 
                     override fun onResponse(call: Call, response: Response) {
                         val responseBody = response.body?.string()
-                         Log.v("응답성공", "code: ${response.code}, body: $responseBody")
+//                         Log.v("응답성공", "code: ${response.code}, body: $responseBody")
 
                         if (response.isSuccessful) {
                             Log.v("회원가입로그", "${response.code}")
@@ -339,7 +339,7 @@ object NetworkUser {
                         return@withContext null
                     }
                     val responseCode = response.code
-                     Log.v("회원탈퇴Success", "${response.body} $responseCode")
+//                     Log.v("회원탈퇴Success", "${response.body} $responseCode")
                     return@withContext responseCode
                 }
             } catch (e: IllegalStateException) {

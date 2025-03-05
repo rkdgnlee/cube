@@ -61,21 +61,6 @@ object MeasurementManager {
         "좌측 발목" to listOf(0, 5),
         "우측 발목" to listOf(0, 5)
     )
-    val exceptDynamicMatchedUris = mapOf(
-        "목관절" to listOf(0, 3, 4, 5, 6),
-        "좌측 어깨" to listOf(0, 3, 5, 6),
-        "우측 어깨" to listOf(0, 4, 5, 6),
-        "좌측 팔꿉" to listOf(0, 2, 3),
-        "우측 팔꿉" to listOf(0, 2, 4),
-        "좌측 손목" to listOf(0, 2, 3),
-        "우측 손목" to listOf(0, 2, 4),
-        "좌측 골반" to listOf(0, 3, 5, 6),
-        "우측 골반" to listOf(0, 4, 5, 6),
-        "좌측 무릎" to listOf(0, 3, 5),
-        "우측 무릎" to listOf(0, 4, 5),
-        "좌측 발목" to listOf(0, 5),
-        "우측 발목" to listOf(0, 5)
-    )
 
     val matchedIndexs = listOf(
         "목관절" , "좌측 어깨", "우측 어깨", "좌측 팔꿉", "우측 팔꿉", "좌측 손목" , "우측 손목" , "좌측 골반", "우측 골반" , "좌측 무릎" , "우측 무릎" , "좌측 발목", "우측 발목"

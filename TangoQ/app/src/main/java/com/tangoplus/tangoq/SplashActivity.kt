@@ -119,11 +119,11 @@ class SplashActivity : AppCompatActivity() {
 
                 FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
-                        Log.w("firebaseMessaging", "FETCHING FCM registration token failed", task.exception)
+                        Log.w("firebaseMessaging", "FETCHING FCM registration token failed : ${task.exception?.message}")
                         return@OnCompleteListener
                     }
-                    val token = task.result.toString()
-                    Log.e("메시지토큰", "fcm token :: $token")
+//                    val token = task.result.toString()
+//                    Log.e("메시지토큰", "fcm token :: $token")
                 })
                 createNotificationChannel()
                 // ------! 푸쉬 알림 끝 !------
@@ -174,7 +174,7 @@ class SplashActivity : AppCompatActivity() {
                                 getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                     if (jo != null) {
                                         storeUserInSingleton(this@SplashActivity, jo)
-                                        Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+//                                        Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
                                         val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
                                         ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
@@ -203,11 +203,11 @@ class SplashActivity : AppCompatActivity() {
                                 jsonObj.put("email", user.email.toString())
                                 jsonObj.put("google_login_id", user.uid)
                                 jsonObj.put("social_account", "google")
-                                Log.v("구글Json", "$jsonObj")
+//                                Log.v("구글Json", "$jsonObj")
                                 getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                     if (jo != null) {
                                         storeUserInSingleton(this, jo)
-                                        Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+//                                        Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                         val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
                                         val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
                                         ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
@@ -244,7 +244,7 @@ class SplashActivity : AppCompatActivity() {
                             getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                 if (jo != null) {
                                     storeUserInSingleton(this, jo)
-                                    Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+//                                    Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                     val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
                                     val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: 0
                                     ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
@@ -318,7 +318,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun navigateDeepLink() {
         val data: Uri? = intent?.data
-        Log.v("splash>deeplink", "data: $data")
+//        Log.v("splash>deeplink", "data: $data")
         if (data != null) {
             // 딥링크 처리
             DeepLinkManager.handleDeepLink(this, data)

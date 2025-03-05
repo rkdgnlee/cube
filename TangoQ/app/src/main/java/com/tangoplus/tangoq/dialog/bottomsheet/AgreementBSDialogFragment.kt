@@ -165,13 +165,13 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
         viewModel.agreementMk1.observe(viewLifecycleOwner) {
             updateAgreeAllState()
             updateAgreeMarketingAllState()
-            Log.v("광고성1", "${viewModel.agreementMk1.value}")
+//            Log.v("광고성1", "${viewModel.agreementMk1.value}")
         }
 
         viewModel.agreementMk2.observe(viewLifecycleOwner) {
             updateAgreeAllState()
             updateAgreeMarketingAllState()
-            Log.v("광고성2", "${viewModel.agreementMk2.value}")
+//            Log.v("광고성2", "${viewModel.agreementMk2.value}")
         }
 
         binding.btnAgreementFinish.setOnClickListener {
@@ -219,7 +219,7 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
             binding.ivAgreement3.setImageResource(
                 if (allChecked) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
             )
-            Log.v("광고성3", "${viewModel.marketingAgree.value}")
+//            Log.v("광고성3", "${viewModel.marketingAgree.value}")
 
         }
     }

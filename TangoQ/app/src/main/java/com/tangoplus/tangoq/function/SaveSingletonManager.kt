@@ -70,7 +70,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             // 3. Room에 저장된 것들 꺼내서 MeasureVO로 변환.
                             fetchAndFilterMeasureInfo(userUUID)
 
-                            Log.v("싱글턴measures", "${singletonMeasure.measures?.size}")
+//                            Log.v("싱글턴measures", "${singletonMeasure.measures?.size}")
                             addRecommendations()
                             callbacks()
                         }
@@ -91,7 +91,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 }
             } else null
         }
-        Log.v("getEncryptedJwt", "save Access Token: ${getEncryptedAccessJwt(context) != ""}")
+//        Log.v("getEncryptedJwt", "save Access Token: ${getEncryptedAccessJwt(context) != ""}")
         withContext(Dispatchers.IO) {
             saveAllMeasureInfo(context, context.getString(R.string.API_measure), userUUID) { existed ->
                 callbacks(existed)
@@ -459,7 +459,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             measure.recommendations = groupedRecs[measureSn] ?: emptyList()
                         } else {
                             val (types, stages) = convertToJsonArrays(measure.dangerParts)
-                            Log.v("types와stages", "types: $types, stages: $stages")
+//                            Log.v("types와stages", "types: $types, stages: $stages")
                             val recommendJson = JSONObject().apply {
                                 put("exercise_type_id", types)
                                 put("exercise_stage", stages)

@@ -65,7 +65,7 @@ class SignInActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 FirebaseAuth.getInstance().signOut()
                 val user = FirebaseAuth.getInstance().currentUser
-                Log.v("user", "$user")
+//                Log.v("user", "$user")
                 user?.delete()
             }
         }
@@ -78,7 +78,7 @@ class SignInActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 FirebaseAuth.getInstance().signOut()
                 val user = FirebaseAuth.getInstance().currentUser
-                Log.v("user", "$user")
+//                Log.v("user", "$user")
                 user?.delete()
             }
         }
@@ -155,7 +155,7 @@ class SignInActivity : AppCompatActivity() {
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(verificationId, token)
                 this@SignInActivity.verificationId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공, verificationId: $verificationId")
+                Log.v("onCodeSent", "메시지 발송 성공")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Snackbar.make(requireViewById(com.tangoplus.tangoq.R.id.clSignIn), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Snackbar.LENGTH_LONG).show()
                 binding.btnAuthConfirm.isEnabled = true
@@ -213,7 +213,6 @@ class SignInActivity : AppCompatActivity() {
                 if (viewModel.nameCondition.value == true) {
                     binding.tvNameCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.successColor, null))
                     binding.tvNameCondition.text = "올바른 형식입니다"
-
                 } else {
                     binding.tvNameCondition.setTextColor(binding.tvIdCondition.resources.getColor(com.tangoplus.tangoq.R.color.deleteColor, null))
                     binding.tvNameCondition.text = "올바른 이름을 입력해주세요"
@@ -344,7 +343,7 @@ class SignInActivity : AppCompatActivity() {
                                     binding.btnIdCondition.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.subColor400, null))
                                     binding.etId.isEnabled = false
                                     viewModel.User.value?.put("user_id", id)
-                                    Log.v("id들어감", "${viewModel.User.value?.getString("user_id")}")
+//                                    Log.v("id들어감", "${viewModel.User.value?.getString("user_id")}")
                                     binding.pvSignIn.progress = 100f
                                     binding.svSignIn.go(3, true)
                                     binding.tvSignInGuide.text = "비밀번호를 입력해주세요"
@@ -577,7 +576,7 @@ class SignInActivity : AppCompatActivity() {
 
                             // 전화번호 "-" 표시 전부 없애기
                             val mobile = binding.etMobile.text.toString().replace("-", "").replace(" ", "")
-                            Log.v("모바일인증완료", mobile)
+//                            Log.v("모바일인증완료", mobile)
                             viewModel.User.value?.put("mobile", mobile)
                             binding.btnAuthSend.isEnabled = true
                         } else {

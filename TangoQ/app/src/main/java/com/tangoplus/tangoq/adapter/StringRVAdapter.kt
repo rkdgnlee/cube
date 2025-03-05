@@ -155,7 +155,7 @@ class StringRVAdapter(private val fragment: Fragment,
 
                     holder.cbWI.setOnClickListener {
                         vm.selectMeasureDate.value = currentItem
-                        Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
+//                        Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
                     }
 
 
@@ -177,7 +177,7 @@ class StringRVAdapter(private val fragment: Fragment,
                     }
                     holder.cbWI.setOnClickListener {
                         vm.selectWeek.value = position
-                        Log.v("selectDate", "selectWeek: ${vm.selectWeek.value}")
+//                        Log.v("selectDate", "selectWeek: ${vm.selectWeek.value}")
                     }
                 }
             }

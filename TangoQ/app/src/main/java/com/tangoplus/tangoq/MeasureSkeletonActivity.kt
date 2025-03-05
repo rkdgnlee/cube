@@ -1445,8 +1445,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_vertical_angle_hip_knee_ankle_left", safePut(hipKneeAnkleAngle.first))
                         put("front_vertical_angle_hip_knee_ankle_right", safePut(hipKneeAnkleAngle.second))
                     }
-                    Log.v("전면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
-                    Log.v("전면각도들", "손목거리: $wristSubDistanceByX, 무릎거리: $kneeSubDistanceByX, 어깨팔꿉: $shoulderElbowLean, 팔꿉손목: $elbowWristLean, 골반무릎: $hipKneeLean, 무릎발목: $kneeAnkleLean, ")
+//                    Log.v("전면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
+//                    Log.v("전면각도들", "손목거리: $wristSubDistanceByX, 무릎거리: $kneeSubDistanceByX, 어깨팔꿉: $shoulderElbowLean, 팔꿉손목: $elbowWristLean, 골반무릎: $hipKneeLean, 무릎발목: $kneeAnkleLean, ")
                     saveJson(mvm.staticjo, step)
                 }
                 1 -> {  // 스쿼트
@@ -1585,8 +1585,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("front_elbow_align_distance_center_wrist_left", wristDistanceByX.first)
                         put("front_elbow_align_distance_center_wrist_right", wristDistanceByX.second)
                     }
-                    Log.v("팔꿉", "ear: ${mvm.earData} shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}")
-                    Log.v("팔꿉각도들", "어깨팔꿉손목각: $shoulderElbowWristAngle")
+//                    Log.v("팔꿉", "ear: ${mvm.earData} shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}")
+//                    Log.v("팔꿉각도들", "어깨팔꿉손목각: $shoulderElbowWristAngle")
 
                     saveJson(mvm.staticjo, step)
                 }
@@ -1621,8 +1621,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("side_left_vertical_angle_hip_knee_ankle", safePut( sideLeftHipKneeAnkleAngle ))
                     }
 
-                    Log.v("좌측 데이터", "코: ${mvm.noseData}, 어깨: ${mvm.shoulderData[1]}, 팔꿉: ${mvm.elbowData[1]}, 손목: ${mvm.wristData[1]}, 골반: ${mvm.hipData[1]}, 무릎: ${mvm.kneeData[1]}, 발목: ${mvm.ankleData[1]}")
-                    Log.v("좌측각도들", "어깨팔꿉: $sideLeftShoulderElbowLean, 팔꿉손목: $sideLeftElbowWristLean, 골반무릎: $sideLeftHipKneeLean, 귀어깨: $sideLeftEarShoulderLean ")
+//                    Log.v("좌측 데이터", "코: ${mvm.noseData}, 어깨: ${mvm.shoulderData[1]}, 팔꿉: ${mvm.elbowData[1]}, 손목: ${mvm.wristData[1]}, 골반: ${mvm.hipData[1]}, 무릎: ${mvm.kneeData[1]}, 발목: ${mvm.ankleData[1]}")
+//                    Log.v("좌측각도들", "어깨팔꿉: $sideLeftShoulderElbowLean, 팔꿉손목: $sideLeftElbowWristLean, 골반무릎: $sideLeftHipKneeLean, 귀어깨: $sideLeftEarShoulderLean ")
 
                     saveJson(mvm.staticjo, step)
                 }
@@ -1656,8 +1656,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("side_right_vertical_angle_hip_knee_ankle", safePut(sideRightHipKneeAnkleAngle))
                     }
 
-                    Log.v("우측 데이터", "코: ${mvm.noseData}, 어깨: ${mvm.shoulderData[0]}, 팔꿉: ${mvm.elbowData[0]}, 손목: ${mvm.wristData[0]}, 골반: ${mvm.hipData[0]}, 무릎: ${mvm.kneeData[0]}, 발목: ${mvm.ankleData[0]}")
-                    Log.v("우측각도들", "어깨팔꿉: $sideRightShoulderElbowLean, 팔꿉손목: $sideRightElbowWristLean, 골반무릎: $sideRightHipKneeLean, 귀어깨: $sideRightEarShoulderLean ")
+//                    Log.v("우측 데이터", "코: ${mvm.noseData}, 어깨: ${mvm.shoulderData[0]}, 팔꿉: ${mvm.elbowData[0]}, 손목: ${mvm.wristData[0]}, 골반: ${mvm.hipData[0]}, 무릎: ${mvm.kneeData[0]}, 발목: ${mvm.ankleData[0]}")
+//                    Log.v("우측각도들", "어깨팔꿉: $sideRightShoulderElbowLean, 팔꿉손목: $sideRightElbowWristLean, 골반무릎: $sideRightHipKneeLean, 귀어깨: $sideRightEarShoulderLean ")
 
                     saveJson(mvm.staticjo, step)
                 }
@@ -1720,8 +1720,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("back_horizontal_distance_wrist_left", backWristDistanceByX.first)
                         put("back_horizontal_distance_wrist_right", backWristDistanceByX.second)
                     }
-                    Log.v("후면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
-                    Log.v("후면각도들", "어깨: $backShoulderAngle, 팔꿉: $backElbowAngle, 손목: $backWristAngle, 골반: $backHipAngle, 무릎: $backKneeAngle, 발목: $backAnkleAngle 팔꿉손목: $backShoulderHipLean, 코골반: $backNoseHipLean, 무릎뒷꿈치: $backKneeHeelLean,")
+//                    Log.v("후면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
+//                    Log.v("후면각도들", "어깨: $backShoulderAngle, 팔꿉: $backElbowAngle, 손목: $backWristAngle, 골반: $backHipAngle, 무릎: $backKneeAngle, 발목: $backAnkleAngle 팔꿉손목: $backShoulderHipLean, 코골반: $backNoseHipLean, 무릎뒷꿈치: $backKneeHeelLean,")
 
                     saveJson(mvm.staticjo, step)
                 }
@@ -1774,8 +1774,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         put("back_sit_vertical_angle_right_shoulder_left_shoulder_center_hip", shoulderHipTriangleAngle.third)
                         put("back_sit_vertical_angle_shoulder_center_hip", shoulderHipRadian)
                     }
-                    Log.v("앉아후면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
-                    Log.v("앉아후면각도들", "귀각도: $sitBackEarAngle, 어깨: $sitBackShoulderAngle, 골반: $sitBackHipAngle, 어깨코삼각형: $shoulderNoseTriangleAngle, 골반어깨 삼각형: $shoulderHipTriangleAngle")
+//                    Log.v("앉아후면데이터", "ear: ${mvm.earData}, shoulder: ${mvm.shoulderData}, elbow: ${mvm.elbowData}, wrist: ${mvm.wristData}, hip: ${mvm.hipData}, knee: ${mvm.kneeData}, ankle: ${mvm.ankleData}")
+//                    Log.v("앉아후면각도들", "귀각도: $sitBackEarAngle, 어깨: $sitBackShoulderAngle, 골반: $sitBackHipAngle, 어깨코삼각형: $shoulderNoseTriangleAngle, 골반어깨 삼각형: $shoulderHipTriangleAngle")
                     saveJson(mvm.staticjo, step)
                 }
             }
@@ -1929,7 +1929,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     }
                     is VideoRecordEvent.Finalize -> {
                         if (!recordEvent.hasError()) {
-                            Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture")
+//                            Log.v("녹화종료시점", "isRecording: $isRecording, isCapture: $isCapture")
                             isRecording = false
                             startRecording = false
                             val savedUri = recordEvent.outputResults.outputUri

@@ -38,7 +38,7 @@ class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
             message = text,
             timeStamp = System.currentTimeMillis(),
         )
-        Log.v("AlarmReceiver", "알람 수신: $title - $text, message: $message")
+//        Log.v("AlarmReceiver", "알람 수신: $title - $text, message: $message")
         prefs.storeAlarm(message)
 
 

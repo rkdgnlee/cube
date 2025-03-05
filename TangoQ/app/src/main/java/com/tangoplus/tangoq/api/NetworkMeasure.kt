@@ -83,7 +83,7 @@ object NetworkMeasure {
 
             } catch (e: SocketTimeoutException) {
                 // 타임아웃 처리
-                Log.e("getMeasureResultError", "Request timed out", e)
+                Log.e("getMeasureResultError", "Request timed out / ${e.message}")
                 callback(null)
                 return@withContext Result.failure(Exception("Request timed out / ${e.message}"))
             } catch (e: IOException) {
