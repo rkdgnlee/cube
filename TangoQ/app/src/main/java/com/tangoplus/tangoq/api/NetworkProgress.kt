@@ -331,8 +331,8 @@ object NetworkProgress {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    // Log.v("Server>week>Progress", "$responseBody")
-                    if (!response.isSuccessful) {
+                    if (!response.isSuccessful || responseBody == "" || responseBody?.length == 1) {
+                        Log.v("Server>week>Progress", "response is Null")
                         return@withContext null
                     }
                     val ja = JSONArray(responseBody.toString())

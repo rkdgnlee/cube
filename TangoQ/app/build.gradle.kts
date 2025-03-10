@@ -68,10 +68,7 @@ dependencies {
     implementation("io.github.litao0621:nifty-slider:1.4.6")
     implementation("com.mikhaellopez:circularprogressbar:3.1.0")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
-    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
-    implementation(libs.androidx.coordinatorlayout)
-    implementation(libs.androidx.runtime.android)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.github.skydoves:progressview:1.1.3")
@@ -81,6 +78,7 @@ dependencies {
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
     implementation("com.arthenica:ffmpeg-kit-full-gpl:4.5.LTS")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
+//    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
 
     // api
     implementation("com.navercorp.nid:oauth:5.10.0")
@@ -97,6 +95,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation("androidx.security:security-crypto:1.0.0")
     implementation("androidx.datastore:datastore-preferences:1.1.2")
+    implementation("androidx.datastore:datastore-core:1.1.3")
 
     // 통신
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
@@ -147,6 +146,8 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation(libs.androidx.coordinatorlayout)
+    implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

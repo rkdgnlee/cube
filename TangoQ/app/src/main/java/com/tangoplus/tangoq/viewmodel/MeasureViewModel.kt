@@ -14,8 +14,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class MeasureViewModel : ViewModel() {
-    val parts = MutableLiveData(mutableListOf<MeasureVO>())
-    val feedbackParts = MutableLiveData(mutableListOf<MeasureVO>())
 
     // 메인 측정 날짜 선택 담을 공간 index임
     var selectMeasureDate = MutableLiveData<String>()
@@ -53,19 +51,12 @@ class MeasureViewModel : ViewModel() {
     var setupAgreement1 = MutableLiveData(true)
     var setupAgreement2 = MutableLiveData(true)
 
-    // measureDetail
-    val recentAnalysisUnits = mutableListOf<MutableList<AnalysisUnitVO>>()
-
-
     // ------# 각 부위 데이터들 #------
     var noseData : Pair<Float, Float> = Pair(0f, 0f)
     var earData = listOf<Pair<Float, Float>>()
     var shoulderData = listOf<Pair<Float, Float>>()
     var elbowData = listOf<Pair<Float, Float>>()
     var wristData = listOf<Pair<Float, Float>>()
-    var indexData = listOf<Pair<Float, Float>>()
-    var pinkyData = listOf<Pair<Float, Float>>()
-    var thumbData = listOf<Pair<Float, Float>>()
     var hipData = listOf<Pair<Float, Float>>()
     var kneeData = listOf<Pair<Float, Float>>()
     var ankleData = listOf<Pair<Float, Float>>()

@@ -106,9 +106,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         }
     }
 
-    // static과 dynamic에서는 column을 쓰지를 않음. 그냥 json파일에 있는 값들을 내가 쓰지,
-
-
     private suspend fun fetchAndFilterMeasureInfo(userUUID: String) {
         val currentActivity = activity
         val dialog = withContext(Dispatchers.Main) {

@@ -40,8 +40,6 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
@@ -203,19 +201,23 @@ class SplashActivity : AppCompatActivity() {
                                 jsonObj.put("email", user.email.toString())
                                 jsonObj.put("google_login_id", user.uid)
                                 jsonObj.put("social_account", "google")
-//                                Log.v("구글Json", "$jsonObj")
-                                getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
-                                    if (jo != null) {
-                                        storeUserInSingleton(this, jo)
+
+                                if (user.displayName != "" && user.email != "") {
+                                    getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
+                                        if (jo != null) {
+                                            storeUserInSingleton(this, jo)
 //                                        Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
-                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                            navigateDeepLink()
+                                            val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+                                            val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
+                                            ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                                                navigateDeepLink()
+                                            }
+                                        } else {
+                                            logout(this@SplashActivity, 0)
                                         }
-                                    } else {
-                                        logout(this@SplashActivity, 0)
                                     }
+                                } else {
+                                    logout(this@SplashActivity, 0)
                                 }
                             }
                         }
@@ -268,7 +270,7 @@ class SplashActivity : AppCompatActivity() {
                                     navigateDeepLink()
                                 }
                             } else {
-                                Log.v("invalidRefresh", "logout invalidRefreshToken ")
+                                Log.v("invalidRefresh", "logout invalidRefreshToken.")
                                 logout(this@SplashActivity, 0)
                             }
                         }

@@ -1,10 +1,24 @@
 package com.tangoplus.tangoq.viewmodel
 
+import android.animation.ObjectAnimator
+import android.content.Context
 import android.net.Uri
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.View
+import android.view.animation.AlphaAnimation
+import android.widget.EditText
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
+import com.tangoplus.tangoq.R
 import org.json.JSONObject
+import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 import kotlin.math.truncate
 
 class SignInViewModel: ViewModel() {
@@ -19,7 +33,7 @@ class SignInViewModel: ViewModel() {
     var emailId = MutableLiveData("")
     var setGender = MutableLiveData(0)    // 아이디 비밀번호 찾기
     var isFindId = true
-
+    var transformMobile = ""
 
     val idCondition = MutableLiveData(false)
     val mobileCondition = MutableLiveData(false)
@@ -113,5 +127,4 @@ class SignInViewModel: ViewModel() {
         currentIdCon.removeObserver { updateIdPwCondition() }
         currentPwCon.removeObserver { updateIdPwCondition() }
     }
-
 }

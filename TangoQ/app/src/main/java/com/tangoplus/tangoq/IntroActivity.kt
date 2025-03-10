@@ -45,6 +45,7 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.dialog.SignInDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
@@ -103,11 +104,8 @@ class IntroActivity : AppCompatActivity() {
                                             val jsonObj = JSONObject()
                                             jsonObj.put("device_sn" ,0)
                                             jsonObj.put("user_sn", 0)
-                                            jsonObj.put("user_name", user.displayName.toString())
-                                            jsonObj.put("email", user.email.toString())
-                                            jsonObj.put("google_login_id", user.uid)
-//                                            jsonObj.put("google_id_token", tokenId) // 토큰 값
-                                            jsonObj.put("social_account", "google")
+                                            jsonObj.put("access_token", tokenId) // 토큰 값
+                                            jsonObj.put("provider", "google")
 //                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                             Log.v("jsonObj", "$jsonObj")
                                             getUserBySdk(getString(R.string.API_user), jsonObj, this@IntroActivity) { jo ->
@@ -183,18 +181,19 @@ class IntroActivity : AppCompatActivity() {
                     override fun onSuccess(result: NidProfileResponse) {
                         Log.v("네이버로그인", "${result.resultCode}, ${result.message}, ${result.profile}")
                         val jsonObj = JSONObject()
-                        val naverMobile = result.profile?.mobile.toString().replace("-", "")
-                        val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
+//                        val naverMobile = result.profile?.mobile.toString().replace("-", "")
+//                        val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
                         jsonObj.put("device_sn" ,0)
                         jsonObj.put("user_sn", 0)
-                        jsonObj.put("user_name", result.profile?.name.toString())
-                        jsonObj.put("gender", naverGender)
-                        jsonObj.put("mobile", naverMobile)
-                        jsonObj.put("email", result.profile?.email.toString())
-                        jsonObj.put("birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
-                        jsonObj.put("naver_login_id" , result.profile?.id.toString())
-                        jsonObj.put("social_account", "naver")
-                        jsonObj.put("device_sn", 0)
+//                        jsonObj.put("user_name", result.profile?.name.toString())
+//                        jsonObj.put("gender", naverGender)
+//                        jsonObj.put("mobile", naverMobile)
+//                        jsonObj.put("email", result.profile?.email.toString())
+//                        jsonObj.put("birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
+//                        jsonObj.put("naver_login_id" , result.profile?.id.toString())
+                        jsonObj.put("provider", "naver")
+                        jsonObj.put("access_token", "${NaverIdLoginSDK.getAccessToken()}")
+//                        jsonObj.put("device_sn", 0)
                         Log.v("jsonObj", "$jsonObj")
 //                        Log.v("네이버이메일", jsonObj.getString("user_email"))
 //                        val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
@@ -229,7 +228,7 @@ class IntroActivity : AppCompatActivity() {
                     }
                 }
             } else if (token != null) {
-                Log.e("카카오톡", "로그인에 성공하였습니다.")
+                Log.v("카카오톡", "로그인에 성공하였습니다.")
                 UserApiClient.instance.accessTokenInfo { tokenInfo, error1 ->
                     if (error1 != null) {
                         enabledAllLoginBtn()
@@ -243,18 +242,18 @@ class IntroActivity : AppCompatActivity() {
                             }
                             else if (user != null) {
                                 val jsonObj = JSONObject()
-                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("-", "")
-                                jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
-                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
+//                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("-", "")
+//                                jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
+//                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
                                 jsonObj.put("device_sn" ,0)
                                 jsonObj.put("user_sn", 0)
-                                jsonObj.put("gender", kakaoUserGender)
-                                jsonObj.put("mobile", kakaoMobile)
-                                jsonObj.put("email", user.kakaoAccount?.email.toString())
-                                jsonObj.put("birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
-                                jsonObj.put("kakao_login_id" , user.id.toString())
-                                jsonObj.put("kakao_id_token", token.idToken)
-                                jsonObj.put("social_account", "kakao")
+//                                jsonObj.put("gender", kakaoUserGender)
+//                                jsonObj.put("mobile", kakaoMobile)
+//                                jsonObj.put("email", user.kakaoAccount?.email.toString())
+//                                jsonObj.put("birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
+//                                jsonObj.put("kakao_login_id" , user.id.toString())
+                                jsonObj.put("access_token", token.accessToken)
+                                jsonObj.put("provider", "kakao")
 
                                 Log.v("jsonObj", "$jsonObj")
 //                                val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
@@ -286,17 +285,19 @@ class IntroActivity : AppCompatActivity() {
 
         binding.btnIntroLogin.setOnSingleClickListener{
             val dialog = LoginDialogFragment()
-            dialog.show(this@IntroActivity.supportFragmentManager
-//                .beginTransaction()
-//                .addSharedElement(binding.ivIntroLogo, "transLogo")
-//                .addSharedElement(binding.tvIntroComment, "transComment")
-//                .setTransition(FragmentTransaction.TRANSIT_NONE)
-                , "LoginDialogFragment")
+            supportFragmentManager.beginTransaction()
+                .addSharedElement(binding.ivIntroLogo, "transLogo")
+                .addSharedElement(binding.tvIntroComment, "transComment")
+                .setReorderingAllowed(true)
+                .add(dialog, "LoginDialogFragment")
+                .commitAllowingStateLoss()
         }
 
         binding.btnIntroSignIn.setOnSingleClickListener {
-            val intent = Intent(this@IntroActivity, SignInActivity::class.java)
-            startActivity(intent)
+//            val intent = Intent(this@IntroActivity, SignInActivity::class.java)
+//            startActivity(intent)
+            val dialog = SignInDialogFragment()
+            dialog.show(supportFragmentManager, "SignInDialogFragment")
         }
     }
 

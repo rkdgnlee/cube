@@ -212,7 +212,4 @@ interface MeasureDao {
     fun JSONObject.toMeasureInfo(): MeasureInfo {
         return Gson().fromJson(this.toString(), MeasureInfo::class.java)
     }
-
-
-
 }

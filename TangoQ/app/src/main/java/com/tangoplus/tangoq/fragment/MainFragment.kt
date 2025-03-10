@@ -125,18 +125,6 @@ class MainFragment : Fragment() {
                         mvm.selectMeasureDate.value = measures?.get(0)?.regDate
                     }
                     binding.clM1.setOnSingleClickListener{
-//                        ssm = SaveSingletonManager(requireContext(), requireActivity())
-//                        lifecycleScope.launch(Dispatchers.IO) {
-//                            ssm.setRecent5MeasureResult(0)
-//                            withContext(Dispatchers.Main) {
-//                                (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
-//                                // 다운로드 후 이동
-//                                requireActivity().supportFragmentManager.beginTransaction().apply {
-//                                    replace(R.id.flMain, MeasureDetailFragment())
-//                                    commit()
-//                                }
-//                            }
-//                        }
                         (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
                         // 다운로드 후 이동
                         requireActivity().supportFragmentManager.beginTransaction().apply {

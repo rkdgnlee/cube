@@ -53,8 +53,6 @@ class WithdrawalFragment : Fragment() {
         singletonUserInstance = Singleton_t_user.getInstance(requireContext())
         singletonMeasureInstance = Singleton_t_measure.getInstance(requireContext())
 
-
-
         // ------! spinner !------
         val withdrawalList = listOf("선택해주세요" ,"앱을 너무 많이 사용해요", "원하는 서비스가 없어요", "서비스가 어려워요","개인 정보를 너무 많이 사용하는 것 같아요","단순 변심이에요", "기타(개인 사정)")
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_dropdown_item_1line, withdrawalList)
@@ -67,7 +65,6 @@ class WithdrawalFragment : Fragment() {
                 Log.v("edit", "$s")
             }
         })
-
 
         binding.cbW.setOnCheckedChangeListener{ _, isChecked ->
             setBtnUI(isChecked)

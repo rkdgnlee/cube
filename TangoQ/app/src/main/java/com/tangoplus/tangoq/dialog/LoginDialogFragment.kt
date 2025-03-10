@@ -66,8 +66,8 @@ class LoginDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedElementEnterTransition = TransitionInflater.from(requireContext()).inflateTransition(R.transition.fade_in_out_transition)
-        sharedElementReturnTransition = TransitionInflater.from(requireContext()).inflateTransition(R.transition.fade_in_out_transition)
+        sharedElementEnterTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.slide_top)
+        sharedElementReturnTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.slide_top)
     }
 
 

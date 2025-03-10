@@ -115,6 +115,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
                 exoPlay?.visibility = View.VISIBLE
             }
         }
+
         exoPlay?.setOnClickListener {
             if (simpleExoPlayer?.isPlaying == false) {
                 simpleExoPlayer?.play()

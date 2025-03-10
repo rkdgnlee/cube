@@ -75,7 +75,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         // ------# 선택 카테고리 & 타입 가져오기 시작 #------
         categoryId = arguments?.getIntegerArrayList(ARG_CATEGORY_ID)
         val sn = arguments?.getInt(ARG_SN)
@@ -94,8 +93,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
 //                commit()
 //            }
 //        }
-
-        Log.v("PTD에서나옴", "$categoryId, $sn")
+//        Log.v("PTD에서나옴", "$categoryId, $sn")
         binding.sflED.startShimmer()
         binding.tvEDMainCategoryName.text = when (categoryId?.get(0)) {
             1 -> "기본 밸런스 및 스트레칭"
@@ -105,8 +103,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             else -> "TangoQ 기구 활용"
         }
         binding.tvEDMainCategoryName.textSize = 23f
-        Log.v("categoryID", "$categoryId")
-
         // 운동 기록 EVP 가져오기
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
@@ -119,8 +115,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             }?.flatten()?.toMutableList()
 
             // -----! 카테고리  시작 !-----
-
-
             categoryMap = mapOf(
                 "전체" to 0,
                 "목관절" to 1,

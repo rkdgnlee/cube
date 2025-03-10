@@ -132,14 +132,14 @@ class AnalyzeFragment : Fragment() {
             }
 
             if (pvm.graphProgresses != null) {
-                withContext(Dispatchers.Main) {
-                    setGraph()
-                }
+                setGraph()
+            } else {
+                setShimmer(false)
             }
             // 상단 프로그레스 받아오기
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
             if (progressResult != null) {
-                Log.v("progressResult", "$progressResult")
+                Log.v("progressResult", "${progressResult.first}")
                 evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
                 evm.latestProgram = progressResult.second
 //            Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
@@ -196,13 +196,8 @@ class AnalyzeFragment : Fragment() {
                     avm.existedMonthProgresses.collectLatest { dates ->
                         binding.cvACalendar.notifyCalendarChanged()
                     }
-
                 }
-
                 setShimmer(false)
-
-
-
             } else {
                 setGraph()
                 setShimmer(false)
@@ -462,16 +457,6 @@ class AnalyzeFragment : Fragment() {
     private fun sortTodayInWeek() : List<Int> {
         val today = LocalDate.now()
         val dayOfWeek = today.dayOfWeek.value // 오늘 요일 (2, 3, 4, 5, 6, 7, 1)
-//        Log.v("오늘요일", "dayOfWeek: $dayOfWeek")
-//        val days = (1..7).toList()
-//        val dayIndex = days.indexOf(dayOfWeek)
-//
-//        val sortedIndex = (1..7).map {
-//            val offset = (it - 4 + dayIndex) % 7
-//            days[if (offset < 0) offset + 7 else offset]
-//        }
-//        Log.v("정렬된 요일", "sortedIndex: $sortedIndex")
-//        return sortedIndex
         return (1..7).map { (dayOfWeek + it) % 7 }.map { if (it == 0) 7 else it } // 오늘요일을 7로 나눴을 때 0인 index가 오늘 요일임.
     }
 
@@ -505,7 +490,6 @@ class AnalyzeFragment : Fragment() {
         }
     }
 
-
     private fun updateMonthView() {
         binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
         binding.cvACalendar.scrollToMonth(currentMonth)
@@ -522,7 +506,6 @@ class AnalyzeFragment : Fragment() {
     // 버튼으로 월이 바꼈을 때,
     private fun updateMonthProgress(date: String) {
 
-//        Log.v("updateMonthProgress", date)
         lifecycleScope.launch(Dispatchers.IO) {
             val dateList = getMonthProgress(requireActivity().getString(R.string.API_progress), date, requireContext())?.toList()
             if (dateList != null) {
@@ -558,7 +541,6 @@ class AnalyzeFragment : Fragment() {
 
             // 해당 날짜가 MutableList에 있는지 확인
             val matchingPair = pvm.graphProgresses?.find { it.first == currentDateStr }
-//            Log.v("weeklySet가져오기", "$matchingPair")
             val count = calculatePercent(matchingPair?.second)
             count
         }
@@ -572,7 +554,7 @@ class AnalyzeFragment : Fragment() {
         val barChart: BarChart = binding.bcA
         barChart.renderer = BarChartRender(barChart, barChart.animator, barChart.viewPortHandler)
         val entries = ArrayList<BarEntry>()
-
+//            Log.v("weeklySet가져오기", "$matchingPair")
         for (i in weeklySets.indices) {
             val entry = BarEntry(i.toFloat(), weeklySets[i])
             entries.add(entry)
@@ -666,9 +648,6 @@ class AnalyzeFragment : Fragment() {
                             setAdapter(listOf())
                         }
                         binding.tvADate.text = "${selectedDate.year}년 ${getCurrentMonthInKorean(selectedDate.yearMonth)} ${getCurrentDayInKorean(selectedDate)} 운동 정보"
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//                            scrollToView(binding.rvA)
-//                        }, 250)
                     }
                 } ?: run {
                     Log.e("DateSelection", "Selected date is null")
@@ -680,23 +659,15 @@ class AnalyzeFragment : Fragment() {
         }
     }
     private fun scrollToView(view: View) {
-        // 1 뷰의 위치를 저장할 배열 생성
         val location = IntArray(2)
-        // 2 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
         view.getLocationInWindow(location)
         val viewTop = location[1]
-        // 3 스크롤 뷰의 위치를 저장할 배열 생성
         val scrollViewLocation = IntArray(2)
 
-        // 4 스크롤 뷰의 위치를 'window' 기준으로 계산 후 배열 저장
         binding.nsvA.getLocationInWindow(scrollViewLocation)
         val scrollViewTop = scrollViewLocation[1]
-        // 5 현재 스크롤 뷰의 스크롤된 y 위치 가져오기
         val scrollY = binding.nsvA.scrollY
-        // 6 스크롤할 위치 계산
-        //    현재 스크롤 위치 + 뷰의 상대 위치 = 스크롤 위치 계산
         val scrollTo = scrollY + viewTop - scrollViewTop
-        // 7 스크롤 뷰 해당 위치로 스크롤
         binding.nsvA.smoothScrollTo(0, scrollTo)
     }
 

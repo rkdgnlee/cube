@@ -39,7 +39,6 @@ object NetworkMeasure {
                         callback(null)
                         return@withContext Result.failure(Exception("Failed to fetch data: ${response.code}"))
                     }
-
                     // ------# db 초기화 #------
                     val md = MeasureDatabase.getDatabase(context)
                     val mDao = md.measureDao()

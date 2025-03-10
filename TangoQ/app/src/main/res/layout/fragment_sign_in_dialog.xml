@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".SignInActivity">
+    tools:context=".dialog.SignInDialogFrgment">
 
     <TextView
         android:id="@+id/tvSignInGuide"
@@ -515,6 +515,7 @@
                         android:paddingTop="16dp"
                         android:paddingRight="12dp"
                         android:paddingBottom="16dp"
+                        android:textColor="@color/black"
                         android:textColorHint="@color/subColor100"
                         android:textSize="18sp" />
 
@@ -555,6 +556,7 @@
                     android:paddingTop="16dp"
                     android:paddingRight="16dp"
                     android:paddingBottom="16dp"
+                    android:textColor="@color/black"
                     android:textColorHint="@color/subColor100"
                     android:textSize="18sp"
                     android:visibility="visible"
