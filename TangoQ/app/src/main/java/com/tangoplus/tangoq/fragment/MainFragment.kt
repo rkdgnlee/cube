@@ -124,15 +124,34 @@ class MainFragment : Fragment() {
                     if (mvm.selectMeasureDate.value == null) {
                         mvm.selectMeasureDate.value = measures?.get(0)?.regDate
                     }
-                    binding.clM1.setOnSingleClickListener{
-                        (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
-                        // 다운로드 후 이동
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            replace(R.id.flMain, MeasureDetailFragment())
-                            commit()
+                    val setNavToMD = listOf(binding.clM1, binding.tvMOverall)
+                    setNavToMD.forEach {
+                        it.setOnSingleClickListener {
+                            (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
+                            // 다운로드 후 이동
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flMain, MeasureDetailFragment())
+                                commit()
+                            }
                         }
                     }
-
+//
+//                    binding.clM1.setOnSingleClickListener{
+//                        (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
+//                        // 다운로드 후 이동
+//                        requireActivity().supportFragmentManager.beginTransaction().apply {
+//                            replace(R.id.flMain, MeasureDetailFragment())
+//                            commit()
+//                        }
+//                    }
+//                    binding.tvMOverall.setOnSingleClickListener {
+//                        (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
+//                        // 다운로드 후 이동
+//                        requireActivity().supportFragmentManager.beginTransaction().apply {
+//                            replace(R.id.flMain, MeasureDetailFragment())
+//                            commit()
+//                        }
+//                    }
                     // ------# 측정결과 있을 때 도움말 툴팁 #------
                     if (isFirstRun("Tooltip_isFirstRun_existed")) {
                         existedMeasurementGuide()

@@ -65,7 +65,8 @@ class PreferencesManager(private val context: Context) {
 
     fun storeAlarm(messageVO: MessageVO) {
         val alarm = Gson().toJson(messageVO)
-        alarmPrefs.edit().putString("alarmMessage_${messageVO.sn}_${messageVO.timeStamp}", alarm).apply()
+//        Log.v("storeAlarm", "$alarm, $messageVO")
+        alarmPrefs.edit().putString("alarmMessage_${messageVO.userSn}_${messageVO.timeStamp}", alarm).apply()
     }
 
     fun getAlarms(sn: Int): MutableList<MessageVO> {

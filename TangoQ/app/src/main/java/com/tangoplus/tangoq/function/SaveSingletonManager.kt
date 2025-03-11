@@ -458,9 +458,9 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             val (types, stages) = convertToJsonArrays(measure.dangerParts)
 //                            Log.v("types와stages", "types: $types, stages: $stages")
                             val recommendJson = JSONObject().apply {
-                                put("exercise_type_id", types)
-                                put("exercise_stage", stages)
-                                put("server_sn", measureSn)
+                                put("exercise_type_id", types) // [0, 6, 7, 8, 13 ]
+                                put("exercise_stage", stages) // [ 2, 1, 1, 1, 2 ]
+                                put("server_sn", measureSn) // [ 268 ]
                             }
                             createRecommendProgram(context.getString(R.string.API_recommendation), recommendJson.toString(), context) { newRecommendations ->
                                 measure.recommendations = newRecommendations

@@ -44,22 +44,26 @@ class MyFirebaseMessagingService : FirebaseMessagingService() { // 푸시 알림
             messageToStore = MessageVO(
                 message = message.data["message"].toString(),
                 timeStamp = System.currentTimeMillis(),
-                route = "AlarmActivity"
+                route = "AlarmDialogFragment"
             )
             preferencesManager.storeAlarm(messageToStore)
         } else {
             // 메시지에 알림 페이로드가 포함되어 있는지 확인
+
             message.notification?.let {
                 sendNotification(
                     message.notification?.title.toString(),
                     message.notification?.body.toString()
                 )
+                Log.v("message received", "${message.notification?.title}, ${message.notification?.body}")
                 messageToStore = MessageVO(
+                    userSn = userSn,
                     message = message.notification?.body.toString(),
                     timeStamp = System.currentTimeMillis(),
-                    route = "AlarmActivity"
+                    route = "AlarmDialogFragment"
                 )
                 preferencesManager.storeAlarm(messageToStore)
+                Log.v("알람리스트", "${preferencesManager.getAlarms(userSn)}")
             }
         }
     }

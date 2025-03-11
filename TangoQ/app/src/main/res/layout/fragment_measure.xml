@@ -343,6 +343,7 @@
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/mainColor"
                         android:padding="16dp"
+                        android:stateListAnimator="@null"
                         android:text="측정 시작하기"
                         android:textColor="@color/whiteText"
                         android:textSize="18dp"

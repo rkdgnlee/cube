@@ -108,7 +108,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }, 250)
 
-
+        binding.ibtnPCDBack2.setOnClickListener{ dismiss() }
         when (arg) {
             "비밀번호" -> {
                 setUIVisibility(0)

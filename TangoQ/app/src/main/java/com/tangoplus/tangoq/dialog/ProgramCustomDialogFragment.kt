@@ -156,7 +156,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                                     binding.rvPCDHorizontal.isEnabled = true
                                 }
                                 pvm.currentSequence = newSequence
-                                Log.v("옵저버seq존재", "프로그레스들: ${pvm.currentProgresses.map { it.progress }}, cycle: ${pvm.currentProgresses.map { it.cycleProgress }}  selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
+//                                Log.v("옵저버seq존재", "프로그레스들: ${pvm.currentProgresses.map { it.progress }}, cycle: ${pvm.currentProgresses.map { it.cycleProgress }}  selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
                                 val selectedSeqValue = pvm.selectedSequence.value
                                 setAdapter(pvm.currentProgram, pvm.currentProgresses, Pair(pvm.currentSequence, selectedSeqValue))
                                 val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
@@ -297,7 +297,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         binding.btnPCDRight.text = "운동 시작하기"
 
                         binding.etPCDTitle.setText(currentProgram.programName)
-                        Log.v("시간", "programTime: ${currentProgram.programTime}")
+//                        Log.v("시간", "programTime: ${currentProgram.programTime}")
                         binding.tvPCDTime.text = if (currentProgram.programTime <= 60) {
                             "${currentProgram.programTime}초"
                         } else {
@@ -515,7 +515,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         } else {
                             LocalDate.now()
                         }
-                        Log.v("currentValid", "${pvm.currentProgresses.map { it.isWatched }}, $rightNow $recentUpdateDate, ${rightNow == recentUpdateDate}")
+//                        Log.v("currentValid", "${pvm.currentProgresses.map { it.isWatched }}, $rightNow $recentUpdateDate, ${rightNow == recentUpdateDate}")
 
                         if (isAllFinish && rightNow == recentUpdateDate) {
                             pvm.dailySeqFinished = true
@@ -523,7 +523,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
                         }
                     }
-
 
                     if (isMaxSeq && isSeqFinish) {
                         // 모든 회차가 끝남 ( 주차가 넘어가야하는 상황 )
@@ -565,7 +564,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             .setHeight(BalloonSizeSpec.WRAP)
             .setText("주차 요일에 맞추어 운동을 진행합니다.\n프로그램을 한 주동안 원하는 날짜에 진행해보세요")
             .setTextColorResource(R.color.white)
-            .setTextSize(if (isTablet(requireContext())) 24f else 18f)
+            .setTextSize(if (isTablet(requireContext())) 20f else 18f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
             .setArrowSize(0)
             .setMargin(10)

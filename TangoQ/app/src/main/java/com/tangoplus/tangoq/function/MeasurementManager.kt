@@ -882,24 +882,6 @@ object MeasurementManager {
         }
     }
 
-//    fun findCurrentIndex(progresses: MutableList<ProgressUnitVO>?) : Int {
-//        val progressIndex = progresses?.indexOfFirst { it.progress > 0 && it.progress < it.duration }
-//        if (progressIndex != -1) {
-//            return progressIndex ?: -1
-//        }
-//
-//        for (i in 1 until progresses.size) {
-//            val prev = progresses[i - 1].countSet
-//            val current = progresses[i].countSet
-//            if ((prev == 3 && current == 2) ||
-//                (prev == 2 && current == 1) ||
-//                (prev == 1 && current == 0)) {
-//                return i
-//            }
-//        }
-//        return 0
-//    }
-
     // 평균과 설명을 넣어주는 곳
     private fun setLabels(columnName : String) : String {
         return when (columnName) {

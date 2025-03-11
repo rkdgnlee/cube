@@ -90,10 +90,9 @@ class MeasureFragment : Fragment() {
                 mvm.selectedMeasureIndex.value = index
             }
         }
-// ------# 싱글턴 패턴 객체 가져오기 #------
+        // ------# 싱글턴 패턴 객체 가져오기 #------
         val singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         measures = singletonMeasure.measures ?: mutableListOf()
-
 
         // ------!  이름 + 통증 부위 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
@@ -143,7 +142,6 @@ class MeasureFragment : Fragment() {
                                                     replace(R.id.flMain, MeasureDetailFragment())
                                                     commit()
                                                 }
-
 //                                                ssm.setRecent5MeasureResult(mvm.selectedMeasureIndex.value ?: 0)
 //                                                withContext(Dispatchers.Main) {
 //                                                    // 다운로드 후 이동
@@ -152,7 +150,6 @@ class MeasureFragment : Fragment() {
 //                                                        commit()
 //                                                    }
 //                                                }
-
                                                 dialog.dismiss()
                                             }
                                         }
@@ -203,7 +200,6 @@ class MeasureFragment : Fragment() {
                     Log.e("MError", "Exception: ${e.message}")
                 }
             }
-
             false -> {
 
             }
@@ -471,7 +467,7 @@ class MeasureFragment : Fragment() {
         balloon = Balloon.Builder(requireContext())
             .setWidthRatio(0.6f)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 0.5f) "상위 ${((1.0f - percent) * 100).toInt()}" else "하위 ${(percent * 100).toInt()}"}%에 위치합니다.")
+            .setText("${userJson?.optString("user_name")}님 연령대에서\n백분위 ${if (percent >= 0.5f) "${((1.0f - percent) * 100).toInt()}" else "${(percent * 100).toInt()}"}%에 위치합니다.")
             .setTextColorResource(R.color.whiteText)
             .setTextSize(15f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
@@ -489,7 +485,6 @@ class MeasureFragment : Fragment() {
     }
 
     private fun calculatePercentage(value: Int?): Float {
-        // 70~100의 범위를 0~100%로 매핑
         val minInput = 40
         val maxInput = 100
         val percentage = ((value?.minus(minInput))?.toDouble() ?: 0.0) / (maxInput - minInput)

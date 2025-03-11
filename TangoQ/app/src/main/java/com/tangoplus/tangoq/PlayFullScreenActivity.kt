@@ -239,7 +239,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     Player.STATE_READY -> {
                         Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: ${pvm.currentMediaSourceIndex}")
                         pvm.currentVideoDuration = pvm.simpleExoPlayer?.duration ?: 0
-                        Log.e("currentVideoDuration임", "$pvm.currentVideoDuration")
+                        Log.e("currentVideoDuration임", "${pvm.currentVideoDuration}")
 
                     }
                     Player.STATE_ENDED -> {
@@ -304,7 +304,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             }
                         }
                     }
-
                 }
             }
         })

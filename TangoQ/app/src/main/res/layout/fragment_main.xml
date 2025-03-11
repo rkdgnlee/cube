@@ -200,7 +200,7 @@
                                 android:layout_marginEnd="10dp"
                                 android:layout_marginBottom="15dp"
                                 android:singleLine="true"
-                                android:text="주의 부위: _"
+                                android:text="_"
                                 android:textColor="@color/subColor800"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"

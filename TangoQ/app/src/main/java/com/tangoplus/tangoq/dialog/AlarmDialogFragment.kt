@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,6 +56,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         userSn = userJson?.optInt("sn") ?:0
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
+//                Log.v("알람리스트", "${pm.getAlarms(userSn)}")
                 alarmList = pm.getAlarms(userSn)
                 alarmList.sortByDescending { it.timeStamp }
                 // ------! alarm touchhelper 연동 시작 !------

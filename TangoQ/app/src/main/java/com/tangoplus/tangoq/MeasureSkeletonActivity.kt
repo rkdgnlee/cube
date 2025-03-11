@@ -20,6 +20,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.ExifInterface
+import android.media.SoundPool
 import android.net.Uri
 import android.net.http.NetworkException
 import android.os.Build
@@ -104,6 +105,9 @@ import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.MeasureSetupDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getServerUUID
+import com.tangoplus.tangoq.function.SoundManager.playSound
+import com.tangoplus.tangoq.function.SoundManager.release
+import com.tangoplus.tangoq.function.SoundManager.stopBackgroundMusic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -224,12 +228,23 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 runOnUiThread{
+                    binding.tvMeasureSkeletonGuide.text = when (seqStep.value) {
+                        0 -> "편한 자세로 서주세요"
+                        1 -> "손을 머리 위로 올리고\n스쿼트를 진행합니다"
+                        2 -> "수직으로 양팔을 굽혀\n팔꿈치 밸런스를 측정합니다"
+                        3 -> "몸의 왼쪽을 측정합니다"
+                        4 -> "몸의 오른쪽을 측정합니다"
+                        5 -> "몸의 뒷면을 측정합니다"
+                        6 -> "앉은 자세로\n몸의 뒷면을 측정합니다"
+                        else -> "다음 동작을 준비해주세요"
+                    }
                     binding.btnMeasureSkeletonStepPrevious.isEnabled = false
                     binding.clMeasureSkeletonCount.visibility = View.VISIBLE
                     binding.clMeasureSkeletonCount.alpha = 1f
                     binding.tvMeasureSkeletonCount.text = "${(millisUntilFinished / 1000.0f).roundToInt()}"
                     binding.tvMeasureSkeletonCount.textSize = if (isTablet(this@MeasureSkeletonActivity)) 150f else 110f
                     Log.v("count", "${binding.tvMeasureSkeletonCount.text}")
+                    playSound(R.raw.camera_countdown)
                 }
             }
             @SuppressLint("SetTextI18n", "DefaultLocale")
@@ -240,6 +255,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     // ------# resultBundleToJson이 동작하는 시간으로 통일 #------
                     timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
                     if (isRecording) { // 동영상 촬영
+                        playSound(R.raw.seq1_start)
                         binding.tvMeasureSkeletonGuide.text = "스쿼트를 실시해주세요"
                         setAnimation(binding.clMeasureSkeletonCount, 1000, 500, false) {
                             hideViews(6000)
@@ -313,7 +329,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                             }
                         }
                     } else {
-
                         binding.tvMeasureSkeletonGuide.text = "자세를 따라해주세요"
                         hideViews(600)
                         Log.v("사진service", "isCapture: ${isCapture}, isRecording: $isRecording")
@@ -324,9 +339,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         }
                         Log.v("캡쳐종료시점", "step: ${seqStep.value}")
                         updateUI()
+                        // 카메라 셔터옴
+                        playSound(R.raw.camera_shutter)
                         isCapture = false
                     }
                     binding.btnMeasureSkeletonStep.isEnabled = true
+
+
                 } else {
                     binding.tvMeasureSkeletonGuide.text = "자세를 다시 따라해주세요"
                     binding.btnMeasureSkeletonStep.isEnabled = true
@@ -373,6 +392,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 sensorManager.unregisterListener(this)
             }
         }
+        stopBackgroundMusic()
+        release()
     }
 
     override fun onDestroy() {
@@ -383,6 +404,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         )
         sensorManager.unregisterListener(this)
         hideIndicatorHandler.removeCallbacks(hideIndicatorRunnable)
+        stopBackgroundMusic()
+        release()
     }
     // ------! POSE LANDMARKER 설정 끝 !------
 
@@ -391,7 +414,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         super.onCreate(savedInstanceState)
         binding = ActivityMeasureSkeletonBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         // ------# room(DB) & singleton & uuid init #------
         md = MeasureDatabase.getDatabase(this)
@@ -402,7 +424,11 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             Log.v("이제들어갈measureSn", "$measureInfoSn")
         }
         decryptedUUID = getServerUUID(this@MeasureSkeletonActivity).toString()
-
+        // 측정 동안 무한으로 재생될 음악
+//        playBackgroundMusic(this@MeasureSkeletonActivity, R.raw.background_sound)
+        Handler(Looper.getMainLooper()).postDelayed({
+            playSound(R.raw.seq0_start)
+        }, 1500)
         // ------# sensor 연결 #------
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -835,6 +861,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         dialog1.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         val dialog2 = MeasureSkeletonDialogFragment.newInstance(false)
         dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+        val dialog4 = MeasureSetupDialogFragment.newInstance(0)
+        dialog4.show(supportFragmentManager, "MeasureSetupDialogFragment")
 
         binding.ibtnMeasureSkeletonInfo.setOnSingleClickListener {
             dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
@@ -844,7 +872,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             dialog3.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.ibtnMeasureSkeletonSetup.setOnSingleClickListener {
-            val dialog4 = MeasureSetupDialogFragment.newInstance(0)
             dialog4.show(supportFragmentManager, "MeasureSetupDialogFragment")
         }
         // ------! 다시 찍기 관리 시작 !------
@@ -958,8 +985,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             maxSeq -> {
                 binding.pvMeasureSkeleton.progress = 100f
                 binding.clMeasureSkeletonCount.visibility = View.VISIBLE
-
-                binding.tvMeasureSkeletonGuide.text = "측정이 완료됐습니다 !"
+                playSound(R.raw.all_finish)
+                binding.tvMeasureSkeletonGuide.text = "모든 측정이 완료 되었습니다."
                 binding.tvMeasureSkeletonCount.visibility = View.GONE
                 binding.tvMeasureSkeletonGuide.textSize = 36f
                 binding.btnMeasureSkeletonStep.text = "완료하기"
@@ -967,8 +994,30 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 Log.v("몇단계?", "Max repeats reached, stopping the loop")
             }
             else -> {
+                // 단계가 끝났을 때 바로 TTS 재생
+                Handler(Looper.getMainLooper()).postDelayed({
+                    playSound(
+                        when (seqStep.value) {
+                            1 -> R.raw.seq1_ready
+                            2 -> R.raw.seq2_start
+                            3 -> R.raw.seq3_start
+                            4 -> R.raw.seq4_start
+                            5 -> R.raw.seq5_start
+                            6 -> R.raw.seq6_start
+                            else -> R.raw.camera_countdown
+                        })
+
+                }, 1500)
                 Log.v("dynamic잘들어갔", "${mvm.dynamic}, ${mvm.dynamicJa.length()}")
-                binding.tvMeasureSkeletonGuide.text = "다음 동작을 준비해주세요"
+                binding.tvMeasureSkeletonGuide.text = when (seqStep.value) {
+                    1 -> "손을 머리 위로 올리고 스쿼트를 진행합니다"
+                    2 -> "수직으로 양팔을 굽혀 팔꿈치 밸런스를 측정합니다"
+                    3 -> "몸의 왼쪽을 측정합니다"
+                    4 -> "몸의 오른쪽을 측정합니다"
+                    5 -> "몸의 뒷면을 측정합니다"
+                    6 -> "앉은 자세로 몸의 뒷면을 측정합니다"
+                    else -> "다음 동작을 준비해주세요"
+                }
                 seqStep.value = seqStep.value?.plus(1)
                 progress += 14
                 binding.pvMeasureSkeleton.progress = progress.toFloat()
@@ -991,7 +1040,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     @SuppressLint("SetTextI18n")
     private fun setPreviousStep() {
-
         /*  이전 버튼 시 동작해야할 사항
         *   1. seqStep.value
         *   2. media file -> jpg, mp4

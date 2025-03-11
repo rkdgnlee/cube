@@ -15,11 +15,13 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MediatorLiveData
+import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentMeasureSetupDialogBinding
 import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -94,15 +96,15 @@ class MeasureSetupDialogFragment : DialogFragment() {
 
                 // 버튼 observer 세팅
                 val buttonEnabled = MediatorLiveData<Boolean>().apply {
-                    addSource(mvm.setupNameCondition) { nameValid ->
-                        value = nameValid == true && mvm.setupNameCondition.value == true
+                    val update = {
+                        value = (mvm.setupNameCondition.value == true &&
+                                mvm.setupAgreement1.value == true &&
+                                mvm.setupAgreement2.value == true)
                     }
-                    addSource(mvm.setupAgreement1) { agreement1Valid ->
-                        value = agreement1Valid == true && mvm.setupAgreement1.value == true
-                    }
-                    addSource(mvm.setupAgreement2) { agreement2Valid ->
-                        value = agreement2Valid == true && mvm.setupAgreement2.value == true
-                    }
+
+                    addSource(mvm.setupNameCondition) { update() }
+                    addSource(mvm.setupAgreement1) { update() }
+                    addSource(mvm.setupAgreement2) { update() }
                 }
 //        val buttonEnabled = MediatorLiveData<Boolean>().apply {
 //            addSource(svm.idCondition) { idValid ->
@@ -118,29 +120,10 @@ class MeasureSetupDialogFragment : DialogFragment() {
                         if (isEnabled) R.color.mainColor else R.color.subColor400
                     ))
                 }
-                binding.btnMSDFinish.text = "동의 완료"
-
-//        val mobilePattern = "^010-\\d{4}-\\d{4}\$"
-//        val mobilePatternCheck = Pattern.compile(mobilePattern)
-//        binding.etMSDPhone.addTextChangedListener(object: TextWatcher {
-//            private var isFormatting = false
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-//            override fun afterTextChanged(s: Editable?) {
-//                if (isFormatting) return
-//                isFormatting = true
-//                val cleaned =s.toString().replace("-", "")
-//                when {
-//                    cleaned.length <= 3 -> s?.replace(0, s.length, cleaned)
-//                    cleaned.length <= 7 -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3)}")
-//                    else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
-//                }
-//                isFormatting = false
-//                svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etMSDPhone.text.toString()).find()
-//            }
-//        })
-
-//        binding.etMSDPhone.setText(mobile)
+                binding.btnMSDDeny.setOnSingleClickListener {
+                    dismiss()
+                    (activity as MeasureSkeletonActivity).finish()
+                }
             }
             1 -> {
                 binding.clMSDAgreement1.visibility = View.GONE

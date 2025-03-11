@@ -34,7 +34,7 @@ class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
 
         val prefs = PreferencesManager(context)
         val message = MessageVO(
-            sn = Singleton_t_user.getInstance(context).jsonObject?.optInt("sn") ?: 0,
+            userSn = Singleton_t_user.getInstance(context).jsonObject?.optInt("sn") ?: 0,
             message = text,
             timeStamp = System.currentTimeMillis(),
         )

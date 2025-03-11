@@ -67,41 +67,24 @@ class QRCodeDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // ------! 바코드 스캔 시작 !------
-        checkCameraPermission()
 
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
         binding.ibtnLSDBack.setOnClickListener { dismiss() }
 
         // ------! balloon 시작 !------
         binding.ibtnLSDBack.setOnClickListener { dismiss() }
-        val balloon = Balloon.Builder(requireContext())
-            .setWidth(BalloonSizeSpec.WRAP)
-            .setHeight(BalloonSizeSpec.WRAP)
-            .setText("탱고바디 키오스크로 로그인을 위한 화면입니다\n탱고바디 화면의 6자리 PIN번호를 입력해주세요")
-            .setTextColorResource(R.color.subColor800)
-            .setTextSize(18f)
-            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
-            .setArrowSize(0)
-            .setMargin(6)
-            .setPadding(12)
-            .setCornerRadius(8f)
-            .setBackgroundColorResource(R.color.white)
-            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-            .setLifecycleOwner(viewLifecycleOwner)
-            .build()
-
-//        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//        binding.otvLSD.requestFocus()
-//        binding.otvLSD.postDelayed({
-//            imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
-//        }, 250)
-
         binding.ibtnLSDInfo.setOnClickListener {
-            binding.textView20.showAlignBottom(balloon)
-            balloon.dismissWithDelay(5000L)
+            balloonCallback {}
         }
-        binding.textView20.showAlignBottom(balloon)
-        balloon.dismissWithDelay(3000L)
+        balloonCallback {
+            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            binding.otvLSD.requestFocus()
+            binding.otvLSD.postDelayed({
+                binding.otvLSD.requestFocus()
+                imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+            }, 250)
+        }
 
         binding.tlLSD.addOnTabSelectedListener(object: OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -112,6 +95,7 @@ class QRCodeDialogFragment : DialogFragment() {
                         binding.flLSD.visibility = View.GONE
                     }
                     1 -> {
+                        checkCameraPermission()
                         showBarcodeView()
                         binding.clLSD.visibility = View.GONE
                         binding.flLSD.visibility = View.VISIBLE
@@ -203,7 +187,26 @@ class QRCodeDialogFragment : DialogFragment() {
         }
 
     }
-
+    private fun balloonCallback(callback: () -> Unit) {
+        val balloon = Balloon.Builder(requireContext())
+            .setWidth(BalloonSizeSpec.WRAP)
+            .setHeight(BalloonSizeSpec.WRAP)
+            .setText("탱고바디 키오스크로 로그인을 위한 화면입니다\n탱고바디 화면의 6자리 PIN번호를 입력해주세요")
+            .setTextColorResource(R.color.subColor800)
+            .setTextSize(20f)
+            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+            .setArrowSize(0)
+            .setMargin(6)
+            .setPadding(12)
+            .setCornerRadius(8f)
+            .setBackgroundColorResource(R.color.white)
+            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+            .setLifecycleOwner(viewLifecycleOwner)
+            .setOnBalloonDismissListener { callback() }
+            .build()
+        binding.textView20.showAlignBottom(balloon)
+        balloon.dismissWithDelay(3000L)
+    }
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,

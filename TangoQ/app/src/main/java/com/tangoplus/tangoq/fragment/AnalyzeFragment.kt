@@ -130,12 +130,14 @@ class AnalyzeFragment : Fragment() {
             if (pvm.graphProgresses.isNullOrEmpty()) {
                 pvm.graphProgresses = getWeekProgress(getString(R.string.API_progress), requireContext())
             }
-
-            if (pvm.graphProgresses != null) {
-                setGraph()
-            } else {
-                setShimmer(false)
-            }
+            setGraph()
+            setShimmer(false)
+//            if (pvm.graphProgresses != null) {
+//                setGraph()
+//            } else {
+//
+//                setShimmer(false)
+//            }
             // 상단 프로그레스 받아오기
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
             if (progressResult != null) {
@@ -251,17 +253,19 @@ class AnalyzeFragment : Fragment() {
                 updateMonthView()
                 updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
                 setAdapter(listOf())
+                pvm.selectedDate = null
             }
         }
 
         binding.previousMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
             initMonthData()
-            if (currentMonth > YearMonth.now().minusMonths(24)) {
+            if (currentMonth > YearMonth.now().minusMonths(12)) {
                 currentMonth = currentMonth.minusMonths(1)
                 updateMonthView()
                 updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
                 setAdapter(listOf())
+                pvm.selectedDate = null
             }
         }
 
@@ -308,7 +312,7 @@ class AnalyzeFragment : Fragment() {
                                 setPadding(24, 24, 24, 24)
                             }
                             11, 21, 31 -> {
-                                setPadding(30, 22, 30, 22)
+                                setPadding(28, 22, 28, 22)
                             }
                             1 -> {
                                 setPadding(36, 14, 36, 14)
@@ -348,6 +352,7 @@ class AnalyzeFragment : Fragment() {
                             }
                         }
                     } else {
+                        setDateStyle(container, day)
                         text = day.date.dayOfMonth.toString()
                         textSize = 20f
                         setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor200))
@@ -409,6 +414,7 @@ class AnalyzeFragment : Fragment() {
                 }
             }
             day.date == pvm.selectedDate -> {
+//                Log.v("현재날짜", "${day.date}, ${pvm.selectedDate}")
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
             }

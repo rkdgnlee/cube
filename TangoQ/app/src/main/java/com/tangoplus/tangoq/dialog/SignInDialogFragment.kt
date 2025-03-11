@@ -31,7 +31,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
@@ -71,7 +70,7 @@ class SignInDialogFragment : DialogFragment() {
             if (task.isSuccessful) {
                 FirebaseAuth.getInstance().signOut()
                 val user = FirebaseAuth.getInstance().currentUser
-//                Log.v("user", "$user")
+
                 user?.delete()
             }
         }
@@ -579,9 +578,7 @@ class SignInDialogFragment : DialogFragment() {
                         // ------! 번호 인증 완료 !------
 
                         Toast.makeText(requireContext(), "인증에 성공했습니다 !", Toast.LENGTH_SHORT).show()
-//                        snackbar.setAction("확인") { snackbar.dismiss() }
-//                        snackbar.setActionTextColor(Color.WHITE)
-//                        snackbar.show()
+
 
                         binding.btnAuthSend.isEnabled = false
                         binding.btnAuthConfirm.isEnabled = false

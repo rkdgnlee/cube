@@ -8,19 +8,31 @@
     android:background="@drawable/bckgnd_top_16"
     tools:context=".dialog.ProfileEditChangeDialogFragment">
 
+    <ImageButton
+        android:id="@+id/ibtnPCDBack2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:padding="4dp"
+        android:src="@drawable/icon_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tvPCD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="5dp"
         android:text="비밀번호 변경"
         android:textColor="@color/black"
         android:textSize="32dp"
         android:textStyle="bold"
         android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/ibtnPCDBack2"
+        app:layout_constraintStart_toEndOf="@+id/ibtnPCDBack2"
+        app:layout_constraintTop_toTopOf="@+id/ibtnPCDBack2" />
 
     <TextView
         android:id="@+id/tvPCD1"

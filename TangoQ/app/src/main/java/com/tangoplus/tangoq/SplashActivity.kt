@@ -38,6 +38,7 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtJo
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
+import com.tangoplus.tangoq.function.SoundManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,7 +68,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        SoundManager.init(this@SplashActivity)
 //        // ------! integrity API 시작 !------
 //        val standardIntegrityManager = IntegrityManagerFactory.createStandard(applicationContext)
 //        val cloudProjectNumber = 196772683133
