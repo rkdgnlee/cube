@@ -195,7 +195,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         var google = false
         var kakao = false
         var naver = false
-        val socialAccount = jsonObject?.optString("social_account")
+        val socialAccount = jsonObject?.optString("provider")
         when (socialAccount) {
             "google" -> google = true
             "naver" -> naver = true

@@ -18,6 +18,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageButton
+                android:id="@+id/ibtnFADBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:padding="4dp"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tlFAD"
                 android:layout_width="0dp"
@@ -50,17 +62,17 @@
             </com.google.android.material.tabs.TabLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clFADMobile"
+                android:id="@+id/clFADAuth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clFADId">
+                app:layout_constraintTop_toBottomOf="@+id/tlFAD">
 
                 <TextView
-                    android:id="@+id/tvFADMobile"
+                    android:id="@+id/tvFADAuth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -81,10 +93,10 @@
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvFADMobile">
+                    app:layout_constraintTop_toBottomOf="@+id/tvFADAuth">
 
                     <EditText
-                        android:id="@+id/etFADMobile"
+                        android:id="@+id/etFADAuth"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
@@ -145,6 +157,31 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout18" />
 
+                <TextView
+                    android:id="@+id/tvFADReAuth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="인증번호가 오지 않는다면, 재전송 을 눌러 다시 시도해주세요"
+                    android:textColor="@color/subColor500"
+                    android:textSize="13dp"
+                    android:visibility="invisible"
+                    app:layout_constraintStart_toStartOf="@+id/etFADAuthNumber"
+                    app:layout_constraintTop_toBottomOf="@+id/etFADAuthNumber" />
+
+                <TextView
+                    android:id="@+id/tvFADCountDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="3분 00초"
+                    android:textColor="@color/subColor500"
+                    android:textSize="13dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tvFADReAuth"
+                    app:layout_constraintTop_toTopOf="@+id/tvFADReAuth" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -158,7 +195,7 @@
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clFADMobile">
+                app:layout_constraintTop_toBottomOf="@+id/clFADAuth">
 
                 <TextView
                     android:id="@+id/textView128"
@@ -200,84 +237,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView128" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clFADId"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tlFAD">
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:text="이름 입력"
-                    android:textColor="@color/black"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <EditText
-                    android:id="@+id/etFADName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_12_edit_text"
-                    android:ems="10"
-                    android:hint="이름을 입력해주세요"
-                    android:inputType="text"
-                    android:padding="16dp"
-                    android:textColor="@color/subColor800"
-                    android:textColorHint="@color/subColor200"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-                <TextView
-                    android:id="@+id/textView133"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:text="아이디 입력"
-                    android:textColor="@color/black"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/etFADName" />
-
-                <EditText
-                    android:id="@+id/etFADId"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_12_edit_text"
-                    android:ems="10"
-                    android:hint="아이디를 입력해주세요"
-                    android:inputType="text"
-                    android:padding="16dp"
-                    android:textColor="@color/subColor800"
-                    android:textColorHint="@color/subColor200"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView133"
-                    app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

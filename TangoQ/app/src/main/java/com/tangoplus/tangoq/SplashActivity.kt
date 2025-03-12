@@ -11,12 +11,20 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenProvider
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
@@ -49,12 +57,15 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.lang.Exception
+import kotlin.math.log
 
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
+    private lateinit var launcher: ActivityResultLauncher<Intent>
     private lateinit var ssm : SaveSingletonManager
     private val timeoutHandler = Handler(Looper.getMainLooper())
     private val timeoutRunnable = Runnable {
@@ -106,7 +117,7 @@ class SplashActivity : AppCompatActivity() {
         KakaoSdk.init(this, getString(R.string.kakao_client_id))
         firebaseAuth = Firebase.auth
 
-        val googleUserExist = firebaseAuth.currentUser
+        val googleUserExist = Firebase.auth.currentUser
         val naverTokenExist = NaverIdLoginSDK.getState()
         ssm = SaveSingletonManager(this@SplashActivity, this)
         // ------! API 초기화 끝 !------
@@ -139,8 +150,6 @@ class SplashActivity : AppCompatActivity() {
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
 
-//                val aa = getEncryptedJwtJo(this@SplashActivity)?.let { isValidToken(it) }
-//                Log.v("aa", "$aa, ${getEncryptedJwtJo(this@SplashActivity)}" )
                 // ------! 네이버 토큰 있음 시작 !------
                 if (naverTokenExist == NidOAuthLoginState.OK) {
                     Log.e("네이버 로그인", "$naverTokenExist")
@@ -156,19 +165,11 @@ class SplashActivity : AppCompatActivity() {
                         override fun onResponse(call: Call, response: Response) {
                             if (response.isSuccessful) {
 
-                                val jsonBody = response.body?.string()?.let { JSONObject(it) }?.getJSONObject("response")
-
                                 val jsonObj = JSONObject()
-                                jsonObj.put("device_sn", 0)
+                                jsonObj.put("device_sn" ,0)
                                 jsonObj.put("user_sn", 0)
-                                jsonObj.put("user_name",jsonBody?.optString("name"))
-                                jsonObj.put("gender", if (jsonBody?.optString("gender") == "M") "남자" else "여자")
-                                val naverMobile = jsonBody?.optString("mobile")?.replaceFirst("010", "+8210")
-                                jsonObj.put("mobile", naverMobile)
-                                jsonObj.put("email",jsonBody?.optString("email"))
-                                jsonObj.put("birthday",jsonBody?.optString("birthyear")+"-"+jsonBody?.optString("birthday"))
-                                jsonObj.put("naver_login_id", jsonBody?.optString("id"))
-                                jsonObj.put("social_account", "naver")
+                                jsonObj.put("provider", "naver")
+                                jsonObj.put("access_token", "${NaverIdLoginSDK.getAccessToken()}")
 
                                 getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                     if (jo != null) {
@@ -187,45 +188,85 @@ class SplashActivity : AppCompatActivity() {
                         }
                     })
                     // ------! 네이버 토큰 있음 끝 !------
-
                 }  // ------! 구글 토큰 있음 시작 !------
                 else if (googleUserExist != null) {
-                    val user = FirebaseAuth.getInstance().currentUser
-                    user?.getIdToken(true)
-                        ?.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val jsonObj = JSONObject()
-                                jsonObj.put("device_sn", 0)
-                                jsonObj.put("user_sn", 0)
-                                jsonObj.put("google_login_id", user.uid)
-                                jsonObj.put("user_name", user.displayName.toString())
-                                jsonObj.put("email", user.email.toString())
-                                jsonObj.put("google_login_id", user.uid)
-                                jsonObj.put("social_account", "google")
-
-                                if (user.displayName != "" && user.email != "") {
-                                    getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
-                                        if (jo != null) {
-                                            storeUserInSingleton(this, jo)
+                    firebaseAuth = FirebaseAuth.getInstance()
+                    launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                        Log.v("google", "1, resultCode: ${result.resultCode}입니다.")
+                        if (result.resultCode == RESULT_OK) {
+                            Log.v("google", "2, resultCode: ${result.resultCode}입니다.")
+                            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                            try {
+                                Log.v("google", "3, resultCode: ${result.resultCode}입니다.")
+                                task.getResult(ApiException::class.java)?.let { account ->
+                                    val tokenId = account.idToken
+                                    if (tokenId != null && tokenId != "") {
+                                        val credential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
+                                        firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
+                                            if (firebaseAuth.currentUser != null) {
+                                                // ---- Google 토큰에서 가져오기 시작 ----
+                                                val user: FirebaseUser = firebaseAuth.currentUser!!
+                                                Log.v("user", "${user.phoneNumber}")
+                                                Log.v("user", user.uid)
+                                                // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
+                                                val jsonObj = JSONObject()
+                                                jsonObj.put("device_sn" ,0)
+                                                jsonObj.put("user_sn", 0)
+                                                jsonObj.put("access_token", tokenId) // 토큰 값
+                                                jsonObj.put("provider", "google")
+//                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
+                                                Log.v("jsonObj", "$jsonObj")
+                                                if (user.displayName != "" && user.email != "") {
+                                                    getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
+                                                        if (jo != null) {
+                                                            storeUserInSingleton(this, jo)
 //                                        Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                            val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-                                            val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
-                                            ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                                navigateDeepLink()
+                                                            val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
+                                                            val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
+                                                            ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                                                                navigateDeepLink()
+                                                            }
+                                                        } else {
+                                                            logout(this@SplashActivity, 0)
+                                                        }
+                                                    }
+                                                } else {
+                                                    logout(this@SplashActivity, 0)
+                                                }
                                             }
-                                        } else {
-                                            logout(this@SplashActivity, 0)
                                         }
                                     }
-                                } else {
-                                    logout(this@SplashActivity, 0)
-                                }
+                                } ?: throw Exception()
+                            } catch (e: IndexOutOfBoundsException) {
+                                logout(this@SplashActivity, 0)
+                                Log.e("IntroIndex", "${e.message}")
+                            } catch (e: IllegalArgumentException) {
+                                logout(this@SplashActivity, 0)
+                                Log.e("IntroIllegal", "${e.message}")
+                            } catch (e: NullPointerException) {
+                                logout(this@SplashActivity, 0)
+                                Log.e("IntroNull", "${e.message}")
+                            } catch (e: Exception) {
+                                logout(this@SplashActivity, 0)
+                                Log.e("IntroException", "${e.message}")
                             }
+                        } else {
+                            logout(this@SplashActivity, 0)
                         }
-                    // ------! 구글 토큰 있음 끝 !------
+                    }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(R.string.firebase_client_id))
+                            .requestEmail()
+                            .build()
+                        val googleSignInClient = GoogleSignIn.getClient(this@SplashActivity, gso)
+                        val signInIntent: Intent = googleSignInClient.signInIntent
+                        launcher.launch(signInIntent)
+                    }
+                }   // ------! 구글 토큰 있음 끝 !------
 
                     // ------! 카카오 토큰 있음 시작 !------
-                } else if (AuthApiClient.instance.hasToken()) {
+                 else if (AuthApiClient.instance.hasToken()) {
                     UserApiClient.instance.me { user, error ->
                         if (error != null) {
                             Log.e("kakaoError", "사용자 정보 요청 실패", error)
@@ -233,17 +274,15 @@ class SplashActivity : AppCompatActivity() {
                         else if (user != null) {
                             Log.v("KakaoAuth요청 성공","hasSignedUp: ${user.hasSignedUp}")
                             val jsonObj = JSONObject()
-                            val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("+82 10", "+8210")
-                            jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
-                            val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
-                            jsonObj.put("device_sn", 0)
+                            val kakaoToken = AuthApiClient.instance.tokenManagerProvider.manager.getToken()?.accessToken
+                            if (kakaoToken != null) {
+                                Log.v("카카오OAuthToken"  , kakaoToken)
+                            }
+                            jsonObj.put("device_sn" ,0)
                             jsonObj.put("user_sn", 0)
-                            jsonObj.put("gender", kakaoUserGender)
-                            jsonObj.put("mobile", kakaoMobile)
-                            jsonObj.put("email", user.kakaoAccount?.email.toString())
-                            jsonObj.put("birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
-                            jsonObj.put("kakao_login_id" , user.id.toString())
-                            jsonObj.put("social_account", "kakao")
+                            jsonObj.put("access_token", kakaoToken)
+                            jsonObj.put("provider", "kakao")
+
                             getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
                                 if (jo != null) {
                                     storeUserInSingleton(this, jo)

@@ -32,7 +32,6 @@ class SignInViewModel: ViewModel() {
     var pw = MutableLiveData("")
     var emailId = MutableLiveData("")
     var setGender = MutableLiveData(0)    // 아이디 비밀번호 찾기
-    var isFindId = true
     var transformMobile = ""
 
     val idCondition = MutableLiveData(false)
@@ -40,7 +39,6 @@ class SignInViewModel: ViewModel() {
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
     val pwBothTrue = MediatorLiveData<Boolean>().apply {
-
         value = false
         addSource(pwCondition) { condition ->
             value = condition && (pwCompare.value ?: false)
@@ -104,7 +102,6 @@ class SignInViewModel: ViewModel() {
     val heightCondition = MutableLiveData(false)
     val weightCondition = MutableLiveData(false)
 
-
     var verificationId = ""
     init {
         User.value = JSONObject()
@@ -120,6 +117,11 @@ class SignInViewModel: ViewModel() {
     private fun updateIdPwCondition() {
         idPwCondition.value = currentIdCon.value == true && currentPwCon.value == true
     }
+
+    // findAccount
+    var saveEmail = ""
+    var isFindId = MutableLiveData(true)
+    var textWatcher : TextWatcher? = null
 
 
     override fun onCleared() {

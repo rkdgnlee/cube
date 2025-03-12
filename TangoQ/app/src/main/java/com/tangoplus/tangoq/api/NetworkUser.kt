@@ -1,6 +1,8 @@
 package com.tangoplus.tangoq.api
 
+import android.accounts.NetworkErrorException
 import android.content.Context
+import android.net.http.NetworkException
 import android.util.Log
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
@@ -12,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,6 +23,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.net.SocketTimeoutException
 
 object NetworkUser {
     const val TAG = "NetworkUser"
@@ -88,22 +92,33 @@ object NetworkUser {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()?.substringAfter("response: ")
-                // Log.v("SDK>Server>User", "$responseBody")
+                try {
+                    val responseBody = response.body?.string()?.substringAfter("response: ")
+                    Log.v("SDK>Server>User", "$responseBody")
+                    val responseJo = responseBody?.let { JSONObject(it).optInt("status") }
+                    Log.v("responseJo", "$responseJo")
+                    if (responseJo !in listOf(200, 201, 202)) {
+                        callback(null)
+                    } else {
+                        val jo = responseBody?.let { JSONObject(it) }
+                        // ------! 토큰 저장 !------
 
-                if (response.code == 401) {
-                    callback(null)
-                } else {
-                    val jo = responseBody?.let { JSONObject(it) }
-                    // ------! 토큰 저장 !------
-                    val token = jo?.optString("jwt")
-                    if (token != null) {
                         val jsonObj = JSONObject()
-                        jsonObj.put("access_jwt", jo.optString("access_jwt"))
-                        jsonObj.put("refresh_jwt", jo.optString("refresh_jwt"))
+                        jsonObj.put("access_jwt", jo?.optString("access_jwt"))
+                        jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
                         saveEncryptedJwtToken(context, jsonObj)
+                        callback(jo)
                     }
-                    callback(jo)
+                } catch (e: NetworkErrorException) {
+                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                } catch (e: SocketTimeoutException) {
+                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                } catch (e: Exception) {
+                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
                 }
             }
         })
@@ -301,7 +316,7 @@ object NetworkUser {
                         return@withContext null
                     }
                     val responseBody = response.body?.string()
-                    // Log.v("회원update", "$responseBody")
+                     Log.v("회원update", "$responseBody")
                     return@withContext true
                 }
             } catch (e: IllegalStateException) {
@@ -391,6 +406,97 @@ object NetworkUser {
         })
     }
 
+    fun verifyPWCode(myUrl: String, joBody: String, callback: (JSONObject?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = joBody.toRequestBody(mediaType)
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("$myUrl")
+            .post(body)리라
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("이메일보내기failed", "Failed to enqueue request")
+            }
+            override fun onResponse(call: Call, response: Response) {
+                try {
+                    val responseBody = response.body?.string()
+                    val jo = responseBody?.let{JSONObject(it)}
+                    callback(jo)
+                } catch (e: NetworkErrorException) {
+                    Log.e("verifyPWError", "Error by verifyPW NetworkErrorException : ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("verifyPWError", "Error by verifyPW IllegalStateException : ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("verifyPWError", "Error by verifyPW IllegalArgumentException : ${e.message}")
+                } catch (e: SocketTimeoutException) {
+                    Log.e("verifyPWError", "Error by verifyPW SocketTimeoutException : ${e.message}")
+                } catch (e: Exception) {
+                    Log.e("verifyPWError", "Error by verifyPW Exception : ${e.message}")
+                }
+            }
+        })
+    }
+
+    fun sendPWCode(myUrl: String, joBody: String, callback: () -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = joBody.toRequestBody(mediaType)
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("$myUrl")
+            .post(body)
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("이메일보내기failed", "Failed to enqueue request")
+            }
+            override fun onResponse(call: Call, response: Response) {
+               try {
+                   val responseBody = response.body?.string()
+                   val jo = responseBody?.let{JSONObject(it)}
+                   callback()
+               } catch (e: NetworkErrorException) {
+                   Log.e("sendPWError", "Error by verifyPW NetworkErrorException : ${e.message}")
+               } catch (e: IllegalStateException) {
+                   Log.e("sendPWError", "Error by verifyPW IllegalStateException : ${e.message}")
+               } catch (e: IllegalArgumentException) {
+                   Log.e("sendPWError", "Error by verifyPW IllegalArgumentException : ${e.message}")
+               } catch (e: SocketTimeoutException) {
+                   Log.e("sendPWError", "Error by verifyPW SocketTimeoutException : ${e.message}")
+               } catch (e: Exception) {
+                   Log.e("sendPWError", "Error by verifyPW Exception : ${e.message}")
+               }
+            }
+        })
+    }
+
+    fun resetPW(myUrl: String, callback: (Int?) -> Unit) {
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+//                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("$myUrl")
+            .get()
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("resetPw", "Failed to resetPw")
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                callback(response.code)
+            }
+        })
+    }
     // ------! 프로필 사진 시작 !------
     suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody, callback: (String) -> Unit) {
         val client = getClient(context)
@@ -423,7 +529,6 @@ object NetworkUser {
         }
     }
     // ------! 프로필 사진 끝 !------
-
     fun storeUserInSingleton(context: Context, jsonObj :JSONObject) {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj.optJSONObject("login_data")
         Singleton_t_user.getInstance(context).jsonObject?.put("profile_file_path", jsonObj.optJSONObject("profile_file_path")?.optString("file_path"))

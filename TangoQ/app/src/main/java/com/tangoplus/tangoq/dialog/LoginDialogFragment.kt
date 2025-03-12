@@ -286,7 +286,6 @@ class LoginDialogFragment : DialogFragment() {
                 }
             }.start()
         }
-
     }
     private fun enabledLogin() {
         binding.btnLDLogin.isEnabled = true

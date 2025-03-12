@@ -15,10 +15,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseSearchHistoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.vo.ExerciseVO
@@ -131,8 +134,20 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
 
         binding.btnESDCategory.setOnClickListener{ dismiss() }
         binding.tvESDClear.setOnClickListener {
-            prefsManager.deleteAllHistory()
-            binding.rv2.adapter = null
+            if (!evm.searchHistory.value.isNullOrEmpty()) {
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setTitle("기록을 삭제하시겠습니까?")
+                    setPositiveButton("예", {_, _ ->
+                        prefsManager.deleteAllHistory()
+                        binding.rv2.adapter = null
+                    })
+                    setNegativeButton("아니오", {_, _ ->
+                        dismiss()
+                    })
+                }.show()
+            } else {
+                Toast.makeText(requireContext(), "기록이 없습니다. 다시 시도해 주세요", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

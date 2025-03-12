@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -44,13 +45,17 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
+import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
+import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.dialog.SignInDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.lang.Exception
 
@@ -115,6 +120,10 @@ class IntroActivity : AppCompatActivity() {
                                                         "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 201) }
                                                         else -> { Log.v("responseCodeError", "response: $jo")}
                                                     }
+                                                } else {
+                                                    enabledAllLoginBtn()
+                                                    Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
+                                                    logout(this@IntroActivity, 0)
                                                 }
                                             }
                                         }
@@ -173,7 +182,7 @@ class IntroActivity : AppCompatActivity() {
             }
             override fun onSuccess() {
                 // ------! 네이버 로그인 성공 동작 시작 !-----
-                // TODO 여기서 NaverIdLoginSDK.getAccessToken(),  getRefreshToken() 을 사용해서 가져올 수 있음. 내가 이걸 전달해주면 -> 회원 프로프리 조회 API 명세를 통해 서버에서 PHP의 로그인 응답결과를 받아서 사용하면 될 듯?
+                // 여기서 NaverIdLoginSDK.getAccessToken(),  getRefreshToken() 을 사용해서 가져올 수 있음. 내가 이걸 전달해주면 -> 회원 프로프리 조회 API 명세를 통해 서버에서 PHP의 로그인 응답결과를 받아서 사용하면 될 듯?
 
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                     override fun onError(errorCode: Int, message: String) { enabledAllLoginBtn() }
@@ -181,29 +190,22 @@ class IntroActivity : AppCompatActivity() {
                     override fun onSuccess(result: NidProfileResponse) {
                         Log.v("네이버로그인", "${result.resultCode}, ${result.message}, ${result.profile}")
                         val jsonObj = JSONObject()
-//                        val naverMobile = result.profile?.mobile.toString().replace("-", "")
-//                        val naverGender : String = if (result.profile?.gender.toString() == "M") "남자" else "여자"
                         jsonObj.put("device_sn" ,0)
                         jsonObj.put("user_sn", 0)
-//                        jsonObj.put("user_name", result.profile?.name.toString())
-//                        jsonObj.put("gender", naverGender)
-//                        jsonObj.put("mobile", naverMobile)
-//                        jsonObj.put("email", result.profile?.email.toString())
-//                        jsonObj.put("birthday", result.profile?.birthYear.toString() + "-" + result.profile?.birthday.toString())
-//                        jsonObj.put("naver_login_id" , result.profile?.id.toString())
                         jsonObj.put("provider", "naver")
                         jsonObj.put("access_token", "${NaverIdLoginSDK.getAccessToken()}")
-//                        jsonObj.put("device_sn", 0)
                         Log.v("jsonObj", "$jsonObj")
-//                        Log.v("네이버이메일", jsonObj.getString("user_email"))
-//                        val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                         getUserBySdk(getString(R.string.API_user), jsonObj, this@IntroActivity) { jo ->
                             if (jo != null) {
                                 when (jo.optString("status")) {
                                     "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
                                     "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 201) }
-                                    else -> { Log.v("responseCodeError", "response: $jo")}
+                                    else -> { Log.e("responseCodeError", "response: $jo") }
                                 }
+                            } else {
+                                enabledAllLoginBtn()
+                                Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
+                                logout(this@IntroActivity, 0)
                             }
                         }
                     }
@@ -242,16 +244,8 @@ class IntroActivity : AppCompatActivity() {
                             }
                             else if (user != null) {
                                 val jsonObj = JSONObject()
-//                                val kakaoMobile = user.kakaoAccount?.phoneNumber.toString().replaceFirst("-", "")
-//                                jsonObj.put("user_name" , user.kakaoAccount?.name.toString())
-//                                val kakaoUserGender = if (user.kakaoAccount?.gender.toString()== "M")  "남자" else "여자"
                                 jsonObj.put("device_sn" ,0)
                                 jsonObj.put("user_sn", 0)
-//                                jsonObj.put("gender", kakaoUserGender)
-//                                jsonObj.put("mobile", kakaoMobile)
-//                                jsonObj.put("email", user.kakaoAccount?.email.toString())
-//                                jsonObj.put("birthday", user.kakaoAccount?.birthyear.toString() + "-" + user.kakaoAccount?.birthday?.substring(0..1) + "-" + user.kakaoAccount?.birthday?.substring(2))
-//                                jsonObj.put("kakao_login_id" , user.id.toString())
                                 jsonObj.put("access_token", token.accessToken)
                                 jsonObj.put("provider", "kakao")
 
@@ -265,6 +259,10 @@ class IntroActivity : AppCompatActivity() {
                                             "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 201) }
                                             else -> { Log.v("responseCodeError", "response: $jo")}
                                         }
+                                    } else {
+                                        enabledAllLoginBtn()
+                                        Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
+                                        logout(this@IntroActivity, 0)
                                     }
                                 }
                             }
@@ -332,12 +330,18 @@ class IntroActivity : AppCompatActivity() {
                         if (agree) {
 
                             // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
-                            jsonObj.put("device_sn" ,0)
-                            jsonObj.put("user_sn", 0)
                             jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
                             jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
+                            CoroutineScope(Dispatchers.IO).launch {
+                                fetchUserUPDATEJson(this@IntroActivity, getString(R.string.API_user), jsonObj.toString(), jo.optInt("sn").toString())
+                            }
                             Log.v("Intro>SMS", "$jsonObj")
                             Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+
+                            // 기존 입력 jo + 동의 항목인 jsonObj 통합
+                            jo.put("sms_receive", "1")
+                            jo.put("email_receive", "1")
+                            jo.put("device_sn", "1")
 
 
                             storeUserInSingleton(this@IntroActivity, jo)
@@ -371,7 +375,13 @@ class IntroActivity : AppCompatActivity() {
                                     }
                                 }
                             }
-                            this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                fetchUserDeleteJson(this@IntroActivity, getString(R.string.API_user), jo.optString("sn"))
+                                withContext(Dispatchers.Main) {
+                                    this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
+                                    enabledAllLoginBtn()
+                                }
+                            }
                         }
                     }
                 })

@@ -71,7 +71,6 @@ object SecureDataStoreManager {
         return keyGenerator.generateKey()
     }
 
-
     object DecryptedFileCache {
         private val cache = LruCache<String, ByteArray>(32 * 1024 * 1024)
 
@@ -82,29 +81,6 @@ object SecureDataStoreManager {
 
     @SuppressLint("HardwareIds")
     fun generateAESKey(context: Context): SecretKey {
-//        val masterKey = MasterKey.Builder(context)
-//            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-//            .build()
-
-//        val sharedPreferences = EncryptedSharedPreferences.create(
-//            context,
-//            "File_Encryption_Prefs",
-//            masterKey,
-//            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-//            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-//        )
-
-//        var salt = sharedPreferences.getString("file_encryption_salt", null)
-//        if (salt == null) {
-//            salt = generateSalt() // salt 만들기
-//            sharedPreferences.edit().putString("file_encryption_salt", salt).apply()
-//        }
-//        val deviceId = Settings.Secure.getString(
-//            context.contentResolver,
-//            Settings.Secure.ANDROID_ID
-//        )
-//        val keyBytes = hashWithSHA512(deviceId, salt) // deviceId와 salt를 통해서 SHA-512 해싱 -> 이 해시를 key로 해서 AES-256 Encrypted함
-//        return SecretKeySpec(keyBytes, "AES")
         val salt = getOrCreateSalt(context)
         val deviceId = Settings.Secure.getString(
             context.contentResolver,
@@ -286,10 +262,6 @@ object SecureDataStoreManager {
         val decryptedBytes = cipher.doFinal(encryptedBytes)
         return String(decryptedBytes, Charset.forName("UTF-8"))
     }
-
-
-
-
     fun isValidToken(jsonObject: JSONObject): Boolean {
         return jsonObject.has("access_jwt") &&
                 jsonObject.has("refresh_jwt") &&

@@ -467,7 +467,7 @@ class MeasureFragment : Fragment() {
         balloon = Balloon.Builder(requireContext())
             .setWidthRatio(0.6f)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("${userJson?.optString("user_name")}님 연령대에서\n백분위 ${if (percent >= 0.5f) "${((1.0f - percent) * 100).toInt()}" else "${(percent * 100).toInt()}"}%에 위치합니다.")
+            .setText("${userJson?.optString("user_name")}님은 평균 백분위\n${if (percent >= 0.5f) "${((1.0f - percent) * 100).toInt()}" else "${(percent * 100).toInt()}"}%에 위치합니다.")
             .setTextColorResource(R.color.whiteText)
             .setTextSize(15f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
