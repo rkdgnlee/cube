@@ -10,6 +10,7 @@ import com.tangoplus.tangoq.vo.MeasureVO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
+import java.io.File
 
 class AnalysisViewModel : ViewModel() {
     // MainAnalysisFragment
@@ -27,6 +28,8 @@ class AnalysisViewModel : ViewModel() {
     var rightAnalysises : MutableList<MutableList<AnalysisUnitVO>>? = null
     var trendLeftUri: String? = null
     var trendRightUri : String? = null
+    var rightEditedFile: File? = null
+    var leftEditedFile: File? = null
 
     // trend(자세별: 0~6 저장), mainAnalysis(seq: 0, 1, 2, 3 저장 ) // measureDetail(seq: 0~6)사용
     var currentIndex : Int = 0

@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.function
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.PointF
 import android.media.MediaMetadataRetriever
@@ -27,6 +28,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import kotlin.coroutines.resume
 import kotlin.math.abs
+import androidx.core.graphics.scale
 
 object MeasurementManager {
     val partIndexes = mapOf(
@@ -163,7 +165,12 @@ object MeasurementManager {
                 "front_horizontal_angle_hip" to Triple(180f, 1.8f, 2.9f)),
             3 to mapOf("side_left_horizontal_distance_hip" to Triple(2.5f, 2.55f, 4.25f)),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, -1.5f, -3.1f)),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
+            6 to mapOf(
+                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(
+                    35f,
+                    4f,
+                    6f
+                ),
             )
         ),
         mapOf(
@@ -171,7 +178,12 @@ object MeasurementManager {
                 "front_horizontal_angle_hip" to Triple(-180f, 1.8f, 2.9f)),
             4 to mapOf("side_right_horizontal_distance_hip" to Triple(2.5f, 2.55f, 4.25f)),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, 1.5f, 3.1f)),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,4f, 6f),
+            6 to mapOf(
+                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(
+                    35f,
+                    4f,
+                    6f
+                ),
             )
         ),
         // 좌측 무릎
@@ -289,7 +301,12 @@ object MeasurementManager {
                 "front_horizontal_angle_hip" to Triple(180f, 1.2f, 2.1f)),
             3 to mapOf("side_left_horizontal_distance_hip" to Triple(2.5f, 2.55f, 3.75f)),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, -0.9f, -2.3f)),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,8f, 14f),
+            6 to mapOf(
+                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(
+                    35f,
+                    8f,
+                    14f
+                ),
             )
         ),
         mapOf(
@@ -297,7 +314,12 @@ object MeasurementManager {
                 "front_horizontal_angle_hip" to Triple(-180f, 1.2f, 2.1f)),
             4 to mapOf("side_right_horizontal_distance_hip" to Triple(2.5f, 2.55f, 3.75f)),
             5 to mapOf("back_horizontal_angle_hip" to Triple(0f, 0.9f, 2.3f)),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f,8f, 14f),
+            6 to mapOf(
+                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(
+                    35f,
+                    8f,
+                    14f
+                ),
             )
         ),
         // 좌측 무릎 정상은 정면 좌측이 음수 우측이 양수 // 후면은 좌측이 양수 우측이 음수
@@ -408,7 +430,8 @@ object MeasurementManager {
             3 to mapOf("side_left_vertical_angle_hip_knee" to "왼쪽 골반과 무릎 기울기",
                 "side_left_horizontal_distance_hip" to "중심과 왼쪽 골반 거리"),
             5 to mapOf("back_horizontal_angle_hip" to "후면 - 양 골반 기울기"),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "양 어깨와 골반을 이은 삼각형에서 골반 기울기",
+            6 to mapOf(
+                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "양 어깨와 골반을 이은 삼각형에서 골반 기울기",
 //                "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
             )
         ),
@@ -418,9 +441,10 @@ object MeasurementManager {
             4 to mapOf("side_right_vertical_angle_hip_knee" to "오른쪽 골반과 무릎 기울기",
                 "side_right_horizontal_distance_hip" to "중심과 오른쪽 골반 거리"),
             5 to mapOf("back_horizontal_angle_hip" to "후면 - 양 골반 기울기"),
-            6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "양 어깨와 골반을 이은 삼각형에서 골반 기울기",
+            6 to mapOf(
+                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to "양 어깨와 골반을 이은 삼각형에서 골반 기울기",
 //                "back_sit_vertical_angle_shoulder_center_hip" to "어깨와 골반중심 기울기",
-                )
+            )
         ),
         // 좌측 무릎 + 스쿼트
         mapOf( // 5
@@ -795,12 +819,25 @@ object MeasurementManager {
                                     fragment.requireContext()
                                 )
                                 isSet = true
-                                // ------# main part일 때 #------
-                                if (case in listOf("mainPart", "solo")  ) {
-                                    ssiv.setImage(ImageSource.bitmap(combinedBitmap))
+                                // ------# MeasureDetail의 Solo #------
+                                // 가로비율은 2배로 확대 세로 비율은 그대로 보여주기
+                                if (case in listOf("solo") ) {
+                                    val targetRatio = combinedBitmap.height.toFloat() / combinedBitmap.width.toFloat()
+                                    Log.v("targetRatio", "$targetRatio, ${combinedBitmap.height}, ${combinedBitmap.width}")
+                                    val scaleFactor = if (targetRatio > 1 ) 1f else 2f // 원하는 확대 비율 (가로만 확대하기 )
+                                    val scaledBitmap = combinedBitmap.scale(
+                                        (combinedBitmap.width * scaleFactor).toInt(),
+                                        (combinedBitmap.height * scaleFactor).toInt()
+                                    )
+                                    val croppedBitmap = ImageSource.bitmap(
+                                        cropToPortraitRatio(scaledBitmap)
+                                    )
+
+                                    ssiv.setImage(croppedBitmap)
+//                                    ssiv.minScale = 2f
                                     // 이미지 크기 맞추기
                                     // ------# trend 비교 일 때 #------
-                                } else if (case == "trend") {
+                                } else if (case in listOf("trend", "mainPart") ) {
                                     ssiv.setImage(ImageSource.bitmap(
                                         cropToPortraitRatio(combinedBitmap)
                                     ))
@@ -847,6 +884,11 @@ object MeasurementManager {
         }
     }
     fun getVideoDimensions(context : Context, videoUri: Uri?) : Pair<Int, Int> {
+        if (videoUri == null) {
+            Log.e("videoUri", "$videoUri")
+            return Pair(0, 0) // 기본값 반환
+        }
+//        Log.e("videoUri", "$videoUri")
         val retriever = MediaMetadataRetriever()
         retriever.setDataSource(context, videoUri)
         val videoWidth = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt() ?: 0

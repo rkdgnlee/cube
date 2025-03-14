@@ -337,7 +337,7 @@ class MainFragment : Fragment() {
 
                 TooltipManager.createGuide(
                     context = requireContext(),
-                    text = "측정을 완료하고 운동 프로그램을 추천받으세요",
+                    text = "측정을 시작해서 몸의 균형상태를 확인해 보세요",
                     anchor = binding.btnMProgram,
                     gravity = Gravity.BOTTOM,
                     dismiss = {

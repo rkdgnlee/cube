@@ -260,7 +260,7 @@ class AnalyzeFragment : Fragment() {
         binding.previousMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
             initMonthData()
-            if (currentMonth > YearMonth.now().minusMonths(12)) {
+            if (currentMonth > YearMonth.now().minusMonths(18)) {
                 currentMonth = currentMonth.minusMonths(1)
                 updateMonthView()
                 updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")

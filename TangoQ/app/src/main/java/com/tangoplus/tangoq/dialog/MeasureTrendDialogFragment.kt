@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.dialog
 
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +12,8 @@ import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.SurfaceView
+import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -17,6 +21,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -25,10 +30,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arthenica.ffmpegkit.FFmpegKit
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.TrendRVAdapter
@@ -48,6 +55,7 @@ import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
+import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
@@ -60,6 +68,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import java.io.File
+import kotlin.math.max
 
 class MeasureTrendDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureTrendDialogBinding
@@ -137,6 +147,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                 val leftAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, avm.measureDisplayDates.filterIndexed { index, dateDisplay -> index != 0 })
                 binding.actvMTDLeft.setAdapter(leftAdapter)
+
+                // 왼쪽 actv 눌렀을 때
                 binding.actvMTDLeft.setOnItemClickListener { _, _, position, _ ->
                     // 날짜 선택
                     val selectedDate = binding.actvMTDLeft.adapter.getItem(position) as DateDisplay
@@ -144,9 +156,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     avm.leftMeasureDate.value = avm.measureDisplayDates.find { it.fullDateTime == selectedDate.fullDateTime }
                     binding.actvMTDLeft.setText(avm.leftMeasureDate.value?.displayDate, false)
                     Log.v("selectedDateLeft", "${avm.leftMeasureDate.value?.fullDateTime}, ${avm.measureDisplayDates.map { it.fullDateTime }}")
-                    CoroutineScope(Dispatchers.IO).launch {
+                    lifecycleScope.launch(Dispatchers.IO) {
                         // 측정파일 없으면 다운로드
-                        setMeasureFiles(avm.leftMeasureDate.value?.fullDateTime)
+                        setMeasureFiles(avm.leftMeasureDate.value?.fullDateTime, false)
                         withContext(Dispatchers.Main) {
                             avm.leftMeasurement.value = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.regDate == avm.leftMeasureDate.value?.fullDateTime }
                             avm.leftAnalysises = transformAnalysisUnit(avm.leftMeasurement.value?.measureResult ?: JSONArray())
@@ -220,6 +232,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
         }
 
     }
+
+    // 오른쪽 actv에 대한 listener
     private fun setACTVClickListener(position: Int) {
         // 날짜 선택
         val selectedDate = binding.actvMTDRight.adapter.getItem(position) as DateDisplay
@@ -229,7 +243,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
 //        Log.v("selectedDateRight", "${avm.rightMeasureDate.value?.fullDateTime}, ${avm.measureDisplayDates.map { it.fullDateTime }}")
         CoroutineScope(Dispatchers.IO).launch {
             // 데이터 셋팅 확인
-            setMeasureFiles(avm.rightMeasureDate.value?.fullDateTime)
+            setMeasureFiles(avm.rightMeasureDate.value?.fullDateTime, true)
 
             // 값 셋팅
             withContext(Dispatchers.Main) {
@@ -258,10 +272,14 @@ class MeasureTrendDialogFragment : DialogFragment() {
         val buttons = listOf(binding.tvMTD1, binding.tvMTD2, binding.tvMTD3, binding.tvMTD4, binding.tvMTD5, binding.tvMTD6, binding.tvMTD7)
 
         buttons.forEachIndexed { index, button ->
+            val isSelected = avm.currentIndex == index
             button.backgroundTintList = when {
                 avm.currentIndex == index -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
                 else -> ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor200))
             }
+            button.isClickable = !isSelected // 선택된 버튼은 클릭 불가능하게 설정
+            button.isEnabled = !isSelected  // 선택된 버튼은 비활성화
+
             button.setOnSingleClickListener {
                 avm.currentIndex = index
                 updateButtonState()  // 버튼 상태를 다시 업데이트
@@ -277,18 +295,23 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                     // 왼쪽이 없을 때는 오른쪽만 갱신
                     withContext(Dispatchers.Main) {
+                        Log.v("avm.leftMeasurement", "${avm.leftMeasurement.value}")
                         if (avm.leftMeasurement.value == null) {
                             if (avm.currentIndex != 6) {
                                 setVideoUI(false, true)
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, transIndex, binding.ssivMTDRight, "trend")
                             } else {
+                                simpleExoPlayer2?.stop()
+                                simpleExoPlayer2?.release()
                                 setVideoUI(true, true)
                                 setClickListener(true)
                                 setPlayer(true)
                             }
-                        } else {
 
+                        } else {
                             if (avm.currentIndex != 6) {
+                                simpleExoPlayer1?.stop()
+                                simpleExoPlayer1?.release()
                                 setVideoUI(false, false)
                                 setVideoUI(false, true)
                                 setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, transIndex, binding.ssivMTDLeft, "trend")
@@ -366,8 +389,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private fun setAdapter(analyzesLeft: MutableList<MutableList<AnalysisUnitVO>>?,
                            analyzesRight : MutableList<MutableList<AnalysisUnitVO>>?,
                            currentSeq : Int = 0) {
+
         val filteredLeftAnalysises = if (currentSeq == 1) {
-            analyzesLeft?.filterIndexed{ index, _ -> index in listOf(1, 2, 7,8,9,10) }?.toMutableList()
+            analyzesLeft?.filterIndexed{ index, _ -> index in listOf(1, 2, 7, 8, 9, 10 ) }?.toMutableList()
         } else {
             analyzesLeft?.mapNotNull { analysisList ->
                 if (analysisList.any { it.seq == currentSeq }) {
@@ -430,7 +454,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         return analysis1
     }
 
-    private suspend fun setMeasureFiles(inputRegDate: String?) {
+    private suspend fun setMeasureFiles(inputRegDate: String?, isRight: Boolean) {
 
         val loadingDialog = LoadingDialogFragment.newInstance("측정파일")
         // ------# 로딩을 통해 파일 가져오기 #------
@@ -448,8 +472,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == inputRegDate }
                         if (singletonIndex != null && singletonIndex >= 0) {
                             singletonMeasure.measures?.set(singletonIndex, editedMeasure)
-                            avm.leftMeasurement.value = editedMeasure
-//                            Log.v("수정완료", "index: $singletonIndex, VO: $editedMeasure")
+                            if (isRight) {
+                                avm.rightMeasurement.value = editedMeasure
+                            } else {
+                                avm.leftMeasurement.value = editedMeasure
+                            }
                             withContext(Dispatchers.Main) {
                                 loadingDialog.dismiss()
                             }
@@ -500,8 +527,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 val videoDuration = simpleExoPlayer2?.duration ?: 0L
                                 lifecycleScope.launch {
                                     while (simpleExoPlayer2?.isPlaying == true) {
-                                        if (!updateUI) updateVideoUI(isRight)
-
+//                                        if (!updateUI) updateVideoUI(isRight)
+                                        updateVideoUI(isRight)
                                         updateFrameData(true, videoDuration, rightJa.length())
                                         delay(24)
                                         Handler(Looper.getMainLooper()).postDelayed( { updateUI = true },1500)
@@ -555,23 +582,86 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private fun initPlayer(isRight: Boolean) {
         when (isRight) {
             true -> {
-                // viewModel의 이전 영상 보존값들 초기화
                 simpleExoPlayer2 = SimpleExoPlayer.Builder(requireContext()).build()
                 binding.pvMTDRight.player = simpleExoPlayer2
                 binding.pvMTDRight.controllerShowTimeoutMs = 1100
-                lifecycleScope.launch {
-                    // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
-                    avm.trendRightUri = avm.rightMeasurement.value?.fileUris?.get(1).toString()
-//                    Log.v("VMTrendRight", "${avm.trendRightUri}")
-                    val mediaItem = MediaItem.fromUri(Uri.parse(avm.trendRightUri))
-                    val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
-                        .createMediaSource(mediaItem)
 
-                    mediaSource.let {
-                        simpleExoPlayer2?.prepare(it)
-                        // 저장된 위치로 정확하게 이동
-                        simpleExoPlayer2?.seekTo(0)
-                        simpleExoPlayer2?.playWhenReady = pvm.getPlayWhenReady()
+                avm.trendRightUri = avm.rightMeasurement.value?.fileUris?.get(1).toString()
+                val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendRightUri?.toUri() ?: "".toUri())
+                val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
+                if (aspectRatio < 1) {
+                    val inputPath = avm.trendRightUri.toString() // 기존 파일 경로
+                    val tempOutputPath = "${context?.cacheDir}/right_temp_video.mp4" // 임시 파일
+
+                    val targetWidth = (videoHeight * 9) / 16
+                    val cropX = max(0, (videoWidth - targetWidth) / 2)
+                    val command = "-i $inputPath -vf crop=$targetWidth:$videoHeight:$cropX:0 -c:v libx264 -preset fast -crf 23 -c:a aac -strict experimental -y $tempOutputPath"
+
+                    lifecycleScope.launch {
+                        FFmpegKit.executeAsync(command) { session ->
+                            if (session.returnCode.isSuccess) {
+                                Log.d("FFmpeg", "✅ 9:16 크롭 성공! output: $tempOutputPath")
+
+                                avm.rightEditedFile = File(tempOutputPath)
+
+                                // ⚠️ 변환된 파일이 정상적으로 생성되었는지 확인
+                                if (avm.rightEditedFile != null && avm.rightEditedFile!!.exists() && avm.rightEditedFile!!.length() > 0) {
+                                    Log.d("FFmpeg", "✅ 변환된 파일 존재 확인: ${avm.rightEditedFile?.absolutePath}")
+
+                                    // UI 스레드에서 실행 (ExoPlayer는 UI 스레드에서 실행해야 함)
+                                    Handler(Looper.getMainLooper()).post {
+                                        val mediaItem = MediaItem.fromUri(Uri.fromFile(avm.rightEditedFile))
+                                        val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
+                                            .createMediaSource(mediaItem)
+
+                                        simpleExoPlayer2?.apply {
+                                            setMediaSource(mediaSource)
+                                            prepare()
+                                            seekTo(0)
+                                            playWhenReady = true
+                                        }
+                                        val displayMetrics = DisplayMetrics()
+                                        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+                                        val screenWidth = displayMetrics.widthPixels
+                                        val aspectRatio2 = videoWidth.toFloat() / videoHeight.toFloat()
+                                        val adjustedHeight = ((screenWidth / 2) * aspectRatio2).toInt()
+
+                                        // clMA의 크기 조절
+                                        val params = binding.clMTDRight.layoutParams
+                                        params.width = screenWidth / 2
+                                        params.height = adjustedHeight
+                                        binding.clMTDRight.layoutParams = params
+
+                                        // llMARV를 clMA 아래에 위치시키기
+                                        val constraintSet = ConstraintSet()
+                                        constraintSet.clone(binding.clMTD)
+                                        constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
+                                        constraintSet.applyTo(binding.clMTD)
+                                    }
+                                } else {
+                                    Log.e("FFmpeg", "❌ 변환된 파일이 존재하지 않음!")
+                                }
+                            } else {
+                                Log.e("FFmpeg", "❌ 크롭 실패! ${session.failStackTrace}")
+                            }
+                        }
+                    }
+                } else {
+                    lifecycleScope.launch {
+                        // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
+
+//                    Log.v("VMTrendRight", "${avm.trendRightUri}")
+                        val mediaItem = MediaItem.fromUri(Uri.parse(avm.trendRightUri))
+                        val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
+                            .createMediaSource(mediaItem)
+
+                        mediaSource.let {
+                            simpleExoPlayer2?.prepare(it)
+                            // 저장된 위치로 정확하게 이동
+                            simpleExoPlayer2?.seekTo(0)
+                            simpleExoPlayer2?.playWhenReady = pvm.getPlayWhenReady()
+                        }
+                        Log.v("오버레이크기", "(${binding.ovMTDRight.width}, ${binding.ovMTDRight.height})")
                     }
                 }
             }
@@ -579,18 +669,79 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 simpleExoPlayer1 = SimpleExoPlayer.Builder(requireContext()).build()
                 binding.pvMTDLeft.player = simpleExoPlayer1
                 binding.pvMTDLeft.controllerShowTimeoutMs = 1100
-                lifecycleScope.launch {
-                    // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
-                    avm.trendLeftUri = avm.leftMeasurement.value?.fileUris?.get(1).toString()
-                    val mediaItem = MediaItem.fromUri(Uri.parse(avm.trendLeftUri))
-                    val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
-                        .createMediaSource(mediaItem)
 
-                    mediaSource.let {
-                        simpleExoPlayer1?.prepare(it)
-                        // 저장된 위치로 정확하게 이동
-                        simpleExoPlayer1?.seekTo(0)
-                        simpleExoPlayer1?.playWhenReady = pvm.getPlayWhenReady()
+                avm.trendLeftUri = avm.leftMeasurement.value?.fileUris?.get(1).toString()
+                val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendLeftUri?.toUri() ?: "".toUri())
+                val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
+                if (aspectRatio < 1) {
+                    val inputPath = avm.trendLeftUri.toString() // 기존 파일 경로
+                    val tempOutputPath = "${context?.cacheDir}/left_temp_video.mp4" // 임시 파일
+
+                    val targetWidth = (videoHeight * 9) / 16
+                    val cropX = max(0, (videoWidth - targetWidth) / 2)
+                    val command = "-i $inputPath -vf crop=$targetWidth:$videoHeight:$cropX:0 -c:v libx264 -preset fast -crf 23 -c:a aac -strict experimental -y $tempOutputPath"
+
+                    lifecycleScope.launch {
+                        FFmpegKit.executeAsync(command) { session ->
+                            if (session.returnCode.isSuccess) {
+                                Log.d("FFmpeg", "✅ 9:16 크롭 성공! output: $tempOutputPath")
+
+                                avm.leftEditedFile = File(tempOutputPath)
+
+                                // ⚠️ 변환된 파일이 정상적으로 생성되었는지 확인
+                                if (avm.leftEditedFile != null && avm.leftEditedFile!!.exists() && avm.leftEditedFile!!.length() > 0) {
+                                    Log.d("FFmpeg", "✅ 변환된 파일 존재 확인: ${avm.leftEditedFile?.absolutePath}")
+
+                                    // UI 스레드에서 실행 (ExoPlayer는 UI 스레드에서 실행해야 함)
+                                    Handler(Looper.getMainLooper()).post {
+                                        val mediaItem = MediaItem.fromUri(Uri.fromFile(avm.leftEditedFile))
+                                        val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
+                                            .createMediaSource(mediaItem)
+
+                                        simpleExoPlayer1?.apply {
+                                            setMediaSource(mediaSource)
+                                            prepare()
+                                            seekTo(0)
+                                            playWhenReady = true
+                                        }
+                                        val displayMetrics = DisplayMetrics()
+                                        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+                                        val screenWidth = displayMetrics.widthPixels
+                                        val aspectRatio2 = videoWidth.toFloat() / videoHeight.toFloat()
+                                        val adjustedHeight = ((screenWidth / 2) * aspectRatio2).toInt()
+
+                                        // clMA의 크기 조절
+                                        val params = binding.clMTDLeft.layoutParams
+                                        params.width = screenWidth / 2
+                                        params.height = adjustedHeight
+                                        binding.clMTDLeft.layoutParams = params
+
+                                        // llMARV를 clMA 아래에 위치시키기
+                                        val constraintSet = ConstraintSet()
+                                        constraintSet.clone(binding.clMTD)
+                                        constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
+                                        constraintSet.applyTo(binding.clMTD)
+                                    }
+                                } else {
+                                    Log.e("FFmpeg", "❌ 변환된 파일이 존재하지 않음!")
+                                }
+                            } else {
+                                Log.e("FFmpeg", "❌ 크롭 실패! ${session.failStackTrace}")
+                            }
+                        }
+                    }
+                } else {
+                    lifecycleScope.launch {
+                        val mediaItem = MediaItem.fromUri(Uri.parse(avm.trendRightUri))
+                        val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
+                            .createMediaSource(mediaItem)
+                        mediaSource.let {
+                            simpleExoPlayer2?.prepare(it)
+                            // 저장된 위치로 정확하게 이동
+                            simpleExoPlayer2?.seekTo(0)
+                            simpleExoPlayer2?.playWhenReady = pvm.getPlayWhenReady()
+                        }
+                        Log.v("오버레이크기", "(${binding.ovMTDRight.width}, ${binding.ovMTDRight.height})")
                     }
                 }
             }
@@ -605,6 +756,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 exoPlay2?.visibility = View.GONE
                 llSpeed2?.visibility = View.GONE
                 exoExit2?.visibility = View.GONE
+                exoPause2?.visibility = View.VISIBLE
                 exoPlay2?.setOnClickListener {
                     simpleExoPlayer2?.seekTo(pvm.getRightPlaybackPosition())
                     simpleExoPlayer2?.play()
@@ -624,6 +776,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 exoPlay1?.visibility = View.GONE
                 llSpeed1?.visibility = View.GONE
                 exoExit1?.visibility = View.GONE
+                exoPause2?.visibility = View.VISIBLE
                 exoPlay1?.setOnClickListener {
                     simpleExoPlayer1?.seekTo(pvm.getLeftPlaybackPosition())
                     simpleExoPlayer1?.play()
@@ -645,23 +798,48 @@ class MeasureTrendDialogFragment : DialogFragment() {
         when (isRight) {
             true -> {
                 val currentPosition = simpleExoPlayer2?.currentPosition ?: 0L
-
                 val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
                 val coordinates = extractVideoCoordinates(rightJa)
 
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendRightUri?.toUri())
-                if (frameIndex in 0 until totalFrames) {
+                val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
 
-                    val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
-                    requireActivity().runOnUiThread {
-                        binding.ovMTDRight.scaleX = -1f
-                        binding.ovMTDRight.setResults(
+                if (aspectRatio < 1) {
+                    val (editedWidth, editedHeight) = getVideoDimensions(requireContext(), Uri.fromFile(avm.rightEditedFile))
+                    if (frameIndex in 0 until totalFrames) {
+                        // overlay의 좌표를 crop된 영상에 맞게 수정하는 함수
+                        val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
+                        val transformedResult = transformCoordinates(
                             poseLandmarkResult,
-                            videoWidth,
-                            videoHeight,
-                            OverlayView.RunningMode.VIDEO
+                            videoWidth, videoHeight,  // 원본 크기
+                            editedWidth, editedHeight  // 편집된 크기
                         )
-                        binding.ovMTDRight.invalidate()
+
+                        requireActivity().runOnUiThread {
+                            binding.ovMTDRight.scaleX = -1f
+                            binding.ovMTDRight.setResults(
+                                transformedResult, // if (isTablet(requireContext())) poseLandmarkResult else
+                                videoWidth,
+                                videoHeight,
+                                OverlayView.RunningMode.VIDEO
+                            )
+                            binding.ovMTDRight.invalidate()
+                        }
+                    }
+                } else {
+                    if (frameIndex in 0 until totalFrames) {
+
+                        val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
+                        requireActivity().runOnUiThread {
+                            binding.ovMTDRight.scaleX = -1f
+                            binding.ovMTDRight.setResults(
+                                poseLandmarkResult,
+                                videoWidth,
+                                videoHeight,
+                                OverlayView.RunningMode.VIDEO
+                            )
+                            binding.ovMTDRight.invalidate()
+                        }
                     }
                 }
             }
@@ -672,22 +850,106 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 val coordinates = extractVideoCoordinates(leftJa)
 
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendLeftUri?.toUri())
-                if (frameIndex in 0 until totalFrames) {
-
-                    val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
-                    requireActivity().runOnUiThread {
-                        binding.ovMTDLeft.scaleX = -1f
-                        binding.ovMTDLeft.setResults(
+                val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
+                if (aspectRatio < 1) {
+                    val (editedWidth, editedHeight) = getVideoDimensions(requireContext(), Uri.fromFile(avm.leftEditedFile))
+                    if (frameIndex in 0 until totalFrames) {
+                        // overlay의 좌표를 crop된 영상에 맞게 수정하는 함수
+                        val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
+                        val transformedResult = transformCoordinates(
                             poseLandmarkResult,
-                            videoWidth,
-                            videoHeight,
-                            OverlayView.RunningMode.VIDEO
+                            videoWidth, videoHeight,  // 원본 크기
+                            editedWidth, editedHeight  // 편집된 크기
                         )
-                        binding.ovMTDLeft.invalidate()
+
+                        requireActivity().runOnUiThread {
+                            binding.ovMTDLeft.scaleX = -1f
+                            binding.ovMTDLeft.setResults(
+                                transformedResult, // if (isTablet(requireContext())) poseLandmarkResult else
+                                videoWidth,
+                                videoHeight,
+                                OverlayView.RunningMode.VIDEO
+                            )
+                            binding.ovMTDLeft.invalidate()
+                        }
+                    }
+                } else {
+                    if (frameIndex in 0 until totalFrames) {
+
+                        val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
+                        requireActivity().runOnUiThread {
+                            binding.ovMTDLeft.scaleX = -1f
+                            binding.ovMTDLeft.setResults(
+                                poseLandmarkResult,
+                                videoWidth,
+                                videoHeight,
+                                OverlayView.RunningMode.VIDEO
+                            )
+                            binding.ovMTDLeft.invalidate()
+                        }
                     }
                 }
             }
         }
+    }
+    private fun transformCoordinates(
+        result: PoseLandmarkResult,
+        originalWidth: Int, originalHeight: Int,
+        targetWidth: Int, targetHeight: Int
+    ): PoseLandmarkResult {
+
+        // 원본 영상에서 크롭된 부분 계산 (FFmpeg 코드와 동일하게)
+        val cropWidth = (originalHeight * 9) / 16
+        val cropX = maxOf(0, (originalWidth - cropWidth) / 2)
+        // 디버깅을 위한 로그
+//        Log.d("크롭 계산", "원본 크기: ${originalWidth}x${originalHeight}, 크롭 너비: $cropWidth, 크롭 시작점: $cropX")
+
+        val transformedLandmarks = result.landmarks.map { landmark ->
+            if (isTablet(requireContext())) {
+                // 태블릿의 경우 scaleY값만 맞추기
+
+                val xScale = originalWidth.toFloat() / targetWidth.toFloat()  // X 축 스케일 증가 (더 넓게)
+                val yScale = originalHeight.toFloat() / targetHeight.toFloat()
+                val maxScale = max(xScale, yScale)
+//                Log.d("크롭 계산", "xScale: $xScale, yScale: $yScale")
+                val yOffset = (targetHeight.toFloat() - originalHeight.toFloat() * maxScale) / 2
+                val normalizedY = landmark.y / originalHeight
+                val newY = normalizedY * targetHeight * maxScale + yOffset
+
+                PoseLandmarkResult.PoseLandmark(landmark.x, newY)
+            } else {
+                // 모바일 일 때 (scaleX만 맞추면 됨)
+
+                // 원본 좌표에서 크롭 시작점 빼기
+                val adjustedX = landmark.x - cropX
+
+                // 크롭 영역 밖의 좌표 처리 (경계 안으로 제한)
+                val clampedX = adjustedX.coerceIn(0f, cropWidth.toFloat())
+
+                // 크롭된 영역에서의 비율 계산
+                val normalizedX = clampedX / cropWidth
+
+                // X 축 조정 - 좌표를 왼쪽으로 이동시키고 넓게 분포
+                // 조정 계수를 실험적으로 조정
+                val xScale = originalWidth.toFloat() / targetWidth.toFloat()  // X 축 스케일 증가 (더 넓게)
+//            val xOffset = -targetWidth * 0.15f  // 왼쪽으로 이동 (음수 값)
+                Log.d("크롭 계산", "xScale: $xScale")
+
+                val newX = normalizedX * targetWidth * xScale
+                val newY = landmark.y * targetHeight / originalHeight  // Y는 잘 맞으므로 간단히 비율만 적용
+
+                PoseLandmarkResult.PoseLandmark(newX, newY)
+            }
+        }
+
+        // 첫 좌표의 변환 전/후 비교 로깅
+        if (result.landmarks.isNotEmpty() && transformedLandmarks.isNotEmpty()) {
+            val origX = result.landmarks[0].x
+            val newX = transformedLandmarks[0].x
+            Log.d("좌표 변환", "첫 번째 점 X 변환: $origX -> $newX")
+        }
+
+        return PoseLandmarkResult(transformedLandmarks)
     }
 
     private fun updateVideoUI(isRight: Boolean) {
@@ -700,27 +962,33 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                 val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
 //                Log.v("aspectRatio", "$aspectRatio")
-                val adjustedHeight = (screenWidth * aspectRatio).toInt()
 
-                val resizingValue = if (isTablet(requireContext())) {
-                    if (aspectRatio > 1) {
-                        0.5f
-                    } else { // 가로 (키오스크 일 때 원본 유지 )
-                        1f
-                    }
-                } else 0.5f // 태블릿이 아닐 때는 상관없음.
+                if (aspectRatio > 1) {
+                    val adjustedHeight = (screenWidth * aspectRatio).toInt()
 
-                // clMA의 크기 조절
-                val params = binding.clMTDRight.layoutParams
-                params.width = (screenWidth  * resizingValue).toInt()
-                params.height = (adjustedHeight * resizingValue).toInt()
-                binding.clMTDRight.layoutParams = params
+                    val resizingValue = if (isTablet(requireContext())) {
+                        if (aspectRatio > 1) {
+                            0.5f
+                        } else { // 가로 (키오스크 일 때 원본 유지 )
+                            1f
+                        }
+                    } else 0.5f // 태블릿이 아닐 때는 상관없음.
 
-                // llMARV를 clMA 아래에 위치시키기
-                val constraintSet = ConstraintSet()
-                constraintSet.clone(binding.clMTD)
-                constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
-                constraintSet.applyTo(binding.clMTD)
+                    // clMA의 크기 조절
+                    val params = binding.clMTDRight.layoutParams
+                    params.width = (screenWidth  * resizingValue).toInt()
+                    params.height = (adjustedHeight * resizingValue).toInt()
+                    binding.clMTDRight.layoutParams = params
+
+                    // llMARV를 clMA 아래에 위치시키기
+                    val constraintSet = ConstraintSet()
+                    constraintSet.clone(binding.clMTD)
+                    constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
+                    constraintSet.applyTo(binding.clMTD)
+
+                } else {
+
+                }
 
                 // PlayerView 크기 조절 (필요한 경우)
             }

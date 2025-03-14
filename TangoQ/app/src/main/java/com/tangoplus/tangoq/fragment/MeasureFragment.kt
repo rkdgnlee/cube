@@ -306,7 +306,7 @@ class MeasureFragment : Fragment() {
                 axisLineWidth = 1.0f
             }
             lcYAxisLeft.apply {
-                axisMinimum = 50f
+                axisMinimum = 45f
                 axisMaximum = 100f
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
@@ -407,8 +407,10 @@ class MeasureFragment : Fragment() {
                         lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
                         balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
 //                        Log.v("originalIndex", "$originalIndex")
-                        mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
-                        mvm.selectedMeasureIndex.value = originalIndex
+                        if ( selectedData.second > 50) {
+                            mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
+                            mvm.selectedMeasureIndex.value = originalIndex
+                        }
                     }
 
                 }

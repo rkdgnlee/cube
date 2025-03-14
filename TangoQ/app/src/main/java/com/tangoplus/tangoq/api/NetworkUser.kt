@@ -148,7 +148,9 @@ object NetworkUser {
 //                     Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
-                    callback(jo)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        callback(jo)
+                    }
                 }
             })
         }
@@ -229,7 +231,7 @@ object NetworkUser {
 
                     override fun onResponse(call: Call, response: Response) {
                         val responseBody = response.body?.string()
-//                         Log.v("응답성공", "code: ${response.code}, body: $responseBody")
+                         Log.v("응답성공", "code: ${response.code}, body: $responseBody")
 
                         if (response.isSuccessful) {
                             Log.v("회원가입로그", "${response.code}")
@@ -411,18 +413,21 @@ object NetworkUser {
         val body = joBody.toRequestBody(mediaType)
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("$myUrl")
-            .post(body)리라
+            .url("${myUrl}verify_otp.php")
+            .post(body)
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("이메일보내기failed", "Failed to enqueue request")
+                Log.e("opt인증failed", "Failed to enqueue request")
             }
             override fun onResponse(call: Call, response: Response) {
                 try {
                     val responseBody = response.body?.string()
                     val jo = responseBody?.let{JSONObject(it)}
-                    callback(jo)
+                    Log.v("opt인증", "$jo")
+                    CoroutineScope(Dispatchers.Main).launch {
+                        callback(jo)
+                    }
                 } catch (e: NetworkErrorException) {
                     Log.e("verifyPWError", "Error by verifyPW NetworkErrorException : ${e.message}")
                 } catch (e: IllegalStateException) {
@@ -438,23 +443,32 @@ object NetworkUser {
         })
     }
 
-    fun sendPWCode(myUrl: String, joBody: String, callback: () -> Unit) {
+    fun sendPWCode(myUrl: String, joBody: String, callback: (Int) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = joBody.toRequestBody(mediaType)
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("$myUrl")
+            .url("${myUrl}send_otp.php")
             .post(body)
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("이메일보내기failed", "Failed to enqueue request")
+                callback(500)
             }
             override fun onResponse(call: Call, response: Response) {
                try {
                    val responseBody = response.body?.string()
-                   val jo = responseBody?.let{JSONObject(it)}
-                   callback()
+
+                   val jo = responseBody?.let{ JSONObject(it) }
+                   Log.v("이메일보내기", "${jo}")
+                   val code = jo?.optInt("status")
+                   if (code != null) {
+                       CoroutineScope(Dispatchers.Main).launch {
+                           callback(code)
+                       }
+                   }
+
                } catch (e: NetworkErrorException) {
                    Log.e("sendPWError", "Error by verifyPW NetworkErrorException : ${e.message}")
                } catch (e: IllegalStateException) {
@@ -470,11 +484,14 @@ object NetworkUser {
         })
     }
 
-    fun resetPW(myUrl: String, callback: (Int?) -> Unit) {
+    fun resetPW(myUrl: String, token: String, body: String, callback: (Int?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val joBody = body.toRequestBody(mediaType)
+
         val authInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val newRequest = originalRequest.newBuilder()
-//                .header("Authorization", "Bearer ${getEncryptedJwtToken(context)}")
+                .header("Authorization", "Bearer $token")
                 .build()
             chain.proceed(newRequest)
         }
@@ -482,8 +499,8 @@ object NetworkUser {
             .addInterceptor(authInterceptor)
             .build()
         val request = Request.Builder()
-            .url("$myUrl")
-            .get()
+            .url("${myUrl}reset_pwd.php")
+            .post(joBody)
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -493,7 +510,45 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                callback(response.code)
+                val jo = responseBody?.let{ JSONObject(it) }
+                val code = jo?.optInt("status")
+                if (code != null) {
+                    callback(code)
+                }
+            }
+        })
+    }
+    fun resetLock(myUrl: String, token: String, body: String, callback: (Int?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val joBody = body.toRequestBody(mediaType)
+
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}reset_lock.php")
+            .post(joBody)
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("resetPw", "Failed to resetPw")
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                val jo = responseBody?.let{ JSONObject(it) }
+                val code = jo?.optInt("status")
+                if (code != null) {
+                    callback(code)
+                }
             }
         })
     }

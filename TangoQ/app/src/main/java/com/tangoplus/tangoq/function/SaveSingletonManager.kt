@@ -273,10 +273,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     }
                 }
 
-                // 작업 개수 로그 확인
                 Log.v("downloadFiles", "Total save jobs")
 
-                // 모든 작업 완료 대기
                 saveJobs.awaitAll()
 
                 Log.v("파일다운로드", "finish saveJobs")

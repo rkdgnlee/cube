@@ -53,7 +53,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
     var currentExerciseId = ""
     private var isExitDialogVisible = false
     private lateinit var mediaSourceList: List<MediaSource>
-
+//    private var pvm.simpleExoPlayer : pvm.simpleExoPlayer? = null
     private var exoPlay: ImageButton? = null
     private var exoPause: ImageButton? = null
     private var llSpeed: LinearLayout? = null
@@ -139,7 +139,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
             playbackPosition = intent.getLongExtra("current_position", 0L)
             Log.v("재생시점원시", "$playbackPosition")
             pvm.isResume = false
-            setPlayer()
+//            setPlayer()
+
         }
 
         exoPlay = findViewById(R.id.btnPlay)
@@ -281,7 +282,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                     if (pvm.baseUrls.size > 1) {
                         sendUVP(true) {}
-//                        val currentPlaybackPosition = simpleExoPlayer?.currentPosition
+//                        val currentPlaybackPosition = pvm.simpleExoPlayer?.currentPosition
 //                        pvm.currentWindowIndex.value = currentWindowIndex
 //                        pvm.currentPlaybackPosition.value = currentPlaybackPosition
                         if (currentWindowIndex != null) {
@@ -336,7 +337,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${pvm.simpleExoPlayer?.duration}")
 //        val positionMs = playbackPosition * 1000
 //        val savedPosition = playbackPositions[windowIndex] ?: positionMs
-//        simpleExoPlayer?.seekTo(windowIndex, savedPosition)
+//        pvm.simpleExoPlayer?.seekTo(windowIndex, savedPosition)
         pvm.simpleExoPlayer?.playWhenReady = true  // 준비되면 자동 재생
     }
 
@@ -498,6 +499,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         pvm.simpleExoPlayer?.let { player ->
             pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
             player.stop()
+            player.release()
             player.playWhenReady = false
             playbackPosition = player.currentPosition
         }
@@ -513,6 +515,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 }
             }
         }
+        Log.v("exoOnStop", "pvm.simpleExoPlayer released and null")
+
     }
 
     override fun onPause() {
@@ -526,17 +530,31 @@ class PlayFullScreenActivity : AppCompatActivity() {
             pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
             player.stop()
             player.playWhenReady = false
+            player.release()
+            player.playWhenReady = false
             playbackPosition = player.currentPosition
+
         }
         pvm.isResume = true
+        Log.v("exoOnPause", "pvm.simpleExoPlayer released and null")
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (pvm.simpleExoPlayer != null) {
+            pvm.simpleExoPlayer?.let { player ->
+                pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
+                player.stop()
+                player.release()
+                player.playWhenReady = false
+                playbackPosition = player.currentPosition
+                Log.v("exoOnDestroy", "Player released in onDestroy()")
+            }
             pvm.simpleExoPlayer?.release()
             pvm.simpleExoPlayer = null
-            Log.v("exoplayerExit", "SimpleExoPlayer released and null")
+
+            Log.v("exoOnDestroy", "pvm.simpleExoPlayer released and null")
         }
     }
 
@@ -545,7 +563,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         if (pvm.simpleExoPlayer != null) {
             pvm.simpleExoPlayer?.release()
             pvm.simpleExoPlayer = null
-            Log.v("exoplayerExit", "SimpleExoPlayer released and null, finish")
+            Log.v("exoplayerExit", "pvm.simpleExoPlayer released and null, finish")
         }
     }
     override fun onSaveInstanceState(outState: Bundle) {

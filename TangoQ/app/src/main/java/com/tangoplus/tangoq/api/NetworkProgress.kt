@@ -146,7 +146,7 @@ object NetworkProgress {
         })
     }
     // 가장 최신 정보를 가져오는게 좋다.
-    suspend fun getProgress(myUrl: String, bodySn : JSONObject, context: Context, callback: (Triple<Int, Int, Int>, List<List<ProgressUnitVO>>) -> Unit) {
+    suspend fun getProgress(myUrl: String, bodySn : JSONObject, context: Context, callback: (Triple<Int, Int, Int>, List<List<ProgressUnitVO>>?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodySn.toString().toRequestBody(mediaType)
         val client = getClient(context)
@@ -159,6 +159,9 @@ object NetworkProgress {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     val bodyJson = JSONObject(responseBody.toString())
+                    Log.v("bodyJson", "$bodyJson")
+
+
                     val latest = bodyJson.optJSONObject("latest")
                     val progressHistorySn = latest?.optInt("progress_history_sn")
                     val currentWeek = latest?.optInt("week_number")
@@ -200,6 +203,7 @@ object NetworkProgress {
                                 ),
                                 chunckedResult
                             )
+//                            callback(Triple(-1, -1, -1), mutableListOf())
                         }
                     }
                 }

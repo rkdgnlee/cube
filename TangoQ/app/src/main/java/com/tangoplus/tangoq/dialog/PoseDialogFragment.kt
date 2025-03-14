@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -56,7 +57,7 @@ class PoseDialogFragment : DialogFragment() {
     private val pvm : PlayViewModel by activityViewModels()
     private var seq = 0
     private var updateUI = false
-
+    private var videoUrl = ""
 
     private var exoPlay: ImageButton? = null
     private var exoPause: ImageButton? = null
@@ -110,7 +111,7 @@ class PoseDialogFragment : DialogFragment() {
 
                 pvm.setPlaybackPosition(0L)
                 pvm.setWindowIndex(0)
-                pvm.videoUrl = mvm.selectedMeasure?.fileUris?.get(1)
+                videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
                 exoPlay = view.findViewById(R.id.btnPlay)
                 exoPause = view.findViewById(R.id.btnPause)
                 llSpeed = view.findViewById(R.id.llSpeed)
@@ -209,9 +210,9 @@ class PoseDialogFragment : DialogFragment() {
         binding.pvPD.controllerShowTimeoutMs = 1100
         lifecycleScope.launch {
             // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
-            pvm.videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
+            videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
 
-            val mediaItem = MediaItem.fromUri(Uri.parse(pvm.videoUrl))
+            val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
             val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
                 .createMediaSource(mediaItem)
 
@@ -320,7 +321,7 @@ class PoseDialogFragment : DialogFragment() {
         val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
         val coordinates = extractVideoCoordinates(pvm.dynamicJa)
 
-        val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), pvm.videoUrl?.toUri())
+        val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl?.toUri())
         if (frameIndex in 0 until totalFrames) {
 
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
@@ -340,7 +341,7 @@ class PoseDialogFragment : DialogFragment() {
     private fun updateVideoUI() {
         binding.ssivPD.visibility = View.GONE
 
-        val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), pvm.videoUrl?.toUri())
+        val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenWidth = displayMetrics.widthPixels

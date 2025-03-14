@@ -495,62 +495,69 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 CoroutineScope(Dispatchers.Main).launch {  // LiveData 업데이트는 메인 스레드에서
                     val adjustedWeek = if (week == -1) 0 else week - 1
                     val adjustedSeq = if (seq == -1) 0 else seq - 1
-                    val countSets = result[adjustedWeek].map { it.countSet }
-                    val isMaxSeq = countSets.map { it == 3 }.all { it }
-                    val isMinSeq = countSets.min()
-                    val isSeqFinish = countSets.distinct().size == 1
-                    Log.v("initPostPg", "($adjustedWeek, $adjustedSeq, $isMaxSeq, $isMinSeq, $isSeqFinish) result: ${result[adjustedWeek].map { it.countSet }}")
+                    if (result?.isNotEmpty() == true) {
+                        val countSets = result[adjustedWeek].map { it.countSet }
 
-                    // 전부 봤는지 + 오늘 날짜 인지 + 현재 seq인지 + 현재 week인지?
-                    // 이 곳에서는 isWatched가 존재하지 않음. "seq"와 "count_set"이 전부 일치하는지 + 오늘 날짜 인건지? 확인해야 함
+                        val isMaxSeq = countSets.map { it == 3 }.all { it }
+                        val isMinSeq = countSets.min()
+                        val isSeqFinish = countSets.distinct().size == 1
+                        Log.v("initPostPg", "($adjustedWeek, $adjustedSeq, $isMaxSeq, $isMinSeq, $isSeqFinish) result: ${result[adjustedWeek].map { it.countSet }}")
 
-                    val isAllFinish = countSets.map { it == seq }.all { it }
+                        // 전부 봤는지 + 오늘 날짜 인지 + 현재 seq인지 + 현재 week인지?
+                        // 이 곳에서는 isWatched가 존재하지 않음. "seq"와 "count_set"이 전부 일치하는지 + 오늘 날짜 인건지? 확인해야 함
 
-                    val rightNow = LocalDate.now()
-                    if (pvm.currentProgresses.isNotEmpty()) {
-                        val recentUpdatedAt = pvm.currentProgresses.sortedByDescending { it.updatedAt }[0].updatedAt
-                        Log.v("recentUpdateAt", "$recentUpdatedAt")
-                        val recentUpdateDate = if (!recentUpdatedAt.isNullOrBlank() && recentUpdatedAt != "null") {
-                            LocalDate.parse(recentUpdatedAt, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                        } else {
-                            LocalDate.now()
-                        }
+                        val isAllFinish = countSets.map { it == seq }.all { it }
+
+                        val rightNow = LocalDate.now()
+                        if (pvm.currentProgresses.isNotEmpty()) {
+                            val recentUpdatedAt = pvm.currentProgresses.sortedByDescending { it.updatedAt }[0].updatedAt
+                            Log.v("recentUpdateAt", "$recentUpdatedAt")
+                            val recentUpdateDate = if (!recentUpdatedAt.isNullOrBlank() && recentUpdatedAt != "null") {
+                                LocalDate.parse(recentUpdatedAt, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                            } else {
+                                LocalDate.now()
+                            }
 //                        Log.v("currentValid", "${pvm.currentProgresses.map { it.isWatched }}, $rightNow $recentUpdateDate, ${rightNow == recentUpdateDate}")
 
-                        if (isAllFinish && rightNow == recentUpdateDate) {
-                            pvm.dailySeqFinished = true
-                            val dialog = ProgramAlertDialogFragment.newInstance(this@ProgramCustomDialogFragment, 1)
-                            dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
+                            if (isAllFinish && rightNow == recentUpdateDate) {
+                                pvm.dailySeqFinished = true
+                                val dialog = ProgramAlertDialogFragment.newInstance(this@ProgramCustomDialogFragment, 1)
+                                dialog.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
+                            }
                         }
-                    }
 
-                    if (isMaxSeq && isSeqFinish) {
-                        // 모든 회차가 끝남 ( 주차가 넘어가야하는 상황 )
-                        pvm.currentWeek = adjustedWeek + 1
-                        pvm.selectWeek.value = adjustedWeek + 1
-                        pvm.selectedWeek.value = adjustedWeek + 1
-                        pvm.currentSequence = 0
-                        pvm.selectedSequence.value = 0
-                        // 회차 진행중
-                    } else if (!isMaxSeq && isSeqFinish && isMinSeq > 0) {
-                        pvm.currentWeek = adjustedWeek
-                        pvm.selectWeek.value = adjustedWeek
-                        pvm.selectedWeek.value = adjustedWeek
-                        pvm.currentSequence = adjustedSeq + 1
-                        pvm.selectedSequence.value= adjustedSeq + 1
-                        // 시청 중간
-                    } else if (isMinSeq > 0) {
-                        pvm.currentWeek = adjustedWeek
-                        pvm.selectWeek.value = adjustedWeek
-                        pvm.selectedWeek.value = adjustedWeek
-                        pvm.currentSequence = adjustedSeq
-                        pvm.selectedSequence.value= adjustedSeq
-                    }else {
-                        pvm.currentWeek = adjustedWeek
-                        pvm.selectWeek.value = adjustedWeek
-                        pvm.selectedWeek.value = adjustedWeek
-                        pvm.currentSequence = adjustedSeq
-                        pvm.selectedSequence.value= adjustedSeq
+                        if (isMaxSeq && isSeqFinish) {
+                            // 모든 회차가 끝남 ( 주차가 넘어가야하는 상황 )
+                            pvm.currentWeek = adjustedWeek + 1
+                            pvm.selectWeek.value = adjustedWeek + 1
+                            pvm.selectedWeek.value = adjustedWeek + 1
+                            pvm.currentSequence = 0
+                            pvm.selectedSequence.value = 0
+                            // 회차 진행중
+                        } else {
+                            if (!isMaxSeq && isSeqFinish && isMinSeq > 0) {
+                                pvm.currentWeek = adjustedWeek
+                                pvm.selectWeek.value = adjustedWeek
+                                pvm.selectedWeek.value = adjustedWeek
+                                pvm.currentSequence = adjustedSeq + 1
+                                pvm.selectedSequence.value= adjustedSeq + 1
+                                // 시청 중간
+                            } else {
+                                if (isMinSeq > 0) {
+                                    pvm.currentWeek = adjustedWeek
+                                    pvm.selectWeek.value = adjustedWeek
+                                    pvm.selectedWeek.value = adjustedWeek
+                                    pvm.currentSequence = adjustedSeq
+                                    pvm.selectedSequence.value= adjustedSeq
+                                }else {
+                                    pvm.currentWeek = adjustedWeek
+                                    pvm.selectWeek.value = adjustedWeek
+                                    pvm.selectedWeek.value = adjustedWeek
+                                    pvm.currentSequence = adjustedSeq
+                                    pvm.selectedSequence.value= adjustedSeq
+                                }
+                            }
+                        }
                     }
                     Log.v("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}")
                 }

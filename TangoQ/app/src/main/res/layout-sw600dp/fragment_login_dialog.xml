@@ -83,11 +83,157 @@
                 app:layout_constraintStart_toStartOf="@+id/etLDId"
                 app:layout_constraintTop_toBottomOf="@+id/etLDId" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clLDResetLock"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etLDPw">
+
+                <TextView
+                    android:id="@+id/textView60"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="30dp"
+                    android:text="계정 잠금 해제"
+                    android:textColor="@color/subColor800"
+                    android:textSize="22dp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout20"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="32dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView64">
+
+                    <EditText
+                        android:id="@+id/etLDEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bckgnd_12_edit_text"
+                        android:ems="10"
+                        android:hint="이메일을 입력해주세요"
+                        android:inputType="textPassword"
+                        android:paddingStart="20dp"
+                        android:paddingTop="20dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="20dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/subColor150"
+                        android:textSize="18dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnLDCodeSend"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_weight="2"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/mainColor"
+                        android:stateListAnimator="@null"
+                        android:text="인증번호 전송"
+                        android:textColor="@color/whiteText"
+                        android:textSize="18dp" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/etLDCode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/bckgnd_12_edit_text"
+                    android:ems="10"
+                    android:hint="인증번호를 입력해주세요"
+                    android:inputType="textPassword"
+                    android:padding="20dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/subColor150"
+                    android:textSize="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout20" />
+
+                <TextView
+                    android:id="@+id/tvLDEmailAlert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="10dp"
+                    android:text="인증번호가 오지 않는다면, 재전송 을 눌러 다시 시도해주세요"
+                    android:textColor="@color/subColor400"
+                    android:textSize="15dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etLDCode" />
+
+                <TextView
+                    android:id="@+id/tvLDAlertTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="02:00"
+                    android:textColor="@color/subColor500"
+                    android:textSize="15dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvLDEmailAlert"
+                    app:layout_constraintStart_toEndOf="@+id/tvLDEmailAlert"
+                    app:layout_constraintTop_toTopOf="@+id/tvLDEmailAlert" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnLDVerify"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/mainColor"
+                    android:padding="16dp"
+                    android:stateListAnimator="@null"
+                    android:text="인증하기"
+                    android:textColor="@color/whiteText"
+                    android:textSize="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvLDEmailAlert" />
+
+                <TextView
+                    android:id="@+id/textView64"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="32dp"
+                    android:text="계정이 잠금돼 이메일 인증이 필요합니다"
+                    android:textColor="@color/subColor500"
+                    android:textSize="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView60" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnLDLogin"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/effect_ibtn_20dp"
                 android:backgroundTint="@color/mainColor"
                 android:insetTop="0dp"
@@ -99,7 +245,7 @@
                 android:textSize="24dp"
                 app:layout_constraintEnd_toEndOf="@+id/etLDPw"
                 app:layout_constraintStart_toStartOf="@+id/etLDPw"
-                app:layout_constraintTop_toBottomOf="@+id/tvLDAlert" />
+                app:layout_constraintTop_toBottomOf="@+id/clLDResetLock" />
 
             <TextView
                 android:id="@+id/tvLDFind"

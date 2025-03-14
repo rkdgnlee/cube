@@ -132,8 +132,8 @@ class SplashActivity : AppCompatActivity() {
                         Log.w("firebaseMessaging", "FETCHING FCM registration token failed : ${task.exception?.message}")
                         return@OnCompleteListener
                     }
-//                    val token = task.result.toString()
-//                    Log.e("메시지토큰", "fcm token :: $token")
+                    val token = task.result.toString()
+                    Log.e("메시지토큰", "fcm token :: $token")
                 })
                 createNotificationChannel()
                 // ------! 푸쉬 알림 끝 !------

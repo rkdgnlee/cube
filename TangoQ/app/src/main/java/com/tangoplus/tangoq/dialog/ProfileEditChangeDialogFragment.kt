@@ -121,7 +121,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     override fun afterTextChanged(s: Editable?) {
                         svm.pwCondition.value = pwPatternCheck.matcher(binding.etPCD2.text.toString()).find()
                         if (svm.pwCondition.value == true) {
-                            binding.tvPCDPWCondition.setTextColor(binding.tvPCDPWCondition.resources.getColor(R.color.subColor400, null))
+                            binding.tvPCDPWCondition.setTextColor(binding.tvPCDPWCondition.resources.getColor(R.color.mainColor, null))
                             binding.tvPCDPWCondition.text = "사용 가능합니다"
                         } else {
                             binding.tvPCDPWCondition.setTextColor(binding.tvPCDPWCondition.resources.getColor(R.color.deleteColor, null))
@@ -136,7 +136,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     override fun afterTextChanged(s: Editable?) {
                         svm.pwCompare.value = (binding.etPCD2.text.toString() == binding.etPCD3.text.toString())
                         if (svm.pwCompare.value == true) {
-                            binding.tvPCDPWVerifyCondition.setTextColor(binding.tvPCDPWVerifyCondition.resources.getColor(R.color.subColor400, null))
+                            binding.tvPCDPWVerifyCondition.setTextColor(binding.tvPCDPWVerifyCondition.resources.getColor(R.color.mainColor, null))
                             binding.tvPCDPWVerifyCondition.text = "일치합니다"
                         } else {
                             binding.tvPCDPWVerifyCondition.setTextColor(binding.tvPCDPWVerifyCondition.resources.getColor(R.color.deleteColor, null))

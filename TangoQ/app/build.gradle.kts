@@ -143,6 +143,8 @@ dependencies {
     implementation("com.google.protobuf:protobuf-javalite:4.26.1")
 
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("androidx.media3:media3-exoplayer:1.5.1")
+    implementation("androidx.media3:media3-effect:1.5.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

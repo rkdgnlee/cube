@@ -119,6 +119,7 @@ class SignInViewModel: ViewModel() {
     }
 
     // findAccount
+    var resetJwt : String = ""
     var saveEmail = ""
     var isFindId = MutableLiveData(true)
     var textWatcher : TextWatcher? = null

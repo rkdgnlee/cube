@@ -56,4 +56,10 @@ class PlayViewModel : ViewModel() {
     fun setRightPlaybackPosition(position: Long) { rightPlayBackPosition = position }
     fun getLeftPlaybackPosition() = leftPlayBackPosition
     fun getRightPlaybackPosition() = rightPlayBackPosition
+
+    override fun onCleared() {
+        super.onCleared()
+        simpleExoPlayer?.release()
+        simpleExoPlayer = null
+    }
 }

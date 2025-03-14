@@ -26,6 +26,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -41,6 +42,10 @@ import com.tangoplus.tangoq.databinding.FragmentLoginDialogBinding
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
 import com.tangoplus.tangoq.api.NetworkUser.getUserIdentifyJson
+import com.tangoplus.tangoq.api.NetworkUser.resetLock
+import com.tangoplus.tangoq.api.NetworkUser.sendPWCode
+import com.tangoplus.tangoq.api.NetworkUser.verifyPWCode
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import kotlinx.coroutines.CoroutineScope
@@ -53,6 +58,7 @@ import java.util.regex.Pattern
 class LoginDialogFragment : DialogFragment() {
     lateinit var binding: FragmentLoginDialogBinding
     val viewModel : SignInViewModel by activityViewModels()
+
     private lateinit var ssm : SaveSingletonManager
     private lateinit var prefs : PreferencesManager
     override fun onCreateView(
@@ -169,7 +175,7 @@ class LoginDialogFragment : DialogFragment() {
                     val statusCode = jo?.optInt("status") ?: 0
                     val retryAfter = jo?.optInt("retry_after") ?: 0
                     Log.v("코드", "$statusCode")
-                    // TODO status Code 수정
+
                     if (statusCode == 0) {
                         val jsonObj = JSONObject()
                         jsonObj.put("access_jwt", jo?.optString("access_jwt"))
@@ -264,7 +270,99 @@ class LoginDialogFragment : DialogFragment() {
             // 계정이 잠겼을 때 문의하기
             2 -> {
                 disabledLogin(-1)
+                // TODO 이 곳에서 계정 잠금에 대한 email layout이 보여야 함
+                binding.clLDResetLock.visibility = View.VISIBLE
+
+
+
+
+
+
             }
+        }
+    }
+
+    private fun setLockFunc() {
+        binding.btnLDCodeSend.setOnSingleClickListener {
+            val jo = JSONObject().apply {
+                put("email", viewModel.saveEmail)
+            }
+            sendPWCode(getString(R.string.API_user), jo.toString()) {
+                Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT).show()
+                viewModel.saveEmail = binding.etLDEmail.text.toString()
+                // 재전송안내 문구 세팅
+                binding.tvLDEmailAlert.visibility = View.VISIBLE
+                setVerifyCountDown(120)
+
+                // 버튼 활성화
+                binding.etLDCode.isEnabled = true
+                binding.btnLDVerify.isEnabled = true
+            }
+        }
+        val emailPattern = "^[a-z0-9]{4,16}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+        val emailPatternCheck = Pattern.compile(emailPattern)
+
+        object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.emailCondition.value = emailPatternCheck.matcher(binding.etLDEmail.text.toString()).find()
+                if (viewModel.emailCondition.value == true) {
+                    binding.btnLDCodeSend.isEnabled = true
+                } else {
+                    binding.btnLDCodeSend.isEnabled = false
+                }
+            }
+        }
+        binding.btnLDVerify.setOnClickListener {
+            val bodyJo = JSONObject().apply {
+                put("email", viewModel.saveEmail)
+                put("otp", binding.etLDCode.text)
+            }
+            verifyPWCode(getString(R.string.API_user), bodyJo.toString()) { jo ->
+                if (jo != null) {
+                    val code = jo.optInt("status")
+                    when (code) {
+                        200 -> {
+                            viewModel.resetJwt = jo.optString("jwt_for_pwd")
+                            resetLock(getString(R.string.API_user), viewModel.resetJwt, viewModel.saveEmail) {
+                                Toast.makeText(requireContext(), "인증에 성공했습니다. 다시 로그인해주세요", Toast.LENGTH_LONG).show()
+                                binding.clLDResetLock.visibility = View.GONE
+                                enabledLogin()
+                            }
+                        }
+                        400 -> {
+                            Toast.makeText(requireContext(), "올바르지 않은 요청입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                        }
+                        401 -> {
+                            Toast.makeText(requireContext(), "만료된 인증번호 입니다. 인증을 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            Toast.makeText(requireContext(), "서버 에러입니다. 관리자에게 문의해주세요", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Log.e("failed Verified", "failed To VerifiedCode")
+                    Toast.makeText(requireContext(), "인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun setVerifyCountDown(retryAfter: Int) {
+        if (retryAfter != -1) {
+            object : CountDownTimer((retryAfter * 1000).toLong(), 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    val remainingSeconds = millisUntilFinished / 1000
+                    val minutes = remainingSeconds / 60
+                    val seconds = remainingSeconds % 60
+                    binding.tvLDAlertTime.visibility = View.VISIBLE
+                    binding.tvLDAlertTime.text = "${minutes}분 ${seconds}초"
+                }
+                override fun onFinish() {
+                    binding.tvLDAlertTime.visibility = View.INVISIBLE
+                }
+            }.start()
         }
     }
 

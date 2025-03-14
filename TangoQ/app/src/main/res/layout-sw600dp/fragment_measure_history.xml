@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".fragment.MeasureHistoryFragment">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="로그아웃갑시다2" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvMH"
         android:layout_width="match_parent"
@@ -38,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="측정 정보"
-                android:textColor="@color/subColor800"
+                android:textColor="@color/black"
                 android:textSize="32dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/ibtnMABack"

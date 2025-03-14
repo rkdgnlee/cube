@@ -17,10 +17,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.tangoplus.tangoq.api.HttpClientProvider.scheduleTokenCheck
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
@@ -43,7 +40,7 @@ import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
 import com.tangoplus.tangoq.fragment.ProgramSelectFragment
 import com.tangoplus.tangoq.fragment.WithdrawalFragment
-import com.tangoplus.tangoq.viewmodel.MainViewModel
+import com.tangoplus.tangoq.viewmodel.AppViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val pvm : PlayViewModel by viewModels()
     private val mvm : MeasureViewModel by viewModels()
-    private val viewModel: MainViewModel by viewModels()
+    private lateinit var appViewModel: AppViewModel
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
@@ -65,6 +62,10 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         // 새로운 인텐트가 들어왔을 때 딥링크 처리
         handleIntent(intent)
+    }
+    private fun showLogoutDialog() {
+        val dialog = AlertDialogFragment.newInstance("logout")
+        dialog.show(supportFragmentManager, "AlertDialogFragment")
     }
 
     @SuppressLint("ScheduleExactAlarm")
@@ -79,24 +80,12 @@ class MainActivity : AppCompatActivity() {
         // ------! activity 사전 설정 시작 !------
         // 로그인 완료 시 2분마다 토큰 갱신
         myApplication = application as MyApplication
-
-        val workManager = WorkManager.getInstance(this)
-        scheduleTokenCheck(this)
-        workManager.getWorkInfosForUniqueWorkLiveData("TokenCheckWork").observe(this) { workInfos ->
-            if (workInfos.isNullOrEmpty()) {
-                Log.e("WorkManagerDebug", "작업이 등록되지 않음!")
-                return@observe
-            }
-            val workInfo = workInfos[0]
-            Log.d("WorkManagerDebug", "WorkInfo 상태: ${workInfo.state}")
-//            Log.v("TokenCheckWorker", "$workInfos")
-        }
-        viewModel.showLogoutDialog.observe(this) { shouldShow ->
-            if (shouldShow == true) {  // null 체크
-                Log.v("로그아웃갑시다2", "중복 로그인 - 현재 기기 로그아웃 처리")
-                val dialog = AlertDialogFragment.newInstance("logout")
-                dialog.show(supportFragmentManager, "AlertDialogFragment")
-                viewModel.resetLogoutDialog()
+        appViewModel = myApplication.appViewModel
+        appViewModel.logoutTrigger.observe(this) { shouldLogout ->
+            if (shouldLogout) {
+                Log.e("RefreshTokenFail", "get the code to Logout : ${shouldLogout}")
+                showLogoutDialog()
+                appViewModel.resetTrigger()
             }
         }
 
@@ -295,7 +284,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // 핸들러의 콜백을 제거하여 메모리 누수를 방지
         backPressHandler.removeCallbacks(backPressRunnable)
-        WorkManager.getInstance(this).cancelUniqueWork("TokenCheckWork")
+//        WorkManager.getInstance(this).cancelUniqueWork("TokenCheckWork")
     }
 
     private fun handleIntent(intent: Intent) {

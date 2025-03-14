@@ -7,7 +7,10 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.tangoplus.tangoq.function.PreferencesManager
+import com.tangoplus.tangoq.viewmodel.AppViewModel
 import java.io.File
 
 class MyApplication : Application() {
@@ -15,6 +18,8 @@ class MyApplication : Application() {
     private var isAppInBackground = false
     private var isBiometricSuccess = false
     private var isLastActivity = false
+    val appViewModel: AppViewModel by lazy { AppViewModel() }
+
     override fun onCreate() {
         super.onCreate()
         // 전역 Context 초기화

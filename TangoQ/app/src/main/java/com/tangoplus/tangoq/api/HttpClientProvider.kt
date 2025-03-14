@@ -10,7 +10,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.dialog.AlertDialogFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
@@ -35,11 +37,15 @@ object HttpClientProvider {
                         .build()
                     val response = chain.proceed(request)
                     // 토큰 만료 시 처리
-                    if (response.code == 401) {
+                    Log.v("inGetClient", "${response.code}")
+                    if (response.code in listOf(400, 401)) {
                         response.close() // 기존 응답 닫기
                         // Refresh Token으로 새 Access Token 발급
                         val refreshToken = getEncryptedRefreshJwt(context)
+                        Log.v("inGetToken", "${refreshToken}")
                         val responseCode = refreshAccessToken(context, refreshToken.toString())
+                        Log.v("inGetToken", "refreshAccessToken: ${responseCode}")
+
                         val newAccessToken = getEncryptedAccessJwt(context)
                         if (responseCode == 200) {
                             request = request.newBuilder()
@@ -61,7 +67,7 @@ object HttpClientProvider {
     }
 
     // ------# 만료됐을 때 다시 토큰 발급 받아 저장 #------
-    fun refreshAccessToken(context: Context, refreshToken: String) : Int {
+    private fun refreshAccessToken(context: Context, refreshToken: String) : Int {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body =
             JSONObject().put("refresh_token", refreshToken).toString().toRequestBody(mediaType)
@@ -76,6 +82,10 @@ object HttpClientProvider {
                 if (!response.isSuccessful) {
                     val code = response.code
                     Log.e("RefreshTokenFail", "Failed to access token: $code")
+                    if (code == 400) {
+                        Log.e("RefreshTokenFail", "send to Code to AppViewModel: $code")
+                        (context.applicationContext as MyApplication).appViewModel.triggerLogout()
+                    }
                     code
                 } else if (response.isSuccessful) {
                     val responseBody = response.body?.string()
@@ -106,21 +116,21 @@ object HttpClientProvider {
         }
     }
 
-    fun scheduleTokenCheck(context: Context) {
-        val tokenCheckRequest = PeriodicWorkRequestBuilder<TokenCheckWorker>(15, TimeUnit.MINUTES)
-//            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST) // 강제 실행
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // 네트워크 필요 없음
-                    .setRequiresBatteryNotLow(false) // 배터리 부족 시 실행 허용
-                    .setRequiresCharging(false) // 충전 중이 아니어도 실행
-                    .build()
-            )
-            .build()
-
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "TokenCheckWork",
-            ExistingPeriodicWorkPolicy.UPDATE
-            ,tokenCheckRequest)
-    }
+//    fun scheduleTokenCheck(context: Context) {
+//        val tokenCheckRequest = PeriodicWorkRequestBuilder<TokenCheckWorker>(15, TimeUnit.MINUTES)
+////            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST) // 강제 실행
+//            .setConstraints(
+//                Constraints.Builder()
+//                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // 네트워크 필요 없음
+//                    .setRequiresBatteryNotLow(false) // 배터리 부족 시 실행 허용
+//                    .setRequiresCharging(false) // 충전 중이 아니어도 실행
+//                    .build()
+//            )
+//            .build()
+//
+//        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+//            "TokenCheckWork",
+//            ExistingPeriodicWorkPolicy.KEEP
+//            ,tokenCheckRequest)
+//    }
 }

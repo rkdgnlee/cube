@@ -18,3 +18,4 @@ app/src/main/java/com/tangoplus/tangoq/function/SecurePreferencesManager.kt
 app/src/main/java/com/tangoplus/tangoq/function/SecureDataStoreManager.kt
 app/src/test/java/com/tangoplus/tangoq/
 app/src/androidTest/java/com/tangoplus/tangoq/
+app/release/
