@@ -337,4 +337,19 @@ class MathTest {
         }
         print("week: $setWeek, seq: $setSeq")
     }
+
+    @Test
+    fun seqText() {
+        val indexes = mutableListOf<Int>()
+        for (i in 0 .. 32) {
+            indexes.add(i + 10)
+        }
+        indexes.forEachIndexed { index, i ->
+            val swapIndex = if (index >= 7 && index % 2 == 0) index - 1 // 짝수인 경우 뒤의 홀수 인덱스로 교체
+            else if (index >= 7 && index % 2 == 1) index + 1 // 홀수인 경우 앞의 짝수 인덱스로 교체
+            else index // 7 미만인 경우 그대로 사용
+            println(swapIndex)
+        }
+
+    }
 }

@@ -29,6 +29,7 @@ import java.io.FileNotFoundException
 import kotlin.coroutines.resume
 import kotlin.math.abs
 import androidx.core.graphics.scale
+import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.rePaintDirection
 
 object MeasurementManager {
     val partIndexes = mapOf(
@@ -838,9 +839,19 @@ object MeasurementManager {
                                     // 이미지 크기 맞추기
                                     // ------# trend 비교 일 때 #------
                                 } else if (case in listOf("trend", "mainPart") ) {
-                                    ssiv.setImage(ImageSource.bitmap(
-                                        cropToPortraitRatio(combinedBitmap)
-                                    ))
+                                    val ratio = bitmap.height.toFloat() / bitmap.width.toFloat()
+                                    if (ratio < 1) {
+                                        val croppedBitmap = cropToPortraitRatio(combinedBitmap)
+                                        // 가로 비율일 경우 LR을 다시 그림
+                                        val directedBitmap = rePaintDirection(croppedBitmap, seq)
+                                        ssiv.setImage(ImageSource.bitmap(
+                                            directedBitmap
+                                        ))
+                                    } else {
+                                        ssiv.setImage(ImageSource.bitmap(
+                                            cropToPortraitRatio(combinedBitmap)
+                                        ))
+                                    }
                                 } else {
                                     // ------# analysisFragment #------
                                     when (seq) {

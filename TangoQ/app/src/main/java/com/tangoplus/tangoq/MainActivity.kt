@@ -11,12 +11,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.setPadding
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
@@ -72,7 +78,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.clMain)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
         if (Singleton_t_user.getInstance(this).jsonObject == null || Singleton_t_user.getInstance(this).jsonObject?.optString("user_name") == "") {
             Toast.makeText(this, "올바르지 않은 접근입니다.\n다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
             logout(this@MainActivity, 0)
@@ -188,6 +201,7 @@ class MainActivity : AppCompatActivity() {
                 val finishedMeasure = result.data?.getBooleanExtra("finishedMeasure", false) ?: false
                 if (finishedMeasure) {
                     mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+                    mvm.selectMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
                     mvm.selectedMeasure = singletonMeasure.measures?.get(0)
                     val bnb : BottomNavigationView = findViewById(R.id.bnbMain)
                     bnb.selectedItemId = R.id.measure

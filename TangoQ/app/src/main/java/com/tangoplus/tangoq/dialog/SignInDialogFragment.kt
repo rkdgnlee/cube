@@ -14,6 +14,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionManager
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,8 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
@@ -100,6 +103,15 @@ class SignInDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         auth = FirebaseAuth.getInstance()
         auth.setLanguageCode("kr")
@@ -248,7 +260,6 @@ class SignInDialogFragment : DialogFragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 svm.emailCondition.value = emailPatternCheck.matcher(binding.etEmailId.text.toString()).find()
-//                Log.v("이메일컨디션", "${svm.emailCondition.value}")
             }
         })
         binding.etEmailId.setOnEditorActionListener { _, actionId, _ ->
@@ -490,6 +501,18 @@ class SignInDialogFragment : DialogFragment() {
         })
 
         // ----- ! 비밀번호 확인 코드 ! -----
+        binding.etPwRepeat.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                showAgreementBottomSheetDialog(requireActivity())
+                true  // 이벤트 처리가 완료되었음을 반환
+            } else {
+                false // 다른 동작들은 그대로 유지
+            }
+        }
+
+
+
         binding.etPwRepeat.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(s: Editable?) {
@@ -630,7 +653,7 @@ class SignInDialogFragment : DialogFragment() {
                     if (jsonObj != null) {
                         lifecycleScope.launch(Dispatchers.IO) {
                             insertUser(getString(com.tangoplus.tangoq.R.string.API_user), jsonObj ) { status ->
-                                Log.v("insertStatus", "status: $status")
+//                                Log.v("insertStatus", "status: $status")
                                 when (status) {
                                     200, 201 -> {
                                         CoroutineScope(Dispatchers.Main).launch {

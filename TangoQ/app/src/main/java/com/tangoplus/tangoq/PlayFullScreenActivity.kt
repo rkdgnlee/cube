@@ -15,6 +15,7 @@ import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Chronometer
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -231,6 +232,15 @@ class PlayFullScreenActivity : AppCompatActivity() {
         Log.v("setPlayer", "position: ${pvm.getPlaybackPosition()}, windowIndex: ${pvm.getWindowIndex()}")
         initPlayer(pvm.baseUrls, pvm.getWindowIndex(), pvm.getPlaybackPosition())
         pvm.simpleExoPlayer?.addListener(object : Player.Listener {
+            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                super.onPlayWhenReadyChanged(playWhenReady, reason)
+                // 재생중일 때는 화면 꺼지기 잠금
+                if (playWhenReady) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                } else {  // 재생이 종료되면 flag 삭제
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                }
+            }
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
                 Log.v("PlaybackState", "State: $playbackState")
@@ -241,7 +251,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
                         Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: ${pvm.currentMediaSourceIndex}")
                         pvm.currentVideoDuration = pvm.simpleExoPlayer?.duration ?: 0
                         Log.e("currentVideoDuration임", "${pvm.currentVideoDuration}")
-
                     }
                     Player.STATE_ENDED -> {
                         Log.v("PlaybackState", "Player.STATE_ENDED")

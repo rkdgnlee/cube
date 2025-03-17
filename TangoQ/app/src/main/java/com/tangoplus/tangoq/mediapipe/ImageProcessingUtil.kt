@@ -347,6 +347,48 @@ object ImageProcessingUtil {
         else -> true
     }
 
+    fun rePaintDirection(originalBitmap: Bitmap, sequence: Int) : Bitmap {
+        val mutableBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(mutableBitmap)
+
+        // left right  표시 넣기
+        val leftCircleX = 60f
+        val leftCircleY = 60f
+        val circleRadius = 28f
+        val innerRadius = 6f
+        val textPaint = Paint().apply {
+            color = Color.parseColor("#000000")
+            textSize = 26f
+            isAntiAlias = true
+            textAlign = Paint.Align.CENTER
+        }
+        val outerCirclePaint = Paint().apply {
+            color = Color.parseColor("#41000000")
+            style = Paint.Style.FILL
+        }
+        val innerCirclePaint = Paint().apply {
+            color = Color.parseColor("#FFFFFF")
+            style = Paint.Style.FILL
+        }
+
+        if (sequence in listOf(5, 6)) {
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("R", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("L", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+        } else if (sequence !in listOf(3, 4)) {
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("R", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+        }
+        return mutableBitmap
+    }
+
     fun cropToPortraitRatio(original: Bitmap): Bitmap {
         val width = original.width
         val height = original.height

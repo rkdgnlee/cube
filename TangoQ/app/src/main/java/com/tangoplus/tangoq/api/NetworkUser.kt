@@ -110,15 +110,15 @@ object NetworkUser {
                         callback(jo)
                     }
                 } catch (e: NetworkErrorException) {
-                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                    Log.e("sdkError", "Network Error Login By SDK : ${e.message}")
                 } catch (e: IllegalStateException) {
-                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                    Log.e("sdkError", "IllegalState Error Login By SDK : ${e.message}")
                 } catch (e: IllegalArgumentException) {
-                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                    Log.e("sdkError", "IllegalArgument Error Login By SDK : ${e.message}")
                 } catch (e: SocketTimeoutException) {
-                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                    Log.e("sdkError", "Socket Timeout Error Login By SDK : ${e.message}")
                 } catch (e: Exception) {
-                    Log.e("sdkError", "Error Login By SDK : ${e.message}")
+                    Log.e("sdkError", "Error Login By SDK : ${e.printStackTrace()}")
                 }
             }
         })

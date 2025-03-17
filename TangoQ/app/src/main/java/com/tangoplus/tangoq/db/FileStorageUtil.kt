@@ -34,7 +34,7 @@ object FileStorageUtil {
     suspend fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
         return withContext(Dispatchers.IO) {
             val url = context.getString(R.string.file_url) + fileName  // url 형식 + 파일 이름
-
+            Log.v("url에서파일저장", url)
             val dir = getDirectory(context, fileType)
             val file = File(dir, fileName)  // 파일 이름을 그대로 사용
 

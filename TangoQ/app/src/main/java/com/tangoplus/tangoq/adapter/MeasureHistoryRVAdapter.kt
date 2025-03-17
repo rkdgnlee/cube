@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.MeasureVO
@@ -55,7 +56,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                     viewModel.selectedMeasure = currentItem
 
                     ssm = SaveSingletonManager(fragment.requireContext(), fragment.requireActivity())
-                    CoroutineScope(Dispatchers.IO).launch {
+                    fragment.lifecycleScope.launch(Dispatchers.IO) {
 //                        ssm.setRecent5MeasureResult(position)
 
                         val currentMeasure = viewModel.selectedMeasure

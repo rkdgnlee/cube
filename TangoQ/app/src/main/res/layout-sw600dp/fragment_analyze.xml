@@ -127,7 +127,7 @@
                         android:layout_marginStart="40dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="40dp"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:cardBackgroundColor="@color/white"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="0dp">
@@ -573,8 +573,7 @@
                     android:layout_marginStart="40dp"
                     android:layout_marginTop="60dp"
                     android:text="2024년 5월 9일"
-                    android:textSize="24dp"
-                    android:textStyle="bold"
+                    android:textSize="20dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/cardView10" />
 

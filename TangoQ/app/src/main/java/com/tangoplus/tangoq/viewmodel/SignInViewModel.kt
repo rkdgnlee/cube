@@ -24,6 +24,7 @@ import kotlin.math.truncate
 class SignInViewModel: ViewModel() {
     // 회원가입에 담는 user
     val User = MutableLiveData(JSONObject())
+    var googleJo = JSONObject()
     // ------# 로그인 #------
     var currentIdCon = MutableLiveData(false)
     var currentPwCon = MutableLiveData(false)

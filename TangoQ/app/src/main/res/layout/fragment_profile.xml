@@ -23,7 +23,6 @@
             android:contentDescription="showAlarm"
             android:padding="4dp"
             android:src="@drawable/icon_alarm"
-            app:layout_constraintBottom_toBottomOf="@+id/textView120"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -15,6 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -105,7 +107,13 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         // -------# 기본 셋팅 #-------
         initVMValue()
         binding.ibtnPCDBack.setOnClickListener { dismiss() }
@@ -165,12 +173,10 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                                 setButtonFlavor()
 
-
-
                                 val currentSequenceProgresses = pvm.currentProgresses
                                 // 가장 최근에 시작한 운동의 인덱스 찾기
                                 val startIndex = findCurrentIndex(currentSequenceProgresses)
-                                Log.v("startIndex찾기", "${currentSequenceProgresses.sortedBy { it.exerciseId }.map { it.isWatched }} $startIndex")
+//                                Log.v("startIndex찾기", "${currentSequenceProgresses.sortedBy { it.exerciseId }.map { it.isWatched }} $startIndex")
                             }
                         }
                     }
@@ -187,7 +193,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     // PreferencesManager 초기화 및 추천 저장
                     val prefManager = PreferencesManager(requireContext())
                     prefManager.saveLatestRecommendation(pvm.recommendationSn)
-                    Log.v("마지막시청rec", "${prefManager.getLatestRecommendation()}")
+//                    Log.v("마지막시청rec", "${prefManager.getLatestRecommendation()}")
                     evm.latestProgram = pvm.currentProgram
 
                     val currentSequenceProgresses = pvm.currentProgresses
@@ -196,7 +202,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                     // startIndex가 유효한지 확인
                     if (startIndex >= 0 && startIndex < currentSequenceProgresses.size) {
-                        Log.v("startIndex", "${startIndex}, currentSequenceProgresses: ${currentSequenceProgresses.size}")
+//                        Log.v("startIndex", "${startIndex}, currentSequenceProgresses: ${currentSequenceProgresses.size}")
                         val videoUrls = mutableListOf<String>()
                         val exerciseIds = mutableListOf<String>()
                         val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용
@@ -205,7 +211,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                             // 재생완료인 것들은 빼버리기
                             val progress = currentSequenceProgresses[i]
-                            Log.v("progress", "${progress.exerciseId}, ${progress.uvpSn}")
+//                            Log.v("progress", "${progress.exerciseId}, ${progress.uvpSn}")
                             if (progress.cycleProgress <= (progress.duration * 92 ) / 100) {
                                 exerciseIds.add(progress.exerciseId.toString())
                                 uvpIds.add(progress.uvpSn.toString())
@@ -388,7 +394,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     val selectedWeekValue = pvm.selectedWeek.value
                     val selectedSeqValue = pvm.selectedSequence.value
                     if (selectedWeekValue != null && selectedSeqValue != null) {
-                        Log.v("회차들", "selectedWeekValue: $selectedWeekValue, selectedSeqValue: $selectedSeqValue, VM.selectedSeq: ${pvm.selectedSequence.value}, VM.currentSeq: ${pvm.currentSequence}")
+//                        Log.v("회차들", "selectedWeekValue: $selectedWeekValue, selectedSeqValue: $selectedSeqValue, VM.selectedSeq: ${pvm.selectedSequence.value}, VM.currentSeq: ${pvm.currentSequence}")
                         setAdapter(pvm.currentProgram, pvm.currentProgresses, Pair(pvm.currentSequence, selectedSeqValue))
                         setButtonFlavor()
                     }
@@ -511,7 +517,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         val rightNow = LocalDate.now()
                         if (pvm.currentProgresses.isNotEmpty()) {
                             val recentUpdatedAt = pvm.currentProgresses.sortedByDescending { it.updatedAt }[0].updatedAt
-                            Log.v("recentUpdateAt", "$recentUpdatedAt")
+//                            Log.v("recentUpdateAt", "$recentUpdatedAt")
                             val recentUpdateDate = if (!recentUpdatedAt.isNullOrBlank() && recentUpdatedAt != "null") {
                                 LocalDate.parse(recentUpdatedAt, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                             } else {

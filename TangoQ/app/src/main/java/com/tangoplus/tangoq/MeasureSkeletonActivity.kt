@@ -36,8 +36,10 @@ import android.util.Size
 import android.view.Surface
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -62,6 +64,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.arthenica.ffmpegkit.FFmpegKit
@@ -405,7 +409,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         )
         sensorManager.unregisterListener(this)
         hideIndicatorHandler.removeCallbacks(hideIndicatorRunnable)
-        SoundManager.release()
         release()
     }
     // ------! POSE LANDMARKER 설정 끝 !------
@@ -414,8 +417,14 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMeasureSkeletonBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(binding.root)
-
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.clMeasureSkeleton)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         // ------# room(DB) & singleton & uuid init #------
         md = MeasureDatabase.getDatabase(this)
         mDao = md.measureDao()
@@ -986,7 +995,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             maxSeq -> {
                 binding.pvMeasureSkeleton.progress = 100f
                 binding.clMeasureSkeletonCount.visibility = View.VISIBLE
-                playSound(R.raw.all_finish)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    playSound(R.raw.all_finish)
+                }, 750)
                 binding.tvMeasureSkeletonGuide.text = "모든 측정이 완료 되었습니다."
                 binding.tvMeasureSkeletonCount.visibility = View.GONE
                 binding.tvMeasureSkeletonGuide.textSize = 36f
@@ -1280,7 +1291,10 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 dialog.dismiss()
             }
             .show()
-    }
+        permissionDialog?.let { dialog ->
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.black))
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.black))
+        }    }
     private fun showSettingsDialog() {
         AlertDialog.Builder(this)
             .setTitle("권한 설정 필요")
@@ -1348,16 +1362,30 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 )
             }
             // 스케일링 pose 33개
-            plr.forEachIndexed { index, poseLandmark ->
+            /* 1. 키오스크 -> pose좌표까지 좌우 반전 -> 8이 왼쪽 어깨
+            *  2. 일치시키기 위해 모바일 pose좌표 -> 동일
+            *  3. 실제 기울기를 계산하는 곳만 반대로 들어감 -> 7 이 왼쪽 어깨
+            *  4. 이유는 기울기와 거리 계산하는 곳의 모든 인자를 변경해줘야 하기 때문에.
+            *  5. 값 계산에서는 왼쪽의 기울기는 second 혹은 1번 index 임.
+            *  6. 이를 일치 시키려면? -> mvm에 들어가는 인자들을 거울모드로 변경 -> 값들은 원상복귀
+            * */
+
+
+
+            plr.forEachIndexed { index, _ ->
+                val swapIndex = if (index >= 7 && index % 2 == 0) index - 1 // 짝수인 경우 뒤의 홀수 인덱스로 교체
+                else if (index >= 7 && index % 2 == 1) index + 1 // 홀수인 경우 앞의 짝수 인덱스로 교체
+                else index // 7 미만인 경우 그대로 사용
+                val targetLandmark = plr[swapIndex]
                 val jo = JSONObject().apply {
                     put("index", index)
                     put("isActive", true)
 //                    if (index == 0) { // 코는 아주 유명한 몸에서 1개만 있는 부위임
-                    put("sx", calculateScreenX(poseLandmark.x()).roundToInt())
-                    put("sy", calculateScreenY(poseLandmark.y()).roundToInt())
-                    put("wx", poseLandmark.x())
-                    put("wy", poseLandmark.y())
-                    put("wz", poseLandmark.z())
+                    put("sx", calculateScreenX(targetLandmark.x()).roundToInt())
+                    put("sy", calculateScreenY(targetLandmark.y()).roundToInt())
+                    put("wx", targetLandmark.x())
+                    put("wy", targetLandmark.y())
+                    put("wz", targetLandmark.z())
                 }
                 poseLandmarks.put(jo)
             }
@@ -1365,41 +1393,41 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             mvm.apply {
                 noseData = Pair(calculateScreenX(plr[0].x()), calculateScreenY(plr[0].y()))
                 earData = listOf(
-                    Pair(calculateScreenX(plr[8].x()), calculateScreenY(plr[8].y())),
-                    Pair(calculateScreenX(plr[7].x()), calculateScreenY(plr[7].y()))
+                    Pair(calculateScreenX(plr[7].x()), calculateScreenY(plr[7].y())),
+                    Pair(calculateScreenX(plr[8].x()), calculateScreenY(plr[8].y()))
                 )
                 shoulderData = listOf(
-                    Pair(calculateScreenX(plr[12].x()), calculateScreenY(plr[12].y())),
-                    Pair(calculateScreenX(plr[11].x()), calculateScreenY(plr[11].y()))
+                    Pair(calculateScreenX(plr[11].x()), calculateScreenY(plr[11].y())),
+                    Pair(calculateScreenX(plr[12].x()), calculateScreenY(plr[12].y()))
                 )
                 elbowData = listOf(
-                    Pair(calculateScreenX(plr[14].x()), calculateScreenY(plr[14].y())),
-                    Pair(calculateScreenX(plr[13].x()), calculateScreenY(plr[13].y()))
+                    Pair(calculateScreenX(plr[13].x()), calculateScreenY(plr[13].y())),
+                    Pair(calculateScreenX(plr[14].x()), calculateScreenY(plr[14].y()))
                 )
                 wristData = listOf(
-                    Pair(calculateScreenX(plr[16].x()), calculateScreenY(plr[16].y())),
-                    Pair(calculateScreenX(plr[15].x()), calculateScreenY(plr[15].y()))
+                    Pair(calculateScreenX(plr[15].x()), calculateScreenY(plr[15].y())),
+                    Pair(calculateScreenX(plr[16].x()), calculateScreenY(plr[16].y()))
                 )
                 hipData = listOf(
-                    Pair(calculateScreenX(plr[24].x()), calculateScreenY(plr[24].y())),
-                    Pair(calculateScreenX(plr[23].x()), calculateScreenY(plr[23].y()))
+                    Pair(calculateScreenX(plr[23].x()), calculateScreenY(plr[23].y())),
+                    Pair(calculateScreenX(plr[24].x()), calculateScreenY(plr[24].y()))
                 )
                 kneeData = listOf(
-                    Pair(calculateScreenX(plr[26].x()), calculateScreenY(plr[26].y())),
-                    Pair(calculateScreenX(plr[25].x()), calculateScreenY(plr[25].y()))
+                    Pair(calculateScreenX(plr[25].x()), calculateScreenY(plr[25].y())),
+                    Pair(calculateScreenX(plr[26].x()), calculateScreenY(plr[26].y()))
                 )
                 ankleData = listOf(
-                    Pair(calculateScreenX(plr[28].x()), calculateScreenY(plr[28].y())),
-                    Pair(calculateScreenX(plr[27].x()), calculateScreenY(plr[27].y()))
+                    Pair(calculateScreenX(plr[27].x()), calculateScreenY(plr[27].y())),
+                    Pair(calculateScreenX(plr[28].x()), calculateScreenY(plr[28].y()))
 
                 )
                 heelData = listOf(
-                    Pair(calculateScreenX(plr[30].x()), calculateScreenY(plr[30].y())),
-                    Pair(calculateScreenX(plr[29].x()), calculateScreenY(plr[29].y()))
+                    Pair(calculateScreenX(plr[29].x()), calculateScreenY(plr[29].y())),
+                    Pair(calculateScreenX(plr[30].x()), calculateScreenY(plr[30].y()))
                 )
                 toeData = listOf(
-                    Pair(calculateScreenX(plr[32].x()), calculateScreenY(plr[32].y())),
-                    Pair(calculateScreenX(plr[31].x()), calculateScreenY(plr[31].y()))
+                    Pair(calculateScreenX(plr[31].x()), calculateScreenY(plr[31].y())),
+                    Pair(calculateScreenX(plr[32].x()), calculateScreenY(plr[32].y()))
 
                 )
             }
@@ -1638,15 +1666,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
                     saveJson(mvm.staticjo, step)
                 }
-                3 -> { // 왼쪽보기 (오른쪽 팔)
+                3 -> { // 왼쪽보기 (왼쪽 팔)
                     val sideLeftShoulderDistance : Float = getRealDistanceX(mvm.shoulderData[1], ankleAxis)
                     val sideLeftWristDistance : Float = getRealDistanceX(mvm.wristData[1], ankleAxis)
                     val sideLeftHipDistance : Float = getRealDistanceX(mvm.hipData[1], ankleAxis)
-                    // ------! 측면 거리  - 왼쪽 !------
-                    val sideLeftShoulderElbowLean : Float = abs(calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second)) % 180
-                    val sideLeftElbowWristLean: Float = abs(calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second)) % 180
-                    val sideLeftHipKneeLean : Float = abs(calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second)) % 180
-                    val sideLeftEarShoulderLean : Float = abs(calculateSlope(mvm.earData[1].first, mvm.earData[1].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second)) % 180
+
+                    val sideLeftShoulderElbowLean : Float = 180 + calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second) % 180
+                    val sideLeftElbowWristLean: Float = 180 + calculateSlope(mvm.elbowData[1].first, mvm.elbowData[1].second, mvm.wristData[1].first, mvm.wristData[1].second) % 180
+                    val sideLeftHipKneeLean : Float = 180 + calculateSlope(mvm.hipData[1].first, mvm.hipData[1].second, mvm.kneeData[1].first, mvm.kneeData[1].second) % 180
+                    val sideLeftEarShoulderLean : Float = 180 + calculateSlope(mvm.earData[1].first, mvm.earData[1].second, mvm.shoulderData[1].first, mvm.shoulderData[1].second) % 180
 
                     val sideLeftNoseShoulderLean : Float = abs(calculateSlope(mvm.shoulderData[1].first, mvm.shoulderData[1].second, mvm.noseData.first, mvm.noseData.second ))
 

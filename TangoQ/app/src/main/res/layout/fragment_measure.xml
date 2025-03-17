@@ -400,7 +400,7 @@
                         app:layout_constraintEnd_toEndOf="@+id/lcM"
                         app:layout_constraintStart_toStartOf="@+id/lcM"
                         app:layout_constraintTop_toTopOf="@+id/lcM"
-                        app:layout_constraintVertical_bias="0.66" />
+                        app:layout_constraintVertical_bias="0.60" />
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cvM"
@@ -684,7 +684,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="3dp"
-                        android:text="90"
+                        android:text="95"
                         android:textColor="@color/subColor300"
                         android:textSize="14dp"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView24"

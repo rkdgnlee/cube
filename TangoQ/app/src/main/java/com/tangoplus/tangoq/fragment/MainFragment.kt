@@ -153,11 +153,11 @@ class MainFragment : Fragment() {
 //                        }
 //                    }
                     // ------# 측정결과 있을 때 도움말 툴팁 #------
-                    if (isFirstRun("Tooltip_isFirstRun_existed")) {
+                    if (isFirstRun("Tooltip_isFirstRun_existed_${Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")}")) {
                         existedMeasurementGuide()
                     }
                 } else {
-                    if (isFirstRun("Tooltip_isFirstRun_not_existed")) {
+                    if (isFirstRun("Tooltip_isFirstRun_not_existed_${Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")}")) {
                         notExistedMeasurementGuide()
                     }
                 }

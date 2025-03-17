@@ -101,9 +101,9 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
     }
 
     fun calculateSlope(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        val radians = atan2(y2 - y1, x2 - x1)
-        val degrees = toDegrees(radians.toDouble())
-        return degrees.toFloat()
+        val radians = atan2(y1 - y2, x1 - x2)
+        val degrees = toDegrees(radians.toDouble()).toFloat()
+        return  if (degrees > 180) degrees % 180 else degrees
     }
 
     @Test
@@ -228,4 +228,27 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
     }
 
 
+    @Test
+    fun noseShoulderTest() {
+        val ear1 = Pair(373f, 313f)
+        val shoulder1 = Pair(400f, 414f)
+
+        val ear2 = Pair(360f, 309f)
+        val shoulder2 = Pair(376f, 425f)
+        val result1 = 180 + calculateSlope(ear1.first, ear1.second, shoulder1.first, shoulder1.second) % 180
+        val result2 = 180 + calculateSlope(ear2.first, ear2.second, shoulder2.first, shoulder2.second) % 180
+        println(result1)
+        println(result2)
+
+        val hip1 = Pair(380f, 698f)
+        val knee1 = Pair(359f, 887f)
+
+        val hip2 = Pair(373f, 698f)
+        val knee2 = Pair(373f, 872f)
+        val result3 = 180 + calculateSlope(hip1.first, hip1.second, knee1.first, knee1.second) % 180
+        val result4 = 180 + calculateSlope(hip2.first, hip2.second, knee2.first, knee2.second) % 180
+        println(result3)
+        println(result4)
+
+    }
 }

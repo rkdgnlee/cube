@@ -40,6 +40,7 @@ class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
         val adapter = StringRVAdapter(this@ProgramWeekBSDialogFragment, weeks, null, "week",  pvm)
         binding.rvWBSD.adapter = adapter
 
+        binding.ibtnWBSDExit.setOnSingleClickListener { dismiss() }
 
         binding.btnWBSD.setOnSingleClickListener {
             pvm.selectedWeek.value = pvm.selectWeek.value

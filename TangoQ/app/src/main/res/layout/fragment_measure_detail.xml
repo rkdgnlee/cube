@@ -139,7 +139,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="20dp"
-                android:maxLines="2"
                 android:text="보고 싶은 부위의 데이터를 선택해주세요"
                 android:textColor="@color/subColor400"
                 android:textSize="16dp"

@@ -19,6 +19,7 @@ import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.net.SocketTimeoutException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.coroutines.resume
@@ -52,12 +53,10 @@ object NetworkProgress {
                             } else {
                                 0f
                             }
-
                             // Log.v("총,진행시간", "$duration, $progress, percent: $percent")
                             pv3s.add(percent)
                         }
                     }
-
                     val progresses = mutableListOf<ProgressUnitVO>()
                     if (ja != null) {
                         for (i in 0 until ja.length()) {
@@ -360,7 +359,10 @@ object NetworkProgress {
             } catch (e: IllegalStateException) {
                 Log.e("ProgressIllegal", "getWeek: ${e.message}")
                 null
-            }catch (e: NullPointerException) {
+            } catch (e: SocketTimeoutException) {
+                Log.e("ProgressTimeout", "getWeek: ${e.message}")
+                null
+            }  catch (e: NullPointerException) {
                 Log.e("ProgressNull", "getWeek: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
@@ -429,6 +431,9 @@ object NetworkProgress {
                 null
             } catch (e: NullPointerException) {
                 Log.e("ProgressNull", "getDaily: ${e.message}")
+                null
+            } catch (e: SocketTimeoutException) {
+                Log.e("ProgressTimeout", "getDaily: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
                 Log.e("ProgressException", "getDaily: ${e.message}")

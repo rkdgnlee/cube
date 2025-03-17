@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,11 +27,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.gms.common.util.DeviceProperties.isTablet
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -48,13 +45,10 @@ import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgresses
 import com.tangoplus.tangoq.api.NetworkProgress.getMonthProgress
 import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.databinding.FragmentAnalyzeBinding
-import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
@@ -79,6 +73,7 @@ class AnalyzeFragment : Fragment() {
     private val pvm : ProgressViewModel by activityViewModels()
     private val evm : ExerciseViewModel by activityViewModels()
     private lateinit var  todayInWeek : List<Int>
+    private var isResume = false
 
     override fun onStop() {
         super.onStop()
@@ -101,6 +96,7 @@ class AnalyzeFragment : Fragment() {
         // ------# 운동 기록 API 공간 #------
         todayInWeek = sortTodayInWeek()
         pvm.selectedDate = LocalDate.now()
+        isResume = false
 
         // 클릭 리스너 달기
         binding.ibtnAAlarm.setOnSingleClickListener {
@@ -123,90 +119,9 @@ class AnalyzeFragment : Fragment() {
                 }, 400)
             }
         }
-
-        // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
-        lifecycleScope.launch(Dispatchers.Main) {
-            setShimmer(true)
-            if (pvm.graphProgresses.isNullOrEmpty()) {
-                pvm.graphProgresses = getWeekProgress(getString(R.string.API_progress), requireContext())
-            }
-            setGraph()
-            setShimmer(false)
-//            if (pvm.graphProgresses != null) {
-//                setGraph()
-//            } else {
-//
-//                setShimmer(false)
-//            }
-            // 상단 프로그레스 받아오기
-            val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
-            if (progressResult != null) {
-                Log.v("progressResult", "${progressResult.first}")
-                evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
-                evm.latestProgram = progressResult.second
-//            Log.v("latestUVP", "${evm.latestUVP}, ${evm.latestProgram}")
-                if (!evm.latestUVP.isNullOrEmpty() && evm.latestProgram != null) {
-                    binding.tvAProgressGuide.visibility = View.VISIBLE
-                    binding.cvAProgress.visibility = View.VISIBLE
-                } else {
-                    binding.tvAProgressGuide.visibility = View.GONE
-                    binding.cvAProgress.visibility = View.GONE
-                }
-//                val currentIndex = findCurrentIndex(evm.latestUVP)
-                if (!evm.latestUVP.isNullOrEmpty()) {
-                    val currentEId = evm.latestUVP?.get(0)?.exerciseId
-                    val currentExerciseItem = evm.latestProgram?.exercises?.find { it.exerciseId?.toInt() == currentEId }
-                    val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
-
-                    // 받아온 데이터로 cvEProgress 채우기
-                    Glide.with(requireContext())
-                        .load("${currentExerciseItem?.imageFilePath}")
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .override(180)
-                        .into(binding.ivAThumbnail)
-                    binding.tvAExerciseName.text = currentExerciseItem?.exerciseName
-                    binding.tvAExerciseTime.text = second
-
-                    when (currentExerciseItem?.exerciseStage) {
-                        "초급" -> {
-                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
-                            binding.tvAExerciseStage.text = "초급자"
-                        }
-                        "중급" -> {
-                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
-                            binding.tvAExerciseStage.text = "중급자"
-                        }
-                        "고급" -> {
-                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
-                            binding.tvAExerciseStage.text = "상급자"
-                        }
-                    }
-                    val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
-                    evpItem.let {
-                        if (it != null) {
-                            binding.hpvA.progress = (it.progress * 100 / it.duration).toFloat()
-                        }
-                    }
-                    binding.cvAProgress.setOnSingleClickListener {
-                        val programSn = evm.latestProgram?.programSn ?: -1
-                        val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
-                        ProgramCustomDialogFragment.newInstance(programSn, recSn)
-                            .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
-                    }
-//                Log.v("현재날짜", "${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
-                    updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
-                    avm.existedMonthProgresses.collectLatest { dates ->
-                        binding.cvACalendar.notifyCalendarChanged()
-                    }
-                }
-                setShimmer(false)
-            } else {
-                setGraph()
-                setShimmer(false)
-                binding.tvAProgressGuide.visibility = View.GONE
-                binding.cvAProgress.visibility = View.GONE
-            }
-        }
+        setShimmer(true)
+        updateUI()
+        setShimmer(false)
 
         // ------! calendar 시작 !------
         binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
@@ -296,32 +211,13 @@ class AnalyzeFragment : Fragment() {
             override fun bind(container: DayViewContainer, day: CalendarDay) {
                 container.date.apply {
                     if (day.date.month == currentMonth.month) {
+                        // 기본 달력 텍스트 스타일 지정
                         text = day.date.dayOfMonth.toString()
                         textSize = if (isTablet(requireContext())) 24f else 20f
-                        when (day.date.dayOfMonth) {
-                            in 2 .. 9 -> {
-                                setPadding(32, 16, 32, 16)
-                            }
-                            in 12 .. 19 -> {
-                                setPadding(26, 20, 26, 20)
-                            }
-                            in 22 .. 29 -> {
-                                setPadding(26, 23, 26, 23)
-                            }
-                            30 -> {
-                                setPadding(24, 24, 24, 24)
-                            }
-                            11, 21, 31 -> {
-                                setPadding(28, 22, 28, 22)
-                            }
-                            1 -> {
-                                setPadding(36, 14, 36, 14)
-                            }
-                            else -> {
-                                setPadding(24)
-                            }
-                        }
+                        gravity = Gravity.CENTER
                         setDateStyle(container, day)
+                        setPadding(4)
+                        // 날짜 선택시.
                         container.date.setOnClickListener {
                             // 선택된 날짜를 업데이트 + UI 갱신
                             if (day.date <= LocalDate.now() ) {
@@ -401,7 +297,7 @@ class AnalyzeFragment : Fragment() {
     private fun setDateStyle(container: DayViewContainer, day: CalendarDay) {
         container.date.background = null
         container.removeBadge()
-
+        val now = LocalDate.now()
         when {
             avm.existedMonthProgresses.value.contains(day.date.toString()) -> {
                 if (day.date == pvm.selectedDate) {
@@ -418,7 +314,7 @@ class AnalyzeFragment : Fragment() {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
             }
-            day.date == LocalDate.now() -> {
+            day.date == now -> {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor800))
                 // 현재 날짜에 대한 특별한 배경이 필요하다면 여기에 추가
             }
@@ -426,11 +322,14 @@ class AnalyzeFragment : Fragment() {
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.thirdColor))
 
             }
+            day.date > now  -> {
+                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor300))
+            }
             day.position == DayPosition.MonthDate -> {
-                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor500))
+                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor700))
             }
             else -> {
-                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor150))
+                container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.subColor100))
             }
         }
     }
@@ -468,19 +367,12 @@ class AnalyzeFragment : Fragment() {
 
 
     private fun sortIvInLayout() {
-        val imageViews = listOf(
-            binding.llAWeek.getChildAt(0),
-            binding.llAWeek.getChildAt(1),
-            binding.llAWeek.getChildAt(2),
-            binding.llAWeek.getChildAt(3),
-            binding.llAWeek.getChildAt(4),
-            binding.llAWeek.getChildAt(5),
-            binding.llAWeek.getChildAt(6)
-        )
+        val imageViews = (0..6).map { binding.llAWeek.getChildAt(it) }
+        val sortedIndices = sortTodayInWeek().map { it - 1 } // 1부터 시작하므로 -1 해서 인덱스화
 
         binding.llAWeek.removeAllViews()
-        for ( i in 0 until 7) {
-            binding.llAWeek.addView(imageViews[todayInWeek[i] - 1])
+        sortedIndices.forEachIndexed { index, sortedIndex ->
+            binding.llAWeek.addView(imageViews[sortedIndex])
         }
     }
 
@@ -621,16 +513,18 @@ class AnalyzeFragment : Fragment() {
         binding.tvAWeekProgress.text = "진행일수 $progressCount/${weeklySets.size}"
         // ------# 월화수목금토일 데이터 존재할 시 변경할 구간 #------
         sortIvInLayout()
-//        Log.v("weeklySets", "$weeklySets")
         for ((index, value) in weeklySets.withIndex()) {
-            if (value > 1.0) {
-                setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_enabled")
+            val day = todayInWeek[index] // 정렬된 요일을 가져옴
+            val drawableName = if (value > 1) {
+                "icon_week_${day}_enabled"
             } else {
-                setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_disabled")
+                "icon_week_${day}_disabled"
             }
-            // 오늘 날짜를 지정할 index선택시 자동으로 정렬
-            if (index == 6) {
-                setWeeklyDrawable("ivA${todayInWeek[index]}", "icon_week_${todayInWeek[index]}_today")
+            setWeeklyDrawable("ivA$day", drawableName)
+
+            // 오늘 날짜 표시할 아이콘 변경
+            if (index == 6) { // 마지막 인덱스가 오늘
+                setWeeklyDrawable("ivA$day", "icon_week_${day}_today")
             }
         }
     }
@@ -704,5 +598,83 @@ class AnalyzeFragment : Fragment() {
             }
         }
         animator.start()
+    }
+
+    private fun updateUI() {
+        // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
+        lifecycleScope.launch(Dispatchers.Main) {
+            pvm.graphProgresses = getWeekProgress(getString(R.string.API_progress), requireContext())
+            setGraph()
+
+            // 상단 프로그레스 받아오기
+            val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
+            if (progressResult != null) {
+                Log.v("progressResult", "${progressResult.first}")
+                evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
+                evm.latestProgram = progressResult.second
+                if (!evm.latestUVP.isNullOrEmpty()) {
+                    val currentEId = evm.latestUVP?.get(0)?.exerciseId
+                    val currentExerciseItem = evm.latestProgram?.exercises?.find { it.exerciseId?.toInt() == currentEId }
+                    val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
+
+                    // 받아온 데이터로 cvEProgress 채우기
+                    Glide.with(requireContext())
+                        .load("${currentExerciseItem?.imageFilePath}")
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .override(180)
+                        .into(binding.ivAThumbnail)
+                    binding.tvAExerciseName.text = currentExerciseItem?.exerciseName
+                    binding.tvAExerciseTime.text = second
+
+                    when (currentExerciseItem?.exerciseStage) {
+                        "초급" -> {
+                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_1))
+                            binding.tvAExerciseStage.text = "초급자"
+                        }
+                        "중급" -> {
+                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_2))
+                            binding.tvAExerciseStage.text = "중급자"
+                        }
+                        "고급" -> {
+                            binding.ivAExerciseStage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_stage_3))
+                            binding.tvAExerciseStage.text = "상급자"
+                        }
+                    }
+                    val evpItem = evm.latestUVP?.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
+                    evpItem.let {
+                        if (it != null) {
+                            binding.hpvA.progress = (it.progress * 100 / it.duration).toFloat()
+                        }
+                    }
+                    binding.cvAProgress.setOnSingleClickListener {
+                        val programSn = evm.latestProgram?.programSn ?: -1
+                        val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
+                        ProgramCustomDialogFragment.newInstance(programSn, recSn)
+                            .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
+                    }
+//                Log.v("현재날짜", "${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
+                    updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
+                    avm.existedMonthProgresses.collectLatest { dates ->
+                        binding.cvACalendar.notifyCalendarChanged()
+                    }
+                }
+                isResume = true
+                setShimmer(false)
+            } else {
+
+                setShimmer(false)
+//                binding.tvAProgressGuide.visibility = View.GONE
+//                binding.cvAProgress.visibility = View.GONE
+            }
+        }
+
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        if (isResume) {
+            updateUI()
+        }
     }
 }

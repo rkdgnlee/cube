@@ -45,8 +45,8 @@ class DayViewContainer(view: View) : ViewContainer(view){
                     // 텍스트뷰 기준으로 위치 설정
                     gravity = Gravity.TOP or Gravity.END
                     // 위치 조정 (약간 오른쪽 상단)
-                    topMargin = date.top + dpToPx(2) // 상단 여백 조정
-                    rightMargin = dpToPx(2) // 오른쪽 여백 조정
+                    topMargin = date.top + dpToPx(0) // 상단 여백 조정
+                    rightMargin = dpToPx(0) // 오른쪽 여백 조정
                 }
             }
             is ConstraintLayout -> {
@@ -55,8 +55,8 @@ class DayViewContainer(view: View) : ViewContainer(view){
                     topToTop = date.id
                     endToEnd = date.id
                     // 약간 오프셋
-                    topMargin = dpToPx(2) // 상단 위치 조정
-                    rightMargin = dpToPx(2) // 오른쪽 위치 조정
+                    topMargin = dpToPx(0) // 상단 위치 조정
+                    rightMargin = dpToPx(0) // 오른쪽 위치 조정
                 }
             }
             else -> {

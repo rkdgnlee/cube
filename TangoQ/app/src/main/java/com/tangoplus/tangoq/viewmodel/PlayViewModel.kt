@@ -12,6 +12,9 @@ class PlayViewModel : ViewModel() {
     private var playbackPosition = 0L
     private var windowIndex = 0
     private var playWhenReady = true
+    private var playWhenReady1 = true
+    private var playWhenReady2 = true
+
     var videoUrl: String? = null
 
     // playFullScreen에서 url, ids 담기
@@ -27,13 +30,15 @@ class PlayViewModel : ViewModel() {
     var dynamicJa = JSONArray()
     fun savePlayerState(player: SimpleExoPlayer, url: String = "") {
         playbackPosition = player.currentPosition
-        playWhenReady = player.playWhenReady
+        playWhenReady1 = player.playWhenReady
         windowIndex = player.currentWindowIndex
         videoUrl = url
     }
 
     fun getPlaybackPosition() = playbackPosition
     fun getPlayWhenReady() = playWhenReady
+    fun getPlayWhenReady1() = playWhenReady1
+    fun getPlayWhenReady2() = playWhenReady2
     fun getWindowIndex() = windowIndex
     fun setPlaybackPosition(position : Long) { playbackPosition = position }
     fun setWindowIndex(index: Int) { windowIndex = index }

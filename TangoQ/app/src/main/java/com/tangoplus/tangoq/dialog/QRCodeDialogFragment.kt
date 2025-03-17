@@ -20,6 +20,8 @@ import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.budiyev.android.codescanner.AutoFocusMode
@@ -66,18 +68,25 @@ class QRCodeDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // ------! 바코드 스캔 시작 !------
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
+        // ------! 바코드 스캔 시작 !------
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
         binding.ibtnLSDBack.setOnClickListener { dismiss() }
-
+        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         // ------! balloon 시작 !------
         binding.ibtnLSDBack.setOnClickListener { dismiss() }
         binding.ibtnLSDInfo.setOnClickListener {
             balloonCallback {}
         }
         balloonCallback {
-            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
             binding.otvLSD.requestFocus()
             binding.otvLSD.postDelayed({
                 binding.otvLSD.requestFocus()
@@ -95,6 +104,7 @@ class QRCodeDialogFragment : DialogFragment() {
                         binding.flLSD.visibility = View.GONE
                     }
                     1 -> {
+                        imm.hideSoftInputFromWindow(view.windowToken, 0)
                         checkCameraPermission()
                         showBarcodeView()
                         binding.clLSD.visibility = View.GONE
