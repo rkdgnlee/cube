@@ -81,7 +81,9 @@ object NetworkProgress {
                             progresses.add(progressUnitVO)
                         }
                     }
-                    callback(pv3s, progresses)
+                    val sortedProgresses = progresses.sortedBy { it.uvpSn }.toMutableList()
+                    Log.v("sorted", "${sortedProgresses.map { it.uvpSn }}")
+                    callback(pv3s, sortedProgresses)
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ProgressIndex", "Post Progress: ${e.message}")

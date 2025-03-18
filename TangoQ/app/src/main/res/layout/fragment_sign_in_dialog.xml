@@ -468,7 +468,7 @@
                 android:text="다음으로"
                 android:textColor="@color/whiteText"
                 android:textSize="18dp"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clMobile"
@@ -585,7 +585,42 @@
                     app:cornerRadius="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvAuthCheck" />
+
+                <TextView
+                    android:id="@+id/tvAuthCheck"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="인증번호가 오지 않는다면, 재전송 을 눌러 다시 시도해주세요"
+                    android:textColor="@color/subColor800"
+                    android:textSize="13dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/etAuthNumber" />
+
+                <TextView
+                    android:id="@+id/tvAuthCountDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/subColor500"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvAuthCheck"
+                    app:layout_constraintStart_toEndOf="@+id/ibtnAuthAlert"
+                    app:layout_constraintTop_toTopOf="@+id/tvAuthCheck" />
+
+                <ImageButton
+                    android:id="@+id/ibtnAuthAlert"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_alert_white"
+                    android:tint="@color/subColor800"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvAuthCountDown"
+                    app:layout_constraintStart_toEndOf="@+id/tvAuthCheck"
+                    app:layout_constraintTop_toTopOf="@+id/tvAuthCountDown" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

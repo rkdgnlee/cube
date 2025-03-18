@@ -130,6 +130,7 @@ class ExerciseRVAdapter (
                     if (xmlName == "ED" && !historys.isNullOrEmpty()) {
                         holder.tvEIFinish.visibility = View.INVISIBLE
                         val historyUnit = historys.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
+                        Log.v("historyUnit", "$historyUnit")
                         historyUnit?.let {
                             holder.hpvEI.visibility = View.VISIBLE
                             holder.hpvEI.progress = (it.progress * 100 / it.duration).toFloat()
@@ -169,12 +170,12 @@ class ExerciseRVAdapter (
                         // ------# 시청 기록 및 완료 버튼 #------
                         val currentItem = progresses[position] // 프로그램 갯수만큼의 progresses의 1개에 접근
                         // currentItem의 currentWeek와 currentSequence로 현재 운동의 회차를 계산
-
+                        Log.v("currentItem", "$currentItem")
 //                        val currentSeq = sequence.first // 안변함
 //                        val selectedSeq = sequence.second // 선택된 회차이기 때문에 변함.
 //                        val currentUnitsSeq = currentItem.countSet // 0,0 으로 나왔다고 쳤을 떄,
                         val condition = when (currentItem.cycleProgress * 100 / currentItem.duration) {
-                            in 95 .. 100 -> 0
+                            in 95 .. 1000 -> 0
                             in 1 .. 94 -> 1
                             else -> 2
                         }

@@ -215,6 +215,7 @@ class FindAccountDialogFragment : DialogFragment() {
 
                                 // 재전송안내 문구 세팅
                                 binding.tvFADReAuth.visibility = View.VISIBLE
+
                                 setVerifyCountDown(120)
 
                                 // 버튼 활성화

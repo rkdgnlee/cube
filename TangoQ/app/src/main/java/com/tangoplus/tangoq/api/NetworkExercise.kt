@@ -145,7 +145,7 @@ object  NetworkExercise {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-//                    Log.v("ExerciseHistory", "$responseBody")
+                    Log.v("ExerciseHistory", "$responseBody")
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ExerciseHistoryError", "IndexOutOfBounds: ${e.message}")
@@ -209,7 +209,7 @@ object  NetworkExercise {
                             )
                             results.add(exerciseHistoryVO)
                         }
-                        // Log.v("getExerciseHistory", "results: $results")
+                         Log.v("getExerciseHistory", "results: $results")
                         return@use results.toList()
                     }
                     return@use results.toList()

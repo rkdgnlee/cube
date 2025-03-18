@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         wifiManager = WifiManager(this)
         // ------! activity 사전 설정 끝 !------
 
@@ -313,6 +312,7 @@ class MainActivity : AppCompatActivity() {
         } else if (finishEVP != null) {
             navigateToFragment("PlayThumbnail", finishEVP)
         }
+        intent.replaceExtras(null)
     }
 
     private fun navigateToFragment(path: String, exerciseId : String?) {

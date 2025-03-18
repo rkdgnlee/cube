@@ -8,9 +8,11 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -23,6 +25,8 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.api.NetworkUser.verifyPW
 import com.tangoplus.tangoq.databinding.FragmentInputDialogBinding
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -64,31 +68,40 @@ class InputDialogFragment : DialogFragment() {
                 if (svm.currentPwCon.value == true) enabledButton() else disabledButton()
             }
         })
+        binding.etIDPw.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                tryVerifyPW()
+                true  // 이벤트 처리가 완료되었음을 반환
+            } else {
+                false // 다른 동작들은 그대로 유지
+            }
+        }
 
         binding.btnIDConfirm.setOnSingleClickListener {
-            val jo = JSONObject().apply { put("password", binding.etIDPw.text.toString()) }
-            lifecycleScope.launch {
-                verifyPW(requireContext(), getString(R.string.API_user), jo) { status ->
-                    when (status) {
-                        200 -> {
-                            val dialog = ProfileEditChangeDialogFragment.newInstance("비밀번호", "")
-                            dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
-                            dismiss()
-                        }
-                        else -> {
-                            Toast.makeText(requireContext(), "적절하지 않은 비밀번호입니다\n다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                            binding.etIDPw.setText("")
-                            visibleKeyboard()
-                        }
+            tryVerifyPW()
+        }
+    }
+
+    private fun tryVerifyPW() {
+        val encryptedPW = encrypt(binding.etIDPw.text.toString(), getString(R.string.secret_key), getString(R.string.secret_iv))
+        val jo = JSONObject().apply { put("password_app", encryptedPW) }
+        lifecycleScope.launch {
+            verifyPW(requireContext(), getString(R.string.API_user), jo) { status ->
+                when (status) {
+                    200 -> {
+                        val dialog = ProfileEditChangeDialogFragment.newInstance("비밀번호", "")
+                        dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+                        dismiss()
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(), "적절하지 않은 비밀번호입니다\n다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                        binding.etIDPw.setText("")
+                        visibleKeyboard()
                     }
                 }
             }
         }
-    }
-
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener {action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 
     private fun enabledButton() {

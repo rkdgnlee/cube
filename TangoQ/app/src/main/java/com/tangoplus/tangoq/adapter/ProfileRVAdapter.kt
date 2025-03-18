@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -23,7 +25,9 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.InputDialogFragment
+import com.tangoplus.tangoq.dialog.PinChangeDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
@@ -69,7 +73,6 @@ class ProfileRVAdapter(private val fragment: Fragment,
             }
             else -> throw IllegalArgumentException("Invaild view Type")
         }
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -83,6 +86,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
 //                            "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
                             "QR코드 핀번호 로그인" -> holder.ivPf.setImageResource(R.drawable.icon_qr_code)
+                            "키오스크 핀번호 재설정" -> holder.ivPf.setImageResource(R.drawable.icon_profile) // TODO 아이콘 변경
                             "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
                             "문의하기" -> holder.ivPf.setImageResource(R.drawable.icon_inquire)
                             "공지사항" -> holder.ivPf.setImageResource(R.drawable.icon_announcement)
@@ -90,7 +94,6 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             "개인정보 처리방침" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
                             "서비스 이용약관" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
                             "로그아웃", "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
-
                         }
                         // ------! 앱 버전 text 설정 시작 !------
                         ViewHolder.tvPfSettingsName.text = currentItem
@@ -113,6 +116,10 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                 "QR코드 핀번호 로그인" -> {
                                     val dialog = QRCodeDialogFragment()
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "QRCodeDialogFragment")
+                                }
+                                "키오스크 핀번호 재설정" -> {
+                                    val dialog = PinChangeDialogFragment()
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "PinChangeDialogFragment")
                                 }
 //                                "연동 관리" -> {
 //                                    val dialog = ConnectManageDialogFragment()
@@ -231,13 +238,13 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                 holder.ivPf.setImageResource(R.drawable.icon_cake)
                             }
                             "성별" -> {
-                                (vm as SignInViewModel).setGender.observe(fragment.viewLifecycleOwner) { genderInt ->
-                                    if (genderInt == null) {
+                                (vm as SignInViewModel).setGender.observe(fragment.viewLifecycleOwner) { genderString ->
+                                    if (genderString == null) {
                                         holder.tvPfInfo.text = "미설정"
-                                    } else if (genderInt == 0) {
+                                    } else if (genderString == "여자") {
                                         holder.tvPfInfo.text = "여자"
                                         holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
-                                    } else if (genderInt == 1) {
+                                    } else if (genderString == "남자") {
                                         holder.tvPfInfo.text = "남자"
                                         holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                                     }
@@ -246,7 +253,6 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                         }
 
-
                         holder.cltvPfSettings.setOnClickListener {
                             when (holder.tvPfSettingsName.text) {
                                 "이메일" -> {
@@ -254,8 +260,14 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
                                 }
                                 "비밀번호" -> {
-                                    val dialog = InputDialogFragment()
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
+                                    val provider = Singleton_t_user.getInstance(fragment.requireContext()).jsonObject?.optString("provider") ?: ""
+                                    Log.v("provider", provider)
+                                    if (provider == "null") {
+                                        val dialog = InputDialogFragment()
+                                        dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
+                                    } else {
+                                        Toast.makeText(fragment.requireContext(), "소셜로그인으로 로그인한 계정입니다.", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 "전화번호" -> {
                                     val dialog = ProfileEditChangeDialogFragment.newInstance("전화번호", "")

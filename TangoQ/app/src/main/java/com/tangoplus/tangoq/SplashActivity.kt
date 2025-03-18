@@ -21,12 +21,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenProvider
+import com.google.firebase.appcheck.ktx.appCheck
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.KakaoSdk
@@ -206,8 +208,8 @@ class SplashActivity : AppCompatActivity() {
                                             if (firebaseAuth.currentUser != null) {
                                                 // ---- Google 토큰에서 가져오기 시작 ----
                                                 val user: FirebaseUser = firebaseAuth.currentUser!!
-                                                Log.v("user", "${user.phoneNumber}")
-                                                Log.v("user", user.uid)
+//                                                Log.v("user", "${user.phoneNumber}")
+//                                                Log.v("user", user.uid)
                                                 // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
                                                 val jsonObj = JSONObject()
                                                 jsonObj.put("device_sn" ,0)
@@ -276,7 +278,7 @@ class SplashActivity : AppCompatActivity() {
                             val jsonObj = JSONObject()
                             val kakaoToken = AuthApiClient.instance.tokenManagerProvider.manager.getToken()?.accessToken
                             if (kakaoToken != null) {
-                                Log.v("카카오OAuthToken"  , kakaoToken)
+                                Log.v("카카오OAuthToken"  , "kakaoToken is Existed")
                             }
                             jsonObj.put("device_sn" ,0)
                             jsonObj.put("user_sn", 0)

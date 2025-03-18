@@ -63,9 +63,10 @@ class ProgressViewModel : ViewModel() {
     }
     suspend fun getProgressData(context: Context) {
         val sns = Triple(recommendationSn, selectedWeek.value?.plus(1) ?: 1, selectedSequence.value?.plus(1) ?: 1)
-//        Log.v("현재주차가져오기", "$sns")
+        Log.v("현재주차가져오기", "$sns")
         postProgressInCurrentProgram(context.getString(R.string.API_progress), sns, context) { pv3s, progressUnits -> // MutableList<ProgressUnitVO>
             currentProgresses = progressUnits
+            Log.v("현재주차꺼", "${currentProgresses.map { it.cycleProgress }}")
             // pv3도 넘겨줘야함
             seqHpvs = pv3s
         }

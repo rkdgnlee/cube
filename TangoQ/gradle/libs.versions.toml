@@ -14,6 +14,7 @@ cameraCore = "1.4.1"
 composePreviewRenderer = "0.0.1-alpha08"
 coordinatorlayout = "1.2.0"
 runtimeAndroid = "1.7.6"
+firebaseAppcheckKtx = "18.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,6 +30,7 @@ androidx-camera-core = { group = "androidx.camera", name = "camera-core", versio
 compose-preview-renderer = { group = "com.android.tools.compose", name = "compose-preview-renderer", version.ref = "composePreviewRenderer" }
 androidx-coordinatorlayout = { group = "androidx.coordinatorlayout", name = "coordinatorlayout", version.ref = "coordinatorlayout" }
 androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
+firebase-appcheck-ktx = { group = "com.google.firebase", name = "firebase-appcheck-ktx", version.ref = "firebaseAppcheckKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

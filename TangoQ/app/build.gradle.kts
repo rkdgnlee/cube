@@ -14,8 +14,8 @@ android {
         minSdk = 27
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
-        versionCode = 43
-        versionName = "1.52"
+        versionCode = 46
+        versionName = "1.55"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -69,6 +69,7 @@ dependencies {
     implementation("com.mikhaellopez:circularprogressbar:3.1.0")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
+    implementation(libs.firebase.appcheck.ktx)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("com.github.skydoves:balloon:1.6.4")
     implementation("com.github.skydoves:progressview:1.1.3")

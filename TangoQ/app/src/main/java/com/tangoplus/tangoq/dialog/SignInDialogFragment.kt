@@ -8,16 +8,23 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOverlay
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.EditorInfo
@@ -40,6 +47,10 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.shuhart.stepview.StepView
+import com.skydoves.balloon.ArrowPositionRules
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.BalloonSizeSpec
 import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
@@ -48,6 +59,7 @@ import com.tangoplus.tangoq.api.NetworkUser.insertUser
 import com.tangoplus.tangoq.databinding.FragmentSignInDialogBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.transition.SignInTransition
@@ -118,6 +130,8 @@ class SignInDialogFragment : DialogFragment() {
         binding.ibtnSignInFinish.setOnClickListener { dismiss() }
         // -----! 초기 버튼 숨기기 및 세팅 시작 !-----
         binding.llPwCondition.visibility = View.GONE
+        binding.tvAuthCheck.visibility =View.GONE
+        binding.ibtnAuthAlert.visibility = View.GONE
         binding.etPw.visibility = View.GONE
         binding.llPwRepeat.visibility = View.GONE
         binding.etPwRepeat.visibility = View.GONE
@@ -165,6 +179,24 @@ class SignInDialogFragment : DialogFragment() {
         // -----! 회원가입 입력 창 anime 시작  !-----
         TransitionManager.beginDelayedTransition(binding.llSignIn, SignInTransition())
 
+        // ------# 인증번호 balloon #------
+        val balloon = Balloon.Builder(requireContext())
+            .setWidthRatio(0.5f)
+            .setHeight(BalloonSizeSpec.WRAP)
+            .setText("인증번호가 오지 않는다면 스팸함 및 국외발신 차단함을 확인해주세요")
+            .setTextColorResource(R.color.subColor800)
+            .setTextSize(15f)
+            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+            .setArrowSize(0)
+            .setMargin(10)
+            .setPadding(12)
+            .setCornerRadius(8f)
+            .setBackgroundColorResource(R.color.white)
+            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+            .setLifecycleOwner(viewLifecycleOwner)
+            .build()
+
+
         // -----! 휴대폰 인증 시작 !-----
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {
@@ -181,10 +213,25 @@ class SignInDialogFragment : DialogFragment() {
                 Log.v("onCodeSent", "메시지 발송 성공")
                 // -----! 메시지 발송에 성공하면 스낵바 호출 !------
                 Toast.makeText(requireContext(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
+                balloon.showAlignTop(binding.ibtnAuthAlert)
                 binding.btnAuthConfirm.isEnabled = true
+                binding.btnAuthConfirm.visibility = View.VISIBLE
+                binding.ibtnAuthAlert.visibility = View.VISIBLE
+                binding.tvAuthCheck.visibility = View.VISIBLE
+                binding.btnAuthSend.apply {
+                    isEnabled = false
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
+                }
+                // 다시 보내기 요청
+                setVerifyCountDown(120)
+
+                binding.etAuthNumber.requestFocus()
             }
         }
 
+        binding.ibtnAuthAlert.setOnSingleClickListener {
+            balloon.showAlignTop(binding.ibtnAuthAlert)
+        }
         binding.btnAuthSend.setOnSingleClickListener {
             svm.transformMobile = phoneNumber82(binding.etMobile.text.toString())
             MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
@@ -196,18 +243,16 @@ class SignInDialogFragment : DialogFragment() {
 
                     val optionsCompat = PhoneAuthOptions.newBuilder(auth)
                         .setPhoneNumber(svm.transformMobile)
-                        .setTimeout(60L, TimeUnit.SECONDS)
+                        .setTimeout(120L, TimeUnit.SECONDS)
                         .setActivity(requireActivity())
                         .setCallbacks(callbacks)
                         .build()
-
                     PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
                     Log.d("PhoneAuth", "verifyPhoneNumber called")
 
                     val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                     alphaAnimation.duration = 600
                     binding.etAuthNumber.isEnabled = true
-                    binding.btnAuthConfirm.visibility = View.VISIBLE
 
                     val objectAnimator = ObjectAnimator.ofFloat(binding.clMobile, "translationY", 1f)
                     objectAnimator.duration = 1000
@@ -219,12 +264,57 @@ class SignInDialogFragment : DialogFragment() {
             }
         }
         // -----! 휴대폰 인증 끝 !-----
+        val fullText = binding.tvAuthCheck.text
+        val spnbString = SpannableString(fullText)
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setTitle("인증번호 재전송")
+                    setMessage("${svm.transformMobile}로 인증번호를 다시 전송 하시겠습니까?")
+                    setPositiveButton("예", { _, _ ->
+                        setVerifyCountDown(120)
+                        val optionsCompat = PhoneAuthOptions.newBuilder(auth)
+                            .setPhoneNumber(svm.transformMobile)
+                            .setTimeout(120L, TimeUnit.SECONDS)
+                            .setActivity(requireActivity())
+                            .setCallbacks(callbacks)
+                            .build()
+//
+                        PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
+                        Log.d("PhoneAuth", "verifyPhoneNumber called")
 
-        binding.btnAuthConfirm.setOnSingleClickListener {
-            val credential = PhoneAuthProvider.getCredential(verificationId, binding.etAuthNumber.text.toString())
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                signInWithPhoneAuthCredential(credential)
+                        val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
+                        alphaAnimation.duration = 600
+                        binding.etAuthNumber.isEnabled = true
+                        binding.btnAuthConfirm.visibility = View.VISIBLE
+                    })
+                    setNegativeButton("아니오", {_, _ -> })
+                }.show()
             }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = resources.getColor(R.color.thirdColor, null)
+            }
+        }
+        val startIndex = fullText.indexOf("재전송")
+        val endIndex = startIndex + "재전송".length
+        spnbString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        binding.tvAuthCheck.text = spnbString
+        binding.tvAuthCheck.movementMethod = LinkMovementMethod.getInstance()
+        binding.etAuthNumber.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                if (binding.btnAuthConfirm.visibility == View.VISIBLE) {
+                    clickBtnAuthConfirm()
+                }
+                true  // 이벤트 처리가 완료되었음을 반환
+            } else {
+                false // 다른 동작들은 그대로 유지
+            }
+        }
+        binding.btnAuthConfirm.setOnSingleClickListener {
+            clickBtnAuthConfirm()
         }  // -----! 인증 문자 확인 끝 !-----
 
         // 이름 조건
@@ -501,17 +591,18 @@ class SignInDialogFragment : DialogFragment() {
         })
 
         // ----- ! 비밀번호 확인 코드 ! -----
+        binding.etPwRepeat.imeOptions = EditorInfo.IME_ACTION_DONE
         binding.etPwRepeat.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
-                showAgreementBottomSheetDialog(requireActivity())
+                if (binding.btnSignIn.isEnabled) {
+                    showAgreementBottomSheetDialog(requireActivity())
+                }
                 true  // 이벤트 처리가 완료되었음을 반환
             } else {
                 false // 다른 동작들은 그대로 유지
             }
         }
-
-
 
         binding.etPwRepeat.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
@@ -527,7 +618,7 @@ class SignInDialogFragment : DialogFragment() {
                 }
                 // -----! 뷰모델에 보낼 값들 넣기 !-----
 
-                svm.User.value?.put("password", s.toString())
+                svm.User.value?.put("password_app", s.toString())
 
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -560,6 +651,13 @@ class SignInDialogFragment : DialogFragment() {
 
         }
     }
+    private fun clickBtnAuthConfirm() {
+        svm.countDownTimer?.cancel()
+        val credential = PhoneAuthProvider.getCredential(verificationId, binding.etAuthNumber.text.toString())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            signInWithPhoneAuthCredential(credential)
+        }
+    }
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)
@@ -581,6 +679,13 @@ class SignInDialogFragment : DialogFragment() {
                         }
                         svm.phoneCondition.value = true
                         // ------! 번호 인증 완료 !------
+
+                        // 카운트다운 삭제
+                        svm.countDownTimer?.cancel()
+                        binding.tvAuthCountDown.visibility = View.GONE
+                        binding.tvAuthCheck.visibility = View.GONE
+                        binding.ibtnAuthAlert.visibility = View.GONE
+
                         val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
                         alphaAnimation.duration = 600
                         binding.tvNameGuide.startAnimation(alphaAnimation)
@@ -596,16 +701,20 @@ class SignInDialogFragment : DialogFragment() {
                         objectAnimator.duration = 1000
                         objectAnimator.start()
                         binding.pvSignIn.progress = 50f
-                        binding.etName.requestFocus()
                         binding.svSignIn.go(1, true)
                         // ------! 번호 인증 완료 !------
 
                         Toast.makeText(requireContext(), "인증에 성공했습니다 !", Toast.LENGTH_SHORT).show()
 
+                        // 이름에 키보드 올리기
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            binding.etName.requestFocus()
+                            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                            imm.showSoftInput(binding.etName, InputMethodManager.SHOW_IMPLICIT)
+                        }, 250)
 
                         binding.btnAuthSend.isEnabled = false
                         binding.btnAuthConfirm.isEnabled = false
-
                         if (svm.mobileCondition.value == true) {
 
                             // 전화번호 "-" 표시 전부 없애기
@@ -642,8 +751,11 @@ class SignInDialogFragment : DialogFragment() {
                         }
                     }
 
-                    // ------! 광고성 넣기 시작 !------
                     val jsonObj = svm.User.value
+                    // 암호화된 비밀번호 넣기
+                    val encryptPW = encrypt(jsonObj?.optString("password_app").toString(), getString(R.string.secret_key), getString(R.string.secret_iv))
+                    jsonObj?.put("password_app", encryptPW)
+                    // ------! 광고성 넣기 시작 !------
                     jsonObj?.put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
                     jsonObj?.put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
                     jsonObj?.put("device_sn" ,0)
@@ -664,7 +776,7 @@ class SignInDialogFragment : DialogFragment() {
                                             startActivity(intent)
                                         }
                                     }
-                                    423, 409, 404, 403 -> {
+                                    423,  404, 403 -> {
                                         CoroutineScope(Dispatchers.Main).launch {
                                             MaterialAlertDialogBuilder(context, com.tangoplus.tangoq.R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                                                 setTitle("회원 가입 실패")
@@ -680,13 +792,36 @@ class SignInDialogFragment : DialogFragment() {
                                                     binding.btnAuthSend.isEnabled = true
                                                     binding.btnEmailNext.isEnabled = true
                                                     binding.btnIdCondition.isEnabled = true
-                                                    binding.btnAuthConfirm.backgroundTintList  = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                                                    binding.btnAuthSend.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                                                    binding.btnEmailNext.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
-                                                    binding.btnIdCondition.backgroundTintList = ColorStateList.valueOf(resources.getColor(com.tangoplus.tangoq.R.color.mainColor, null))
+                                                    binding.btnAuthConfirm.backgroundTintList  = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                                                    binding.btnAuthSend.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                                                    binding.btnEmailNext.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                                                    binding.btnIdCondition.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
                                                 }
                                                 show()
                                             }
+                                        }
+                                    }
+                                    409 -> {
+                                        MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                            setTitle("회원 가입 실패")
+                                            setMessage("이미 존재하는 회원 정보입니다. 로그인을 진행해주세요")
+                                            setPositiveButton("예") { _, _ ->
+                                                binding.etEmail.isEnabled = true
+                                                binding.etPw.isEnabled = true
+                                                binding.etPwRepeat.isEnabled = true
+                                                binding.etId.isEnabled = true
+                                                binding.etAuthNumber.isEnabled = true
+                                                binding.etMobile.isEnabled = true
+                                                binding.btnAuthConfirm.isEnabled = true
+                                                binding.btnAuthSend.isEnabled = true
+                                                binding.btnEmailNext.isEnabled = true
+                                                binding.btnIdCondition.isEnabled = true
+                                                binding.btnAuthConfirm.backgroundTintList  = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                                                binding.btnAuthSend.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                                                binding.btnEmailNext.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                                                binding.btnIdCondition.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                                            }
+                                            show()
                                         }
                                     }
                                 }
@@ -699,7 +834,27 @@ class SignInDialogFragment : DialogFragment() {
         val fragmentManager = context.supportFragmentManager
         bottomSheetFragment.show(fragmentManager, bottomSheetFragment.tag)
     }
-
+    private fun setVerifyCountDown(retryAfter: Int) {
+        if (retryAfter != -1) {
+            svm.countDownTimer?.cancel() // 기존 카운트다운 취소
+            svm.countDownTimer = object : CountDownTimer((retryAfter * 1000).toLong(), 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    val remainingSeconds = millisUntilFinished / 1000
+                    val minutes = remainingSeconds / 60
+                    val seconds = remainingSeconds % 60
+                    binding.tvAuthCountDown.visibility = View.VISIBLE
+                    binding.tvAuthCountDown.text = "${minutes}분 ${seconds}초"
+                }
+                override fun onFinish() {
+                    binding.tvAuthCountDown.visibility = View.INVISIBLE
+                }
+            }.start()
+        }
+    }
+    private fun cancelCountDown() {
+        svm.countDownTimer?.cancel()
+        binding.tvAuthCountDown.visibility = View.INVISIBLE
+    }
     override fun onResume() {
         super.onResume()
         binding.nsvSignIn.isNestedScrollingEnabled = false

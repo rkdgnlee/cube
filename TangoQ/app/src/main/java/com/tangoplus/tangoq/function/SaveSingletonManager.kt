@@ -237,7 +237,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             try {
                                 saveFileFromUrl(context, fileName2, FileStorageUtil.FileType.VIDEO)
                             } catch (e: Exception) {
-                                Log.e("downloadFiles", "Error saving video file", e)
+                                Log.e("downloadFiles", "Error saving video file ${e.message}")
                                 false
                             }
                         })
@@ -245,7 +245,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             try {
                                 saveFileFromUrl(context, jsonName2, FileStorageUtil.FileType.JSON)
                             } catch (e: Exception) {
-                                Log.e("downloadFiles", "Error saving JSON file", e)
+                                Log.e("downloadFiles", "Error saving JSON file ${e.message}")
                                 false
                             }
                         })
@@ -257,7 +257,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             try {
                                 saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
                             } catch (e: Exception) {
-                                Log.e("downloadFiles", "Error saving image file", e)
+                                Log.e("downloadFiles", "Error saving image file ${e.message}")
                                 false
                             }
                         })
@@ -266,7 +266,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             try {
                                 saveFileFromUrl(context, jsonName, FileStorageUtil.FileType.JSON)
                             } catch (e: Exception) {
-                                Log.e("downloadFiles", "Error saving JSON file", e)
+                                Log.e("downloadFiles", "Error saving JSON file ${e.message}")
                                 false
                             }
                         })

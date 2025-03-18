@@ -163,7 +163,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
 //                Log.v("categoryCountList", "$currentCateExercises,${evm.allExerciseHistorys}")
                 // 초기 recyclerView 업데이트 하는 곳.
                 if (evm.allExerciseHistorys != null) {
-                    currentCateHistorys = evm.allExerciseHistorys?.filter { it.exerciseTypeId == categoryMap["목관절"] }?.sortedBy { it.exerciseId }?.toMutableList()
+                    currentCateHistorys = evm.allExerciseHistorys // ?.filter { it.exerciseTypeId == categoryMap["목관절"] }?.sortedBy { it.exerciseId }?.toMutableList()
                     updateRecyclerView(currentCateExercises?.toMutableList(), currentCateHistorys)
 
                 }

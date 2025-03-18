@@ -17,11 +17,13 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -42,6 +44,7 @@ import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -190,6 +193,18 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     setText(value)
                     filters = arrayOf(InputFilter.LengthFilter(3))
                 }
+                binding.etPCD1.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.etPCD1.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                        if (binding.btnPCDFinish.isEnabled) {
+                            updateUserData()
+                        }
+                        true  // 이벤트 처리가 완료되었음을 반환
+                    } else {
+                        false // 다른 동작들은 그대로 유지
+                    }
+                }
             }
             "신장" -> {
                 val heightPattern = "^(8\\d|[9]\\d|[1-2]\\d{2}|250)\$"
@@ -214,6 +229,18 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     setText(value)
                     filters = arrayOf(InputFilter.LengthFilter(3))
                 }
+                binding.etPCD1.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.etPCD1.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                        if (binding.btnPCDFinish.isEnabled) {
+                            updateUserData()
+                        }
+                        true  // 이벤트 처리가 완료되었음을 반환
+                    } else {
+                        false // 다른 동작들은 그대로 유지
+                    }
+                }
             }
             "이메일" -> {
                 setUIVisibility(1)
@@ -223,7 +250,18 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     inputType = InputType.TYPE_CLASS_TEXT
                     filters = arrayOf(InputFilter.LengthFilter(25))
                 }
-
+                binding.etPCD1.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.etPCD1.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                        if (binding.btnPCDFinish.isEnabled) {
+                            updateUserData()
+                        }
+                        true  // 이벤트 처리가 완료되었음을 반환
+                    } else {
+                        false // 다른 동작들은 그대로 유지
+                    }
+                }
                 val emailPattern = "^[a-z0-9]{4,16}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
                 val emailPatternCheck = Pattern.compile(emailPattern)
                 binding.etPCD1.addTextChangedListener(object : TextWatcher {
@@ -246,7 +284,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
             "생년월일" -> {
                 binding.etPCD1.hint = "19950812"
                 binding.etPCD1.setHintTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400)))
-                val birthdayPattern = "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])\$"
+                val birthdayPattern = "^(19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])\$"
                 val birthdayPatternCheck = Pattern.compile(birthdayPattern)
                 binding.etPCD1.addTextChangedListener(object: TextWatcher {
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -266,6 +304,18 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.etPCD1.apply {
                     inputType = InputType.TYPE_CLASS_NUMBER
                     filters = arrayOf(InputFilter.LengthFilter(8))
+                }
+                binding.etPCD1.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.etPCD1.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                        if (binding.btnPCDFinish.isEnabled) {
+                            updateUserData()
+                        }
+                        true  // 이벤트 처리가 완료되었음을 반환
+                    } else {
+                        false // 다른 동작들은 그대로 유지
+                    }
                 }
             }
             "전화번호" -> {
@@ -310,8 +360,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 
                 val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                     override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-//                        Log.v("verifyComplete", "PhoneAuthCredential: $p0")
-
+                        Log.v("verifyComplete", "PhoneAuthCredential: ${p0.zzb()}")
                     }
                     override fun onVerificationFailed(p0: FirebaseException) {
                         Log.e("failedAuth", "verify failed")
@@ -370,7 +419,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 setUIVisibility(3)
                 binding.tvPCD.text = "성별 선택"
                 binding.tvPCDGuide.text = "성별을 선택해주세요."
-                setGenderButton( if (svm.setGender.value == 0) false else true)
+                setGenderButton( if (svm.setGender.value == "남자") false else true)
                 binding.ivPCDMale.setOnSingleClickListener { setGenderButton(true) }
                 binding.mrbPCDMale.setOnSingleClickListener { setGenderButton(true) }
                 binding.ivPCDFemale.setOnSingleClickListener { setGenderButton(false) }
@@ -389,7 +438,6 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 //            }
 //        }, 250)
 
-
 //        binding.btnPEBSDFinish.setOnClickListener {
 //            when (arg) {
 //                "몸무게" -> svm.setWeight.value = binding.etPEBSD.text.toString().toInt()
@@ -401,67 +449,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
 //        }
         // ------# 변경 #------
         binding.btnPCDFinish.setOnClickListener {
-            val updatedItem = binding.etPCD1.text.toString()
-            val jo = JSONObject().apply {
-                when (arg) {
-                    "비밀번호" -> put("password", svm.pw.value)
-                    "전화번호" -> put("mobile", binding.etPCDMobile.text.toString())
-                    "몸무게" -> put("weight", updatedItem)
-                    "신장" -> put("height", updatedItem)
-                    "이메일" -> put("email", updatedItem)
-                    "생년월일" -> put("birthday", updatedItem)
-                    "성별" -> put("gender", svm.setGender.value)
-                }
-            }
-            lifecycleScope.launch(Dispatchers.IO) {
-                val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
-                if (isUpdateFinished == true) {
-                    when (arg) {
-                        "몸무게" -> {
-                            userJson.put("weight", updatedItem)
-                            withContext(Dispatchers.Main) {
-                                svm.setWeight.value = updatedItem.toInt()
-                            }
-                        }
-                        "전화번호" -> {
-                            userJson.put("mobile", binding.etPCDMobile.text.toString())
-                            withContext(Dispatchers.Main) {
-                                svm.setMobile.value = binding.etPCDMobile.text.toString()
-                                Log.v("svm.setMobile", "${svm.setMobile.value}")
-                            }
-                        }
-                        "신장" -> {
-                            userJson.put("height", updatedItem)
-                            withContext(Dispatchers.Main) {
-                                svm.setHeight.value = updatedItem.toInt()
-                            }
-                        }
-                        "이메일" -> {
-                            userJson.put("email", updatedItem)
-                            withContext(Dispatchers.Main) {
-                                svm.setEmail.value = updatedItem
-                            }
-                        }
-                        "생년월일" -> {
-                            userJson.put("birthday", updatedItem)
-                            withContext(Dispatchers.Main) {
-                                svm.setBirthday.value = updatedItem
-                            }
-                        }
-                        "성별" -> {
-                            userJson.put("gender", svm.setGender)
-                            withContext(Dispatchers.Main) {
-                                svm.setBirthday.value = updatedItem
-                            }
-                        }
-                    }
-                    withContext(Dispatchers.Main) {
-                        if (isAdded) {
-                            dismiss()
-                        }
-                    }
-                }
-            }
+            updateUserData()
         }
 
         // ------# clear listener #------
@@ -470,6 +458,72 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         binding.ibtnPCD3Clear.setOnClickListener{ binding.etPCD3.setText("") }
 
     }
+
+    private fun updateUserData() {
+        val updatedItem = binding.etPCD1.text.toString()
+        val encryptedPW = encrypt(svm.pw.value.toString(), getString(R.string.secret_key), getString(R.string.secret_iv))
+        val jo = JSONObject().apply {
+            when (arg) {
+                "비밀번호" -> put("password_app", encryptedPW)
+                "전화번호" -> put("mobile", binding.etPCDMobile.text.toString())
+                "몸무게" -> put("weight", updatedItem)
+                "신장" -> put("height", updatedItem)
+                "이메일" -> put("email", updatedItem)
+                "생년월일" -> put("birthday", updatedItem)
+                "성별" -> put("gender", svm.setGender.value)
+            }
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
+            if (isUpdateFinished == true) {
+                when (arg) {
+                    "몸무게" -> {
+                        userJson.put("weight", updatedItem)
+                        withContext(Dispatchers.Main) {
+                            svm.setWeight.value = updatedItem.toInt()
+                        }
+                    }
+                    "전화번호" -> {
+                        userJson.put("mobile", binding.etPCDMobile.text.toString())
+                        withContext(Dispatchers.Main) {
+                            svm.setMobile.value = binding.etPCDMobile.text.toString()
+                            Log.v("svm.setMobile", "${svm.setMobile.value}")
+                        }
+                    }
+                    "신장" -> {
+                        userJson.put("height", updatedItem)
+                        withContext(Dispatchers.Main) {
+                            svm.setHeight.value = updatedItem.toInt()
+                        }
+                    }
+                    "이메일" -> {
+                        userJson.put("email", updatedItem)
+                        withContext(Dispatchers.Main) {
+                            svm.setEmail.value = updatedItem
+                        }
+                    }
+                    "생년월일" -> {
+                        userJson.put("birthday", updatedItem)
+                        withContext(Dispatchers.Main) {
+                            svm.setBirthday.value = updatedItem
+                        }
+                    }
+                    "성별" -> {
+                        userJson.put("gender", svm.setGender)
+                        withContext(Dispatchers.Main) {
+                            svm.setBirthday.value = updatedItem
+                        }
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    if (isAdded) {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+
     private fun setGenderButton(isMale: Boolean) {
         when {
             isMale -> {
@@ -478,7 +532,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.mrbPCDFemale.isSelected = false
                 binding.ivPCDMale.isSelected = true
                 binding.ivPCDFemale.isSelected = false
-                svm.setGender.value = 1
+                svm.setGender.value = "남자"
             }
             !isMale -> {
                 binding.mrgPCD.check(binding.mrbPCDFemale.id)
@@ -486,7 +540,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.mrbPCDFemale.isSelected = true
                 binding.ivPCDMale.isSelected = false
                 binding.ivPCDFemale.isSelected = true
-                svm.setGender.value = 0
+                svm.setGender.value = "여자"
             }
         }
     }

@@ -80,7 +80,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         svm.setEmail.value = svm.User.value?.optString("email")
         svm.setBirthday.value = svm.User.value?.optInt("birthday").toString()
         svm.setMobile.value = svm.User.value?.optString("mobile").toString()
-        svm.setGender.value = svm.User.value?.optInt("gender")
+        svm.setGender.value = svm.User.value?.optString("gender")
 
 //        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
@@ -107,6 +107,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "내정보",
             "다크 모드",
             "QR코드 핀번호 로그인",
+            "키오스크 핀번호 재설정",
 
 //            "연동 관리",
             "푸쉬 알림 설정",
@@ -120,9 +121,9 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "로그아웃",
             "회원탈퇴"
         )
-        setAdapter(profilemenulist.subList(0,3), binding.rvPNormal,0)
-        setAdapter(profilemenulist.subList(3,6), binding.rvPHelp, 1)
-        setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
+        setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
+        setAdapter(profilemenulist.subList(4,7), binding.rvPHelp, 1)
+        setAdapter(profilemenulist.subList(7, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
 
 

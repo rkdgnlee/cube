@@ -189,10 +189,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
         forward5.setOnClickListener {
             val forwardPosition = pvm.simpleExoPlayer?.currentPosition?.plus(5000)
             if (forwardPosition != null) {
-                if (forwardPosition < (pvm.simpleExoPlayer?.duration?.minus(5000) ?: 0L)) {
+                if (forwardPosition < (pvm.simpleExoPlayer?.duration?.minus(6000) ?: 0L)) {
                     pvm.simpleExoPlayer?.seekTo(forwardPosition)
-                } else {
-                    pvm.simpleExoPlayer?.pause()
                 }
             }
         } // ------! 앞으로 감기 뒤로 감기 끝 !------
@@ -343,11 +341,12 @@ class PlayFullScreenActivity : AppCompatActivity() {
         pvm.simpleExoPlayer?.setMediaSources(mediaSourceList)
         pvm.simpleExoPlayer?.prepare()
         pvm.simpleExoPlayer?.seekTo(pvm.getWindowIndex(), pvm.getPlaybackPosition())
-        Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${pvm.simpleExoPlayer?.duration}")
+
 //        val positionMs = playbackPosition * 1000
 //        val savedPosition = playbackPositions[windowIndex] ?: positionMs
 //        pvm.simpleExoPlayer?.seekTo(windowIndex, savedPosition)
         pvm.simpleExoPlayer?.playWhenReady = true  // 준비되면 자동 재생
+        Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${pvm.simpleExoPlayer?.duration}")
     }
 
     // ------# isFinish는 영상 길이 전부 시청했는지 여부 #------

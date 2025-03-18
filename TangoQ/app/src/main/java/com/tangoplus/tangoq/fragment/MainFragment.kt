@@ -66,19 +66,8 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (pvm.fromProgramCustom) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
-                mvm.selectedMeasure?.recommendations = progressRec
-                withContext(Dispatchers.Main){
-                    if (isAdded) {
-                        Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-                        Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
-                        setAdapter()
-                    }
-
-                    pvm.fromProgramCustom = false
-                }
-            }
+            renderProgramRV()
+            pvm.fromProgramCustom = false
         }
     }
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
@@ -135,23 +124,6 @@ class MainFragment : Fragment() {
                             }
                         }
                     }
-//
-//                    binding.clM1.setOnSingleClickListener{
-//                        (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
-//                        // 다운로드 후 이동
-//                        requireActivity().supportFragmentManager.beginTransaction().apply {
-//                            replace(R.id.flMain, MeasureDetailFragment())
-//                            commit()
-//                        }
-//                    }
-//                    binding.tvMOverall.setOnSingleClickListener {
-//                        (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
-//                        // 다운로드 후 이동
-//                        requireActivity().supportFragmentManager.beginTransaction().apply {
-//                            replace(R.id.flMain, MeasureDetailFragment())
-//                            commit()
-//                        }
-//                    }
                     // ------# 측정결과 있을 때 도움말 툴팁 #------
                     if (isFirstRun("Tooltip_isFirstRun_existed_${Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")}")) {
                         existedMeasurementGuide()
@@ -262,12 +234,7 @@ class MainFragment : Fragment() {
                                     }
                                 }
 
-                                // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
-                                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
-                                mvm.selectedMeasure?.recommendations = progressRec
-                                Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-//                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
-                                setAdapter()
+                                renderProgramRV()
                             }
                         }  catch (e: IndexOutOfBoundsException) {
                             Log.e("MainIndex", "${e.message}")
@@ -286,6 +253,19 @@ class MainFragment : Fragment() {
             }
         }
     }
+
+    private fun renderProgramRV() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
+            val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
+            mvm.selectedMeasure?.recommendations = progressRec
+            Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
+//                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
+            setAdapter()
+        }
+    }
+
+
     private fun setAdapter() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf())

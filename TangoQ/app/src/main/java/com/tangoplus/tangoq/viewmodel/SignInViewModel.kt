@@ -1,30 +1,16 @@
 package com.tangoplus.tangoq.viewmodel
 
-import android.animation.ObjectAnimator
-import android.content.Context
 import android.net.Uri
-import android.text.Editable
+import android.os.CountDownTimer
 import android.text.TextWatcher
-import android.util.Log
-import android.view.View
-import android.view.animation.AlphaAnimation
-import android.widget.EditText
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
-import com.tangoplus.tangoq.R
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
-import kotlin.math.truncate
 
 class SignInViewModel: ViewModel() {
     // 회원가입에 담는 user
     val User = MutableLiveData(JSONObject())
-    var googleJo = JSONObject()
     // ------# 로그인 #------
     var currentIdCon = MutableLiveData(false)
     var currentPwCon = MutableLiveData(false)
@@ -32,7 +18,7 @@ class SignInViewModel: ViewModel() {
     var id = MutableLiveData("")
     var pw = MutableLiveData("")
     var emailId = MutableLiveData("")
-    var setGender = MutableLiveData(0)    // 아이디 비밀번호 찾기
+    var setGender = MutableLiveData("")    // 아이디 비밀번호 찾기
     var transformMobile = ""
 
     val idCondition = MutableLiveData(false)
@@ -50,7 +36,7 @@ class SignInViewModel: ViewModel() {
     }
 
     val mobileAuthCondition = MutableLiveData(false)
-
+    var countDownTimer : CountDownTimer? = null
 
     // 회원가입 condition
     var invalidIdCondition = MutableLiveData(false)
@@ -125,7 +111,9 @@ class SignInViewModel: ViewModel() {
     var isFindId = MutableLiveData(true)
     var textWatcher : TextWatcher? = null
 
-
+    // PIN 번호 로그인
+    var setPin = ""
+    var pinCondition = MutableLiveData(false)
     override fun onCleared() {
         super.onCleared()
         currentIdCon.removeObserver { updateIdPwCondition() }

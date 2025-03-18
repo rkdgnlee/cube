@@ -49,6 +49,7 @@ import com.tangoplus.tangoq.api.NetworkUser.sendPWCode
 import com.tangoplus.tangoq.api.NetworkUser.verifyPWCode
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -160,9 +161,12 @@ class LoginDialogFragment : DialogFragment() {
     private fun tryLogin() {
         if (viewModel.idPwCondition.value == true) {
 
+            // pw 암호화
+            val encryptedPW = encrypt(viewModel.pw.value.toString(), getString(R.string.secret_key), getString(R.string.secret_iv))
+            Log.v("암호화비밀번호", encryptedPW)
             val jsonObject = JSONObject()
             jsonObject.put("user_id", viewModel.id.value)
-            jsonObject.put("password", viewModel.pw.value)
+            jsonObject.put("password_app", encryptedPW)
             val dialog = LoadingDialogFragment.newInstance("로그인")
             dialog.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")
 

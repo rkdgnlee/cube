@@ -38,6 +38,7 @@ object HttpClientProvider {
                 .addInterceptor { chain ->
                     var request = chain.request()
                     val accessToken = getEncryptedAccessJwt(context)
+                    Log.v("액세스토큰", "$accessToken")
                     request = request.newBuilder()
                         .header("Authorization", "Bearer $accessToken")
                         .build()
@@ -125,7 +126,6 @@ object HttpClientProvider {
             .build()
 
         return tokenRefreshClient.newCall(request).execute().use { response ->
-            Log.v("TryAccessToken", "accessToken시도")
             try {
                 if (!response.isSuccessful) {
                     val code = response.code
@@ -139,7 +139,6 @@ object HttpClientProvider {
                     200
                 } else {
                     Log.e("RefreshTokenElse", "Failed to access token: ${response.code}")
-                    // TODO refreshToken이 그냥 혼자쓰고있어도 400번이 날아옴 이 부분 해결해야함 36번 하면
                     400
                 }
             } catch (e: IndexOutOfBoundsException) {

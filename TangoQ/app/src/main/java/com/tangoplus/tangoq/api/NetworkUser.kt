@@ -93,12 +93,16 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 try {
-                    val responseBody = response.body?.string()?.substringAfter("response: ")
+                    Log.e("responseCode", "${response.code}")
+                    if (response.code == 500) {
+                        return callback(null)
+                    }
+                    val responseBody = response.body?.string()  // ?.substringAfter("response: ")
                     Log.v("SDK>Server>User", "$responseBody")
                     val responseJo = responseBody?.let { JSONObject(it).optInt("status") }
                     Log.v("responseJo", "$responseJo")
                     if (responseJo !in listOf(200, 201, 202)) {
-                        callback(null)
+                        return callback(null)
                     } else {
                         val jo = responseBody?.let { JSONObject(it) }
                         // ------! 토큰 저장 !------
@@ -107,12 +111,12 @@ object NetworkUser {
                         jsonObj.put("access_jwt", jo?.optString("access_jwt"))
                         jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
                         saveEncryptedJwtToken(context, jsonObj)
-                        callback(jo)
+                        return callback(jo)
                     }
                 } catch (e: NetworkErrorException) {
                     Log.e("sdkError", "Network Error Login By SDK : ${e.message}")
                 } catch (e: IllegalStateException) {
-                    Log.e("sdkError", "IllegalState Error Login By SDK : ${e.message}")
+                    Log.e("sdkError", "IllegalState Error Login By SDK : ${e.printStackTrace()}")
                 } catch (e: IllegalArgumentException) {
                     Log.e("sdkError", "IllegalArgument Error Login By SDK : ${e.message}")
                 } catch (e: SocketTimeoutException) {
@@ -145,7 +149,7 @@ object NetworkUser {
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-//                     Log.v("자체로그인Success", "$responseBody")
+                     Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     CoroutineScope(Dispatchers.Main).launch {
@@ -201,7 +205,7 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                // Log.v("verifyPW", "$responseBody")
+                 Log.v("verifyPW", "$responseBody")
                 val status = responseBody?.let { JSONObject(it).optInt("status") }
                 if (status != null) {
                     withContext(Dispatchers.Main) {
@@ -272,7 +276,7 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("회원update", "ResponseCode: ${response.code}")
+                        Log.e("ID중복체크", "ResponseCode: ${response.code}")
                         return@withContext null
                     }
 
@@ -314,12 +318,17 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("회원update", "ResponseCode: ${response.code}")
-                        return@withContext null
+                        val responseBody = response.body?.string()
+                        Log.e("회원updateFailed", "ResponseCode: ${responseBody.toString()}")
+                        withContext(Dispatchers.Main) {
+                            return@withContext null
+                        }
                     }
                     val responseBody = response.body?.string()
                      Log.v("회원update", "$responseBody")
-                    return@withContext true
+                    withContext(Dispatchers.Main) {
+                        return@withContext true
+                    }
                 }
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "${e.message}")
@@ -352,7 +361,7 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("회원탈퇴Error", "ResponseCode: ${response.body.toString()} ${response.code}")
+                        Log.e("회원탈퇴Error", "Failed to execute request!") //  ${response.body.toString()}
                         return@withContext null
                     }
                     val responseCode = response.code
@@ -461,7 +470,7 @@ object NetworkUser {
                    val responseBody = response.body?.string()
 
                    val jo = responseBody?.let{ JSONObject(it) }
-                   Log.v("이메일보내기", "${jo}")
+//                   Log.v("이메일보내기", "${jo}")
                    val code = jo?.optInt("status")
                    if (code != null) {
                        CoroutineScope(Dispatchers.Main).launch {
@@ -555,7 +564,7 @@ object NetworkUser {
     // ------! 프로필 사진 시작 !------
     suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody, callback: (String) -> Unit) {
         val client = getClient(context)
-        Log.d("sendProfileImage", "myUrl: $myUrl, sn: $sn")
+//        Log.d("sendProfileImage", "myUrl: $myUrl, sn: $sn")
         val request = Request.Builder()
             .url("${myUrl}users/$sn")
             .post(requestBody)
@@ -630,4 +639,39 @@ object NetworkUser {
         val regex = """"file_path":\s*"([^"]+)"""".toRegex()
         return regex.find(jsonString)?.groupValues?.get(1) ?: ""
     }
+
+//    fun changeKioskPin(myUrl: String, bodyJo: String, callback: (Int?) -> Unit) {
+//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+//        val body = bodyJo.toRequestBody(mediaType)
+//        val client = OkHttpClient()
+//        val request = Request.Builder()
+//            .url("${myUrl}?TODO바꿔야함")
+//            .post(body)
+//            .build()
+//        client.newCall(request).enqueue(object : Callback{
+//            override fun onFailure(call: Call, e: IOException) {
+//                Log.e("changePinFailed", "Failed to change Kiosk Pin : ${e.message}")
+//                callback(500)
+//            }
+//            override fun onResponse(call: Call, response: Response) {
+//                try {
+//                    val responseBody = response.body?.string()
+//                    Log.v("changedPin", "$responseBody")
+//
+//                    val status = responseBody?.let { JSONObject(it).optInt("status")}
+//                    callback(status)
+//                } catch (e: SocketTimeoutException) {
+//                    Log.e("pinChangeError", "Pin Changed Error: SocketTimeout ${e.message}")
+//                } catch (e: IllegalStateException) {
+//                    Log.e("pinChangeError", "Pin Changed Error: IllegalState ${e.message}")
+//                } catch (e: IllegalArgumentException) {
+//                    Log.e("pinChangeError", "Pin Changed Error: IllegalArgument ${e.message}")
+//                } catch (e: ClassNotFoundException) {
+//                    Log.e("pinChangeError", "Pin Changed Error: Class not found ${e.message}")
+//                } catch (e: Exception) {
+//                    Log.e("pinChangeError", "Pin Changed Error: Exception ${e.message}")
+//                }
+//            }
+//        })
+//    }
 }

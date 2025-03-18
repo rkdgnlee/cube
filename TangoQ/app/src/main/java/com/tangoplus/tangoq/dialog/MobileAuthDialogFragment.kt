@@ -9,11 +9,13 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -70,7 +72,6 @@ class MobileAuthDialogFragment : DialogFragment() {
             return fragment
         }
     }
-
 
     interface OnAuthFinishListener {
         fun onFinish(agree: Boolean)
@@ -144,7 +145,7 @@ class MobileAuthDialogFragment : DialogFragment() {
                                 }
                             }
                         }
-
+                        listener?.onFinish(false)
                         dialog?.dismiss()
                     }
                 })
@@ -154,18 +155,28 @@ class MobileAuthDialogFragment : DialogFragment() {
             }.show()
         }
 
-
         binding.etMADMobile.requestFocus()
         binding.etMADMobile.postDelayed({
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etMADMobile, InputMethodManager.SHOW_IMPLICIT)
         }, 200)
 
+        binding.etMADAuthNumber.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                if (binding.btnMADAuthConfirm.isEnabled) {
+                    tryAuth()
+                }
+                true  // 이벤트 처리가 완료되었음을 반환
+            } else {
+                false // 다른 동작들은 그대로 유지
+            }
+        }
+
         // -----! 휴대폰 인증 시작 !-----
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {
                 Log.v("verifyComplete", "PhoneAuthCredential: $p0")
-
             }
             override fun onVerificationFailed(p0: FirebaseException) {
                 Log.e("failedAuth", "$p0")
@@ -218,11 +229,9 @@ class MobileAuthDialogFragment : DialogFragment() {
         // -----! 휴대폰 인증 끝 !-----
 
         binding.btnMADAuthConfirm.setOnSingleClickListener {
-            val credential = PhoneAuthProvider.getCredential(verificationId, binding.etMADAuthNumber.text.toString())
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                signInWithPhoneAuthCredential(credential)
-            }
-        }  // -----! 인증 문자 확인 끝 !-----
+            tryAuth()
+        }
+        // -----! 인증 문자 확인 끝 !-----
         val mobilePattern = "^010-\\d{4}-\\d{4}\$"
         val mobilePatternCheck = Pattern.compile(mobilePattern)
         // ------! 핸드폰 번호 조건 코드 !-----
@@ -259,6 +268,14 @@ class MobileAuthDialogFragment : DialogFragment() {
             }
         })
     }
+    private fun tryAuth() {
+        val credential = PhoneAuthProvider.getCredential(verificationId, binding.etMADAuthNumber.text.toString())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            signInWithPhoneAuthCredential(credential)
+        }
+    }
+
+
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.P)
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
@@ -272,7 +289,7 @@ class MobileAuthDialogFragment : DialogFragment() {
                         // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
                         val mobile = svm.transformMobile.replace("+8210", "010")
                         svm.transformMobile = mobile
-                        Log.v("변환됐는지", svm.transformMobile)
+//                        Log.v("변환됐는지", svm.transformMobile)
                         val mobileJo = JSONObject().apply {
                             put("mobile", svm.transformMobile)
                         }
@@ -280,9 +297,8 @@ class MobileAuthDialogFragment : DialogFragment() {
                             fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), mobileJo.toString(), userSn.toString())
                         }
                         // 기존 입력 jo + 동의 항목인 jsonObj 통합
-                        val jo = svm.googleJo
-                        jo.put("mobile", svm.transformMobile)
-                        storeUserInSingleton(requireContext(), jo)
+                        val jo = Singleton_t_user.getInstance(requireContext()).jsonObject
+                        jo?.put("mobile", svm.transformMobile)
                         listener?.onFinish(true)
                         Toast.makeText(requireContext(), "인증에 성공했습니다", Toast.LENGTH_SHORT).show()
                         dismiss()
