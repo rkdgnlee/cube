@@ -625,6 +625,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 balloon2.dismissWithDelay(1800L)
             }, 700)
         }
+        balloon2.setOnBalloonClickListener { balloon2.dismiss() }
         binding.ibtnPCDTop.setOnClickListener { it.showAlignBottom(balloon2) }
     }
     private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {

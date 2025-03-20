@@ -84,9 +84,9 @@ class ProfileRVAdapter(private val fragment: Fragment,
                     "profile" -> {
                         when (currentItem) {
                             "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
-//                            "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
+
                             "QR코드 핀번호 로그인" -> holder.ivPf.setImageResource(R.drawable.icon_qr_code)
-                            "키오스크 핀번호 재설정" -> holder.ivPf.setImageResource(R.drawable.icon_profile) // TODO 아이콘 변경
+                            "키오스크 핀번호 재설정" -> holder.ivPf.setImageResource(R.drawable.icon_security)
                             "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
                             "문의하기" -> holder.ivPf.setImageResource(R.drawable.icon_inquire)
                             "공지사항" -> holder.ivPf.setImageResource(R.drawable.icon_announcement)
@@ -200,6 +200,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     holder.tvPfInfo.text = maskingEmail
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_email)
+                                holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                             }
                             "비밀번호" -> {
                                 holder.tvPfInfo.text = "************"
@@ -255,10 +256,10 @@ class ProfileRVAdapter(private val fragment: Fragment,
 
                         holder.cltvPfSettings.setOnClickListener {
                             when (holder.tvPfSettingsName.text) {
-                                "이메일" -> {
-                                    val dialog = ProfileEditChangeDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
-                                }
+//                                "이메일" -> {
+//                                    val dialog = ProfileEditChangeDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
+//                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+//                                }
                                 "비밀번호" -> {
                                     val provider = Singleton_t_user.getInstance(fragment.requireContext()).jsonObject?.optString("provider") ?: ""
                                     Log.v("provider", provider)

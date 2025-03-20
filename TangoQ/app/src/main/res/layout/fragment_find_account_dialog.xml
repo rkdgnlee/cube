@@ -52,7 +52,7 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="아이디 찾기" />
+                    android:text="이메일 찾기" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
@@ -203,7 +203,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:gravity="center"
-                    android:text="회원님의 아이디는"
+                    android:text="회원님의 이메일은"
                     android:textColor="@color/subColor800"
                     android:textSize="16dp"
                     android:textStyle="bold"
@@ -225,7 +225,7 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                    android:id="@+id/tvFADIdFinded"
+                    android:id="@+id/tvFADFindedEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"

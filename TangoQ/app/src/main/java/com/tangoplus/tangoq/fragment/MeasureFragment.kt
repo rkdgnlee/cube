@@ -574,7 +574,7 @@ class MeasureFragment : Fragment() {
                 tvMScores[i].text =bodyText
             }
 
-            tvMDates[i].textSize = if (isTablet(requireContext())) 18f else 15f
+//            tvMDates[i].textSize = if (isTablet(requireContext())) 18f else 15f
         }
     }
 }

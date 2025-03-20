@@ -25,6 +25,7 @@ import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
+import com.tangoplus.tangoq.listener.OnExerciseClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.vo.ExerciseHistoryVO
@@ -41,8 +42,7 @@ class ExerciseRVAdapter (
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var dialogClosedListener: OnDialogClosedListener? = null
-
-
+    var exerciseClickListener : OnExerciseClickListener? = null
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val clEI : ConstraintLayout = view.findViewById(R.id.clEI)
         val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
@@ -100,6 +100,8 @@ class ExerciseRVAdapter (
         when (holder) {
             is MainViewHolder -> {
                 if (xmlName in listOf("E", "ED", "PCD")) {
+
+
                     // -----! recyclerview에서 운동군 보여주기 !------
                     holder.tvEIFinish.visibility = View.INVISIBLE
                     holder.tvEISymptom.text = currentExerciseItem?.relatedSymptom.toString()
@@ -207,6 +209,9 @@ class ExerciseRVAdapter (
                     }
                     if (!isTouchLocked) {
                         holder.vEI.setOnClickListener {
+                            // 클릭했을 때 검색기록 넣기
+                            exerciseClickListener?.exerciseClick(currentExerciseItem?.exerciseName.toString())
+
                             val currentItem = progresses?.get(position)
                             val dialogFragment = PlayThumbnailDialogFragment().apply {
                                 arguments = Bundle().apply {

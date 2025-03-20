@@ -30,15 +30,17 @@ import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseSearchDialogBinding
 import com.tangoplus.tangoq.function.PreferencesManager
+import com.tangoplus.tangoq.listener.OnExerciseClickListener
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
 import java.util.Locale
 
-class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, OnHistoryClickListener {
+class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, OnHistoryClickListener, OnExerciseClickListener {
     lateinit var binding : FragmentExerciseSearchDialogBinding
     private val evm : ExerciseViewModel by activityViewModels()
     private lateinit var prefsManager : PreferencesManager
     private var isKeyboardVisible = false
+    private lateinit var adapter2 : ExerciseSearchHistoryRVAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -78,20 +80,8 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
             binding.rv1.adapter = null
         }
 
-        for (i in prefsManager.getLastSn() downTo 1) {
-            if (prefsManager.getStoredHistory(i) != "") {
-                evm.searchHistory.value?.add(Pair(i ,prefsManager.getStoredHistory(i)))
-//                Log.v("storedHistory", prefsManager.getStoredHistory(i))
-            }
 
-        }
-//        Log.v("searchHistory", "${evm.searchHistory.value}")
-        var adapter2 : ExerciseSearchHistoryRVAdapter
-        val searchHistory = evm.searchHistory.value
-        if (searchHistory != null) {
-            adapter2 = ExerciseSearchHistoryRVAdapter(searchHistory, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
-            setAdapter(adapter2, binding.rv2)
-        }
+        setSearchAdapter()
 
 
         binding.etESDSearch.addTextChangedListener(object : TextWatcher{
@@ -111,6 +101,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
                     }
 
                     val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, null,null,"E")
+                    adapter1.exerciseClickListener = this@ExerciseSearchDialogFragment
                     setAdapter(adapter1, binding.rv1)
                     if (filteredList.isEmpty()) binding.clESDEmpty.visibility = View.VISIBLE else binding.clESDEmpty.visibility = View.GONE
 //                    binding.clESDHistory.visibility = View.GONE
@@ -172,6 +163,19 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         rv.layoutManager = layoutManager
         rv.adapter = adapter
     }
+    private fun setSearchAdapter() {
+        evm.searchHistory.value?.clear()
+        for (i in prefsManager.getLastSn() downTo 1) {
+            if (prefsManager.getStoredHistory(i) != "") {
+                evm.searchHistory.value?.add(Pair(i ,prefsManager.getStoredHistory(i)))
+            }
+        }
+        val searchHistory = evm.searchHistory.value
+        if (searchHistory != null) {
+            adapter2 = ExerciseSearchHistoryRVAdapter(searchHistory, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
+            setAdapter(adapter2, binding.rv2)
+        }
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onHistoryDelete(history: Pair<Int,String>) {
@@ -183,6 +187,11 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
     override fun onHistoryClick(history: String) {
         binding.etESDSearch.setText(history)
         binding.etESDSearch.requestFocus()
+    }
+
+    override fun exerciseClick(name: String) {
+        prefsManager.setStoredHistory(binding.etESDSearch.text.toString())
+        setSearchAdapter()
     }
 
 }

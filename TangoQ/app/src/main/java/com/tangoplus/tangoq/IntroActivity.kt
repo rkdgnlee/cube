@@ -483,7 +483,7 @@ class IntroActivity : AppCompatActivity() {
         runOnUiThread {
             if (code == 201) {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    Toast.makeText(this@IntroActivity, "회원가입을 축하합니다 ! 로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@IntroActivity, "회원가입을 축하합니다\n로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
                 }, 500)
                 Handler(Looper.getMainLooper()).postDelayed({
                     val dialog = LoginDialogFragment()

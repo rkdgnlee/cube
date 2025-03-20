@@ -616,7 +616,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         Log.v("rightFileExisted", "${avm.rightEditedFile}")
                         setPlayerByCroppedVideo(true, videoWidth.toFloat(), videoHeight.toFloat())
                     }
-                    // TODO 로그 보고 왜 rightFIle이 사라져있는지 확인해야함.
                     // 로딩창 키기
                     if (!isLoadingShown) {
                         loadingDialog.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")

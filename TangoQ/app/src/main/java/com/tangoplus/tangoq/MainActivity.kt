@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.clMain)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
 
@@ -301,9 +301,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleIntent(intent: Intent) {
+        // 딥링크에서 왔을 때
         val deepLinkPath = intent.getStringExtra(DeepLinkManager.DEEP_LINK_PATH_KEY)
         val exerciseId = intent.getStringExtra(DeepLinkManager.EXERCISE_ID_KEY)
         val finishEVP =  intent.getStringExtra("evp_finish")
+
+        // 알람에서 왔을 때
+        val alarmNav = intent.getStringExtra("fragmentId")
         Log.v("finishEVP", "$finishEVP")
         if (deepLinkPath != null) {
             if (exerciseId != null) {

@@ -24,6 +24,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.util.concurrent.TimeUnit
 
 object NetworkUser {
     const val TAG = "NetworkUser"
@@ -265,10 +266,14 @@ object NetworkUser {
         }
     }
 
-    suspend fun idDuplicateCheck(myUrl: String, userId: String) : Int? {
-        val client = OkHttpClient()
+    suspend fun emailDuplicateCheck(myUrl: String, userEmail: String) : Int? {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 서버 연결 타임아웃 (10초)
+            .readTimeout(8, TimeUnit.SECONDS)    // 응답 읽기 타임아웃 (30초)
+            .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
+            .build()
         val request = Request.Builder()
-            .url("${myUrl}check_user_id.php?user_id=$userId")
+            .url("${myUrl}check_email.php?email=$userEmail")
             .get()
             .build()
 
@@ -276,13 +281,13 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("ID중복체크", "ResponseCode: ${response.code}")
+                        Log.e("email중복체크", "ResponseCode: ${response.code}")
                         return@withContext null
                     }
 
                     response.body?.string()?.let { responseString ->
-                        // Log.v("중복확인로그", "code: ${response.code}, body: $responseString")
                         val bodyJo = JSONObject(responseString)
+                        Log.v("email중복확인로그", "$bodyJo")
                         return@withContext bodyJo.optInt("status")
                     }
                 }
@@ -305,6 +310,50 @@ object NetworkUser {
         }
     }
 
+    suspend fun mobileDuplicateCheck(myUrl: String, mobile: String) : Int? {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 서버 연결 타임아웃 (10초)
+            .readTimeout(8, TimeUnit.SECONDS)    // 응답 읽기 타임아웃 (30초)
+            .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
+            .build()
+
+        val request = Request.Builder()
+            .url("${myUrl}check_mobile.php?mobile=$mobile")
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("mobile중복체크", "ResponseCode: ${response.code}")
+                        return@withContext null
+                    }
+
+                    response.body?.string()?.let { responseString ->
+                        val bodyJo = JSONObject(responseString)
+                        Log.v("mobile중복확인로그", "$bodyJo")
+                        return@withContext bodyJo.optInt("status")
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("mobileCondition Error", "IndexOutOfBoundsException: ${e.message}")
+                500
+            } catch (e: IllegalArgumentException) {
+                Log.e("mobileCondition Error", "IllegalArgumentException: ${e.message}")
+                500
+            } catch (e: IllegalStateException) {
+                Log.e("mobileCondition Error", "IllegalStateException: ${e.message}")
+                500
+            } catch (e: NullPointerException) {
+                Log.e("mobileCondition Error", "NullPointerException: ${e.message}")
+                500
+            } catch (e: java.lang.Exception) {
+                Log.e("mobileCondition Error", "Exception: ${e.message}")
+                500
+            }
+        }
+    }
 
     suspend fun fetchUserUPDATEJson(context: Context, myUrl : String, json: String, sn: String) : Boolean? {
         val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
@@ -388,11 +437,10 @@ object NetworkUser {
         }
     }
 
-    fun findUserId(context: Context, myUrl: String, joBody: String, callback: (String) -> Unit) {
+    fun findUserEmail(myUrl: String, joBody: String, callback: (String) -> Unit) {
 
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = joBody.toRequestBody(mediaType)
-//        val client = getClient(context)
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}find_user_id.php")
@@ -407,7 +455,7 @@ object NetworkUser {
                 val responseBody = response.body?.string()
                 // Log.v("userId", "$responseBody")
                 val jo = responseBody?.let { JSONObject(it) }
-                val id = jo?.optString("user_id")
+                val id = jo?.optString("email")
                 if (id != null) {
                     callback(id)
                 } else {
@@ -645,7 +693,7 @@ object NetworkUser {
 //        val body = bodyJo.toRequestBody(mediaType)
 //        val client = OkHttpClient()
 //        val request = Request.Builder()
-//            .url("${myUrl}?TODO바꿔야함")
+//            .url("${myUrl}?")
 //            .post(body)
 //            .build()
 //        client.newCall(request).enqueue(object : Callback{

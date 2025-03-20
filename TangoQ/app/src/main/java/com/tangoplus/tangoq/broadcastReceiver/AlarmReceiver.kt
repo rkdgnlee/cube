@@ -37,6 +37,7 @@ class AlarmReceiver: BroadcastReceiver() { // 인앱알림 채널
             userSn = Singleton_t_user.getInstance(context).jsonObject?.optInt("sn") ?: 0,
             message = text,
             timeStamp = System.currentTimeMillis(),
+            // TODO route를 맞춤설정해야함 -> 아직 알림 내용이 모호하고 사기진작느낌이라 특정 경로를 설정하기가 애매함..
         )
 //        Log.v("AlarmReceiver", "알람 수신: $title - $text, message: $message")
         prefs.storeAlarm(message)

@@ -55,6 +55,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.regex.Pattern
 
@@ -74,11 +75,9 @@ class LoginDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         sharedElementEnterTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.slide_top)
         sharedElementReturnTransition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.slide_top)
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,28 +90,29 @@ class LoginDialogFragment : DialogFragment() {
         }
 
         // ------# 로그인 count 저장 #------
+        viewModel.fullEmail.value = ""
         prefs = PreferencesManager(requireContext())
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         ssm = SaveSingletonManager(requireContext(), requireActivity())
-        binding.etLDId.requestFocus()
-        binding.etLDId.postDelayed({
-            imm.showSoftInput(binding.etLDId, InputMethodManager.SHOW_IMPLICIT)
-            scrollToView(binding.etLDId)
+        binding.etLDEmail.requestFocus()
+        binding.etLDEmail.postDelayed({
+            imm.showSoftInput(binding.etLDEmail, InputMethodManager.SHOW_IMPLICIT)
+            scrollToView(binding.etLDEmail)
         }, 250)
 
         imm.hideSoftInputFromWindow(view.windowToken, 0)
 
         // ------! 로그인 시작 !------
-        val idPattern = "^[\\s\\S]{4,16}$" // 영문, 숫자 4 ~ 16자 패턴
-        val idPatternCheck = Pattern.compile(idPattern)
+        val emailPattern = "^[a-zA-Z0-9._]{4,20}@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}\$" // 영문, 숫자 4 ~ 16자 패턴
+        val emailPatternCheck = Pattern.compile(emailPattern)
         val pwPattern = "^[\\s\\S]{4,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴 ^[a-zA-Z0-9]{6,20}$
         val pwPatternCheck = Pattern.compile(pwPattern)
-        binding.etLDId.addTextChangedListener(object: TextWatcher {
+        binding.etLDEmail.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                viewModel.id.value = s.toString()
-                viewModel.currentIdCon.value = idPatternCheck.matcher(binding.etLDId.text.toString()).find()
+                viewModel.fullEmail.value = s.toString()
+                viewModel.currentEmailCon.value = emailPatternCheck.matcher(binding.etLDEmail.text.toString()).find()
             }
         })
         binding.etLDPw.addTextChangedListener(object : TextWatcher {
@@ -135,16 +135,16 @@ class LoginDialogFragment : DialogFragment() {
 
         // 응답과 관계없이 로그인 시도 5회 실패시 잠금 ( 3분간 )
         // 5회 동안 이렇게 세고, 6회 시도 시 실패 -> 5분 7회 -> 10 8회 -> 20 9회 30분 10회 -> 이제 추가함
-        binding.ibtnLDIdClear.setOnClickListener { binding.etLDId.text.clear() }
-        binding.ibtnLDPwClear.setOnClickListener { binding.etLDPw.text.clear() }
+        binding.ibtnLDIdClear.setOnSingleClickListener { binding.etLDEmail.text.clear() }
+        binding.ibtnLDPwClear.setOnSingleClickListener { binding.etLDPw.text.clear() }
 
-        binding.btnLDLogin.setOnClickListener {
+        binding.btnLDLogin.setOnSingleClickListener {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
             tryLogin()
         } // ------! 로그인 끝 !------
 
         // ------! 비밀번호 및 아이디 찾기 시작 !------
-        binding.tvLDFind.setOnClickListener {
+        binding.tvLDFind.setOnSingleClickListener {
             val dialog = FindAccountDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "FindAccountDialogFragment")
         }
@@ -159,13 +159,13 @@ class LoginDialogFragment : DialogFragment() {
     }
 
     private fun tryLogin() {
-        if (viewModel.idPwCondition.value == true) {
+        if (viewModel.emailPwCondition.value == true) {
 
             // pw 암호화
             val encryptedPW = encrypt(viewModel.pw.value.toString(), getString(R.string.secret_key), getString(R.string.secret_iv))
             Log.v("암호화비밀번호", encryptedPW)
             val jsonObject = JSONObject()
-            jsonObject.put("user_id", viewModel.id.value)
+            jsonObject.put("email", viewModel.fullEmail.value)
             jsonObject.put("password_app", encryptedPW)
             val dialog = LoadingDialogFragment.newInstance("로그인")
             dialog.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")
@@ -234,6 +234,7 @@ class LoginDialogFragment : DialogFragment() {
                                 },
                                 retryAfter
                             )
+
                             binding.etLDPw.text.clear()
                         }
                     }
@@ -283,14 +284,8 @@ class LoginDialogFragment : DialogFragment() {
             // 계정이 잠겼을 때 문의하기
             2 -> {
                 disabledLogin(-1)
-                // TODO 이 곳에서 계정 잠금에 대한 email layout이 보여야 함
                 binding.clLDResetLock.visibility = View.VISIBLE
-
-
-
-
-
-
+                setLockFunc()
             }
         }
     }
@@ -339,9 +334,11 @@ class LoginDialogFragment : DialogFragment() {
                         200 -> {
                             viewModel.resetJwt = jo.optString("jwt_for_pwd")
                             resetLock(getString(R.string.API_user), viewModel.resetJwt, viewModel.saveEmail) {
-                                Toast.makeText(requireContext(), "인증에 성공했습니다. 다시 로그인해주세요", Toast.LENGTH_LONG).show()
-                                binding.clLDResetLock.visibility = View.GONE
-                                enabledLogin()
+                                lifecycleScope.launch (Dispatchers.Main) {
+                                    Toast.makeText(requireContext(), "인증에 성공했습니다. 다시 로그인해주세요", Toast.LENGTH_LONG).show()
+                                    binding.clLDResetLock.visibility = View.GONE
+                                    enabledLogin()
+                                }
                             }
                         }
                         400 -> {

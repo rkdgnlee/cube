@@ -106,6 +106,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         intent.putExtra("fragmentId", fragmentId)
         intent.putExtra("fromAlarmActivity", true)
         startActivity(intent)
+        intent.replaceExtras(null)
     }
 
     @SuppressLint("NotifyDataSetChanged")

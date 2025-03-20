@@ -72,7 +72,7 @@
                     android:background="@color/white"
                     android:text="측정 기록"
                     android:textColor="@color/black"
-                    android:textSize="32sp"
+                    android:textSize="32dp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView19"
                     app:layout_constraintStart_toEndOf="@+id/imageView19"
@@ -166,7 +166,7 @@
                             android:layout_marginStart="20dp"
                             android:text=" 측정 기록"
                             android:textColor="@color/black"
-                            android:textSize="18sp"
+                            android:textSize="18dp"
                             app:layout_constraintBottom_toTopOf="@+id/tvMMeasureHistory"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -196,6 +196,7 @@
                             android:backgroundTint="@color/subColor100"
                             android:text="최근 측정 기록 -     .  .  "
                             android:textColor="@color/subColor800"
+                            android:textSize="14dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent" />
@@ -314,7 +315,8 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:text="표준이하"
-                            android:textColor="@color/subColor400" />
+                            android:textColor="@color/subColor400"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:id="@+id/textView42"
@@ -323,7 +325,8 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:text="표준"
-                            android:textColor="@color/subColor800" />
+                            android:textColor="@color/subColor800"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:id="@+id/textView43"
@@ -332,7 +335,8 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:text="표준이상"
-                            android:textColor="@color/subColor400" />
+                            android:textColor="@color/subColor400"
+                            android:textSize="14dp" />
                     </LinearLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
@@ -450,7 +454,7 @@
                         android:layout_marginStart="4dp"
                         android:text="기간별 변화 척도"
                         android:textColor="@color/subColor300"
-                        android:textSize="14sp"
+                        android:textSize="14dp"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView12"
                         app:layout_constraintStart_toEndOf="@+id/imageView12"
                         app:layout_constraintTop_toTopOf="@+id/imageView12" />

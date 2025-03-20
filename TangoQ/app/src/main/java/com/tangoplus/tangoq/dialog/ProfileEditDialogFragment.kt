@@ -119,7 +119,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                 }
 
                 // ------! id, pw, EmailId VM에 값 보존 & 광고성 수신 동의 시작 !------
-                svm.id.value = svm.User.value?.optString("user_id")
+
 
                 when (svm.User.value?.optInt("sms_receive")) {
                     1 -> svm.agreementMk1.value = true

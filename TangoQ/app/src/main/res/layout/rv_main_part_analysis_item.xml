@@ -97,6 +97,7 @@
             android:layout_marginTop="4dp"
             android:text="주의"
             android:textColor="@color/subColor400"
+            android:textSize="14dp"
             app:layout_constraintEnd_toEndOf="@+id/view25"
             app:layout_constraintStart_toStartOf="@+id/view25"
             app:layout_constraintTop_toBottomOf="@+id/view25" />

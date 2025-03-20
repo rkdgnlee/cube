@@ -100,6 +100,12 @@ class PinChangeDialogFragment : DialogFragment() {
                 "다음으로" -> {
                     binding.clPCD2.visibility = View.VISIBLE
                     fadeInView(binding.clPCD2)
+                    binding.etPCDPinRepeat.requestFocus()
+                    binding.etPCDPinRepeat.postDelayed({
+                        imm.showSoftInput(binding.etPCDPinRepeat, InputMethodManager.SHOW_IMPLICIT)
+                    }, 250)
+
+
                     binding.btnPCDConfirm.text = "변경하기"
                     svm.pinCondition.observe(viewLifecycleOwner) {
                         if (it) {
@@ -151,6 +157,7 @@ class PinChangeDialogFragment : DialogFragment() {
             .build()
         binding.ibtnPCDAlert.showAlignBottom(balloon)
         balloon.dismissWithDelay(3000L)
+        balloon.setOnBalloonClickListener { balloon.dismiss() }
     }
 
     private fun enabledBtn() {

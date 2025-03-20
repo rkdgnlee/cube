@@ -78,10 +78,13 @@ class QRCodeDialogFragment : DialogFragment() {
 
         // ------! 바코드 스캔 시작 !------
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
-        binding.ibtnLSDBack.setOnClickListener { dismiss() }
+
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         // ------! balloon 시작 !------
-        binding.ibtnLSDBack.setOnClickListener { dismiss() }
+        binding.ibtnLSDBack.setOnClickListener {
+            dismiss()
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
         binding.ibtnLSDInfo.setOnClickListener {
             balloonCallback {}
         }
@@ -216,6 +219,7 @@ class QRCodeDialogFragment : DialogFragment() {
             .build()
         binding.textView20.showAlignBottom(balloon)
         balloon.dismissWithDelay(3000L)
+        balloon.setOnBalloonClickListener { balloon.dismiss() }
     }
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
