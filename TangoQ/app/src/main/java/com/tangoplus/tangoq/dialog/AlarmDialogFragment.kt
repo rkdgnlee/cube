@@ -24,6 +24,7 @@ import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,7 +62,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
 
         pm = PreferencesManager(requireContext())
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-        binding.ibtnAlarmBack.setOnClickListener { dismiss() }
+        binding.ibtnAlarmBack.setOnSingleClickListener { dismiss() }
         userSn = userJson?.optInt("sn") ?:0
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
@@ -94,7 +95,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
             }
         }
 
-        binding.tvAlarmClear.setOnClickListener {
+        binding.tvAlarmClear.setOnSingleClickListener {
             alarmList.clear()
             pm.deleteAllAlarms(userSn)
             alarmRVAdapter.notifyDataSetChanged()

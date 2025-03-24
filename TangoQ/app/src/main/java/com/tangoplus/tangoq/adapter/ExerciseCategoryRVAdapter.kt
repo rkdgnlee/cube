@@ -16,6 +16,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 
 class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
@@ -81,7 +82,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .into(holder.ivMCThumbnail)
-                holder.ivMCThumbnail.setOnClickListener{
+                holder.ivMCThumbnail.setOnSingleClickListener{
                     goExerciseDetail(currentItemMain)
                 }
             }
@@ -99,7 +100,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor100)
                 }
 
-                holder.tvSCName.setOnClickListener {
+                holder.tvSCName.setOnSingleClickListener {
                     onCategoryClickListener?.onCategoryClick(currentItem.first)
                     val previousPosition = selectedPosition
                     selectedPosition = adapterPosition

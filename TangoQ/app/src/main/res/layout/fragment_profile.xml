@@ -249,18 +249,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/rvPHelp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvPDetail"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="100dp"
-                    android:nestedScrollingEnabled="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView106" />
-
                 <View
                     android:id="@+id/view4"
                     android:layout_width="4dp"
@@ -286,6 +274,33 @@
                     android:src="@drawable/icon_edit_white"
                     app:layout_constraintBottom_toBottomOf="@+id/civP"
                     app:layout_constraintEnd_toEndOf="@+id/civP" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPDetail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView106" />
+
+                <TextView
+                    android:id="@+id/textView75"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="100dp"
+                    android:lineSpacingExtra="5dp"
+                    android:padding="20dp"
+                    android:text="㈜옵토닉스\n사업자번호:409-81-84171\n대표자명: 이용범, 이영우\n사업장소재지: 광주광역시 북구 첨단벤처소로15번길 63(월출동)\nContact:062-973-1260"
+                    android:textColor="@color/subColor300"
+                    android:textSize="14dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvPDetail"
+                    app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

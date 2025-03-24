@@ -52,9 +52,11 @@ import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.dialog.MobileAuthDialogFragment
 import com.tangoplus.tangoq.dialog.SignInDialogFragment
+import com.tangoplus.tangoq.dialog.WebViewDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
+import com.tangoplus.tangoq.function.WifiManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -83,9 +85,9 @@ class IntroActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        // ------! activity 사전 설정 끝 !------
 
-//        val dialog = MobileAuthDialogFragment()
-//        dialog.show(supportFragmentManager, "MobileAuthDialogFragment")
+        // ------# 접근 방지 #------
 
         // ------! token 저장할  securedPref init !------
         securePref = SecurePreferencesManager.getInstance(this@IntroActivity)
@@ -481,32 +483,44 @@ class IntroActivity : AppCompatActivity() {
     private fun handleSignInResult(code: Int) {
 //        Log.v("SignInFinished", "$code")
         runOnUiThread {
-            if (code == 201) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    Toast.makeText(this@IntroActivity, "회원가입을 축하합니다\n로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
-                }, 500)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    val dialog = LoginDialogFragment()
-                    dialog.show(supportFragmentManager, "LoginDialogFragment")
-                }, 1500)
-            }  else if (code == 409) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    Toast.makeText(this@IntroActivity, "잘못된 접근입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                }, 500)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    val dialog = LoginDialogFragment()
-                    dialog.show(supportFragmentManager, "LoginDialogFragment")
-                }, 1200)
-            } else if (code == 402){
-                Handler(Looper.getMainLooper()).postDelayed({
-                    Toast.makeText(this@IntroActivity, "이미 가입된 회원입니다. 아이디/비밀번호 찾기를 진행해주세요", Toast.LENGTH_SHORT).show()
-                }, 500)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    val dialog = LoginDialogFragment()
-                    dialog.show(supportFragmentManager, "LoginDialogFragment")
-                }, 1200)
+            when (code) {
+                201 -> {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        Toast.makeText(this@IntroActivity, "회원가입을 축하합니다\n로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
+                    }, 500)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val dialog = LoginDialogFragment()
+                        dialog.show(supportFragmentManager, "LoginDialogFragment")
+                    }, 1500)
+                }
+                202 -> {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        Toast.makeText(this@IntroActivity, "수정이 완료됐습니다\n로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
+                    }, 500)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val dialog = LoginDialogFragment()
+                        dialog.show(supportFragmentManager, "LoginDialogFragment")
+                    }, 1500)
+                }
+                409 -> {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        Toast.makeText(this@IntroActivity, "잘못된 접근입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                    }, 500)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val dialog = LoginDialogFragment()
+                        dialog.show(supportFragmentManager, "LoginDialogFragment")
+                    }, 1200)
+                }
+                402 -> {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        Toast.makeText(this@IntroActivity, "이미 가입된 회원입니다. 아이디/비밀번호 찾기를 진행해주세요", Toast.LENGTH_SHORT).show()
+                    }, 500)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val dialog = LoginDialogFragment()
+                        dialog.show(supportFragmentManager, "LoginDialogFragment")
+                    }, 1200)
+                }
             }
-
         }
     }
 

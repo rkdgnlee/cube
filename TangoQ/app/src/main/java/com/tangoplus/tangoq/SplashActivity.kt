@@ -333,6 +333,7 @@ class SplashActivity : AppCompatActivity() {
                     val intent = Intent(this, IntroActivity::class.java)
                     startActivity(intent)
                     finish()
+                    logout(this@SplashActivity, 0)
                 }, 4000
                 )
             }

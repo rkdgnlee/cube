@@ -31,6 +31,7 @@ import com.tangoplus.tangoq.dialog.PinChangeDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.fragment.WithdrawalFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
@@ -106,7 +107,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         // ------! 앱 버전 text 설정 끝 !------
 
                         // ------! 각 item 클릭 동작 시작 !------
-                        ViewHolder.cltvPfSettings.setOnClickListener {
+                        ViewHolder.cltvPfSettings.setOnSingleClickListener {
                             when (currentItem) {
                                 "내정보" -> {
                                     val dialogFragment = ProfileEditDialogFragment()
@@ -254,7 +255,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                         }
 
-                        holder.cltvPfSettings.setOnClickListener {
+                        holder.cltvPfSettings.setOnSingleClickListener {
                             when (holder.tvPfSettingsName.text) {
 //                                "이메일" -> {
 //                                    val dialog = ProfileEditChangeDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())

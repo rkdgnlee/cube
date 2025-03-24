@@ -29,6 +29,7 @@ import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,7 +73,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        binding.ibtnPEDBack.setOnClickListener { dismiss() }
+        binding.ibtnPEDBack.setOnSingleClickListener { dismiss() }
         // ------# 초기 생체인증 init #------
         biometricManager = BiometricManager(this)
         biometricManager.authenticate(

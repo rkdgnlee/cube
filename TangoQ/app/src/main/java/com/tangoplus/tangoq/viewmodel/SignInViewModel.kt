@@ -39,11 +39,23 @@ class SignInViewModel: ViewModel() {
     var countDownTimer : CountDownTimer? = null
 
     // 회원가입 condition
-    val nameCondition = MutableLiveData(false)
+    // PASS나 문자인증에서 받아온 값들
+    val passName = MutableLiveData("")
+    val passMobile = MutableLiveData("")
     val emailIdCondition = MutableLiveData(false)
     val domainCondition = MutableLiveData(false)
     val phoneCondition = MutableLiveData(false)
     val emailVerify = MutableLiveData(false)
+
+    val passAuthCondition = MediatorLiveData<Boolean>().apply {
+        value = false
+        addSource(passName) { condition ->
+            value = condition != "" && (passMobile.value != "")
+        }
+        addSource(passMobile) { condition ->
+            value = condition != "" && (passName.value != "")
+        }
+    }
 
     val emailCondition = MediatorLiveData<Boolean>().apply {
         value = false
@@ -57,15 +69,14 @@ class SignInViewModel: ViewModel() {
 
     val allTrueLiveData = MediatorLiveData<Boolean>().apply {
         val checkAllTrue = {
-            val v1 = nameCondition.value ?: false
-            val v2 = emailCondition.value ?: false
-            val v3 = emailVerify.value ?: false
-            val v4 = phoneCondition.value ?: false
-            val v5 = pwBothTrue.value ?: false
-            value = v1 && v2 && v3 && v4 && v5
+            val v1 = emailCondition.value ?: false
+            val v2 = emailVerify.value ?: false
+            val v3 = phoneCondition.value ?: false
+            val v4 = pwBothTrue.value ?: false
+            value = v1 && v2 && v3 && v4
         }
-        addSource(nameCondition) { checkAllTrue() }
         addSource(emailCondition) { checkAllTrue() }
+        addSource(emailVerify) { checkAllTrue() }
         addSource(phoneCondition) { checkAllTrue() }
         addSource(pwBothTrue) { checkAllTrue() }
     }

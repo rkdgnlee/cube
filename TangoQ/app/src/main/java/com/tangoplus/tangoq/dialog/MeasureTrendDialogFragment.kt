@@ -42,6 +42,7 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
@@ -139,7 +140,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 avm.resetMeasureDates()
 //                Log.v("초기measureDates들", "lef t: ${avm.leftMeasureDate.value}, right: ${avm.rightMeasureDate.value}")
 
-                binding.ibtnMTDBack.setOnClickListener { dismiss() }
+                binding.ibtnMTDBack.setOnSingleClickListener { dismiss() }
                 pvm.setLeftPlaybackPosition(0)
                 pvm.setRightPlaybackPosition(0)
                 // ------# 비교할 모든 analysisVO 넣기 #------

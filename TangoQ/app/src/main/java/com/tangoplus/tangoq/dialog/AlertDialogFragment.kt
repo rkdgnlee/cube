@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentAlertDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -48,7 +49,7 @@ class AlertDialogFragment : DialogFragment() {
         val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
         when (case) {
             "agree", "disagree" -> {
-                binding.tvMkConfirm.setOnClickListener{ dismiss() }
+                binding.tvMkConfirm.setOnSingleClickListener{ dismiss() }
                 val message = SpannableString("전송자: TangoPlus (탱고플러스)" + "\n수신동의 날짜: ${today.format(formatter)}\n처리내용: 수신 ${if (case == "agree") "동의" else "거부"} 처리 완료")
                 val accentIndex = message.indexOf("처리내용")
                 when (case) {

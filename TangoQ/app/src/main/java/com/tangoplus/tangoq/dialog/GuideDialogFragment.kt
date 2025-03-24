@@ -22,6 +22,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.databinding.FragmentGuideDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 
 class GuideDialogFragment : DialogFragment() {
     private lateinit var binding : FragmentGuideDialogBinding
@@ -94,7 +95,7 @@ class GuideDialogFragment : DialogFragment() {
         if (!hasExactAlarmPermission(requireContext())) {
             requestExactAlarmPermission(requireContext())
         }
-        binding.btnGD.setOnClickListener { dismiss() }
+        binding.btnGD.setOnSingleClickListener { dismiss() }
     }
 
     override fun onResume() {

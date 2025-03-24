@@ -24,6 +24,7 @@ import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartBSItemBinding
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnDisconnectListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
@@ -153,7 +154,7 @@ class StringRVAdapter(private val fragment: Fragment,
                         updateCheckboxTextColor(holder.cbWI, isChecked)
                     }
 
-                    holder.cbWI.setOnClickListener {
+                    holder.cbWI.setOnSingleClickListener {
                         vm.selectMeasureDate.value = currentItem
 //                        Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
                     }
@@ -175,7 +176,7 @@ class StringRVAdapter(private val fragment: Fragment,
                         holder.cbWI.isChecked = isChecked
                         updateCheckboxTextColor(holder.cbWI, isChecked)
                     }
-                    holder.cbWI.setOnClickListener {
+                    holder.cbWI.setOnSingleClickListener {
                         vm.selectWeek.value = position
 //                        Log.v("selectDate", "selectWeek: ${vm.selectWeek.value}")
                     }
@@ -196,7 +197,7 @@ class StringRVAdapter(private val fragment: Fragment,
                     updateCheckbox(holder ,holder.cbPBSI, isChecked)
                 }
 
-                holder.cbPBSI.setOnClickListener {
+                holder.cbPBSI.setOnSingleClickListener {
                     if (currentItem != null) {
                         vm.selectPart.value = currentItem
                         Log.v("selectedDate", "현재: ${vm.currentPart.value}, 선택값: ${vm.selectPart}")

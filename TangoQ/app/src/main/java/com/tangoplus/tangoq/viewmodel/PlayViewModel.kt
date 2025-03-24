@@ -3,6 +3,7 @@ package com.tangoplus.tangoq.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.tangoplus.tangoq.vo.ExerciseVO
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.json.JSONArray
 
@@ -53,7 +54,7 @@ class PlayViewModel : ViewModel() {
     var isProgram = false
     var uvpSn = 0
     var uvpSnCurrentPosition = 0
-
+    var exerciseData : ExerciseVO? = null
 
     private var leftPlayBackPosition  = 0L
     private var rightPlayBackPosition = 0L

@@ -21,6 +21,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvMeasureDetailAnalysisItemBinding
 import com.tangoplus.tangoq.dialog.PoseDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.createSeqGuideComment
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.seqs
@@ -67,7 +68,7 @@ class MeasureDetailRVAdapter(private val fragment: Fragment, private val data : 
 
 
             setApapter(currentItem.indexx, holder, currentItem.labels)
-            holder.ivMDAI.setOnClickListener {
+            holder.ivMDAI.setOnSingleClickListener {
                 val dialog = PoseDialogFragment.newInstance(currentItem.indexx)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartPoseDialogFragment")
             }

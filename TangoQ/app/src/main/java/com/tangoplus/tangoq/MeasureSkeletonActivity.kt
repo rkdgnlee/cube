@@ -478,7 +478,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         /** 사진 및 동영상 촬영 순서
          * 1. isLooping true -> seqStep확인 -> count에 맞게 isCapture및 isRecord 선택
          * 2. mCountdown.start() -> 카운트 다운이 종료될 때 isCapture, isRecording에 따라 service 함수 실행 */
-        binding.ibtnMeasureSkeletonBack.setOnClickListener {
+        binding.ibtnMeasureSkeletonBack.setOnSingleClickListener {
             MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("알림")
                 setMessage("측정을 종료하시겠습니까 ?")

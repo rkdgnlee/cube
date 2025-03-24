@@ -16,8 +16,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.databinding.FragmentLoadingDialogBinding
+import androidx.core.graphics.drawable.toDrawable
 
-@Suppress("DEPRECATION")
 class LoadingDialogFragment : DialogFragment() {
     lateinit var binding : FragmentLoadingDialogBinding
 
@@ -34,7 +34,7 @@ class LoadingDialogFragment : DialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentLoadingDialogBinding.inflate(inflater)
         return binding.root
@@ -74,7 +74,7 @@ class LoadingDialogFragment : DialogFragment() {
         val dialog = super.onCreateDialog(savedInstanceState)
 
         dialog.window?.apply {
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
             addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
             setDimAmount(0.6f)
         }

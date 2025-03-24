@@ -14,6 +14,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.RecommendationVO
 import com.tangoplus.tangoq.databinding.RvRecommendationItemBinding
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 
 class RecommendationRVAdapter(private val fragment: Fragment,
                               private val data: List<RecommendationVO>,
@@ -45,7 +46,7 @@ class RecommendationRVAdapter(private val fragment: Fragment,
         val typeItem = exerciseTypeIds[position]
         if (holder is RecommendationViewHolder) {
             holder.tvPI.text = currentItem.title
-            holder.clPI.setOnClickListener {
+            holder.clPI.setOnSingleClickListener {
                 val dialog = ProgramCustomDialogFragment.newInstance(currentItem.programSn, currentItem.recommendationSn)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
             }

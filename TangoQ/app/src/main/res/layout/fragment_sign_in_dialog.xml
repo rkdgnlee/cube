@@ -23,7 +23,7 @@
     <com.shuhart.stepview.StepView
         android:id="@+id/svSignIn"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="84dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
@@ -34,6 +34,7 @@
         app:sv_animationType="Circle"
         app:sv_background="@color/white"
         app:sv_doneCircleColor="@color/thirdColor"
+        app:sv_doneCircleRadius="20dp"
         app:sv_doneStepLineColor="@color/white"
         app:sv_doneStepMarkColor="@color/white"
         app:sv_doneTextColor="@color/secondaryColor"
@@ -42,10 +43,12 @@
         app:sv_nextStepLineColor="@color/white"
         app:sv_nextTextColor="@color/white"
         app:sv_selectedCircleColor="@color/thirdColor"
+        app:sv_selectedCircleRadius="20dp"
         app:sv_selectedStepNumberColor="@color/white"
         app:sv_selectedTextColor="@color/secondaryColor"
+        app:sv_stepNumberTextSize="20dp"
         app:sv_stepsNumber="3"
-        app:sv_textPadding="4dp"
+        app:sv_textPadding="6dp"
         app:sv_textSize="16dp" />
 
 

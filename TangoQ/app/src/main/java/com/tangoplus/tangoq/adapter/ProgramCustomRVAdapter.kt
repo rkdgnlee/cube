@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvProgramSeqItemBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 
@@ -115,7 +116,7 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
 
 
              // 회차별 상태 업데이트
-            holder.tvPSIName.setOnClickListener {
+            holder.tvPSIName.setOnSingleClickListener {
                 onCustomCategoryClickListener.customCategoryClick(position)
             }
         }

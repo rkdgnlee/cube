@@ -35,6 +35,7 @@ import com.tangoplus.tangoq.databinding.FragmentSignIn2Binding
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.dialog.SignInDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -62,12 +63,20 @@ class SignIn2Fragment : Fragment() {
         // dialog 세팅
         loadingDialog = LoadingDialogFragment.newInstance("회원가입확인")
         parentDialog  = (requireParentFragment() as SignInDialogFragment)
-
-        binding.etEmailId.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                parentDialog?.requireView()?.findViewById<StepView>(R.id.svSignIn)?.go(2, true)
-                parentDialog?.requireView()?.findViewById<ProgressView>(R.id.pvSignIn)?.let { it.progress = 75f }
-                parentDialog?.requireView()?.findViewById<TextView>(R.id.tvSignInGuide)?.let { it.text = "이메일을 입력해주세요" }
+        binding.etEmailId.apply {
+            binding.etEmailId.postDelayed({
+                binding.etEmailId.requestFocus()
+                val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(binding.etEmailId, InputMethodManager.SHOW_IMPLICIT)
+            }, 250)
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    parentDialog?.requireView()?.findViewById<StepView>(R.id.svSignIn)?.go(1, true)
+                    parentDialog?.requireView()?.findViewById<ProgressView>(R.id.pvSignIn)
+                        ?.let { it.progress = 60f }
+                    parentDialog?.requireView()?.findViewById<TextView>(R.id.tvSignInGuide)
+                        ?.let { it.text = "이메일을 입력해주세요" }
+                }
             }
         }
 
@@ -101,19 +110,19 @@ class SignIn2Fragment : Fragment() {
                 if (position == 3) {
                     binding.etEmail.visibility = View.VISIBLE
                     binding.spinner.visibility = View.GONE
-                    binding.ivSpinner.setOnClickListener{
-                        binding.spinner.performClick()
-                        binding.spinner.visibility = View.VISIBLE
-                    }
                     svm.domainCondition.value = false
+                    binding.etEmail.setText("")
                 } else {
                     binding.etEmail.visibility = View.GONE
-                    binding.etEmail.setText("")
                     binding.spinner.visibility = View.VISIBLE
                     svm.domainCondition.value = true
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+        // image눌러도 spinner가 보이게끔 하기
+        binding.ivSpinner.setOnSingleClickListener {
+            binding.spinner.performClick()
         }
 
         svm.emailCondition.observe(viewLifecycleOwner) {
@@ -127,11 +136,13 @@ class SignIn2Fragment : Fragment() {
                     }
                 }
                 false -> {
-                    binding.tvEmailCondition.text = "올바른 이메일 형식을 입력해주세요"
-                    binding.tvEmailCondition.setTextColor(resources.getColor(R.color.deleteColor, null))
-                    binding.btnEmailConfirm.apply {
-                        isEnabled = false
-                        backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor400, null))
+                    if (binding.etEmailId.text.isNotEmpty()) {
+                        binding.tvEmailCondition.text = "올바른 이메일 형식을 입력해주세요"
+                        binding.tvEmailCondition.setTextColor(resources.getColor(R.color.deleteColor, null))
+                        binding.btnEmailConfirm.apply {
+                            isEnabled = false
+                            backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor400, null))
+                        }
                     }
                 }
             }
@@ -144,7 +155,7 @@ class SignIn2Fragment : Fragment() {
             }
             false
         }
-        binding.btnEmailConfirm.setOnClickListener {
+        binding.btnEmailConfirm.setOnSingleClickListener {
             confirmEmail()
         }
 
@@ -220,6 +231,27 @@ class SignIn2Fragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }) //-----! 입력 문자 조건 끝 !-----
+
+        // 회원가입 버튼 state 관리
+        svm.allTrueLiveData.observe(viewLifecycleOwner) {
+            if (it) {
+                parentDialog?.requireView()?.findViewById<ProgressView>(R.id.pvSignIn)?.let { it.progress = 100f }
+                parentDialog?.requireView()?.findViewById<TextView>(R.id.tvSignInGuide)?.let { it.text = "가입 버튼을 눌러주세요" }
+                binding.btnSignIn.apply {
+                    isEnabled = it
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
+                }
+            } else {
+                binding.btnSignIn.apply {
+                    isEnabled = it
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
+                }
+            }
+    }
+
+
+
+
     }
     private fun showAgreementBottomSheetDialog(context: FragmentActivity) {
         val bottomSheetFragment = AgreementBSDialogFragment()
@@ -311,8 +343,8 @@ class SignIn2Fragment : Fragment() {
                                 binding.spinner.isEnabled = false
                                 svm.User.value?.put("email", svm.fullEmail.value)
 //                                    Log.v("id들어감", "${svm.User.value?.getString("user_id")}")
-                                parentDialog?.requireView()?.findViewById<StepView>(R.id.svSignIn)?.go(3, true)
-                                parentDialog?.requireView()?.findViewById<ProgressView>(R.id.pvSignIn)?.let { it.progress = 95f }
+                                parentDialog?.requireView()?.findViewById<StepView>(R.id.svSignIn)?.go(2, true)
+                                parentDialog?.requireView()?.findViewById<ProgressView>(R.id.pvSignIn)?.let { it.progress = 90f }
                                 parentDialog?.requireView()?.findViewById<TextView>(R.id.tvSignInGuide)?.let { it.text = "비밀번호를 입력해주세요" }
 
                                 // pw로 포커싱

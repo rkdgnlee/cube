@@ -110,7 +110,7 @@ class AnalyzeFragment : Fragment() {
         }
         val btns = listOf(binding.vA1, binding.vA2, binding.vA3, binding.vA4, binding.vA5, binding.vA6, binding.vA7)
         btns.forEachIndexed { index, view ->
-            view.setOnClickListener {
+            view.setOnSingleClickListener {
 
                 showDailyProgress(index)
                 animateCardViewToPercentage( index)

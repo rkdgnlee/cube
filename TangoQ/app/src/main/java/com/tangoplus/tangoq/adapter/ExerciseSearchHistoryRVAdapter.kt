@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.divider.MaterialDivider
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvExerciseSearchHistoryItemBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
 
@@ -39,10 +40,10 @@ class ExerciseSearchHistoryRVAdapter(private val historys: MutableList<Pair<Int,
             }
             holder.tvHI.text = currentItem.second
 
-            holder.ibtnHI.setOnClickListener{
+            holder.ibtnHI.setOnSingleClickListener{
                 historyDeleteListener.onHistoryDelete(currentItem)
             }
-            holder.tvHI.setOnClickListener {
+            holder.tvHI.setOnSingleClickListener {
                 historyClickListener.onHistoryClick(currentItem.second)
             }
 

@@ -15,6 +15,8 @@ import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.skydoves.balloon.ArrowPositionRules
@@ -26,6 +28,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.databinding.FragmentPinChangeDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.fadeInView
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -49,6 +52,14 @@ class PinChangeDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+
         binding.clPCD2.visibility = View.GONE
         binding.btnPCDConfirm.text = "다음으로"
         disabledBtn()
@@ -142,7 +153,7 @@ class PinChangeDialogFragment : DialogFragment() {
         val balloon = Balloon.Builder(requireContext())
             .setWidth(BalloonSizeSpec.WRAP)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("탱고바디 키오스크 로그인 PIN번호를 재설정하시려면\n하단에 4자리를 입력하고 변경버튼을 눌러주세요")
+            .setText("탱고바디 키오스크의 PIN번호를 재설정하시려면\n하단에 4자리를 입력하고 변경버튼을 눌러주세요")
             .setTextColorResource(R.color.subColor800)
             .setTextSize(20f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
@@ -155,7 +166,7 @@ class PinChangeDialogFragment : DialogFragment() {
             .setLifecycleOwner(viewLifecycleOwner)
             .setOnBalloonDismissListener { callback() }
             .build()
-        binding.ibtnPCDAlert.showAlignBottom(balloon)
+        binding.textView67.showAlignBottom(balloon)
         balloon.dismissWithDelay(3000L)
         balloon.setOnBalloonClickListener { balloon.dismiss() }
     }
@@ -169,14 +180,6 @@ class PinChangeDialogFragment : DialogFragment() {
         binding.btnPCDConfirm.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor400, null))
     }
 
-    fun fadeInView(view: View) {
-        view.visibility = View.VISIBLE
-        view.alpha = 0f
-        ObjectAnimator.ofFloat(view, "alpha", 0f, 1f).apply {
-            duration = 500 // 애니메이션 지속 시간 (ms)
-            interpolator = DecelerateInterpolator()
-            start()
-        }
-    }
+
 
 }

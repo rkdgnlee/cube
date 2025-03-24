@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvMainPartItemBinding
 import com.tangoplus.tangoq.databinding.RvPartItemBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.MainAnalysisFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
@@ -79,7 +80,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val dangerParts:
                 loadFlippedImage(holder, drawableId, isRight)
             }
 
-            holder.clPI.setOnClickListener {
+            holder.clPI.setOnSingleClickListener {
                 avm.currentPart.value = currentItem?.first
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flMain, MainAnalysisFragment.newInstance(currentItem?.first ?: ""))
@@ -102,7 +103,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val dangerParts:
             } else {
                 holder.clPI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor200)
             }
-            holder.clPI.setOnClickListener {
+            holder.clPI.setOnSingleClickListener {
                 if (currentItem != null) {
                     onCategoryClickListener?.onCategoryClick(currentItem.first.toString())
                 }

@@ -14,6 +14,7 @@ import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvMainProgressItemBinding
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.vo.RecommendationVO
 
@@ -77,10 +78,7 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
             }
         }
     }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
-    }
+
     private val keywords = listOf("목관절", "어깨", "팔꿉", "손목", "고관절", "무릎", "발목")
     fun replaceJointProgram(input: String, jointParts: List<String>): String {
         var result = input

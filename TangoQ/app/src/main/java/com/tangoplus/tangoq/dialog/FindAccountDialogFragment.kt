@@ -20,11 +20,13 @@ import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -50,6 +52,8 @@ import com.tangoplus.tangoq.databinding.FragmentFindAccountDialogBinding
 import com.tangoplus.tangoq.api.NetworkUser.resetPW
 import com.tangoplus.tangoq.api.NetworkUser.sendPWCode
 import com.tangoplus.tangoq.api.NetworkUser.verifyPWCode
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -58,6 +62,7 @@ import java.util.regex.Pattern
 class FindAccountDialogFragment : DialogFragment() {
     lateinit var binding : FragmentFindAccountDialogBinding
     private lateinit var auth : FirebaseAuth
+    private var loadingDialog : LoadingDialogFragment? = null
     val svm : SignInViewModel by viewModels()
     var verifyId = ""
 
@@ -93,7 +98,8 @@ class FindAccountDialogFragment : DialogFragment() {
         }
 
         // ------# 초기 세팅 #------
-        binding.ibtnFADBack.setOnClickListener { dismiss() }
+        loadingDialog = LoadingDialogFragment.newInstance("회원가입전송")
+        binding.ibtnFADBack.setOnSingleClickListener { dismiss() }
         binding.clFADIdResult.visibility = View.GONE
         binding.clFADResetPassword.visibility = View.GONE
         auth = FirebaseAuth.getInstance()
@@ -161,63 +167,20 @@ class FindAccountDialogFragment : DialogFragment() {
 
             }
         }
-        // ------! 인증 문자 확인 끝 !------
-        binding.btnFADAuthSend.setOnClickListener {
-            when (svm.isFindEmail.value) {
-                true -> {
-                    var transformMobile = phoneNumber82(binding.etFADAuth.text.toString())
-                    val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog)
-                        .setTitle("📩 문자 인증 ")
-                        .setMessage("$transformMobile 로 인증 하시겠습니까?")
-                        .setPositiveButton("예") { _, _ ->
-                            transformMobile = transformMobile.replace("-", "")
-
-                            val optionsCompat = PhoneAuthOptions.newBuilder(auth)
-                                .setPhoneNumber(transformMobile)
-                                .setTimeout(60L, TimeUnit.SECONDS)
-                                .setActivity(requireActivity())
-                                .setCallbacks(callbacks)
-                                .build()
-                            PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
-                            auth.setLanguageCode("kr")
-
-                            val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
-                            alphaAnimation.duration = 600
-                            binding.etFADAuthNumber.isEnabled = true
-                            binding.etFADAuthNumber.requestFocus()
-                        }
-                        .setNegativeButton("아니오", null)
-                        .show()
-                }
-                false -> {
-
-                    MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                        setTitle("📩 문자 인증 ")
-                        setMessage("${binding.etFADAuth.text} 로 인증번호를 전송 하시겠습니까?")
-                        setPositiveButton("예") { _, _ ->
-                            svm.saveEmail = binding.etFADAuth.text.toString()
-                            val jo = JSONObject().apply {
-                                put("email", svm.saveEmail)
-                            }
-                            disabledSendButton()
-                            sendPWCode(getString(R.string.API_user), jo.toString()) {
-                                Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT).show()
-
-                                // 재전송안내 문구 세팅
-                                binding.tvFADReAuth.visibility = View.VISIBLE
-                                setVerifyCountDown(120)
-
-                                // 버튼 활성화
-                                binding.etFADAuthNumber.isEnabled = true
-                                binding.btnFADConfirm.isEnabled = true
-                            }
-                        }
-                        setNegativeButton("아니오", null)
-                        show()
-                    }
-                }
-                null -> {}
+        // ------# 키보드 focus자동 이동 #------
+        binding.etFADAuth.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                sendAuthCode(callbacks)
+                true  // 이벤트 처리가 완료되었음을 반환
+            } else {
+                false // 다른 동작들은 그대로 유지
             }
+        }
+
+        // ------! 인증 문자 확인 끝 !------
+        binding.btnFADAuthSend.setOnSingleClickListener {
+            sendAuthCode(callbacks)
         }
         val fullText = binding.tvFADReAuth.text
         val spnbString = SpannableString(fullText)
@@ -277,7 +240,7 @@ class FindAccountDialogFragment : DialogFragment() {
             }
         })
 
-        binding.btnFADConfirm.setOnClickListener{
+        binding.btnFADConfirm.setOnSingleClickListener{
             when (binding.btnFADConfirm.text) {
                 "인증 하기" -> {
                     val credential = PhoneAuthProvider.getCredential(verifyId, binding.etFADAuthNumber.text.toString())
@@ -370,16 +333,17 @@ class FindAccountDialogFragment : DialogFragment() {
                     }
                 }
                 "비밀번호 재설정" -> {
+                    val encryptePW = encrypt(svm.pw.value ?: "", getString(R.string.secret_key), getString(R.string.secret_iv))
                     val bodyJo = JSONObject().apply {
                         put("email", svm.saveEmail)
-                        put("new_password", "${svm.pw.value}")
+                        put("new_password", encryptePW)
                     }
                     resetPW(getString(R.string.API_user), svm.resetJwt, bodyJo.toString()) { code ->
                         when (code) {
                             200 -> {
                                 val intent = Intent(requireActivity(), IntroActivity::class.java)
                                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                intent.putExtra("SignInFinished", 201)
+                                intent.putExtra("SignInFinished", 202)
                                 dismiss()
                                 startActivity(intent)
                             }
@@ -564,5 +528,71 @@ class FindAccountDialogFragment : DialogFragment() {
         binding.etFADAuth.setText("")
         binding.btnFADConfirm.text = "이메일 인증"
         svm.isFindEmail.value = false
+    }
+
+    private fun sendAuthCode(callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks) {
+
+        when (svm.isFindEmail.value) {
+            true -> {
+                var transformMobile = phoneNumber82(binding.etFADAuth.text.toString())
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog)
+                    .setTitle("📩 문자 인증 ")
+                    .setMessage("$transformMobile 로 인증 하시겠습니까?")
+                    .setPositiveButton("예") { _, _ ->
+                        transformMobile = transformMobile.replace("-", "")
+
+                        val optionsCompat = PhoneAuthOptions.newBuilder(auth)
+                            .setPhoneNumber(transformMobile)
+                            .setTimeout(60L, TimeUnit.SECONDS)
+                            .setActivity(requireActivity())
+                            .setCallbacks(callbacks)
+                            .build()
+                        PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
+                        auth.setLanguageCode("kr")
+
+                        val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
+                        alphaAnimation.duration = 600
+                        binding.etFADAuthNumber.isEnabled = true
+                        binding.etFADAuthNumber.requestFocus()
+                    }
+                    .setNegativeButton("아니오", null)
+                    .show()
+            }
+            false -> {
+
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setTitle("📩 문자 인증 ")
+                    setMessage("${binding.etFADAuth.text} 로 인증번호를 전송 하시겠습니까?")
+                    setPositiveButton("예") { _, _ ->
+                        if (dialog?.isShowing == true) {
+                            loadingDialog?.show(requireActivity().supportFragmentManager, "LoadingDialogFragment")
+                        }
+
+                        svm.saveEmail = binding.etFADAuth.text.toString()
+                        val jo = JSONObject().apply {
+                            put("email", svm.saveEmail)
+                        }
+                        disabledSendButton()
+                        sendPWCode(getString(R.string.API_user), jo.toString()) {
+                            Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT).show()
+                            if (dialog?.isShowing == true) {
+                                loadingDialog?.dismiss()
+                            }
+                            // 재전송안내 문구 세팅
+                            binding.tvFADReAuth.visibility = View.VISIBLE
+                            setVerifyCountDown(120)
+
+                            // 버튼 활성화
+                            binding.etFADAuthNumber.isEnabled = true
+                            binding.btnFADConfirm.isEnabled = true
+                        }
+                    }
+                    setNegativeButton("아니오", null)
+                    show()
+                }
+            }
+            null -> {}
+        }
+
     }
 }

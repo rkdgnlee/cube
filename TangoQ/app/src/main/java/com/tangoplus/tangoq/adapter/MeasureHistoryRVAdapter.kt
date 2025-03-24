@@ -17,6 +17,7 @@ import com.tangoplus.tangoq.databinding.RvMeasureItemBinding
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import kotlinx.coroutines.CoroutineScope
@@ -51,7 +52,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
             holder.tvMIScore.text = currentItem.overall.toString()
             val hideBadgeFunction = fragment.hideBadgeOnClick(holder.tvMIName, holder.clMI, "${holder.tvMIName.text}", ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 
-            holder.clMI.setOnClickListener {
+            holder.clMI.setOnSingleClickListener {
                 try {
                     viewModel.selectedMeasure = currentItem
 

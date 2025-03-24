@@ -6,6 +6,8 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -29,6 +31,7 @@ import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseSearchDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnExerciseClickListener
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
@@ -73,11 +76,11 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         imm?.hideSoftInputFromWindow(view.windowToken, 0)
         isKeyboardVisible = true
 
-        binding.ibtnESDBack.setOnClickListener { dismiss() }
+        binding.ibtnESDBack.setOnSingleClickListener { dismiss() }
 
-        binding.ibtnESDClear.setOnClickListener{
+        binding.ibtnESDClear.setOnSingleClickListener{
             binding.etESDSearch.setText("")
-            binding.rv1.adapter = null
+            setSearchData("")
         }
 
 
@@ -90,22 +93,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
             override fun afterTextChanged(s: Editable?) {
 
                 // ------# 첫번쨰 rv 필터링 하기 #------
-                val query = s.toString()
-                val filteredList = mutableListOf<ExerciseVO>()
-                if (query.isNotEmpty()) {
-                    val filteredPattern = query.lowercase(Locale.getDefault()).trim()
-                    for (indices in evm.allExercises) {
-                        if (indices.exerciseName?.lowercase(Locale.getDefault())?.contains(filteredPattern) == true) {
-                            filteredList.add(indices)
-                        }
-                    }
-
-                    val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, null,null,"E")
-                    adapter1.exerciseClickListener = this@ExerciseSearchDialogFragment
-                    setAdapter(adapter1, binding.rv1)
-                    if (filteredList.isEmpty()) binding.clESDEmpty.visibility = View.VISIBLE else binding.clESDEmpty.visibility = View.GONE
-//                    binding.clESDHistory.visibility = View.GONE
-                }
+                setSearchData(s.toString())
             }
         })
 
@@ -123,17 +111,12 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
             val keypadHeight = screenHeight - rect.bottom
             val isKeyboardNowVisible = keypadHeight > screenHeight * 0.15
 
-            if (isKeyboardVisible && !isKeyboardNowVisible && binding.etESDSearch.text.isNotEmpty()) {
-                prefsManager.setStoredHistory(binding.etESDSearch.text.toString())
-//                Log.v("saveHistory", "sn: ${prefsManager.getLastSn()}, history: ${prefsManager.getStoredHistory(prefsManager.getLastSn())}")
-
-            }
 
             isKeyboardVisible = isKeyboardNowVisible
         }
 
-        binding.btnESDCategory.setOnClickListener{ dismiss() }
-        binding.tvESDClear.setOnClickListener {
+        binding.btnESDCategory.setOnSingleClickListener{ dismiss() }
+        binding.tvESDClear.setOnSingleClickListener {
             if (!evm.searchHistory.value.isNullOrEmpty()) {
                 MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                     setTitle("기록을 삭제하시겠습니까?")
@@ -192,6 +175,34 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
     override fun exerciseClick(name: String) {
         prefsManager.setStoredHistory(binding.etESDSearch.text.toString())
         setSearchAdapter()
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.etESDSearch.setText("")
+            setSearchData("")
+        }, 500)
     }
 
+    private fun setSearchData(queryString: String) {
+        // ------# 첫번쨰 rv 필터링 하기 #------
+        val filteredList = mutableListOf<ExerciseVO>()
+        // 검색결과에 대한 필터링 넣기
+        if (queryString.isNotEmpty()) {
+            val filteredPattern = queryString.lowercase(Locale.getDefault()).trim()
+            for (indices in evm.allExercises) {
+                if (indices.exerciseName?.lowercase(Locale.getDefault())?.contains(filteredPattern) == true) {
+                    filteredList.add(indices)
+                }
+            }
+        }
+
+        val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, null,null,"E")
+        adapter1.exerciseClickListener = this@ExerciseSearchDialogFragment
+        setAdapter(adapter1, binding.rv1)
+        if (filteredList.isEmpty()) {
+            binding.clESDEmpty.visibility = View.VISIBLE
+            binding.clESDHistory.visibility = View.VISIBLE
+        } else {
+            binding.clESDEmpty.visibility = View.GONE
+            binding.clESDHistory.visibility = View.GONE
+        }
+    }
 }

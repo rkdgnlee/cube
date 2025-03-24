@@ -1,11 +1,13 @@
 package com.tangoplus.tangoq.fragment
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.DecelerateInterpolator
 import androidx.annotation.OptIn
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
@@ -91,4 +93,15 @@ object ExtendedFunctions {
         val listener = View.OnClickListener { action(it) }
         setOnClickListener(OnSingleClickListener(listener))
     }
+
+    fun fadeInView(view: View) {
+        view.visibility = View.VISIBLE
+        view.alpha = 0f
+        ObjectAnimator.ofFloat(view, "alpha", 0f, 1f).apply {
+            duration = 500 // 애니메이션 지속 시간 (ms)
+            interpolator = DecelerateInterpolator()
+            start()
+        }
+    }
+
 }

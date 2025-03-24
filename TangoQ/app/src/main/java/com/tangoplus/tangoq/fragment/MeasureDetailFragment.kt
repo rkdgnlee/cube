@@ -35,6 +35,7 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
@@ -92,11 +93,11 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
             arguments?.putBoolean("showMeasure", false)
         }
 
-        binding.ibtnMDAlarm.setOnClickListener {
+        binding.ibtnMDAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
-        binding.ibtnMDBack.setOnClickListener {
+        binding.ibtnMDBack.setOnSingleClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MeasureHistoryFragment())
                 commit()
@@ -104,8 +105,11 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
         }
         // ------# measure 에 맞게 UI 수정 #------
         measure = mvm.selectedMeasure
-        avm.currentPart.value = "목관절"
-        avm.mdMeasureResult = measure?.measureResult?.getJSONArray(1) ?: JSONArray()
+
+        avm.mdMeasureResult = measure?.measureResult?.optJSONArray(1) ?: JSONArray()
+        if (avm.mdMeasureResult != JSONArray()) {
+            avm.currentPart.value = "목관절"
+        }
         updateUI()
         setHorizonAdapter()
         // ------# 10각형 레이더 차트 #------
@@ -188,12 +192,13 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
 //        val currentMeasureIndex = singletonMeasure?.indexOf(mvm.selectedMeasure)
 //        setAdapter(currentMeasureIndex ?: 0)
         avm.currentPart.observe(viewLifecycleOwner) { part ->
-            setAdapter(part)
-            // 초기 상태
-            avm.currentIndex = matchedIndexs.indexOf(part)
-            Log.v("파트observe", "$part, ${avm.currentPart.value}")
+            if (!part.isNullOrEmpty()) {
+                setAdapter(part)
+                // 초기 상태
+                avm.currentIndex = matchedIndexs.indexOf(part)
+                Log.v("파트observe", "$part, ${avm.currentPart.value}")
+            }
         }
-
     }
     private fun setAdapter(part: String) {
 //        val painPart = avm.currentParts?.find { it == part }

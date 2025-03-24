@@ -92,9 +92,12 @@
                 android:id="@+id/clESDEmpty"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="80dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rv1">
+                app:layout_constraintTop_toBottomOf="@+id/clESDHistory"
+                app:layout_constraintVertical_bias="0.0">
 
                 <TextView
                     android:id="@+id/textView76"
@@ -142,7 +145,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clESDEmpty">
+                app:layout_constraintTop_toBottomOf="@+id/rv1">
 
                 <TextView
                     android:id="@+id/textView56"
@@ -161,7 +164,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="80dp"
                     android:nestedScrollingEnabled="false"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

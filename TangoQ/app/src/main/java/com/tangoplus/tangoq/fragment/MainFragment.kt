@@ -32,6 +32,7 @@ import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.listener.OnSingleClickListener
@@ -84,12 +85,12 @@ class MainFragment : Fragment() {
         latestRecSn = prefsManager.getLatestRecommendation()
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
         // ------# 알람 intent #------
-        binding.ibtnMAlarm.setOnClickListener {
+        binding.ibtnMAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
-        binding.ibtnMQRCode.setOnClickListener{
+        binding.ibtnMQRCode.setOnSingleClickListener{
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
@@ -136,7 +137,7 @@ class MainFragment : Fragment() {
                 Log.v("선택된measureDate", "${mvm.selectedMeasureDate.value}")
                 updateUI()
 
-                binding.tvMMeasureDate.setOnClickListener {
+                binding.tvMMeasureDate.setOnSingleClickListener {
                     val dialog = MeasureBSDialogFragment()
                     dialog.show(requireActivity().supportFragmentManager, "MeasureBSDialogFragment")
                 }
@@ -326,9 +327,4 @@ class MainFragment : Fragment() {
             }
         )
     }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
-    }
-
 }

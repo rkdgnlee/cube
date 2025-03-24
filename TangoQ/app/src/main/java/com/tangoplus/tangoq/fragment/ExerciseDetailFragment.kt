@@ -25,6 +25,7 @@ import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
 import com.tangoplus.tangoq.vo.ExerciseHistoryVO
@@ -79,15 +80,15 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         categoryId = arguments?.getIntegerArrayList(ARG_CATEGORY_ID)
         val sn = arguments?.getInt(ARG_SN)
         prefs = PreferencesManager(requireContext())
-        binding.ibtnEDAlarm.setOnClickListener {
+        binding.ibtnEDAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
-        binding.ibtnEDQRCode.setOnClickListener{
+        binding.ibtnEDQRCode.setOnSingleClickListener{
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
-//        binding.ibtnEDBack.setOnClickListener {
+//        binding.ibtnEDBack.setOnSingleClickListener {
 //            requireActivity().supportFragmentManager.beginTransaction().apply {
 //                replace(R.id.flMain, ExerciseFragment())
 //                commit()
@@ -153,7 +154,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             // -----! 카테고리 끝 !-----
 
             // ------! 자동완성 시작 !------
-            binding.linearLayout3.setOnClickListener{
+            binding.linearLayout3.setOnSingleClickListener{
                 val dialog = ExerciseSearchDialogFragment()
                 dialog.show(requireActivity().supportFragmentManager, "ExerciseSearchDialogFragment")
             }

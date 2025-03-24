@@ -18,11 +18,13 @@ import com.tangoplus.tangoq.dialog.AlertDialogFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
+import com.tangoplus.tangoq.function.WifiManager
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.io.IOException
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 
@@ -36,6 +38,11 @@ object HttpClientProvider {
         if (!::client.isInitialized) {
             client = OkHttpClient.Builder()
                 .addInterceptor { chain ->
+                    val networkType = WifiManager(context).checkNetworkType()
+                    if (networkType == "none") {
+                        Log.v("networkType", networkType)
+                        throw IOException("네트워크 연결이 없습니다")
+                    }
                     var request = chain.request()
                     val accessToken = getEncryptedAccessJwt(context)
                     Log.v("액세스토큰", "$accessToken")

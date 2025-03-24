@@ -134,59 +134,9 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             val result = async { initializeProgram() }
             result.await()
             pvm.selectedWeek.observe(viewLifecycleOwner) { selectedWeek ->
-
-                /* week, seq든 상관없음
-                * 이제 하나하나 unit이니까
-                * recommendation_sn + week 까지만 받아서 쓰면 될듯?
-                * 그러면 내가 week
-                * */
                 updateUI()
-//                lifecycleScope.launch(Dispatchers.IO) {
-//                    val result2 = async { pvm.getProgressData(requireContext()) }
-//                    result2.await()
-//                    withContext(Dispatchers.Main) {
-//
-//                        if (pvm.currentProgram != null && pvm.selectedSequence.value != null) {
-//                            val maxSeq = pvm.currentProgram?.programFrequency
-//
-//                            if (selectedWeek != null) {
-//                                val seqProgresses = pvm.currentProgresses
-//                                val minSequenceInWeek = seqProgresses.minOfOrNull { it.countSet } ?: 0
-//
-//                                if (minSequenceInWeek != maxSeq) {
-//                                    pvm.currentSequence = minSequenceInWeek // 지금 1주찬데 2주차로넘어갔을 때 0으로 가지겠지?
-//                                }
-//
-//                                val newSequence = pvm.calculateCurrentSeq(selectedWeek) // 다른 주차일 경우 무조건 0 임. newSequence는. 이전 완료한 주차일 경우 3
-//                                if (newSequence == maxSeq) {
-//                                    pvm.selectedSequence.value = 0
-//                                    binding.rvPCDHorizontal.isEnabled = false
-//                                } else {
-//                                    pvm.selectedSequence.value = newSequence
-//                                    binding.rvPCDHorizontal.isEnabled = true
-//                                }
-//                                pvm.currentSequence = newSequence
-//                                Log.v("옵저버seq존재", "cycle: ${pvm.currentProgresses.map { it.cycleProgress }}  selectedWeek: ${pvm.selectedWeek.value}, currentWeek: ${pvm.currentWeek}, selectedSequence: ${pvm.selectedSequence.value}, newSequence: $newSequence")
-//                                setAdapter(pvm.currentProgram, pvm.currentProgresses, Pair(pvm.currentSequence, pvm.selectedSequence.value))
-//                                val tvTotalWeek = pvm.currentProgram?.programWeek ?: 0
-//                                val tvWeek = pvm.selectedWeek.value
-//                                binding.tvPCDWeek.text = "${tvWeek?.plus(1)}/$tvTotalWeek 주차"
-//
-//                                setButtonFlavor()
-//
-//                                val currentSequenceProgresses = pvm.currentProgresses
-//                                // 가장 최근에 시작한 운동의 인덱스 찾기
-//                                val startIndex = findCurrentIndex(currentSequenceProgresses)
-////                                Log.v("startIndex찾기", "${currentSequenceProgresses.sortedBy { it.exerciseId }.map { it.isWatched }} $startIndex")
-//                            }
-//                        }
-//                    }
-//                }
             }
         }
-
-
-
 
         binding.btnPCDRight.setOnSingleClickListener {
             when (binding.btnPCDRight.text) {
@@ -317,7 +267,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             else -> ""
                         }
                         binding.tvPCDCount.text = "총 ${currentProgram.programCount} 개"
-                        CoroutineScope(Dispatchers.Main).launch {
+                        lifecycleScope.launch(Dispatchers.Main) {
                             isTodayEnd()
                             setButtonFlavor()
                             val maxSeq = pvm.currentProgram?.programFrequency
@@ -334,11 +284,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             val tvWeek = pvm.selectedWeek.value ?: 0
                             binding.tvPCDWeek.text = "${tvWeek?.plus(1)}/$tvTotalWeek 주차"
 
-                            // 모든 ui가 업데이트 됐을 때 shimmer 종료
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                binding.sflPCD.visibility = View.GONE
-                                binding.sflPCD.stopShimmer()
-                            }, 150)
+
                         }
                     } else {
                         Log.e("Error", "Some required data is null or empty, program: ${currentProgram?.exercises?.map { it.exerciseName }}, seq: $currentSeq, size: ${currentProgresses.size}")
@@ -349,6 +295,12 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     showBalloon()
                     isResume = true
                     Log.v("현재IsResume", "isResume: $isResume")
+
+                    // 모든 ui가 업데이트 됐을 때 shimmer 종료
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        binding.sflPCD.visibility = View.GONE
+                        binding.sflPCD.stopShimmer()
+                    }, 150)
                     binding.tvPCDWeek.setOnClickListener {
                         val dialog = ProgramWeekBSDialogFragment()
                         dialog.show(requireActivity().supportFragmentManager, "ProgramWeekBSDialogFragment")
@@ -452,7 +404,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         if (selectedWeekValue != null && pvm.currentProgresses.isNotEmpty()) {
             // 현재 week에서 벗어남
             if (selectedWeekValue > pvm.currentWeek) {
-                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(true)
+                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(1)
                 binding.btnPCDRight.apply {
                     isEnabled = false
                     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
@@ -461,7 +413,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 // 현재 주차 ok > 현재 회차 벗어남
             } else if (selectedSeqValue != null &&  selectedSeqValue < pvm.currentSequence) {
                 // rv와 버튼 잠금
-                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(true)
+                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(1)
                 binding.btnPCDRight.apply {
                     isEnabled = false
                     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
@@ -469,12 +421,14 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 }
                 // 오늘자인데.
             }  else if (selectedSeqValue == pvm.currentSequence  && pvm.dailySeqFinished) {
+                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(2)
                 binding.btnPCDRight.apply {
                     isEnabled = false
                     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
                     text = "오늘 필요한 운동을 완료했습니다"
                 }
             } else if (selectedSeqValue == pvm.currentSequence) {
+                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(0)
                 binding.btnPCDRight.apply {
                     isEnabled = true
                     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))

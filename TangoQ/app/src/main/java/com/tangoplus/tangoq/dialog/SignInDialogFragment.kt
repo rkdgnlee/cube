@@ -1,76 +1,34 @@
 package com.tangoplus.tangoq.dialog
 
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.ContentValues
-import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
-import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.transition.TransitionManager
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.AlphaAnimation
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.shuhart.stepview.StepView
-import com.skydoves.balloon.ArrowPositionRules
-import com.skydoves.balloon.Balloon
-import com.skydoves.balloon.BalloonAnimation
-import com.skydoves.balloon.BalloonSizeSpec
-import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.etc.SpinnerAdapter
-import com.tangoplus.tangoq.api.NetworkUser.emailDuplicateCheck
-import com.tangoplus.tangoq.api.NetworkUser.insertUser
 import com.tangoplus.tangoq.databinding.FragmentSignInDialogBinding
-import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
-import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
-import com.tangoplus.tangoq.transition.SignInTransition
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
-import androidx.core.view.isGone
 import com.tangoplus.tangoq.api.NetworkUser.mobileDuplicateCheck
-import androidx.core.view.isVisible
-import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.tangoplus.tangoq.adapter.etc.SignInVPAdapter
 
@@ -125,6 +83,7 @@ class SignInDialogFragment : DialogFragment() {
             insets
         }
 
+        binding.pvSignIn.progress = 30f
         binding.vpSignIn.adapter = SignInVPAdapter(this@SignInDialogFragment)
         binding.vpSignIn.isUserInputEnabled = false
         loadingDialog = LoadingDialogFragment.newInstance("회원가입전송")
@@ -192,29 +151,26 @@ class SignInDialogFragment : DialogFragment() {
                     add("비밀번호")
                 }
             })
-            .stepsNumber(4)
-            .animationDuration(getResources().getInteger(android.R.integer.config_shortAnimTime))
+            .stepsNumber(3)
+            .animationDuration(resources.getInteger(android.R.integer.config_shortAnimTime))
             .commit()
         // -----! 초기 버튼 숨기기 및 세팅 끝 !-----
-
-        // -----! progress bar 시작 !-----
-        binding.pvSignIn.progress = 25f
 
         // -----! 회원가입 입력 창 anime 시작  !-----
 //        TransitionManager.beginDelayedTransition(binding.llSignIn, SignInTransition())
 
         // -----! 휴대폰 인증 시작 !-----
-        val callbacks = object : OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(p0: PhoneAuthCredential) { Log.v("verifyComplete", "PhoneAuthCredential: $p0") }
-            override fun onVerificationFailed(p0: FirebaseException) { Log.e("failedAuth", "$p0") }
-            @RequiresApi(Build.VERSION_CODES.P)
-            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                super.onCodeSent(verificationId, token)
-                this@SignInDialogFragment.verificationId = verificationId
-                Log.v("onCodeSent", "메시지 발송 성공")
-                // -----! 메시지 발송에 성공하면 스낵바 호출 !------
-                loadingDialog.dismiss()
-                Toast.makeText(requireContext(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
+//        val callbacks = object : OnVerificationStateChangedCallbacks() {
+//            override fun onVerificationCompleted(p0: PhoneAuthCredential) { Log.v("verifyComplete", "PhoneAuthCredential: $p0") }
+//            override fun onVerificationFailed(p0: FirebaseException) { Log.e("failedAuth", "$p0") }
+//            @RequiresApi(Build.VERSION_CODES.P)
+//            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+//                super.onCodeSent(verificationId, token)
+//                this@SignInDialogFragment.verificationId = verificationId
+//                Log.v("onCodeSent", "메시지 발송 성공")
+//                // -----! 메시지 발송에 성공하면 스낵바 호출 !------
+//                loadingDialog.dismiss()
+//                Toast.makeText(requireContext(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
 //                authBalloonCallback {
 //                    binding.etAuthNumber.postDelayed({
 //                        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -232,8 +188,8 @@ class SignInDialogFragment : DialogFragment() {
 //                // 다시 보내기 요청
 //                setVerifyCountDown(120)
 //                binding.etAuthNumber.requestFocus()
-            }
-        }
+//            }
+//        }
 
 //        binding.ibtnAuthAlert.setOnSingleClickListener {
 //            authBalloonCallback { }

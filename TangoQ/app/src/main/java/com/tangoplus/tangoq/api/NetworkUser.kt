@@ -168,7 +168,11 @@ object NetworkUser {
         bodyJo.put("refresh_token", getEncryptedRefreshJwt(context))
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodyJo.toString().toRequestBody(mediaType)
-        val client = OkHttpClient()
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 연결 타임아웃
+            .readTimeout(5, TimeUnit.SECONDS)    // 읽기 타임아웃
+            .writeTimeout(5, TimeUnit.SECONDS)   // 쓰기 타임아웃
+            .build()
         val request = Request.Builder()
             .url("$myUrl/logout.php")
             .post(body)
@@ -518,7 +522,7 @@ object NetworkUser {
                    val responseBody = response.body?.string()
 
                    val jo = responseBody?.let{ JSONObject(it) }
-//                   Log.v("이메일보내기", "${jo}")
+                   Log.v("이메일보내기", "${jo}")
                    val code = jo?.optInt("status")
                    if (code != null) {
                        CoroutineScope(Dispatchers.Main).launch {
@@ -595,13 +599,14 @@ object NetworkUser {
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("resetPw", "Failed to resetPw")
+                Log.e("resetLock", "Failed to resetPw")
                 callback(null)
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
                 val jo = responseBody?.let{ JSONObject(it) }
+                Log.v("응답값", jo.toString())
                 val code = jo?.optInt("status")
                 if (code != null) {
                     callback(code)
@@ -609,6 +614,38 @@ object NetworkUser {
             }
         })
     }
+    
+    // ------# webView에 PASS창 띄우기 #------
+    fun sendMOKResult(myUrl: String, bodyJo: String ,callback: (JSONObject?) -> Unit )  {
+        val mediaType = "application/json charset=utf-8".toMediaTypeOrNull()
+        val body = bodyJo.toRequestBody(mediaType)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .writeTimeout(5, TimeUnit.SECONDS)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}sendMOKResult")
+            .post(body)
+            .build()
+        client.newCall(request).enqueue(object: Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("Token응답실패", "Failed to execute request")
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                if (responseBody != null) {
+                    Log.v("MOKLog", responseBody)
+                }
+                val jo = JSONObject(responseBody.toString())
+                callback(jo)
+            }
+        })
+    }
+    
+    
     // ------! 프로필 사진 시작 !------
     suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody, callback: (String) -> Unit) {
         val client = getClient(context)
@@ -688,38 +725,4 @@ object NetworkUser {
         return regex.find(jsonString)?.groupValues?.get(1) ?: ""
     }
 
-//    fun changeKioskPin(myUrl: String, bodyJo: String, callback: (Int?) -> Unit) {
-//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-//        val body = bodyJo.toRequestBody(mediaType)
-//        val client = OkHttpClient()
-//        val request = Request.Builder()
-//            .url("${myUrl}?")
-//            .post(body)
-//            .build()
-//        client.newCall(request).enqueue(object : Callback{
-//            override fun onFailure(call: Call, e: IOException) {
-//                Log.e("changePinFailed", "Failed to change Kiosk Pin : ${e.message}")
-//                callback(500)
-//            }
-//            override fun onResponse(call: Call, response: Response) {
-//                try {
-//                    val responseBody = response.body?.string()
-//                    Log.v("changedPin", "$responseBody")
-//
-//                    val status = responseBody?.let { JSONObject(it).optInt("status")}
-//                    callback(status)
-//                } catch (e: SocketTimeoutException) {
-//                    Log.e("pinChangeError", "Pin Changed Error: SocketTimeout ${e.message}")
-//                } catch (e: IllegalStateException) {
-//                    Log.e("pinChangeError", "Pin Changed Error: IllegalState ${e.message}")
-//                } catch (e: IllegalArgumentException) {
-//                    Log.e("pinChangeError", "Pin Changed Error: IllegalArgument ${e.message}")
-//                } catch (e: ClassNotFoundException) {
-//                    Log.e("pinChangeError", "Pin Changed Error: Class not found ${e.message}")
-//                } catch (e: Exception) {
-//                    Log.e("pinChangeError", "Pin Changed Error: Exception ${e.message}")
-//                }
-//            }
-//        })
-//    }
 }

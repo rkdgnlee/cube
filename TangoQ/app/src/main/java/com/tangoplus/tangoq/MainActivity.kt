@@ -114,6 +114,9 @@ class MainActivity : AppCompatActivity() {
                     logout(this@MainActivity, 0)
                 },   3 * 60000) //
             }
+            else -> {
+                Log.v("현재 네트워크 타입", securityType)
+            }
         }
 
         // ------# 접근 방지 #------

@@ -40,7 +40,7 @@
                 android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:hint="이메일을 입력해주세요"
-                android:inputType="text|textVisiblePassword"
+                android:inputType="text|textEmailAddress"
                 android:padding="20dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/subColor150"
@@ -83,7 +83,7 @@
                 android:id="@+id/clLDResetLock"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvLDAlert">

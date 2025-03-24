@@ -17,6 +17,7 @@ import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.net.SocketTimeoutException
 
 object  NetworkExercise {
 
@@ -214,6 +215,9 @@ object  NetworkExercise {
                     }
                     return@use results.toList()
                 }
+            } catch (e: SocketTimeoutException) {
+                Log.e("ExerciseHistoryError", "GETSocketTimeout: ${e.message}")
+                null
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ExerciseHistoryError", "GETIndexOutOfBounds: ${e.message}")
                 null
@@ -227,7 +231,7 @@ object  NetworkExercise {
                 Log.e("ExerciseHistoryError", "GETNullPointer: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
-                Log.e("ExerciseHistoryError", "GETException: ${e.printStackTrace()}")
+                Log.e("ExerciseHistoryError", "GETException: ${e.message}")
                 null
             }
         }

@@ -13,6 +13,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentAgreementDetailDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import java.io.BufferedReader
 import java.io.IOException
@@ -118,8 +119,8 @@ class AgreementDetailDialogFragment : DialogFragment() {
         binding.tvAgreement.text = agreementText
         binding.tvAgreement.textSize = if (isTablet(requireContext())) 19f else 16f
 
-        binding.ibtnAgreement.setOnClickListener { dismiss() }
-        binding.btnAgreement.setOnClickListener { dismiss() }
+        binding.ibtnAgreement.setOnSingleClickListener { dismiss() }
+        binding.btnAgreement.setOnSingleClickListener { dismiss() }
         return builder.create()
     }
     @SuppressLint("UseCompatLoadingForDrawables")

@@ -204,7 +204,7 @@ class QRCodeDialogFragment : DialogFragment() {
         val balloon = Balloon.Builder(requireContext())
             .setWidth(BalloonSizeSpec.WRAP)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("탱고바디 키오스크로 로그인을 위한 화면입니다\n탱고바디 화면의 6자리 PIN번호를 입력해주세요")
+            .setText("탱고바디 키오스크 로그인을 위한 화면입니다\n탱고바디 화면의 6자리 PIN번호를 입력해주세요")
             .setTextColorResource(R.color.subColor800)
             .setTextSize(20f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)

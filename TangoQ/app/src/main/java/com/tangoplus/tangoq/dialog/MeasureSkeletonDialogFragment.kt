@@ -17,6 +17,7 @@ import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.etc.CautionVPAdapter
 import com.tangoplus.tangoq.databinding.FragmentMeasureSkeletonDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 
 class MeasureSkeletonDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureSkeletonDialogBinding
@@ -70,11 +71,11 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
         }
         binding.vpMSD.adapter = CautionVPAdapter(requireContext(), layouts, isPose, seq)
         binding.vpMSD.currentItem = 0
-        binding.btnMSDConfirm.setOnClickListener {
+        binding.btnMSDConfirm.setOnSingleClickListener {
             Log.v("resumePoseLandmarker", "btnMSDConfirm")
             dismiss()
         }
-        binding.ibtnMSDExit.setOnClickListener {
+        binding.ibtnMSDExit.setOnSingleClickListener {
             Log.v("resumePoseLandmarker", "ibtnMSDExit")
             dismiss()
         }

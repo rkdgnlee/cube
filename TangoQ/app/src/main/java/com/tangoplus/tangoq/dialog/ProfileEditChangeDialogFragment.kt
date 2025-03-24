@@ -44,6 +44,7 @@ import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import kotlinx.coroutines.Dispatchers
@@ -120,7 +121,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }, 250)
 
-        binding.ibtnPCDBack2.setOnClickListener{ dismiss() }
+        binding.ibtnPCDBack2.setOnSingleClickListener{ dismiss() }
         when (arg) {
             "비밀번호" -> {
                 setUIVisibility(0)
