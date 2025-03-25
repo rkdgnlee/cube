@@ -38,9 +38,7 @@ class SignIn1Fragment : Fragment() {
             val passDialog = WebViewDialogFragment()
             passDialog.show(requireActivity().supportFragmentManager, "WebViewDialogFragment")
         }
-//        binding.etMobile.setOnSingleClickListener {
-//            storeUserValue()
-//        }
+
 
         svm.passName.observe(viewLifecycleOwner) {
             if (it != "") {
@@ -64,6 +62,7 @@ class SignIn1Fragment : Fragment() {
         svm.passAuthCondition.observe(viewLifecycleOwner) {
             if (it) {
                 storeUserValue()
+                setNextPage()
             } else {
                 clearUserValue()
             }
@@ -73,11 +72,14 @@ class SignIn1Fragment : Fragment() {
     private fun storeUserValue() {
         svm.User.value?.put("mobile", svm.passMobile.value)
         svm.User.value?.put("user_name", svm.passName.value)
+        // 담고 옮기기
+    }
+
+    private fun setNextPage() {
         Handler(Looper.getMainLooper()).postDelayed({
             parentDialog?.setonNextPage()
         }, 600)
     }
-
     private fun clearUserValue() {
         svm.User.value?.put("mobile", "")
         svm.User.value?.put("user_name", "")

@@ -48,6 +48,7 @@ import com.tangoplus.tangoq.databinding.FragmentAnalyzeBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.scrollToView
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.view.BarChartRender
 import com.tangoplus.tangoq.view.DayViewContainer
@@ -115,7 +116,7 @@ class AnalyzeFragment : Fragment() {
                 showDailyProgress(index)
                 animateCardViewToPercentage( index)
                 Handler(Looper.getMainLooper()).postDelayed({
-                    scrollToView(binding.rvA)
+                    scrollToView(binding.rvA, binding.nsvA)
                 }, 400)
             }
         }
@@ -558,18 +559,7 @@ class AnalyzeFragment : Fragment() {
             }
         }
     }
-    private fun scrollToView(view: View) {
-        val location = IntArray(2)
-        view.getLocationInWindow(location)
-        val viewTop = location[1]
-        val scrollViewLocation = IntArray(2)
 
-        binding.nsvA.getLocationInWindow(scrollViewLocation)
-        val scrollViewTop = scrollViewLocation[1]
-        val scrollY = binding.nsvA.scrollY
-        val scrollTo = scrollY + viewTop - scrollViewTop
-        binding.nsvA.smoothScrollTo(0, scrollTo)
-    }
 
     private fun animateCardViewToPercentage(index: Int) {
         val params = binding.cvAEffect.layoutParams as ConstraintLayout.LayoutParams

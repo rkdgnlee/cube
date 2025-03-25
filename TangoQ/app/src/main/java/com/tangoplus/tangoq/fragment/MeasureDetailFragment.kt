@@ -191,8 +191,9 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
         }
 //        val currentMeasureIndex = singletonMeasure?.indexOf(mvm.selectedMeasure)
 //        setAdapter(currentMeasureIndex ?: 0)
+        Log.v("파트observe", "${avm.currentPart.value}, ${measure?.measureResult}")
         avm.currentPart.observe(viewLifecycleOwner) { part ->
-            if (!part.isNullOrEmpty()) {
+            if (!part.isNullOrEmpty() && measure?.measureResult != JSONArray() ) { //
                 setAdapter(part)
                 // 초기 상태
                 avm.currentIndex = matchedIndexs.indexOf(part)

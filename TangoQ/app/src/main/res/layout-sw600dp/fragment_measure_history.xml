@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".fragment.MeasureHistoryFragment">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="로그아웃갑시다2" />
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvMH"
         android:layout_width="match_parent"

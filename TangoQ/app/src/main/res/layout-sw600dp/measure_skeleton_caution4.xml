@@ -26,7 +26,7 @@
         android:layout_marginTop="20dp"
         android:text="4."
         android:textColor="@color/mainColor"
-        android:textSize="24dp"
+        android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView41" />
@@ -38,7 +38,7 @@
         android:layout_marginStart="4dp"
         android:text="등받이 없는 의자 준비"
         android:textColor="@color/subColor800"
-        android:textSize="24dp"
+        android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/textView107"
         app:layout_constraintStart_toEndOf="@+id/textView107"
@@ -54,7 +54,7 @@
         android:lineSpacingExtra="8sp"
         android:text="앉은 후면 측정을 위해\n측정 전, 등받이가 없는 의자를 준비해주세요"
         android:textColor="@color/subColor800"
-        android:textSize="18dp"
+        android:textSize="24dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,8 +62,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView40"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginEnd="20dp"
         app:cardBackgroundColor="@color/subColor200"
         app:cardCornerRadius="16dp"
@@ -74,8 +74,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView29"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginStart="20dp"
         app:cardBackgroundColor="@color/mainColor"
         app:cardCornerRadius="16dp"
@@ -86,8 +86,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView41"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginTop="20dp"
         app:cardBackgroundColor="@color/subColor200"
         app:cardCornerRadius="16dp"
@@ -98,8 +98,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView50"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         app:cardBackgroundColor="@color/subColor200"
@@ -110,8 +110,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView51"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         app:cardBackgroundColor="@color/subColor200"

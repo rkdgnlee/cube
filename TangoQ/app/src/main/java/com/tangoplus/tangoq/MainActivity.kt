@@ -41,10 +41,10 @@ import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlertDialogFragment
+import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
-import com.tangoplus.tangoq.fragment.ProgramSelectFragment
 import com.tangoplus.tangoq.fragment.WithdrawalFragment
 import com.tangoplus.tangoq.viewmodel.AppViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.addOnBackStackChangedListener {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.flMain)
             when (currentFragment) {
-                is MainFragment, is ProgramSelectFragment -> binding.bnbMain.selectedItemId = R.id.main
+                is MainFragment-> binding.bnbMain.selectedItemId = R.id.main
                 is AnalyzeFragment -> binding.bnbMain.selectedItemId = R.id.analyze
                 is MeasureFragment, is MeasureHistoryFragment, is MeasureDetailFragment -> binding.bnbMain.selectedItemId = R.id.measure
                 is ExerciseFragment, is ExerciseDetailFragment -> binding.bnbMain.selectedItemId = R.id.exercise
@@ -375,8 +375,12 @@ class MainActivity : AppCompatActivity() {
 
 
     fun launchMeasureSkeletonActivity() {
-        val intent = Intent(this, MeasureSkeletonActivity::class.java)
-        measureSkeletonLauncher.launch(intent)
+        if (WifiManager(this).checkNetworkType() != "NONE") {
+            val intent = Intent(this, MeasureSkeletonActivity::class.java)
+            measureSkeletonLauncher.launch(intent)
+        } else {
+            Toast.makeText(this, "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun hasExactAlarmPermission(context: Context): Boolean {

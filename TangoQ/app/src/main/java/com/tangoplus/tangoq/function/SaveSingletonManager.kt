@@ -294,6 +294,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             } catch (e: Exception) {
                 Log.e("downloadFiles", "Unexpected error: ${e.message}")
                 Result.failure(e)
+            } finally {
+
             }
         }
     }

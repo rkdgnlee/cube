@@ -8,6 +8,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.api.NetworkProgress.postProgressInCurrentProgram
 import com.tangoplus.tangoq.vo.ProgramVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
+import com.tangoplus.tangoq.vo.RecommendationVO
 import java.time.LocalDate
 
 class ProgressViewModel : ViewModel() {
@@ -28,12 +29,15 @@ class ProgressViewModel : ViewModel() {
     var selectedSequence = MutableLiveData<Int>()
     var recommendationSn = 0
 
+    // ProgramCustom에서 쓸 선택된 recommendation
+    var selectedRecProgress = 0f
+
     // 현재 선택된 progress, 즉 시청 기록을 담는 곳(1주의 모든 회차가 다 들어감) 이걸 만약에 1회차에 들어가는 값만 나온다? 그러면 이 list를 줄이고, 거기다가 값을 넣어서 갱신하는 걸로
     var currentProgresses = mutableListOf<ProgressUnitVO>()
     var seqHpvs : List<Float>? = null
     var dailySeqFinished = false
 
-    // ----------------------# MD2 에서 사용하는 공간 #---------------------
+    // ----------------------# AnalysisFragment 에서 사용하는 공간 #---------------------
     var graphProgresses : MutableList<Pair<String, Int>>? = null
     var selectedDate: LocalDate? = LocalDate.now()
 

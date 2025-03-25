@@ -135,6 +135,7 @@ class QRCodeDialogFragment : DialogFragment() {
                     CoroutineScope(Dispatchers.IO).launch {
 
                         val status = loginWithPin(getString(R.string.API_kiosk), otp.toInt(), userJson.optString("user_uuid"))
+                        Log.v("스테이터스", "$status")
                         withContext(Dispatchers.Main) {
                             when (status) {
                                 200 -> {
@@ -152,6 +153,14 @@ class QRCodeDialogFragment : DialogFragment() {
                                     Handler(Looper.getMainLooper()).postDelayed({
                                         binding.otvLSD.setOTP("")
                                     }, 500)
+                                }
+                                1 -> {
+                                    Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show()
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        binding.otvLSD.setOTP("")
+                                        dismiss()
+                                    }, 500)
+
                                 }
                             }
                         }
@@ -193,6 +202,7 @@ class QRCodeDialogFragment : DialogFragment() {
                             }
                             400 -> { Toast.makeText(requireContext(), "인증이 올바르지 않습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show() }
                             404 -> { Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show() }
+                            1 -> { Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show() }
                         }
                     }
                 }

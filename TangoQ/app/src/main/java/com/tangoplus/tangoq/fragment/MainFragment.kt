@@ -3,6 +3,8 @@ package com.tangoplus.tangoq.fragment
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -14,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MainProgressRVAdapter
@@ -32,6 +35,7 @@ import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.scrollToView
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
 import com.tangoplus.tangoq.function.SaveSingletonManager
@@ -191,12 +195,7 @@ class MainFragment : Fragment() {
                     binding.rvM1.visibility = View.VISIBLE
                     binding.tvMTitle.text = "최근 측정 정보"
 //                    binding.tvMProgram.visibility = View.VISIBLE
-                    binding.btnMProgram.setOnSingleClickListener {
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            replace(R.id.flMain, ProgramSelectFragment())
-                            commit()
-                        }
-                    }
+
                     // ------# 바텀시트에서 변한 selectedMeasureDate 에 맞게 변함 #------
 
 
@@ -261,7 +260,6 @@ class MainFragment : Fragment() {
             val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
             mvm.selectedMeasure?.recommendations = progressRec
             Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-//                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
             setAdapter()
         }
     }
@@ -269,11 +267,23 @@ class MainFragment : Fragment() {
 
     private fun setAdapter() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf())
+        Log.w("rec갯수", "${mvm.selectedMeasure?.recommendations?.size}, ${mvm.selectedMeasure?.recommendations?.map { it.title }}")
+        val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf(), pvm)
         binding.rvM2.layoutManager = layoutManager
         binding.rvM2.adapter = adapter
-        adapter.notifyDataSetChanged()
+        binding.btnMProgram.setOnSingleClickListener {
+            if (binding.btnMProgram.text == "더보기") {
+                binding.btnMProgram.text = "접기"
+            } else {
+                binding.btnMProgram.text = "더보기"
+            }
+            adapter.toggleExpand(binding.rvM2)
+            Handler(Looper.getMainLooper()).postDelayed({
+                scrollToView(binding.btnMProgram, binding.nsvM)
+            }, 250)
+        }
     }
+
 
 
     private fun existedMeasurementGuide() {

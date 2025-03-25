@@ -154,6 +154,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     *   5. updateUI
     *
     *   그 외 previousStep
+    *
     * */
     // ------! POSE LANDMARKER 설정 시작 !------
     companion object {
@@ -303,7 +304,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                                 Log.v("noseDynamic", "$noseDynamic")
                                                 val decreasingFrameIndex = findLowestYFrame(noseDynamic)
                                                 val saveDynamic = jsonArrayCopy.optJSONObject(decreasingFrameIndex)
-                                                Log.v("인덱스와변형전dynamicJson추출", "decreasingFrameIndex: ${decreasingFrameIndex}, saveDynamic: $saveDynamic")
 
                                                 saveDynamic?.let { jsonObject ->
                                                     val modifiedObject = JSONObject(jsonObject.toString()) // 객체 복사
@@ -336,7 +336,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     } else {
                         binding.tvMeasureSkeletonGuide.text = "자세를 따라해주세요"
                         hideViews(600)
-                        Log.v("사진service", "isCapture: ${isCapture}, isRecording: $isRecording")
                         // ------! 종료 후 다시 세팅 !------
                         latestResult?.let { resultBundleToJson(it, seqStep.value ?: -1) }
                         if (seqStep.value != null) {
@@ -895,7 +894,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
 
         binding.btnMeasureSkeletonStepPrevious.setOnSingleClickListener {
-            setPreviousStep()
+            MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                setMessage("이전 단계로 되돌아가시겠습니까?")
+                setPositiveButton("예", {_, _ ->
+                    setPreviousStep()
+                })
+                setNegativeButton("아니오", {_ ,_ -> })
+            }.show()
         }
         // ------! 다시 찍기 관리 끝 !------
 

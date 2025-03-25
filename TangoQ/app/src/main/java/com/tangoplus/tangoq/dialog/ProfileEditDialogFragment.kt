@@ -135,9 +135,9 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                 svm.agreementMk2.observe(viewLifecycleOwner) { binding.schPEDAgreementMk2.isChecked = it }
                 binding.schPEDAgreementMk1.setOnCheckedChangeListener { _, isChecked -> svm.agreementMk1.value = isChecked }
                 binding.schPEDAgreementMk2.setOnCheckedChangeListener { _, isChecked -> svm.agreementMk2.value = isChecked }
-                binding.schPEDAgreementMk1.setOnClickListener { createDialog(1) }
-                binding.schPEDAgreementMk2.setOnClickListener { createDialog(2) }
-                binding.schPEDAgreementMk3.setOnClickListener {
+                binding.schPEDAgreementMk1.setOnSingleClickListener { createDialog(1) }
+                binding.schPEDAgreementMk2.setOnSingleClickListener { createDialog(2) }
+                binding.schPEDAgreementMk3.setOnSingleClickListener {
                     when (svm.agreementAll3.value) {
                         true -> {
                             svm.User.value?.put("sms_receive", 1)
@@ -149,12 +149,25 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                             }
                             lifecycleScope.launch(Dispatchers.IO) {
                                 val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
-                                if (isUpdateFinished == true) {
-//                                    Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-                                    singletonUser.jsonObject = svm.User.value
-                                    requireActivity().runOnUiThread {
-                                        val dialog = AlertDialogFragment.newInstance("agree")
-                                        dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
+                                when (isUpdateFinished) {
+                                    true -> {
+                                        Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
+                                        singletonUser.jsonObject = svm.User.value
+                                        requireActivity().runOnUiThread {
+                                            val dialog = AlertDialogFragment.newInstance("agree")
+                                            dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
+                                        }
+                                    }
+                                    false -> {
+
+                                    }
+                                    null -> {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            svm.agreementMk1.value = false
+                                            svm.agreementMk2.value = false
+                                            svm.agreementAll3.value = false
+                                            Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                 }
                             }

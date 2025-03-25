@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -39,6 +40,7 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
@@ -213,8 +215,12 @@ class MeasureFragment : Fragment() {
         }
         // ------# 자세히 보기 #------
         binding.tvM1Trend.setOnSingleClickListener {
-            val dialog = MeasureTrendDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
+            if (WifiManager(requireContext()).checkNetworkType() != "NONE") {
+                val dialog = MeasureTrendDialogFragment()
+                dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
+            } else {
+                Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // ------! 꺾은선 그래프 시작 !------
@@ -457,7 +463,7 @@ class MeasureFragment : Fragment() {
             }
 
             binding.clMPercent.setOnClickListener {
-                balloon?.dismissWithDelay(2500L)
+                balloon?.let { it1 -> binding.ivMPosition.showAlignTop(it1) }
             }
             binding.ivMPosition.setOnClickListener {
                 balloon?.let { it1 -> binding.ivMPosition.showAlignTop(it1) }
@@ -481,6 +487,7 @@ class MeasureFragment : Fragment() {
                 in 0f..0.3f -> {R.color.deleteColor}
                 else -> {R.color.thirdColor}
             })
+            .setOnBalloonClickListener { balloon?.dismiss() }
             .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
             .setLifecycleOwner(viewLifecycleOwner)
             .build()

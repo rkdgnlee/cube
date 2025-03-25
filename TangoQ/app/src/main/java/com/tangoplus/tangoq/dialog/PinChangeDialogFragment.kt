@@ -127,6 +127,7 @@ class PinChangeDialogFragment : DialogFragment() {
                     }
                 }
                 "변경하기" -> {
+                    binding.btnPCDConfirm.isEnabled = false
                     val encryptedPin = encrypt(svm.setPin, getString(R.string.secret_key), getString(R.string.secret_iv))
                     val jo = JSONObject().apply {
                         put("password", encryptedPin)
@@ -135,12 +136,19 @@ class PinChangeDialogFragment : DialogFragment() {
                     CoroutineScope(Dispatchers.IO).launch {
                         val isFinish = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userSn.toString())
                         withContext(Dispatchers.Main) {
-                            if (isFinish == true) {
-                                Toast.makeText(requireContext(), "PIN번호 변경이 완료됐습니다", Toast.LENGTH_SHORT).show()
-                                dismiss()
-                            } else {
-                                Toast.makeText(requireContext(), "올바르지 않은 접근입니다. 잠시후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            when (isFinish) {
+                                true -> {
+                                    Toast.makeText(requireContext(), "PIN번호 변경이 완료됐습니다", Toast.LENGTH_SHORT).show()
+                                    dismiss()
+                                }
+                                null -> {
+                                    Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+                                }
+                                false -> {
+                                    Toast.makeText(requireContext(), "올바르지 않은 접근입니다. 잠시후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                                }
                             }
+                            binding.btnPCDConfirm.isEnabled = true
                         }
                     }
                 }

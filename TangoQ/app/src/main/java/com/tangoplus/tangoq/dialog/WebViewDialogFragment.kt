@@ -1,10 +1,10 @@
 package com.tangoplus.tangoq.dialog
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -19,6 +19,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.api.NetworkUser.sendMOKResult
 import com.tangoplus.tangoq.view.CustomWebChromeClient
 import org.json.JSONObject
+import java.net.URLDecoder
 
 
 class WebViewDialogFragment : DialogFragment() {
@@ -38,6 +39,7 @@ class WebViewDialogFragment : DialogFragment() {
 
         // WebView 설정
         binding.wv.apply {
+            loadUrl(urlInfo)
             settings.javaScriptEnabled = true
             getSettings().domStorageEnabled = true //필수설정(true)
             getSettings().javaScriptCanOpenWindowsAutomatically = true //필수설정(true)
@@ -52,12 +54,43 @@ class WebViewDialogFragment : DialogFragment() {
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                     val url = request.url.toString()
-                    if (url.startsWith("https://이용기관URL/본인인증_완료_콜백")) {
-                        handleMOKTokenResponse(url)
-                        return true
+
+                    // 특정 도메인이나 경로 체크
+                    if (url.contains(getString(R.string.API_user) + "mok/mok_std_result.jsp")) {
+                        try {
+                            val uri = url.toUri()
+                            val decodedData = URLDecoder.decode(uri.getQueryParameter("data"), "UTF-8") // json이 아니기 때문에 실제로 "data"라는 걸 넣으면 응답 JSON에 들어가있는 값에 접근할 수 있음.
+                            val jsonObject = JSONObject(decodedData)
+                            val encryptedMOKToken = jsonObject.getString("encryptMOKKeyToken")
+
+                            // 토큰 처리 로직
+                            handleMOKTokenResponse(encryptedMOKToken)
+
+                            return true  // URL 로딩 중단
+                        } catch (e: Exception) {
+                            Log.e("MOKToken", "토큰 처리 중 오류", e)
+                            return false
+                        }
                     }
                     return false
                 }
+
+//                override fun onPageFinished(view: WebView?, url: String?) {
+//                    super.onPageFinished(view, url)
+//                    if (url?.contains("your_result_url") == true) {
+//                        // WebView에서 결과 데이터 추출
+//                        view?.evaluateJavascript(
+//                            "(function() { return document.body.innerText; })();",
+//                            ValueCallback { result ->
+//                                // result에서 encryptMOKKeyToken 파싱
+//                                val jsonResult = JSONObject(result)
+//                                val mokToken = jsonResult.getString("encryptMOKKeyToken")
+//                                handleMOKTokenResponse(mokToken)
+//
+//                            }
+//                        )
+//                    }
+//                }
             }
             webChromeClient = CustomWebChromeClient(requireContext()) // PASS 앱 관련 처리
 
@@ -84,16 +117,15 @@ class WebViewDialogFragment : DialogFragment() {
         }
     }
 
-    private fun handleMOKTokenResponse(url: String) {
-        val uri = url.toUri()
-        val encryptedMOKToken = uri.getQueryParameter("encryptMOKKeyToken") ?: return
+    private fun handleMOKTokenResponse(encryptedToken: String) {
         val jo = JSONObject().apply {
-            put("encryptMOKKeyToken", encryptedMOKToken)
+            put("encryptMOKKeyToken", encryptedToken)
         }
         sendMOKResult(getString(R.string.API_user), jo.toString()) { resultJo ->
             if (resultJo != null) {
                 svm.passName.value = resultJo.optString("user_name")
                 svm.passMobile.value = resultJo.optString("mobile")
+                dismiss()
             } else {
                 Toast.makeText(requireContext(), "올바르지 않은 요청입니다. 인증을 다시 해주세요", Toast.LENGTH_SHORT).show()
             }

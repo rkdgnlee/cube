@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,9 +17,12 @@ import com.tangoplus.tangoq.databinding.RvMainProgressItemBinding
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.vo.RecommendationVO
 
-class MainProgressRVAdapter(private val fragment: Fragment, private val recommends : List<RecommendationVO>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MainProgressRVAdapter(private val fragment: Fragment, private val recommends : List<RecommendationVO>, private val pvm : ProgressViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var visibleCount = 3 // 처음에는 3개만 보이게 설정
+
     inner class MPViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPIName: TextView = view.findViewById(R.id.tvMPIName)
         val ivMPIThumbnail: ImageView = view.findViewById(R.id.ivMPIThumbnail)
@@ -35,12 +39,13 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
     }
 
     override fun getItemCount(): Int {
-        return recommends.size
+        return if (recommends.size > 3) visibleCount else recommends.size
     }
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = recommends[position]
+        Log.v("아이템들", "$currentItem")
         if (holder is MPViewHolder) {
             val title = replaceJointProgram(currentItem.title, keywords)
             holder.tvMPIName.text = title
@@ -73,6 +78,8 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
 
             // 선택
             holder.clMPI.setOnSingleClickListener {
+                pvm.selectedRecProgress = (currentItem.totalProgress * 100).toFloat() / (currentItem.totalDuration * 12)
+                Log.w("프로그램", "${currentItem.programSn}, ${currentItem.recommendationSn}")
                 val dialog = ProgramCustomDialogFragment.newInstance(currentItem.programSn, currentItem.recommendationSn)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
             }
@@ -80,7 +87,7 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
     }
 
     private val keywords = listOf("목관절", "어깨", "팔꿉", "손목", "고관절", "무릎", "발목")
-    fun replaceJointProgram(input: String, jointParts: List<String>): String {
+    private fun replaceJointProgram(input: String, jointParts: List<String>): String {
         var result = input
         jointParts.forEach { part ->
             val modifyPart = if (part == "목관절") "목" else part
@@ -91,5 +98,34 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
                 .replace("운동프로그램", "운동 프로그램")
         }
         return result
+    }
+    fun toggleExpand(recyclerView: RecyclerView) {
+        val startHeight = recyclerView.height
+        val endHeight = when {
+            recommends.size <= 3 -> recyclerView.measuredHeight // 3개 이하면 현재 높이 유지
+            visibleCount == 3 -> recyclerView.measuredHeight * (recommends.size) / 3 // 전체 아이템 표시
+            else -> recyclerView.measuredHeight / 2 // 다시 접었을 때는 초기 높이로
+        }
+        val oldCount = visibleCount
+        visibleCount = when {
+            recommends.size <= 3 -> recommends.size // 3개 이하면 전체 표시
+            visibleCount == 3 -> recommends.size // 펼칠 때는 전체 아이템 표시
+            else -> 3 // 접을 때는 3개만 표시
+        }
+
+        val animator = ValueAnimator.ofInt(startHeight, endHeight)
+        animator.addUpdateListener { valueAnimator ->
+            recyclerView.layoutParams.height = valueAnimator.animatedValue as Int
+            recyclerView.requestLayout()
+        }
+        animator.duration = 300
+        animator.start()
+        if (visibleCount > oldCount) {
+            // 펼칠 때: 새로운 아이템들만 추가됨
+            notifyItemRangeInserted(oldCount, visibleCount - oldCount)
+        } else {
+            // 접을 때: 추가된 아이템들만 제거됨
+            notifyItemRangeRemoved(visibleCount, oldCount - visibleCount)
+        }
     }
 }

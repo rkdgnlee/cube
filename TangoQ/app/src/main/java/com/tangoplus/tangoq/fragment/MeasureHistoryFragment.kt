@@ -58,7 +58,7 @@ class MeasureHistoryFragment : Fragment() {
         filterList.add("낮은 점수순")
 //        binding.spnrMH.adapter = SpinnerAdapter(requireContext(), R.layout.item_spinner, filterList, 1)
         measures = Singleton_t_measure.getInstance(requireContext()).measures
-        measures?.let { measure ->
+        measures?.let {
             setAdapter(measures)
             binding.tvMHCount.text = "총 측정건: ${measures?.size}건"
 

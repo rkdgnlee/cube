@@ -113,12 +113,13 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         disabledButton()
         // ------# 키보드 #------
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        Handler(Looper.getMainLooper()).postDelayed({
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            imm.hideSoftInputFromWindow(view.windowToken, 0)
+//        }, 250)
+        binding.etPCD1.postDelayed({
             binding.etPCD1.requestFocus()
-            binding.etPCD1.postDelayed({
-                imm.showSoftInput(binding.etPCD1, InputMethodManager.SHOW_IMPLICIT)
-            }, 0)
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
+            binding.etPCD1.setSelection(binding.etPCD1.length())
+            imm.showSoftInput(binding.etPCD1, InputMethodManager.SHOW_IMPLICIT)
         }, 250)
 
         binding.ibtnPCDBack2.setOnSingleClickListener{ dismiss() }
@@ -520,6 +521,11 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     if (isAdded) {
                         dismiss()
                     }
+                }
+            } else if (isUpdateFinished == null) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+                    dismiss()
                 }
             }
         }

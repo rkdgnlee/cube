@@ -10,6 +10,7 @@ import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.OptIn
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.google.android.material.badge.BadgeDrawable
@@ -103,5 +104,16 @@ object ExtendedFunctions {
             start()
         }
     }
+    fun scrollToView(view: View, nsv: NestedScrollView) {
+        val location = IntArray(2)
+        view.getLocationInWindow(location)
+        val viewTop = location[1]
+        val scrollViewLocation = IntArray(2)
 
+        nsv.getLocationInWindow(scrollViewLocation)
+        val scrollViewTop = scrollViewLocation[1]
+        val scrollY = nsv.scrollY
+        val scrollTo = scrollY + viewTop - scrollViewTop
+        nsv.smoothScrollTo(0, scrollTo)
+    }
 }

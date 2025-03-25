@@ -15,6 +15,50 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white">
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView30"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout10"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:background="@color/whitebar">
+
+                    <ImageButton
+                        android:id="@+id/ibtnESDBack"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="36dp"
+                        android:layout_marginTop="13dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/white"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/icon_arrow_left"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView32"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="운동 검색"
+                        android:textColor="@color/subColor800"
+                        android:textSize="32dp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/ibtnESDBack"
+                        app:layout_constraintStart_toEndOf="@+id/ibtnESDBack"
+                        app:layout_constraintTop_toTopOf="@+id/ibtnESDBack" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/linearLayout6"
@@ -32,7 +76,7 @@
                 android:paddingBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider12">
+                app:layout_constraintTop_toBottomOf="@+id/cardView30">
 
                 <ImageView
                     android:id="@+id/imageView25"
@@ -57,31 +101,25 @@
                     android:singleLine="true"
                     android:textColor="@color/subColor800"
                     android:textColorHint="@color/subColor400"
-                    android:textSize="18dp" />
+                    android:textSize="20dp" />
 
                 <ImageButton
                     android:id="@+id/ibtnESDClear"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_weight="1"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/secondContainerColor"
                     android:contentDescription="clearEtESDSearch"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/icon_text_clear" />
             </LinearLayout>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/materialDivider12"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="16dp"
-                app:dividerColor="@color/subColor100"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ibtnESDBack" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv1"
                 android:layout_width="0dp"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -187,32 +225,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textView56" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-            <ImageButton
-                android:id="@+id/ibtnESDBack"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="36dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="@color/white"
-                android:padding="4dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_arrow_left"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/textView32"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="운동 검색"
-                android:textColor="@color/subColor800"
-                android:textSize="28dp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/ibtnESDBack"
-                app:layout_constraintStart_toEndOf="@+id/ibtnESDBack"
-                app:layout_constraintTop_toTopOf="@+id/ibtnESDBack" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -395,7 +395,7 @@ class FindAccountDialogFragment : DialogFragment() {
             }
 
             false -> {
-                val emailPattern = "^[a-z0-9]{4,16}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+                val emailPattern = "^[a-z0-9]{4,24}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
                 val emailPatternCheck = Pattern.compile(emailPattern)
 
                 object : TextWatcher {

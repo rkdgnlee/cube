@@ -59,13 +59,15 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                     ssm = SaveSingletonManager(fragment.requireContext(), fragment.requireActivity())
                     fragment.lifecycleScope.launch(Dispatchers.IO) {
 //                        ssm.setRecent5MeasureResult(position)
+                        val dialog = LoadingDialogFragment.newInstance("측정파일")
+                        dialog.show(fragment.requireActivity().supportFragmentManager, "LoadingDialogFragment")
 
                         val currentMeasure = viewModel.selectedMeasure
                         val uriTuples = currentMeasure?.sn?.let { ssm.get1MeasureUrls(it) }
                         if (uriTuples != null) {
                             ssm.downloadFiles(uriTuples)
                             val editedMeasure = ssm.insertUrlToMeasureVO(uriTuples, currentMeasure)
-//                            Log.v("리스너", "$editedMeasure")
+
 
                             // 파일 다운로드 후 url과 data (JSONARRAY) 넣기
                             val singletonMeasure = Singleton_t_measure.getInstance(fragment.requireContext()).measures
@@ -76,11 +78,10 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                                     singletonMeasure.set(singletonIndex, editedMeasure)
                                     viewModel.selectedMeasure = editedMeasure
                                     viewModel.selectedMeasureDate.value = editedMeasure.regDate
-//                                        Log.v("수정완료", "뷰모델변경: ${viewModel.selectedMeasure!!.regDate} index: $singletonIndex, VO: $editedMeasure")
-
                                     // 뱃지 제거
                                     hideBadgeFunction?.invoke()
                                     // 다운로드 후 이동
+                                    dialog.dismiss()
                                     fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                                         replace(R.id.flMain, MeasureDetailFragment())
                                         commit()

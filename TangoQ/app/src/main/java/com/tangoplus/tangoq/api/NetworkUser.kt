@@ -692,12 +692,25 @@ object NetworkUser {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val code = response.code
-                val responseBody = response.body?.string()
-                // Log.v("PIN>ResponseBody", "$responseBody")
-                code
+            try {
+                client.newCall(request).execute().use { response ->
+                    val code = response.code
+                    val responseBody = response.body?.string()
+                    Log.v("PIN>ResponseBody", "$responseBody, $code")
+                    code
+                }
+            } catch (e: IllegalStateException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: NullPointerException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: Exception) {
+                Log.e(TAG, "${e.message}")
             }
+
         }
     }
 
@@ -711,12 +724,25 @@ object NetworkUser {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val statusCode = response.code
-                val responseBody = response.body?.string()
-                // Log.v("QRcode>ResponseBody", "$responseBody")
-                statusCode
+            try {
+                client.newCall(request).execute().use { response ->
+                    val statusCode = response.code
+                    val responseBody = response.body?.string()
+                     Log.v("QRcode>ResponseBody", "$responseBody")
+                    statusCode
+                }
+            } catch (e: IllegalStateException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: NullPointerException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                Log.e(TAG, "${e.message}")
+            } catch (e: Exception) {
+                Log.e(TAG, "${e.message}")
             }
+
         }
     }
 
