@@ -12,35 +12,21 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenProvider
-import com.google.firebase.appcheck.ktx.appCheck
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.initialize
 import com.google.firebase.messaging.FirebaseMessaging
-import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
-import com.navercorp.nid.oauth.NidOAuthLoginState
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
 import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
-import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
 import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.api.NetworkUser.trySelfLogin
 import com.tangoplus.tangoq.db.Singleton_t_user
@@ -52,15 +38,6 @@ import com.tangoplus.tangoq.function.SoundManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import org.json.JSONObject
-import java.io.IOException
-import java.lang.Exception
-import kotlin.math.log
 
 
 @SuppressLint("CustomSplashScreen")
@@ -152,155 +129,8 @@ class SplashActivity : AppCompatActivity() {
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
 
-                // ------! 네이버 토큰 있음 시작 !------
-                if (naverTokenExist == NidOAuthLoginState.OK) {
-                    Log.e("네이버 로그인", "$naverTokenExist")
-                    val naverToken = NaverIdLoginSDK.getAccessToken()
-                    val url = "https://openapi.naver.com/v1/nid/me"
-                    val request = Request.Builder()
-                        .url(url)
-                        .addHeader("Authorization", "Bearer $naverToken")
-                        .build()
-                    val client = OkHttpClient()
-                    client.newCall(request).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) { }
-                        override fun onResponse(call: Call, response: Response) {
-                            if (response.isSuccessful) {
 
-                                val jsonObj = JSONObject()
-                                jsonObj.put("device_sn" ,0)
-                                jsonObj.put("user_sn", 0)
-                                jsonObj.put("provider", "naver")
-                                jsonObj.put("access_token", "${NaverIdLoginSDK.getAccessToken()}")
-
-                                getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
-                                    if (jo != null) {
-                                        storeUserInSingleton(this@SplashActivity, jo)
-//                                        Log.e("Spl네이버>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                        val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-                                        val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
-                                        ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                            navigateDeepLink()
-                                        }
-                                    } else {
-                                        logout(this@SplashActivity, 0)
-                                    }
-                                }
-                            }
-                        }
-                    })
-                    // ------! 네이버 토큰 있음 끝 !------
-                }  // ------! 구글 토큰 있음 시작 !------
-                else if (googleUserExist != null) {
-                    firebaseAuth = FirebaseAuth.getInstance()
-                    launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                        Log.v("google", "1, resultCode: ${result.resultCode}입니다.")
-                        if (result.resultCode == RESULT_OK) {
-                            Log.v("google", "2, resultCode: ${result.resultCode}입니다.")
-                            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                            try {
-                                Log.v("google", "3, resultCode: ${result.resultCode}입니다.")
-                                task.getResult(ApiException::class.java)?.let { account ->
-                                    val tokenId = account.idToken
-                                    if (tokenId != null && tokenId != "") {
-                                        val credential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
-                                        firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
-                                            if (firebaseAuth.currentUser != null) {
-                                                // ---- Google 토큰에서 가져오기 시작 ----
-                                                val user: FirebaseUser = firebaseAuth.currentUser!!
-//                                                Log.v("user", "${user.phoneNumber}")
-//                                                Log.v("user", user.uid)
-                                                // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
-                                                val jsonObj = JSONObject()
-                                                jsonObj.put("device_sn" ,0)
-                                                jsonObj.put("user_sn", 0)
-                                                jsonObj.put("access_token", tokenId) // 토큰 값
-                                                jsonObj.put("provider", "google")
-//                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-                                                Log.v("jsonObj", "$jsonObj")
-                                                if (user.displayName != "" && user.email != "") {
-                                                    getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
-                                                        if (jo != null) {
-                                                            storeUserInSingleton(this, jo)
-//                                        Log.e("Spl구글>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                                            val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-                                                            val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: -1
-                                                            ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                                                navigateDeepLink()
-                                                            }
-                                                        } else {
-                                                            logout(this@SplashActivity, 0)
-                                                        }
-                                                    }
-                                                } else {
-                                                    logout(this@SplashActivity, 0)
-                                                }
-                                            }
-                                        }
-                                    }
-                                } ?: throw Exception()
-                            } catch (e: IndexOutOfBoundsException) {
-                                logout(this@SplashActivity, 0)
-                                Log.e("IntroIndex", "${e.message}")
-                            } catch (e: IllegalArgumentException) {
-                                logout(this@SplashActivity, 0)
-                                Log.e("IntroIllegal", "${e.message}")
-                            } catch (e: NullPointerException) {
-                                logout(this@SplashActivity, 0)
-                                Log.e("IntroNull", "${e.message}")
-                            } catch (e: Exception) {
-                                logout(this@SplashActivity, 0)
-                                Log.e("IntroException", "${e.message}")
-                            }
-                        } else {
-                            logout(this@SplashActivity, 0)
-                        }
-                    }
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(getString(R.string.firebase_client_id))
-                            .requestEmail()
-                            .build()
-                        val googleSignInClient = GoogleSignIn.getClient(this@SplashActivity, gso)
-                        val signInIntent: Intent = googleSignInClient.signInIntent
-                        launcher.launch(signInIntent)
-                    }
-                }   // ------! 구글 토큰 있음 끝 !------
-
-                    // ------! 카카오 토큰 있음 시작 !------
-                 else if (AuthApiClient.instance.hasToken()) {
-                    UserApiClient.instance.me { user, error ->
-                        if (error != null) {
-                            Log.e("kakaoError", "사용자 정보 요청 실패", error)
-                        }
-                        else if (user != null) {
-                            Log.v("KakaoAuth요청 성공","hasSignedUp: ${user.hasSignedUp}")
-                            val jsonObj = JSONObject()
-                            val kakaoToken = AuthApiClient.instance.tokenManagerProvider.manager.getToken()?.accessToken
-                            if (kakaoToken != null) {
-                                Log.v("카카오OAuthToken"  , "kakaoToken is Existed")
-                            }
-                            jsonObj.put("device_sn" ,0)
-                            jsonObj.put("user_sn", 0)
-                            jsonObj.put("access_token", kakaoToken)
-                            jsonObj.put("provider", "kakao")
-
-                            getUserBySdk(getString(R.string.API_user), jsonObj, this@SplashActivity) { jo ->
-                                if (jo != null) {
-                                    storeUserInSingleton(this, jo)
-//                                    Log.e("Spl>싱글톤", "${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
-                                    val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
-                                    val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: 0
-                                    ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
-                                        navigateDeepLink()
-                                    }
-                                } else {
-                                    logout(this@SplashActivity, 0)
-                                }
-                            }
-                        }
-                    }
-                } else if (getEncryptedJwtJo(this@SplashActivity)?.let { isValidToken(it) } == true) {
+                    if (getEncryptedJwtJo(this@SplashActivity)?.let { isValidToken(it) } == true) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         trySelfLogin(getString(R.string.API_user), this@SplashActivity, getEncryptedRefreshJwt(this@SplashActivity)) { jo ->
                             if (jo != null) {

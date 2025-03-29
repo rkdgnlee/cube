@@ -43,7 +43,10 @@ class MeasureSetupDialogFragment : DialogFragment() {
             return fragment
         }
     }
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -174,20 +177,11 @@ class MeasureSetupDialogFragment : DialogFragment() {
             dismiss()
         }
     }
-
-
-    @SuppressLint("UseCompatLoadingForDrawables")
     @Deprecated("Deprecated in Java")
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
-        dialog?.setCancelable(false)
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this@MeasureSetupDialogFragment, width = 0.7f, height = 0.4f)
-        } else {
-            dialogFragmentResize(requireContext(), this@MeasureSetupDialogFragment, width =  0.9f, height = 0.45f)
-        }
     }
+
 }

@@ -170,12 +170,21 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     }.show()
                                 }
                                 "회원탈퇴" -> {
-                                    fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                                        setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                                        replace(R.id.flMain, WithdrawalFragment())
+                                    val provider = Singleton_t_user.getInstance(fragment.requireContext()).jsonObject?.optString("provider") ?: ""
+                                    Log.v("provider", provider)
+                                    if (provider == "null" || provider == "") {
+                                        val dialog = InputDialogFragment.newInstance(2)
+                                        dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
+                                    } else {
+                                        Toast.makeText(fragment.requireContext(), "소셜로그인으로 로그인한 계정입니다.", Toast.LENGTH_SHORT).show()
+                                        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
+                                            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                                            replace(R.id.flMain, WithdrawalFragment())
 
-                                        commit()
+                                            commit()
+                                        }
                                     }
+
                                 }
                             }
                         }
@@ -209,7 +218,10 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "전화번호" -> {
                                 (vm as SignInViewModel).setMobile.observe(fragment.viewLifecycleOwner) { mobile ->
-                                    holder.tvPfInfo.text = "010${maskedProfileData(mobile.toString())}"
+                                    holder.tvPfInfo.text =
+                                        if (mobile.length > 9) {
+                                        "010${maskedProfileData(mobile.toString())}"
+                                    } else "미설정"
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_phone)
                             }
@@ -234,14 +246,16 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "생년월일" -> {
                                 (vm as SignInViewModel).setBirthday.observe(fragment.viewLifecycleOwner) { birthday ->
-                                    holder.tvPfInfo.text = if (birthday == "0" || birthday == "") "미설정" else birthday
+                                    Log.v("생년월일", "$birthday, ${birthday.length}")
+                                    holder.tvPfInfo.text = if (birthday == "0" || birthday == "" || birthday == "null") "미설정" else birthday
                                 }
                                 if (holder.tvPfInfo.text != "미설정") holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                                 holder.ivPf.setImageResource(R.drawable.icon_cake)
                             }
                             "성별" -> {
                                 (vm as SignInViewModel).setGender.observe(fragment.viewLifecycleOwner) { genderString ->
-                                    if (genderString == null) {
+                                    Log.v("성별string", "$genderString, ${genderString.length}")
+                                    if (genderString == null || genderString == "" || genderString == "null") {
                                         holder.tvPfInfo.text = "미설정"
                                     } else if (genderString == "여자") {
                                         holder.tvPfInfo.text = "여자"
@@ -265,7 +279,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     val provider = Singleton_t_user.getInstance(fragment.requireContext()).jsonObject?.optString("provider") ?: ""
                                     Log.v("provider", provider)
                                     if (provider == "null") {
-                                        val dialog = InputDialogFragment()
+                                        val dialog = InputDialogFragment.newInstance(1)
                                         dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
                                     } else {
                                         Toast.makeText(fragment.requireContext(), "소셜로그인으로 로그인한 계정입니다.", Toast.LENGTH_SHORT).show()

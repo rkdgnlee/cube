@@ -67,6 +67,10 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
     private var dialogCloseListener: DialogCloseListener? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_DialogFragment)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -39,6 +39,11 @@ class ProgramAlertDialogFragment : DialogFragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -97,18 +102,10 @@ class ProgramAlertDialogFragment : DialogFragment() {
         binding.tvPAD.textSize = if (isTablet(requireContext())) 22f else 16f
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     @Deprecated("Deprecated in Java")
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
-        dialog?.setCancelable(false)
-//        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f , height = 0.35f)
-        } else {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.45f)
-        }
     }
 }

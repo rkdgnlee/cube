@@ -230,25 +230,32 @@ fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float,
 
     @Test
     fun noseShoulderTest() {
-        val ear1 = Pair(373f, 313f)
-        val shoulder1 = Pair(400f, 414f)
+        val nose1 = Pair(348f, 308f)
+        val ear1 = Pair(394f, 294f)
+        val shoulder1 = Pair(430f, 382f)
 
-        val ear2 = Pair(360f, 309f)
-        val shoulder2 = Pair(376f, 425f)
+        val ear2 = Pair(406f, 297f)
+        val nose2 = Pair(447f, 306f)
+        val shoulder2 = Pair(388f, 386f)
+
         val result1 = 180 + calculateSlope(ear1.first, ear1.second, shoulder1.first, shoulder1.second) % 180
-        val result2 = 180 + calculateSlope(ear2.first, ear2.second, shoulder2.first, shoulder2.second) % 180
+        val result2 = 180 + calculateSlope(nose1.first, nose1.second, shoulder1.first, shoulder1.second) % 180
+        val result3 = abs(calculateSlope(ear2.first, ear2.second, shoulder2.first, shoulder2.second) % 180)
+        val result4 = abs(calculateSlope(nose2.first, nose2.second, shoulder2.first, shoulder2.second) % 180)
         println(result1)
         println(result2)
-
-        val hip1 = Pair(380f, 698f)
-        val knee1 = Pair(359f, 887f)
-
-        val hip2 = Pair(373f, 698f)
-        val knee2 = Pair(373f, 872f)
-        val result3 = 180 + calculateSlope(hip1.first, hip1.second, knee1.first, knee1.second) % 180
-        val result4 = 180 + calculateSlope(hip2.first, hip2.second, knee2.first, knee2.second) % 180
         println(result3)
         println(result4)
+
+//        val hip1 = Pair(380f, 698f)
+//        val knee1 = Pair(359f, 887f)
+//
+//        val hip2 = Pair(373f, 698f)
+//        val knee2 = Pair(373f, 872f)
+//        val result3 = 180 + calculateSlope(hip1.first, hip1.second, knee1.first, knee1.second) % 180
+//        val result4 = 180 + calculateSlope(hip2.first, hip2.second, knee2.first, knee2.second) % 180
+//        println(result3)
+//        println(result4)
 
     }
 }

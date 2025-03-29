@@ -106,21 +106,21 @@ class MeasureFragment : Fragment() {
                         (activity as? MainActivity)?.launchMeasureSkeletonActivity()
                     }
                     if (measures?.isNotEmpty() == true) {
-                        val hideBadgeFunction = hideBadgeOnClick(
-                            binding.tvMBadge,
-                            binding.clMPredictDicease,
-                            "${binding.tvMBadge.text}",
-                            ContextCompat.getColor(requireContext(), R.color.thirdColor)
-                        )
-
-                        binding.tvMMeasureHistory.text =
-                            "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)?.replace("-", ". ")}"
-                        binding.tvMName.text = "${userJson?.optString("user_name")}님의 기록"
-                        binding.clMPredictDicease.setOnSingleClickListener {
+//                        val hideBadgeFunction = hideBadgeOnClick(
+//                            binding.tvMBadge,
+//                            binding.llMPredictDisease,
+//                            "${binding.tvMBadge.text}",
+//                            ContextCompat.getColor(requireContext(), R.color.thirdColor)
+//                        )
+                        val historyInitString = "최근 측정 기록: ${measures?.get(0)?.regDate?.substring(0, 10)?.replace("-", ". ")}"
+                        binding.tvMMeasureHistory.text =historyInitString
+                        val userString = "${userJson?.optString("user_name")}님의 기록"
+                        binding.tvMName.text = userString
+                        binding.llMPredictDisease.setOnSingleClickListener {
                             val dialog = LoadingDialogFragment.newInstance("측정파일")
                             dialog.show(activity?.supportFragmentManager ?: return@setOnSingleClickListener, "LoadingDialogFragment")
 
-                            hideBadgeFunction?.invoke()
+//                            hideBadgeFunction?.invoke()
                             ssm = SaveSingletonManager(requireContext(), requireActivity())
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
@@ -144,14 +144,6 @@ class MeasureFragment : Fragment() {
                                                     replace(R.id.flMain, MeasureDetailFragment())
                                                     commit()
                                                 }
-//                                                ssm.setRecent5MeasureResult(mvm.selectedMeasureIndex.value ?: 0)
-//                                                withContext(Dispatchers.Main) {
-//                                                    // 다운로드 후 이동
-//                                                    requireActivity().supportFragmentManager.beginTransaction().apply {
-//                                                        replace(R.id.flMain, MeasureDetailFragment())
-//                                                        commit()
-//                                                    }
-//                                                }
                                                 dialog.dismiss()
                                             }
                                         }
@@ -434,8 +426,10 @@ class MeasureFragment : Fragment() {
                 val measuresSize = measures?.size
                 if (measuresSize != null && measuresSize >= 1) {
                     val userPercentile = measures?.get(4 - it)?.overall?.toInt() ?: 0 // index가 4, 3, 2, 1, 0으로 들어감.
+
                     percentage = calculatePercentage(userPercentile)
 //                    Log.v("userPercentile", "$userPercentile, $percentage")
+                    // 상단 평균 분포 움직이기
                     when (percentage) {
                         in 0f..0.33f -> {
                             binding.vMMiddle.visibility = View.INVISIBLE
@@ -457,7 +451,17 @@ class MeasureFragment : Fragment() {
                     }
                     animateArrowToPercentage(percentage)
                     createBalloon(userJson, percentage)
+
+                    // 종합점수와 텍스트 변경
+                    val historyText = if (it == 4) {
+                        "최근 측정 기록: "
+                    } else {
+                        "선택된 날짜: "
+                    } + "${measures?.get(4 - it)?.regDate?.substring(0, 10)?.replace("-", ". ")}"
+                    binding.tvMMeasureHistory.text = historyText
                     binding.tvMTotalScore.text = userPercentile.toString()
+
+
                 }
                 animateCardViewToPercentage(it)
             }

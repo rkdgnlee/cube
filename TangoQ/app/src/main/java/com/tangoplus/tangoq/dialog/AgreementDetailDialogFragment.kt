@@ -81,6 +81,9 @@ class AgreementDetailDialogFragment : DialogFragment() {
         }
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val builder = AlertDialog.Builder(requireContext())
+        binding = FragmentAgreementDetailDialogBinding.inflate(layoutInflater)
+        builder.setView(binding.root)
 
         val agreementType = arguments?.getString(ARG_AGREEMENT_TYPE)
         var agreementText = when (agreementType) {
@@ -92,17 +95,15 @@ class AgreementDetailDialogFragment : DialogFragment() {
             else -> ""
         }
 
+        if (agreementType in listOf("agreement1", "agreement2", "agreement3")) {
+            binding.btnAgreement.text = "확인"
+        }
         if (agreementType in listOf("agreement4", "agreement5")) {
             val userName = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_name") ?: ""
             val currentDate = "${LocalDate.now()}".replace("-", " .")
 
             agreementText += "\n${currentDate}\n이용자 성명 $userName"
         }
-
-        val builder = AlertDialog.Builder(requireContext())
-        binding = FragmentAgreementDetailDialogBinding.inflate(layoutInflater)
-        builder.setView(binding.root)
-
         binding.tvAgreementTitle.text = when (agreementType) {
             "agreement1" -> titles[0]
             "agreement2" -> titles[1]

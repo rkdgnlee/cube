@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:text="측정 전 주의사항"
+        android:text="측정 자세 및 진행"
         android:textColor="@color/subColor800"
         android:textSize="30dp"
         android:textStyle="bold"

@@ -135,42 +135,24 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                 svm.agreementMk2.observe(viewLifecycleOwner) { binding.schPEDAgreementMk2.isChecked = it }
                 binding.schPEDAgreementMk1.setOnCheckedChangeListener { _, isChecked -> svm.agreementMk1.value = isChecked }
                 binding.schPEDAgreementMk2.setOnCheckedChangeListener { _, isChecked -> svm.agreementMk2.value = isChecked }
-                binding.schPEDAgreementMk1.setOnSingleClickListener { createDialog(1) }
-                binding.schPEDAgreementMk2.setOnSingleClickListener { createDialog(2) }
+                binding.schPEDAgreementMk1.setOnSingleClickListener {
+                    if (svm.agreementMk1.value == false) {
+                        createDialog(1)
+                    } else {
+                        setMarketingChecking(1)
+                    }
+                }
+                binding.schPEDAgreementMk2.setOnSingleClickListener {
+                    if (svm.agreementMk2.value == false) {
+                        createDialog(2)
+                    } else {
+                        setMarketingChecking(2)
+                    }
+                }
                 binding.schPEDAgreementMk3.setOnSingleClickListener {
                     when (svm.agreementAll3.value) {
                         true -> {
-                            svm.User.value?.put("sms_receive", 1)
-                            svm.User.value?.put("email_receive", 1)
-
-                            val bodyJo = JSONObject().apply {
-                                put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
-                                put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
-                            }
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
-                                when (isUpdateFinished) {
-                                    true -> {
-                                        Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
-                                        singletonUser.jsonObject = svm.User.value
-                                        requireActivity().runOnUiThread {
-                                            val dialog = AlertDialogFragment.newInstance("agree")
-                                            dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
-                                        }
-                                    }
-                                    false -> {
-
-                                    }
-                                    null -> {
-                                        lifecycleScope.launch(Dispatchers.Main) {
-                                            svm.agreementMk1.value = false
-                                            svm.agreementMk2.value = false
-                                            svm.agreementAll3.value = false
-                                            Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
-                                }
-                            }
+                            setMarketingChecking(3)
                         }
                         false -> {
                             createDialog(3)
@@ -250,10 +232,72 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         }
     }
 
+    // 정보 수신 동의
+    private fun setMarketingChecking(case: Int) {
+        val bodyJo = when (case) {
+            1 -> {
+                svm.User.value?.put("sms_receive", 1)
+                JSONObject().apply {
+                    put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
+                }
+            }
+            2 -> {
+                svm.User.value?.put("email_receive", 1)
+                JSONObject().apply {
+                    put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
+                }
+            }
+            else -> {
+                svm.User.value?.put("sms_receive", 1)
+                svm.User.value?.put("email_receive", 1)
+                JSONObject().apply {
+                    put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
+                    put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
+                }
+            }
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), bodyJo.toString(), userSn)
+            when (isUpdateFinished) {
+                true -> {
+                    Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
+                    singletonUser.jsonObject = svm.User.value
+                    requireActivity().runOnUiThread {
+                        val dialog = AlertDialogFragment.newInstance(
+                            when (case) {
+                                1 -> "agreeMk1"
+                                2 -> "agreeMk2"
+                                else -> "agree"
+                            }
+                        )
+                        dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
+                    }
+                }
+                false -> {
+
+                }
+                null -> {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        svm.agreementMk1.value = false
+                        svm.agreementMk2.value = false
+                        svm.agreementAll3.value = false
+                        Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
     private fun createDialog(case: Int) {
         MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
             setTitle("마케팅 동의 해제")
-            setMessage("마케팅 이용 동의를 해제하시겠습니까?")
+            setMessage(
+                when (case) {
+                    1 -> "문자메시지 정보 수신"
+                    2 -> "이메일 정보 수신"
+                    else -> "마케팅 정보 수신"
+                } +
+                        "동의를 해제하시겠습니까?")
             setPositiveButton("예") { _, _ ->
                 val bodyJo = JSONObject()
                 when (case) {
@@ -278,7 +322,13 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                         Log.w(" 싱글톤객체추가", "$userSn, ${svm.User.value}")
                         singletonUser.jsonObject = svm.User.value
                         withContext(Dispatchers.Main) {
-                            val dialog = AlertDialogFragment.newInstance("disagree")
+                            val dialog = AlertDialogFragment.newInstance(
+                                when (case) {
+                                    1 -> "disagreeMk1"
+                                    2 -> "disagreeMk2"
+                                    else -> "disagree"
+                                }
+                            )
                             dialog.show(requireActivity().supportFragmentManager, "AlertDialogFragment")
                         }
                     }

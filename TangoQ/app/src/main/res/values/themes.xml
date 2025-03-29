@@ -10,7 +10,7 @@
         <item name="colorAccent">@color/mainColor</item>
         <item name="android:windowBackground">#FAFAFA</item>
         <item name="android:fragment">@color/white</item>
-        <item name="android:dialogTheme">@style/AppTheme.DialogFragment</item>
+<!--        <item name="android:dialogTheme">@style/AppTheme.DialogFragment</item>-->
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:windowLightNavigationBar">true</item>
 <!--        <item name="android:windowIsTranslucent">true</item>-->

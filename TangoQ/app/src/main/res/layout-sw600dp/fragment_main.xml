@@ -243,6 +243,39 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/clMMeasure" />
 
+                    <LinearLayout
+                        android:id="@+id/linearLayout23"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical"
+                        app:layout_constraintTop_toBottomOf="@+id/tvM2"
+                        tools:layout_editor_absoluteX="40dp">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sflM"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <include layout="@layout/rv_shimmer_main_item" />
+
+                                <include layout="@layout/rv_shimmer_main_item" />
+
+                                <include layout="@layout/rv_shimmer_main_item" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvM2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/tvMProgram"
                         android:layout_width="120dp"
@@ -269,7 +302,7 @@
                         android:id="@+id/btnMProgram"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="40dp"
                         android:layout_marginBottom="80dp"
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/mainColor"
@@ -286,16 +319,8 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/rvM2" />
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout23" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvM2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="30dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvM2" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

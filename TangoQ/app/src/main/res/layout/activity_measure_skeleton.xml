@@ -317,7 +317,7 @@
         android:background="@drawable/bckgnd_rectangle_12"
         android:backgroundTint="@color/white_overlay"
         android:elevation="4dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop">
@@ -325,7 +325,7 @@
         <TextView
             android:id="@+id/tvMeasureSkeletonGuide"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
@@ -333,7 +333,7 @@
             android:gravity="center"
             android:text="손을 머리 위로 올리고 스쿼트를 진행합니다"
             android:textColor="@color/subColor700"
-            android:textSize="23dp"
+            android:textSize="22dp"
             app:layout_constraintBottom_toTopOf="@+id/tvMeasureSkeletonCount"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

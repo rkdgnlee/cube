@@ -147,13 +147,14 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvMTotalScore" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/clMPredictDicease"
+                    <LinearLayout
+                        android:id="@+id/llMPredictDisease"
                         android:layout_width="0dp"
-                        android:layout_height="64dp"
+                        android:layout_height="0dp"
                         android:layout_marginStart="12dp"
-                        android:background="@drawable/bckgnd_rectangle_8"
+                        android:background="@drawable/bckgnd_rectangle_12"
                         android:backgroundTint="@color/subColor100"
+                        android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="@+id/cardView7"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/cardView7"
@@ -161,59 +162,44 @@
 
                         <TextView
                             android:id="@+id/tvMBadge"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_marginStart="20dp"
-                            android:text=" 측정 기록"
+                            android:layout_marginEnd="20dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:text="측정 기록"
                             android:textColor="@color/black"
                             android:textSize="18dp"
-                            app:layout_constraintBottom_toTopOf="@+id/tvMMeasureHistory"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <ImageView
-                            android:id="@+id/ivMDetail"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="10dp"
-                            android:background="@drawable/effect_ibtn_12dp"
-                            android:backgroundTint="@color/subColor100"
-                            android:padding="4dp"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/icon_arrow_right"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:drawableEndCompat="@drawable/icon_arrow_right" />
 
                         <TextView
                             android:id="@+id/tvMMeasureHistory"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_marginStart="20dp"
-                            android:layout_marginEnd="20dp"
-                            android:layout_marginBottom="8dp"
+                            android:layout_marginEnd="5dp"
+                            android:layout_weight="1"
                             android:background="@drawable/bckgnd_rectangle_12"
                             android:backgroundTint="@color/subColor100"
+                            android:gravity="center_vertical"
                             android:text="최근 측정 기록 -     .  .  "
                             android:textColor="@color/subColor800"
-                            android:textSize="14dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                            android:textSize="14dp" />
+                    </LinearLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/clMPercent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="40dp"
                         android:background="@drawable/bckgnd_rectangle_12"
                         android:backgroundTint="@color/subColor100"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/clMPredictDicease">
+                        app:layout_constraintTop_toBottomOf="@+id/llMPredictDisease">
 
                         <View
                             android:id="@+id/vMPercent"
@@ -717,6 +703,7 @@
                     android:backgroundTint="@color/secondContainerColor"
                     android:drawableStart="@drawable/icon_search"
                     android:drawableTint="@color/secondaryColor"
+                    android:gravity="center"
                     android:paddingStart="18dp"
                     android:paddingTop="6dp"
                     android:paddingEnd="18dp"

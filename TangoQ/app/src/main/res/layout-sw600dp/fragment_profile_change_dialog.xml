@@ -56,7 +56,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="입력해주세요"
         android:inputType="text|textPassword"
@@ -91,7 +91,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="새로운 비밀번호"
         android:inputType="text|textPassword"
@@ -125,7 +125,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="새로운 비밀번호 확인"
         android:inputType="text|textPassword"
@@ -210,7 +210,7 @@
             android:layout_marginStart="40dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="15dp"
-            android:background="@drawable/bckgnd_1_sub150_12"
+            android:background="@drawable/bckgnd_12_edit_text"
             android:ems="10"
             android:hint="핸드폰 번호를 입력해주세요"
             android:inputType="phone"
@@ -240,23 +240,6 @@
             app:layout_constraintTop_toTopOf="@+id/etPCDMobile"
             app:layout_constraintWidth_percent="0.325" />
 
-        <EditText
-            android:id="@+id/etPCDAuth"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="40dp"
-            android:background="@drawable/bckgnd_1_sub150_12"
-            android:ems="10"
-            android:hint="인증번호를 입력해주세요"
-            android:inputType="number"
-            android:padding="20dp"
-            android:textColor="@color/subColor800"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etPCDMobile" />
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnPCDAuthConfirm"
             android:layout_width="0dp"
@@ -273,7 +256,7 @@
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etPCDAuth" />
+            app:layout_constraintTop_toBottomOf="@+id/etPCDMobile" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -49,8 +49,7 @@ import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
-import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
-import com.tangoplus.tangoq.dialog.MobileAuthDialogFragment
+import com.tangoplus.tangoq.api.NetworkUser.identifyEmail
 import com.tangoplus.tangoq.dialog.SignInDialogFragment
 import com.tangoplus.tangoq.dialog.WebViewDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
@@ -117,28 +116,29 @@ class IntroActivity : AppCompatActivity() {
                                         if (firebaseAuth.currentUser != null) {
                                             // ---- Google 토큰에서 가져오기 시작 ----
                                             val user: FirebaseUser = firebaseAuth.currentUser!!
-//                                            Log.v("user", "${user.phoneNumber}")
-//                                            Log.v("user", user.uid)
+
                                             // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
                                             val jsonObj = JSONObject()
                                             jsonObj.put("device_sn" ,0)
                                             jsonObj.put("user_sn", 0)
+                                            jsonObj.put("providerId", user.uid)
+                                            jsonObj.put("email", user.email)
+                                            jsonObj.put("user_name", user.displayName)
                                             jsonObj.put("access_token", tokenId) // 토큰 값
                                             jsonObj.put("provider", "google")
 //                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
                                             Log.v("jsonObj", "$jsonObj")
-                                            getUserBySdk(getString(R.string.API_user), jsonObj, this@IntroActivity) { jo ->
-                                                if (jo != null) {
-                                                    when (jo.optString("status")) {
-                                                        "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
-                                                        "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 2011) }
-                                                        else -> { Log.v("responseCodeError", "response: $jo")}
-                                                    }
-                                                } else {
-                                                    CoroutineScope(Dispatchers.Main).launch {
-                                                        enabledAllLoginBtn()
-                                                        Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
-                                                        logout(this@IntroActivity, 0)
+                                            sViewModel.snsJo = jsonObj
+                                            lifecycleScope.launch(Dispatchers.IO) {
+                                                identifyEmail(getString(R.string.API_user), jsonObj) { responseJo ->
+                                                    if (responseJo != null) {
+                                                        trackingUserStatus(responseJo)
+                                                    } else {
+                                                        CoroutineScope(Dispatchers.Main).launch {
+                                                            enabledAllLoginBtn()
+                                                            Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
+                                                            logout(this@IntroActivity, 0)
+                                                        }
                                                     }
                                                 }
                                             }
@@ -178,7 +178,9 @@ class IntroActivity : AppCompatActivity() {
                     .requestEmail()
                     .build()
                 val googleSignInClient = GoogleSignIn.getClient(this@IntroActivity, gso)
-                val signInIntent: Intent = googleSignInClient.signInIntent
+                val signInIntent: Intent = googleSignInClient.signInIntent.apply {
+                    putExtra("prompt", "select_account")
+                }
                 launcher.launch(signInIntent)
             }
         } // ---- 구글 로그인 끝 ----
@@ -208,20 +210,25 @@ class IntroActivity : AppCompatActivity() {
                         val jsonObj = JSONObject()
                         jsonObj.put("device_sn" ,0)
                         jsonObj.put("user_sn", 0)
+                        jsonObj.put("providerId", "${result.profile?.id}")
+                        jsonObj.put("email", result.profile?.email)
+                        jsonObj.put("user_name", "${result.profile?.name}")
+                        jsonObj.put("mobile", "${result.profile?.mobile}")
                         jsonObj.put("provider", "naver")
                         jsonObj.put("access_token", "${NaverIdLoginSDK.getAccessToken()}")
+                        sViewModel.snsJo = jsonObj
                         Log.v("jsonObj", "$jsonObj")
-                        getUserBySdk(getString(R.string.API_user), jsonObj, this@IntroActivity) { jo ->
-                            if (jo != null) {
-                                when (jo.optString("status")) {
-                                    "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
-                                    "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 201) }
-                                    else -> { Log.e("responseCodeError", "response: $jo") }
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            identifyEmail(getString(R.string.API_user), jsonObj) { responseJo ->
+                                if (responseJo != null) {
+                                    trackingUserStatus(responseJo)
+                                } else {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        enabledAllLoginBtn()
+                                        Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
+                                        logout(this@IntroActivity, 0)
+                                    }
                                 }
-                            } else {
-                                enabledAllLoginBtn()
-                                Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
-                                logout(this@IntroActivity, 0)
                             }
                         }
                     }
@@ -264,21 +271,24 @@ class IntroActivity : AppCompatActivity() {
                                 jsonObj.put("user_sn", 0)
                                 jsonObj.put("access_token", token.accessToken)
                                 jsonObj.put("provider", "kakao")
-
-//                                Log.v("jsonObj", "$jsonObj")
+                                jsonObj.put("providerId", user.uuid)
+                                jsonObj.put("email", user.kakaoAccount?.email)
+                                jsonObj.put("user_name", user.kakaoAccount?.name)
+                                Log.v("jsonObj", "$jsonObj")
+                                sViewModel.snsJo = jsonObj
 //                                val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
 //                                Log.w("카카오가입>메일", encodedUserEmail)
-                                getUserBySdk(getString(R.string.API_user), jsonObj, this@IntroActivity) { jo ->
-                                    if (jo != null) {
-                                        when (jo.optString("status")) {
-                                            "200" -> { saveTokenAndIdentifyUser(jo, jsonObj, 200) }
-                                            "201" -> { saveTokenAndIdentifyUser(jo, jsonObj, 201) }
-                                            else -> { Log.v("responseCodeError", "response: $jo")}
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    identifyEmail(getString(R.string.API_user), jsonObj) { responseJo ->
+                                        if (responseJo != null) {
+                                            trackingUserStatus(responseJo)
+                                        } else {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                enabledAllLoginBtn()
+                                                Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
+                                                logout(this@IntroActivity, 0)
+                                            }
                                         }
-                                    } else {
-                                        enabledAllLoginBtn()
-                                        Toast.makeText(this@IntroActivity, "로그인에 실패했습니다\n관리자에게 문의해주세요", Toast.LENGTH_LONG).show()
-                                        logout(this@IntroActivity, 0)
                                     }
                                 }
                             }
@@ -308,35 +318,31 @@ class IntroActivity : AppCompatActivity() {
         }
 
         binding.btnIntroSignIn.setOnSingleClickListener {
-//            val intent = Intent(this@IntroActivity, SignInActivity::class.java)
-//            startActivity(intent)
             val dialog = SignInDialogFragment()
             dialog.show(supportFragmentManager, "SignInDialogFragment")
         }
     }
 
     private fun mainInit() {
-        val intent = Intent(this ,MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finishAffinity()
     }
 
-    private fun saveTokenAndIdentifyUser(jo: JSONObject, jsonObj: JSONObject, situation: Int) {
-        when (situation) {
-            // ------# 기존 로그인 #------
+    private fun trackingUserStatus(responseJo : JSONObject) {
+        // TODO 일단 응답결과에 따른 tracking을 판단해야함
+        val status = responseJo.optInt("status")
+        when (status) {
             200 -> {
-                storeUserInSingleton(this@IntroActivity, jo)
-                createKey(getString(R.string.SECURE_KEY_ALIAS))
-                Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
-                val userUUID = Singleton_t_user.getInstance(this).jsonObject?.optString("user_uuid") ?: ""
-                val userInfoSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("sn")?.toInt() ?: -1
-                ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
-                    mainInit()
-                }
+                // 해당 이메일 정보가 이미 있는데 소셜 로그인으로 기존에 한 경우
+
+
             }
-            // ------# 최초 회원가입 #------
             201 -> {
-                // ------! 광고성 수신 동의 문자 시작 !------
+                // 해당 이메일 정보가 있긴한데, 자체 회원가입으로 진행한 계정이 있을 경우
+            }
+            202 -> {
+                // 네이버 전용인데 네이버로 했을 때 일단 해당 naver.com이 db에 없을 경우 ( 키오스크 측정 데이터가 있든 없든 상관없음)
                 val bottomSheetFragment = AgreementBSDialogFragment()
                 bottomSheetFragment.isCancelable = false
                 bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
@@ -345,20 +351,20 @@ class IntroActivity : AppCompatActivity() {
                         if (agree) {
 
                             // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
-                            jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
-                            jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
-                            CoroutineScope(Dispatchers.IO).launch {
-                                fetchUserUPDATEJson(this@IntroActivity, getString(R.string.API_user), jsonObj.toString(), jo.optInt("sn").toString())
-                            }
+//                            jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
+//                            jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
+//                            CoroutineScope(Dispatchers.IO).launch {
+//                                fetchUserUPDATEJson(this@IntroActivity, getString(R.string.API_user), jsonObj.toString(), jo.optInt("sn").toString())
+//                            }
 //                            Log.v("Intro>SMS", "$jsonObj")
 //                            Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
 
                             // 기존 입력 jo + 동의 항목인 jsonObj 통합
-                            jo.put("sms_receive", "1")
-                            jo.put("email_receive", "1")
-                            jo.put("device_sn", "1")
+//                            jo.put("sms_receive", "1")
+//                            jo.put("email_receive", "1")
+//                            jo.put("device_sn", "1")
 
-                            storeUserInSingleton(this@IntroActivity, jo)
+//                            storeUserInSingleton(this@IntroActivity, jo)
                             createKey(getString(R.string.SECURE_KEY_ALIAS))
                             Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
                             val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")
@@ -386,7 +392,7 @@ class IntroActivity : AppCompatActivity() {
                                 }
                             }
                             lifecycleScope.launch(Dispatchers.IO) {
-                                fetchUserDeleteJson(this@IntroActivity, getString(R.string.API_user), jo.optString("sn"))
+                                fetchUserDeleteJson(this@IntroActivity, getString(R.string.API_user), "")
                                 withContext(Dispatchers.Main) {
                                     this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
                                     enabledAllLoginBtn()
@@ -396,83 +402,173 @@ class IntroActivity : AppCompatActivity() {
                     }
                 })
             }
-            2011 -> {
-                storeUserInSingleton(this@IntroActivity, jo)
-                val dialog = MobileAuthDialogFragment.newInstance(jo.optInt("sn"))
-                dialog.show(supportFragmentManager, "MobileAuthDialogFragment")
-                dialog.setOnFinishListener(object: MobileAuthDialogFragment.OnAuthFinishListener{
-                    override fun onFinish(agree: Boolean) {
-                        // 전화번호 인증을 반대했을 때
-                        if (!agree) {
-                            enabledAllLoginBtn()
-                            return
-                        }
-                        // ------! 광고성 수신 동의 문자 시작 !------
-                        val bottomSheetFragment = AgreementBSDialogFragment()
-                        bottomSheetFragment.isCancelable = false
-                        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
-                        bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
-                            override fun onFinish(agree: Boolean) {
-                                if (agree) {
-
-                                    // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
-                                    jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
-                                    jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
-                                    jsonObj.put("mobile", sViewModel.transformMobile)
-
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        fetchUserUPDATEJson(this@IntroActivity, getString(R.string.API_user), jsonObj.toString(), jo.optInt("sn").toString())
-                                    }
-//                                    Log.v("Intro>SMS", "$jsonObj")
-//                                    Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-
-                                    // 기존 입력 jo + 동의 항목인 jsonObj 통합
-                                    jo.put("sms_receive", "1")
-                                    jo.put("email_receive", "1")
-                                    jo.put("device_sn", "1")
-//                                    Log.v("sViewModel", "${sViewModel.transformMobile}, $jo")
-                                    createKey(getString(R.string.SECURE_KEY_ALIAS))
-//                                    Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                                    val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")
-                                    val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()
-                                    if (userUUID != null && userInfoSn != null) {
-                                        ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
-                                            mainInit()
-                                        }
-                                    }
-                                } else {
-                                    // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------
-                                    if (Firebase.auth.currentUser != null) {
-                                        Firebase.auth.signOut()
-                                        Log.d("로그아웃", "Firebase sign out successful")
-                                    } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
-                                        NaverIdLoginSDK.logout()
-                                        Log.d("로그아웃", "Naver sign out successful")
-                                    } else if (AuthApiClient.instance.hasToken()) {
-                                        UserApiClient.instance.logout { error->
-                                            if (error != null) {
-                                                Log.e("로그아웃", "KAKAO Sign out failed", error)
-                                            } else {
-                                                Log.e("로그아웃", "KAKAO Sign out successful")
-                                            }
-                                        }
-                                    }
-                                    lifecycleScope.launch(Dispatchers.IO) {
-                                        fetchUserDeleteJson(this@IntroActivity, getString(R.string.API_user), jo.optString("sn"))
-                                        withContext(Dispatchers.Main) {
-                                            this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
-                                            enabledAllLoginBtn()
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    }
-                })
-
+            203 -> {
 
             }
+            // 이메일 정보가 없어서 일단은 회원가입 창으로 이동.
+            404, 405, 409, 419, 416 -> {
+                val dialog = SignInDialogFragment.newInstance(true)
+                dialog.show(supportFragmentManager, "SignInDialogFragment")
+            }
+            else -> {
+
+            }
+
         }
+
+
+
+//        when (situation) {
+//            // ------# 기존 로그인 #------
+//            200 -> {
+//                storeUserInSingleton(this@IntroActivity, jo)
+//                createKey(getString(R.string.SECURE_KEY_ALIAS))
+//                Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this).jsonObject}")
+//                val userUUID = Singleton_t_user.getInstance(this).jsonObject?.optString("user_uuid") ?: ""
+//                val userInfoSn =  Singleton_t_user.getInstance(this).jsonObject?.optString("sn")?.toInt() ?: -1
+//                ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
+//                    mainInit()
+//                }
+//            }
+//            // ------# 최초 회원가입 #------
+//            201 -> {
+//                // ------! 광고성 수신 동의 문자 시작 !------
+//                val bottomSheetFragment = AgreementBSDialogFragment()
+//                bottomSheetFragment.isCancelable = false
+//                bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+//                bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
+//                    override fun onFinish(agree: Boolean) {
+//                        if (agree) {
+//
+//                            // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
+//                            jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
+//                            jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
+//                            CoroutineScope(Dispatchers.IO).launch {
+//                                fetchUserUPDATEJson(this@IntroActivity, getString(R.string.API_user), jsonObj.toString(), jo.optInt("sn").toString())
+//                            }
+////                            Log.v("Intro>SMS", "$jsonObj")
+////                            Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+//
+//                            // 기존 입력 jo + 동의 항목인 jsonObj 통합
+//                            jo.put("sms_receive", "1")
+//                            jo.put("email_receive", "1")
+//                            jo.put("device_sn", "1")
+//
+//                            storeUserInSingleton(this@IntroActivity, jo)
+//                            createKey(getString(R.string.SECURE_KEY_ALIAS))
+//                            Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+//                            val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")
+//                            val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()
+//                            if (userUUID != null && userInfoSn != null) {
+//                                ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
+//                                    mainInit()
+//                                }
+//                            }
+//                        } else {
+//                            // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------
+//                            if (Firebase.auth.currentUser != null) {
+//                                Firebase.auth.signOut()
+//                                Log.d("로그아웃", "Firebase sign out successful")
+//                            } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
+//                                NaverIdLoginSDK.logout()
+//                                Log.d("로그아웃", "Naver sign out successful")
+//                            } else if (AuthApiClient.instance.hasToken()) {
+//                                UserApiClient.instance.logout { error->
+//                                    if (error != null) {
+//                                        Log.e("로그아웃", "KAKAO Sign out failed", error)
+//                                    } else {
+//                                        Log.e("로그아웃", "KAKAO Sign out successful")
+//                                    }
+//                                }
+//                            }
+//                            lifecycleScope.launch(Dispatchers.IO) {
+//                                fetchUserDeleteJson(this@IntroActivity, getString(R.string.API_user), jo.optString("sn"))
+//                                withContext(Dispatchers.Main) {
+//                                    this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
+//                                    enabledAllLoginBtn()
+//                                }
+//                            }
+//                        }
+//                    }
+//                })
+//            }
+//            2011 -> {
+//                storeUserInSingleton(this@IntroActivity, jo)
+//                val dialog = MobileAuthDialogFragment.newInstance(jo.optInt("sn"))
+//                dialog.show(supportFragmentManager, "MobileAuthDialogFragment")
+//                dialog.setOnFinishListener(object: MobileAuthDialogFragment.OnAuthFinishListener{
+//                    override fun onFinish(agree: Boolean) {
+//                        // 전화번호 인증을 반대했을 때
+//                        if (!agree) {
+//                            enabledAllLoginBtn()
+//                            return
+//                        }
+//                        // ------! 광고성 수신 동의 문자 시작 !------
+//                        val bottomSheetFragment = AgreementBSDialogFragment()
+//                        bottomSheetFragment.isCancelable = false
+//                        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+//                        bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
+//                            override fun onFinish(agree: Boolean) {
+//                                if (agree) {
+//
+//                                    // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
+//                                    jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
+//                                    jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
+//                                    jsonObj.put("mobile", sViewModel.transformMobile)
+//
+//                                    CoroutineScope(Dispatchers.IO).launch {
+//                                        fetchUserUPDATEJson(this@IntroActivity, getString(R.string.API_user), jsonObj.toString(), jo.optInt("sn").toString())
+//                                    }
+////                                    Log.v("Intro>SMS", "$jsonObj")
+////                                    Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+//
+//                                    // 기존 입력 jo + 동의 항목인 jsonObj 통합
+//                                    jo.put("sms_receive", "1")
+//                                    jo.put("email_receive", "1")
+//                                    jo.put("device_sn", "1")
+////                                    Log.v("sViewModel", "${sViewModel.transformMobile}, $jo")
+//                                    createKey(getString(R.string.SECURE_KEY_ALIAS))
+////                                    Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+//                                    val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")
+//                                    val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()
+//                                    if (userUUID != null && userInfoSn != null) {
+//                                        ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
+//                                            mainInit()
+//                                        }
+//                                    }
+//                                } else {
+//                                    // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------
+//                                    if (Firebase.auth.currentUser != null) {
+//                                        Firebase.auth.signOut()
+//                                        Log.d("로그아웃", "Firebase sign out successful")
+//                                    } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
+//                                        NaverIdLoginSDK.logout()
+//                                        Log.d("로그아웃", "Naver sign out successful")
+//                                    } else if (AuthApiClient.instance.hasToken()) {
+//                                        UserApiClient.instance.logout { error->
+//                                            if (error != null) {
+//                                                Log.e("로그아웃", "KAKAO Sign out failed", error)
+//                                            } else {
+//                                                Log.e("로그아웃", "KAKAO Sign out successful")
+//                                            }
+//                                        }
+//                                    }
+//                                    lifecycleScope.launch(Dispatchers.IO) {
+//                                        fetchUserDeleteJson(this@IntroActivity, getString(R.string.API_user), jo.optString("sn"))
+//                                        withContext(Dispatchers.Main) {
+//                                            this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
+//                                            enabledAllLoginBtn()
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        })
+//                    }
+//                })
+//
+//
+//            }
+//        }
     }
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

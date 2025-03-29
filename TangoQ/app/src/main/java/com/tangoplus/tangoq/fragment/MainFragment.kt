@@ -104,11 +104,9 @@ class MainFragment : Fragment() {
             dialog.show(requireActivity().supportFragmentManager, "GuideDialogFragment")
         }
 
-
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 measures = Singleton_t_measure.getInstance(requireContext()).measures
-
 
                 // ------# 초기 measure 설정 #------
                 if (!measures.isNullOrEmpty()) {
@@ -166,7 +164,7 @@ class MainFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
         Log.v("measure있는지", "${measures?.size}")
-
+        startShimmer()
         if (measures.isNullOrEmpty()) {
             // ------# measure에 뭐라도 들어있으면 위 코드 #-------
             binding.tvMTitle.text = "${Singleton_t_user.getInstance(requireContext()).jsonObject?.getString("user_name") ?: ""}님"
@@ -178,8 +176,7 @@ class MainFragment : Fragment() {
             binding.rvM1.visibility = View.GONE
             binding.tvM2.visibility = View.GONE
 //            binding.tvMProgram.visibility = View.GONE
-
-
+            stopShimmer()
             binding.btnMProgram.apply {
                 text = "측정 시작하기"
                 setOnSingleClickListener{
@@ -202,6 +199,7 @@ class MainFragment : Fragment() {
                     mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
                         try {
                             lifecycleScope.launch(Dispatchers.Main) {
+
                                 Log.v("날짜 비교", "$selectedDate, ${measures!!.map { it.regDate }} ")
                                 val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
                                 if (dateIndex != null) {
@@ -261,6 +259,7 @@ class MainFragment : Fragment() {
             mvm.selectedMeasure?.recommendations = progressRec
             Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
             setAdapter()
+            stopShimmer()
         }
     }
 
@@ -271,20 +270,35 @@ class MainFragment : Fragment() {
         val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf(), pvm)
         binding.rvM2.layoutManager = layoutManager
         binding.rvM2.adapter = adapter
+        binding.btnMProgram.text = when {
+            pvm.isExpanded -> "접기"
+            else -> "더보기"
+        }
         binding.btnMProgram.setOnSingleClickListener {
             if (binding.btnMProgram.text == "더보기") {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    scrollToView(binding.btnMProgram, binding.nsvM)
+                }, 250)
                 binding.btnMProgram.text = "접기"
             } else {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    scrollToView(binding.rvM1, binding.nsvM)
+                }, 250)
                 binding.btnMProgram.text = "더보기"
             }
             adapter.toggleExpand(binding.rvM2)
-            Handler(Looper.getMainLooper()).postDelayed({
-                scrollToView(binding.btnMProgram, binding.nsvM)
-            }, 250)
+
         }
     }
 
-
+    private fun startShimmer() {
+        binding.sflM.startShimmer()
+        binding.sflM.visibility = View.VISIBLE
+    }
+    private fun stopShimmer() {
+        binding.sflM.stopShimmer()
+        binding.sflM.visibility = View.GONE
+    }
 
     private fun existedMeasurementGuide() {
         binding.clM2.isEnabled = false

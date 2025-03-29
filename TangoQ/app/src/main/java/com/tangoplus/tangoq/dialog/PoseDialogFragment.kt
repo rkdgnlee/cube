@@ -79,7 +79,10 @@ class PoseDialogFragment : DialogFragment() {
         binding = FragmentPoseDialogBinding.inflate(inflater)
         return binding.root
     }
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
+    }
     companion object {
         const val ARG_SEQ_INDEX = "pose_seq_index"
         fun newInstance(seq: Int) : PoseDialogFragment {

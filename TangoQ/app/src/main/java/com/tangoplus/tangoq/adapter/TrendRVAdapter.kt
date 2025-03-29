@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -64,8 +67,22 @@ class TrendRVAdapter(private val fragment: Fragment,
                 holder.tvMTIScore2.text = "${String.format("%.1f 점", score)}"
 
                 // 설명 넣기
-                val collectedComment = createSummary(analysisUnits) + createAdvise(filteredParts?.get(position), score.toInt(), 2)
-                holder.tvMTIComment.text = collectedComment
+                val summary = createSummary(analysisUnits)
+                val advice = createAdvise(filteredParts?.get(position), score.toInt(), 2)
+
+                val spannableString = SpannableStringBuilder()
+                spannableString.append(summary)
+                spannableString.append(advice)
+
+                // createSummary 부분만 작은 텍스트 크기로 설정
+                spannableString.setSpan(
+                    AbsoluteSizeSpan(13, true), // 14sp 크기로 설정, 두 번째 파라미터는 dip 단위 사용 여부
+                    0,
+                    summary.length, // 끝 위치
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                holder.tvMTIComment.text = spannableString
 
             } else if (!leftAnalysises.isNullOrEmpty() && !rightAnalysises.isNullOrEmpty()) {
                 val leftAnalysisUnits = leftAnalysises[position]
@@ -87,8 +104,24 @@ class TrendRVAdapter(private val fragment: Fragment,
                 holder.tvMTIScore1.text = "${String.format("%.1f 점", leftScore)}"
                 holder.tvMTIScore2.text = "${String.format("%.1f 점", rightScore)}"
 
-                val collectedComment = createSummary(rightAnalysisUnits) + createAdvise(filteredParts?.get(position), rightScore.toInt(), state)
-                holder.tvMTIComment.text = collectedComment
+                val summary = createSummary(rightAnalysisUnits)
+                val advice = createAdvise(filteredParts?.get(position), rightScore.toInt(), state)
+
+                val spannableString = SpannableStringBuilder()
+                spannableString.append(summary)
+                spannableString.append(advice)
+
+                // createSummary 부분만 작은 텍스트 크기로 설정
+                spannableString.setSpan(
+                    AbsoluteSizeSpan(13, true), // 14sp 크기로 설정, 두 번째 파라미터는 dip 단위 사용 여부
+                    0,
+                    summary.length, // 끝 위치
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                holder.tvMTIComment.text = spannableString
+//                val collectedComment = createSummary(rightAnalysisUnits) + createAdvise(filteredParts?.get(position), rightScore.toInt(), state)
+//                holder.tvMTIComment.text = collectedComment
 
                 // 코멘트가 만들어진 후 코멘트와 같이 점수 state 설정
                 setStateFlavor(holder, state)

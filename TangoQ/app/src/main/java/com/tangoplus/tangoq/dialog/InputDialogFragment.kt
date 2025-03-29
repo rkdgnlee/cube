@@ -26,6 +26,7 @@ import com.tangoplus.tangoq.api.NetworkUser.verifyPW
 import com.tangoplus.tangoq.databinding.FragmentInputDialogBinding
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.fragment.WithdrawalFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
@@ -37,6 +38,7 @@ import java.util.regex.Pattern
 class InputDialogFragment : DialogFragment() {
     private lateinit var binding: FragmentInputDialogBinding
     private val svm : SignInViewModel by activityViewModels()
+    private var case = -1
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -44,7 +46,16 @@ class InputDialogFragment : DialogFragment() {
         binding = FragmentInputDialogBinding.inflate(inflater)
         return binding.root
     }
-
+    companion object {
+        const val ARG_INPUT = "input_arguments"
+        fun newInstance(case: Int) : InputDialogFragment {
+            val fragment = InputDialogFragment()
+            val args = Bundle()
+            args.putInt(ARG_INPUT, case)
+            fragment.arguments = args
+            return fragment
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // api35이상 화면 크기 조절
@@ -54,7 +65,7 @@ class InputDialogFragment : DialogFragment() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
+        case = arguments?.getInt(ARG_INPUT) ?: -1
         val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&^])[A-Za-z[0-9]$@$!%*#?&^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
         val pwPatternCheck = Pattern.compile(pwPattern)
         disabledButton()
@@ -90,9 +101,29 @@ class InputDialogFragment : DialogFragment() {
             verifyPW(requireContext(), getString(R.string.API_user), jo) { status ->
                 when (status) {
                     200 -> {
-                        val dialog = ProfileEditChangeDialogFragment.newInstance("비밀번호", "")
-                        dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
-                        dismiss()
+                        when (case) {
+                            // 비밀번호 변경
+                            1 -> {
+                                dismiss()
+                                val dialog = ProfileEditChangeDialogFragment.newInstance("비밀번호", "")
+                                dialog.show(requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+
+                            }
+                            // 회원탈퇴
+                            2 -> {
+                                dismiss()
+                                requireActivity().supportFragmentManager.beginTransaction().apply {
+                                    setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
+                                    replace(R.id.flMain, WithdrawalFragment())
+                                    commit()
+                                }
+                            }
+                            -1 -> {
+                                dismiss()
+                                Toast.makeText(requireContext(), "올바르지 않은 접근입니다.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
                     }
                     else -> {
                         Toast.makeText(requireContext(), "적절하지 않은 비밀번호입니다\n다시 시도해주세요", Toast.LENGTH_SHORT).show()

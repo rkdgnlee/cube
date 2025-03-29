@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -43,6 +44,12 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        // 바텀시트 태블릿 가로모드
+        val bottomSheet = view.parent as View
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
         // -----! 개인정보 동의항목 체크 시작 !-----
         binding.clAgreementAll.setOnClickListener {

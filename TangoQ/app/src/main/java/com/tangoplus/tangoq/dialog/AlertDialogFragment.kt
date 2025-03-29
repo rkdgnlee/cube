@@ -48,13 +48,23 @@ class AlertDialogFragment : DialogFragment() {
         val today = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
         when (case) {
-            "agree", "disagree" -> {
+            "agree", "disagree", "agreeMk1", "agreeMk2", "disagreeMk1", "disagreeMk2" -> {
+                binding.tvMkTitle.text = when (case) {
+                    "agreeMk1" -> "문자 메시지 정보 수신 동의"
+                    "agreeMk2" -> "이메일 정보 수신 동의"
+                    "agree" -> "마케팅 정보 수신 동의"
+                    "disagreeMk1" -> "문자 메시지 정보 수신 거부"
+                    "disagreeMk2" -> "이메일 정보 수신 거부"
+                    "disagree" -> "마케팅 정보 수신 거부"
+                    else -> "마케팅 정보 수신"
+
+                }
                 binding.tvMkConfirm.setOnSingleClickListener{ dismiss() }
-                val message = SpannableString("전송자: TangoPlus (탱고플러스)" + "\n수신동의 날짜: ${today.format(formatter)}\n처리내용: 수신 ${if (case == "agree") "동의" else "거부"} 처리 완료")
+                val message = SpannableString("전송자: TangoPlus (탱고플러스)" + "\n수신동의 날짜: ${today.format(formatter)}\n처리내용: 수신 ${if (case in listOf("agree", "agreeMk1", "agreeMk2")) "동의" else "거부"} 처리 완료")
                 val accentIndex = message.indexOf("처리내용")
                 when (case) {
-                    "agree" -> message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.secondaryColor)), accentIndex + 5, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    "disagree" -> message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), accentIndex + 5, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    "agree", "agreeMk1", "agreeMk2" -> message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.secondaryColor)), accentIndex + 5, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    "disagree", "disagreeMk1", "disagreeMk2" -> message.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.deleteColor)), accentIndex + 5, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
                 binding.tvMkContent.text = message
             }

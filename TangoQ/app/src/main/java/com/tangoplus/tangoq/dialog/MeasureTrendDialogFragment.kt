@@ -29,6 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -106,6 +107,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private var exo0752: ImageButton? = null
     private var exo102: ImageButton? = null
     private var exoExit2 : ImageButton? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_DialogFragment)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -530,6 +535,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
+
     private fun setPlayer(isRight: Boolean) {
         when (isRight) {
             true -> {
@@ -763,8 +769,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 exoForward2?.visibility = View.GONE
                 exoReplay2?.visibility = View.GONE
                 exoPlay2?.visibility = View.GONE
-                llSpeed2?.visibility = View.GONE
                 exoExit2?.visibility = View.GONE
+                llSpeed2?.visibility = View.VISIBLE
                 exoPause2?.visibility = View.VISIBLE
                 exoPlay2?.setOnClickListener {
                     simpleExoPlayer2?.seekTo(pvm.getRightPlaybackPosition())
@@ -778,13 +784,77 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     exoPlay2?.visibility = View.VISIBLE
                     exoPause2?.visibility = View.GONE
                 }
+                var isShownSpeed2 = false
+                var forChanged2 = false
+                btnSpeed2?.setOnClickListener{
+                    if (!isShownSpeed2) {
+                        exo052?.visibility = View.VISIBLE
+                        exo0752?.visibility = View.VISIBLE
+                        isShownSpeed2 = true
+                    } else {
+                        exo052?.visibility = View.GONE
+                        exo0752?.visibility = View.GONE
+                        isShownSpeed2 = false
+                    }
+                }
+
+                exo052?.setOnClickListener {
+                    if (forChanged2) {
+                        exo052?.visibility = View.VISIBLE
+                        exo0752?.visibility = View.VISIBLE
+                        exo102?.visibility = View.VISIBLE
+                        forChanged2 = false
+                    } else {
+                        simpleExoPlayer2?.playbackParameters = PlaybackParameters(0.5f)
+                        exo052?.visibility = View.VISIBLE
+                        exo0752?.visibility = View.GONE
+                        exo102?.visibility = View.GONE
+                        btnSpeed2?.visibility = View.GONE
+                        isShownSpeed2 = false
+                        forChanged2 = true
+                    }
+
+                }
+                exo0752?.setOnClickListener {
+                    if (forChanged2) {
+                        exo052?.visibility = View.VISIBLE
+                        exo0752?.visibility = View.VISIBLE
+                        exo102?.visibility = View.VISIBLE
+                        forChanged2 = false
+                    } else {
+                        simpleExoPlayer2?.playbackParameters = PlaybackParameters(0.75f)
+                        exo052?.visibility = View.GONE
+                        exo0752?.visibility = View.VISIBLE
+                        exo102?.visibility = View.GONE
+                        btnSpeed2?.visibility = View.GONE
+                        isShownSpeed2 = false
+                        forChanged2 = true
+                    }
+                }
+                exo102?.setOnClickListener {
+                    if (forChanged2) {
+                        exo052?.visibility = View.VISIBLE
+                        exo0752?.visibility = View.VISIBLE
+                        exo102?.visibility = View.VISIBLE
+                        forChanged2 = false
+                    } else {
+                        simpleExoPlayer2?.playbackParameters = PlaybackParameters(1.0f)
+                        exo052?.visibility = View.GONE
+                        exo0752?.visibility = View.GONE
+                        exo102?.visibility = View.VISIBLE
+                        btnSpeed2?.visibility = View.GONE
+                        isShownSpeed2 = false
+                        forChanged2 = true
+                    }
+                }
+
             }
             false -> {
                 exoForward1?.visibility = View.GONE
                 exoReplay1?.visibility = View.GONE
                 exoPlay1?.visibility = View.GONE
-                llSpeed1?.visibility = View.GONE
                 exoExit1?.visibility = View.GONE
+                llSpeed1?.visibility = View.VISIBLE
                 exoPause1?.visibility = View.VISIBLE
                 exoPlay1?.setOnClickListener {
                     simpleExoPlayer1?.seekTo(pvm.getLeftPlaybackPosition())
@@ -798,6 +868,69 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     simpleExoPlayer1?.pause()
                     exoPlay1?.visibility = View.VISIBLE
                     exoPause1?.visibility = View.GONE
+                }
+                var isShownSpeed1 = false
+                var forChanged1 = false
+                btnSpeed1?.setOnClickListener{
+                    if (!isShownSpeed1) {
+                        exo051?.visibility = View.VISIBLE
+                        exo0751?.visibility = View.VISIBLE
+                        isShownSpeed1 = true
+                    } else {
+                        exo051?.visibility = View.GONE
+                        exo0751?.visibility = View.GONE
+                        isShownSpeed1 = false
+                    }
+                }
+
+                exo051?.setOnClickListener {
+                    if (forChanged1) {
+                        exo051?.visibility = View.VISIBLE
+                        exo0751?.visibility = View.VISIBLE
+                        exo101?.visibility = View.VISIBLE
+                        forChanged1 = false
+                    } else {
+                        simpleExoPlayer1?.playbackParameters = PlaybackParameters(0.5f)
+                        exo051?.visibility = View.VISIBLE
+                        exo0751?.visibility = View.GONE
+                        exo101?.visibility = View.GONE
+                        btnSpeed1?.visibility = View.GONE
+                        isShownSpeed1 = false
+                        forChanged1 = true
+                    }
+
+                }
+                exo0751?.setOnClickListener {
+                    if (forChanged1) {
+                        exo051?.visibility = View.VISIBLE
+                        exo0751?.visibility = View.VISIBLE
+                        exo101?.visibility = View.VISIBLE
+                        forChanged1 = false
+                    } else {
+                        simpleExoPlayer1?.playbackParameters = PlaybackParameters(0.75f)
+                        exo051?.visibility = View.GONE
+                        exo0751?.visibility = View.VISIBLE
+                        exo101?.visibility = View.GONE
+                        btnSpeed1?.visibility = View.GONE
+                        isShownSpeed1 = false
+                        forChanged1 = true
+                    }
+                }
+                exo101?.setOnClickListener {
+                    if (forChanged1) {
+                        exo051?.visibility = View.VISIBLE
+                        exo0751?.visibility = View.VISIBLE
+                        exo101?.visibility = View.VISIBLE
+                        forChanged1 = false
+                    } else {
+                        simpleExoPlayer1?.playbackParameters = PlaybackParameters(1.0f)
+                        exo051?.visibility = View.GONE
+                        exo0751?.visibility = View.GONE
+                        exo101?.visibility = View.VISIBLE
+                        btnSpeed1?.visibility = View.GONE
+                        isShownSpeed1 = false
+                        forChanged1 = true
+                    }
                 }
             }
         }
@@ -1125,9 +1258,5 @@ class MeasureTrendDialogFragment : DialogFragment() {
         super.onDestroy()
         simpleExoPlayer1?.release()
         simpleExoPlayer2?.release()
-    }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 }

@@ -56,7 +56,8 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")
 
     // 스켈레톤
-    implementation("com.google.mediapipe:tasks-vision:0.10.0")
+    implementation("com.google.mediapipe:tasks-vision:0.20230731")
+    implementation("androidx.window:window:1.3.0")
 
     // 외부 라이브러리
     implementation("com.github.shuhart:StepView:v1.5.1")
@@ -77,7 +78,7 @@ dependencies {
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
-    implementation("com.arthenica:ffmpeg-kit-full-gpl:4.5.LTS")
+    implementation("com.arthenica:ffmpeg-kit-full-gpl:4.5.LTS") // 최신버전은 implementation 'com.arthenica:ffmpeg-kit-full:6.0-2' 인데 이 부분은 안드로이드 버전 업그레이드할 때 필요
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
 //    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
 

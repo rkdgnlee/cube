@@ -24,11 +24,11 @@ class PoseLandmarkerHelper(
     var minPoseDetectionConfidence: Float = DEFAULT_POSE_DETECTION_CONFIDENCE,
     var minPoseTrackingConfidence: Float = DEFAULT_POSE_TRACKING_CONFIDENCE,
     var minPosePresenceConfidence: Float = DEFAULT_POSE_PRESENCE_CONFIDENCE,
-    private var currentModel: Int = MODEL_POSE_LANDMARKER_FULL,
-    var currentDelegate: Int = DELEGATE_GPU,
+    var currentModel: Int = MODEL_POSE_LANDMARKER_FULL,
+    var currentDelegate: Int = DELEGATE_CPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
-    // 이 리스너는 RunningMode.LIVE_STREAM에서 실행될 때만 사용됩니다.
+    // this listener is only used when running in RunningMode.LIVE_STREAM
     val poseLandmarkerHelperListener: LandmarkerListener? = null
 ) {
     // 이 예에서는 변경 시 재설정될 수 있도록 var여야 합니다.
@@ -42,11 +42,10 @@ class PoseLandmarkerHelper(
         poseLandmarker?.close()
         poseLandmarker = null
     }
-
-    // PoseLandmarkerHelper의 실행 상태를 반환합니다.
     fun isClose(): Boolean {
         return poseLandmarker == null
     }
+
 
     fun setupPoseLandmarker() {
         // Set general pose landmarker options
@@ -62,8 +61,6 @@ class PoseLandmarkerHelper(
             }
         }
 
-        //-----------------------------------! ASSET MODEL 선택 !-----------------------------------
-        // 이 모델은 Activity의 MODEL_POSE
         val modelName =
             when (currentModel) {
                 MODEL_POSE_LANDMARKER_FULL -> "pose_landmarker_full.task"
@@ -72,7 +69,7 @@ class PoseLandmarkerHelper(
 
         baseOptionBuilder.setModelAssetPath(modelName)
 
-        // runningMode가 poseLandmarkerHelperListener와 일치하는지 확인합니다.
+        // Check if runningMode is consistent with poseLandmarkerHelperListener
         when (runningMode) {
             RunningMode.LIVE_STREAM -> {
                 if (poseLandmarkerHelperListener == null) {
@@ -81,59 +78,33 @@ class PoseLandmarkerHelper(
                     )
                 }
             }
-            else -> { } // no-op
-        }
-        try {
-            if (!isEmulator()) {
-                val baseOptions = baseOptionBuilder.build()
-
-                // 기본 옵션과 특정 옵션이 포함된 옵션 빌더를 생성합니다.
-                // 옵션은 Pose Landmarker에만 사용됩니다.
-                val optionsBuilder =
-                    PoseLandmarker.PoseLandmarkerOptions.builder()
-                        .setBaseOptions(baseOptions)
-                        .setMinPoseDetectionConfidence(minPoseDetectionConfidence)
-                        .setMinTrackingConfidence(minPoseTrackingConfidence)
-                        .setMinPosePresenceConfidence(minPosePresenceConfidence)
-                        .setRunningMode(runningMode)
-
-                // ResultListener 및 ErrorListener는 LIVE_STREAM 모드에만 사용됩니다.
-                if (runningMode == RunningMode.LIVE_STREAM) {
-                    optionsBuilder
-                        .setResultListener(this::returnLivestreamResult)
-                        .setErrorListener(this::returnLivestreamError)
-                }
-
-                CoroutineScope(Dispatchers.Main).launch {
-                    try {
-                        val options = optionsBuilder.build()
-                        Log.d("PoseLandmarkerDebug", "Build.PRODUCT: ${Build.PRODUCT}")
-                        Log.d("PoseLandmarkerDebug", "Build.HARDWARE: ${Build.HARDWARE}")
-                        Log.d("PoseLandmarkerDebug", "Build.MODEL: ${Build.MODEL}")
-                        Log.d("PoseLandmarkerDebug", "Build.MANUFACTURER: ${Build.MANUFACTURER}")
-                        Log.d("PoseLandmarkerDebug", "Build.BRAND: ${Build.BRAND}")
-                        Log.d("PoseLandmarkerDebug", "Build.DEVICE: ${Build.DEVICE}")
-                        Log.d("PoseLandmarkerDebug", "Build.FINGERPRINT: ${Build.FINGERPRINT}")
-
-                        // 옵션 생성 전 옵션 객체 세부 정보 로깅
-                        Log.d("PoseLandmarkerDebug", "Options: $options")
-
-
-                        poseLandmarker = PoseLandmarker.createFromOptions(context, options)
-                    } catch (e: UnsatisfiedLinkError) {
-                        poseLandmarker = null
-                        Log.e(TAG, "${e.message}")
-                    } catch (e: IllegalStateException) {
-                        Log.e(TAG, "${e.message}")
-                    } catch (e: NullPointerException) {
-                        Log.e(TAG, "${e.message}")
-                    } catch (e: IllegalArgumentException) {
-                        Log.e(TAG, "${e.message}")
-                    }
-                }
-            } else {
-                poseLandmarker = null
+            else -> {
+                // no-op
             }
+        }
+
+        try {
+            val baseOptions = baseOptionBuilder.build()
+            // Create an option builder with base options and specific
+            // options only use for Pose Landmarker.
+            val optionsBuilder =
+                PoseLandmarker.PoseLandmarkerOptions.builder()
+                    .setBaseOptions(baseOptions)
+                    .setMinPoseDetectionConfidence(minPoseDetectionConfidence)
+                    .setMinTrackingConfidence(minPoseTrackingConfidence)
+                    .setMinPosePresenceConfidence(minPosePresenceConfidence)
+                    .setRunningMode(runningMode)
+
+            // The ResultListener and ErrorListener only use for LIVE_STREAM mode.
+            if (runningMode == RunningMode.LIVE_STREAM) {
+                optionsBuilder
+                    .setResultListener(this::returnLivestreamResult)
+                    .setErrorListener(this::returnLivestreamError)
+            }
+
+            val options = optionsBuilder.build()
+            poseLandmarker =
+                PoseLandmarker.createFromOptions(context, options)
         } catch (e: IllegalStateException) {
             poseLandmarkerHelperListener?.onError(
                 "Pose Landmarker failed to initialize. See error logs for " +

@@ -150,15 +150,12 @@ class AnalyzeFragment : Fragment() {
             scrollToMonth(currentMonth)
 
             monthScrollListener = { month ->
+                initMonthData()
                 currentMonth = month.yearMonth
                 binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
+                setCalendarMonthData()
+                binding.cvACalendar.notifyCalendarChanged()
             }
-            // ------# 월별로 운동 기록 필터링 #------
-//            val filteredExercises = viewModel.allHistorys.filter { history ->
-//                val historyDate = stringToLocalDate(history.regDate)
-//                historyDate.month == currentMonth?.month && historyDate.year == currentMonth?.year
-//            }.toMutableList()
-//            setAdapter(filteredExercises)
         }
 
         binding.nextMonthButton.setOnClickListener {
@@ -166,10 +163,7 @@ class AnalyzeFragment : Fragment() {
             initMonthData()
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
-                updateMonthView()
-                updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
-                setAdapter(listOf())
-                pvm.selectedDate = null
+                setCalendarMonthData()
             }
         }
 
@@ -178,10 +172,7 @@ class AnalyzeFragment : Fragment() {
             initMonthData()
             if (currentMonth > YearMonth.now().minusMonths(18)) {
                 currentMonth = currentMonth.minusMonths(1)
-                updateMonthView()
-                updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
-                setAdapter(listOf())
-                pvm.selectedDate = null
+                setCalendarMonthData()
             }
         }
 
@@ -591,14 +582,18 @@ class AnalyzeFragment : Fragment() {
     }
 
     private fun updateUI() {
+
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
         lifecycleScope.launch(Dispatchers.Main) {
             pvm.graphProgresses = getWeekProgress(getString(R.string.API_progress), requireContext())
+            Log.v("그래프프로그레스", "${pvm.graphProgresses}")
             setGraph()
 
             // 상단 프로그레스 받아오기
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
             if (progressResult != null) {
+                binding.clAProgress2.visibility =View.VISIBLE
+                binding.tvANoProgram.visibility = View.GONE
                 Log.v("progressResult", "${progressResult.first}")
                 evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
                 evm.latestProgram = progressResult.second
@@ -651,7 +646,8 @@ class AnalyzeFragment : Fragment() {
                 isResume = true
                 setShimmer(false)
             } else {
-
+                binding.clAProgress2.visibility = View.INVISIBLE
+                binding.tvANoProgram.visibility = View.VISIBLE
                 setShimmer(false)
 //                binding.tvAProgressGuide.visibility = View.GONE
 //                binding.cvAProgress.visibility = View.GONE
@@ -659,7 +655,12 @@ class AnalyzeFragment : Fragment() {
         }
 
     }
-
+    private fun setCalendarMonthData() {
+        updateMonthView()
+        updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
+        setAdapter(listOf())
+        pvm.selectedDate = null
+    }
 
     override fun onResume() {
         super.onResume()

@@ -172,17 +172,19 @@ class QRCodeDialogFragment : DialogFragment() {
 
     private fun initScanner() {
         try {
-            codeScanner = CodeScanner(requireContext(), binding.csvLSD)
+            if (!::codeScanner.isInitialized) {
+                codeScanner = CodeScanner(requireContext(), binding.csvLSD)
+            }
         } catch (e: IndexOutOfBoundsException) {
-            Log.e("ProgramIndex", "${e.message}")
+            Log.e("scannerError", "IndexOutofBounds: ${e.message}")
         } catch (e: IllegalArgumentException) {
-            Log.e("ProgramIllegal", "${e.message}")
+            Log.e("scannerError", "IllegalArgument: ${e.printStackTrace()}")
         } catch (e: IllegalStateException) {
-            Log.e("ProgramIllegal", "${e.message}")
+            Log.e("scannerError", "IllegalState: ${e.printStackTrace()}")
         } catch (e: NullPointerException) {
-            Log.e("ProgramNull", "${e.message}")
+            Log.e("scannerError", "NullPointer: ${e.message}")
         } catch (e: java.lang.Exception) {
-            Log.e("ProgramException", "${e.message}")
+            Log.e("scannerError", "Exception ${e.message}")
         }
         codeScanner.startPreview()
         codeScanner.formats = CodeScanner.ALL_FORMATS

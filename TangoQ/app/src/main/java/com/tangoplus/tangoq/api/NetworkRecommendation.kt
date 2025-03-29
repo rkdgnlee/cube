@@ -215,7 +215,6 @@ object NetworkRecommendation {
                                 expired = ja.optJSONObject(i).optInt("expired"),
                                 totalProgress = ja.optJSONObject(i).optInt("total_progress"),
                             )
-                            Log.v("recommendationVO", "$recommendationVO")
                             recommendations.add(recommendationVO)
 
                         }

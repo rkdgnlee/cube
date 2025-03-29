@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
@@ -40,6 +41,12 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 바텀시트 태블릿 가로모드
+        val bottomSheet = view.parent as View
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        // 초기 데이터 설정
         singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         ssm = SaveSingletonManager(requireContext(), requireActivity())
         val measures = singletonMeasure.measures

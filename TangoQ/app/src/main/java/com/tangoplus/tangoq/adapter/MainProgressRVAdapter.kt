@@ -2,6 +2,7 @@ package com.tangoplus.tangoq.adapter
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +22,8 @@ import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.vo.RecommendationVO
 
 class MainProgressRVAdapter(private val fragment: Fragment, private val recommends : List<RecommendationVO>, private val pvm : ProgressViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var visibleCount = 3 // 처음에는 3개만 보이게 설정
+    private val MAX_COLLAPSED_ITEMS = 3
+
 
     inner class MPViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPIName: TextView = view.findViewById(R.id.tvMPIName)
@@ -39,13 +41,16 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
     }
 
     override fun getItemCount(): Int {
-        return if (recommends.size > 3) visibleCount else recommends.size
+        return if (pvm.isExpanded || recommends.size <= MAX_COLLAPSED_ITEMS) {
+            recommends.size
+        } else {
+            MAX_COLLAPSED_ITEMS
+        }
     }
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = recommends[position]
-        Log.v("아이템들", "$currentItem")
         if (holder is MPViewHolder) {
             val title = replaceJointProgram(currentItem.title, keywords)
             holder.tvMPIName.text = title
@@ -100,19 +105,30 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
         return result
     }
     fun toggleExpand(recyclerView: RecyclerView) {
+        // 아이템 개수가 3개 이하면 펼치기 기능 비활성화
+        if (recommends.size <= MAX_COLLAPSED_ITEMS) return
+
+        // 현재 상태 토글
+        pvm.isExpanded = !pvm.isExpanded
+
+        // 높이 애니메이션 계산
         val startHeight = recyclerView.height
-        val endHeight = when {
-            recommends.size <= 3 -> recyclerView.measuredHeight // 3개 이하면 현재 높이 유지
-            visibleCount == 3 -> recyclerView.measuredHeight * (recommends.size) / 3 // 전체 아이템 표시
-            else -> recyclerView.measuredHeight / 2 // 다시 접었을 때는 초기 높이로
-        }
-        val oldCount = visibleCount
-        visibleCount = when {
-            recommends.size <= 3 -> recommends.size // 3개 이하면 전체 표시
-            visibleCount == 3 -> recommends.size // 펼칠 때는 전체 아이템 표시
-            else -> 3 // 접을 때는 3개만 표시
+        val itemHeight = recyclerView.getChildAt(0).height
+        val marginPixel = dpToPixels(20, fragment.requireContext())
+        val endHeight = if (pvm.isExpanded) {
+            ( itemHeight + marginPixel ) * recommends.size
+        } else {
+            ( itemHeight + marginPixel ) * MAX_COLLAPSED_ITEMS
         }
 
+        if (pvm.isExpanded) {
+            // 펼칠 때: 새로운 아이템들만 추가됨
+            notifyItemRangeInserted(MAX_COLLAPSED_ITEMS, recommends.size - MAX_COLLAPSED_ITEMS)
+        } else {
+            // 접을 때: 추가된 아이템들만 제거됨
+            notifyItemRangeRemoved(recommends.size, MAX_COLLAPSED_ITEMS - recommends.size)
+        }
+        // 애니메이션 설정
         val animator = ValueAnimator.ofInt(startHeight, endHeight)
         animator.addUpdateListener { valueAnimator ->
             recyclerView.layoutParams.height = valueAnimator.animatedValue as Int
@@ -120,12 +136,10 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
         }
         animator.duration = 300
         animator.start()
-        if (visibleCount > oldCount) {
-            // 펼칠 때: 새로운 아이템들만 추가됨
-            notifyItemRangeInserted(oldCount, visibleCount - oldCount)
-        } else {
-            // 접을 때: 추가된 아이템들만 제거됨
-            notifyItemRangeRemoved(visibleCount, oldCount - visibleCount)
-        }
+    }
+
+    fun dpToPixels(dp: Int, context: Context): Int {
+        val displayMetrics = context.resources.displayMetrics
+        return (dp * displayMetrics.density).toInt()
     }
 }

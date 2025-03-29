@@ -75,12 +75,14 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         svm.snsCount = 0
         // ------! 싱글턴에서 가져오기 !------
         svm.User.value = userJson
+        Log.v("userJson보기", "${svm.setBirthday.value}")
         svm.setHeight.value = svm.User.value?.optInt("height")
         svm.setWeight.value = svm.User.value?.optInt("weight")
         svm.setEmail.value = svm.User.value?.optString("email")
-        svm.setBirthday.value = svm.User.value?.optInt("birthday").toString()
+        svm.setBirthday.value = svm.User.value?.optString("birthday")
         svm.setMobile.value = svm.User.value?.optString("mobile").toString()
         svm.setGender.value = svm.User.value?.optString("gender")
+        Log.v("userJson보기", "${svm.setBirthday.value}")
 
 //        Log.v("Singleton>Profile", "$userJson")
         updateUserData()

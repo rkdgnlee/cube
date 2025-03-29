@@ -207,7 +207,8 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/tvMMeasureResult1" />
+                                app:layout_constraintTop_toBottomOf="@+id/tvMMeasureResult1"
+                                app:layout_constraintVertical_bias="0.0" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <TextView
@@ -275,12 +276,49 @@
                         app:layout_constraintTop_toTopOf="@+id/tvM2" />
 
 
+                    <LinearLayout
+                        android:id="@+id/linearLayout22"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvM2">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sflM"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <include layout="@layout/rv_shimmer_main_item" />
+
+                                <include layout="@layout/rv_shimmer_main_item" />
+
+                                <include layout="@layout/rv_shimmer_main_item" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvM2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:nestedScrollingEnabled="false" />
+                    </LinearLayout>
+
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnMProgram"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="20dp"
                         android:layout_marginBottom="80dp"
                         android:background="@drawable/effect_ibtn_12dp"
@@ -298,19 +336,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/rvM2" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvM2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:nestedScrollingEnabled="false"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvM2" />
+                        app:layout_constraintTop_toBottomOf="@+id/linearLayout22" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

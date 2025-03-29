@@ -35,6 +35,11 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             return fragment
         }
     }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         return dialog

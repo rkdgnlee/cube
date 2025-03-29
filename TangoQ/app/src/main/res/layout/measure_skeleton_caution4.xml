@@ -7,117 +7,131 @@
     android:background="@color/white">
 
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lavSC4"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.65"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/textView107"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="4."
-        android:textColor="@color/mainColor"
-        android:textSize="24dp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView41" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textView109"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="등받이 없는 의자 준비"
-        android:textColor="@color/subColor800"
-        android:textSize="24dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/textView107"
-        app:layout_constraintStart_toEndOf="@+id/textView107"
-        app:layout_constraintTop_toTopOf="@+id/textView107" />
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lavSC4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:id="@+id/textView114"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:lineSpacingExtra="8sp"
-        android:text="앉은 후면 측정을 위해\n측정 전, 등받이가 없는 의자를 준비해주세요"
-        android:textColor="@color/subColor800"
-        android:textSize="18dp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView107" />
+            <TextView
+                android:id="@+id/textView107"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="4."
+                android:textColor="@color/mainColor"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView41" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView40"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginEnd="20dp"
-        app:cardBackgroundColor="@color/subColor200"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView41"
-        app:layout_constraintEnd_toStartOf="@+id/cardView41"
-        app:layout_constraintTop_toTopOf="@+id/cardView41" />
+            <TextView
+                android:id="@+id/textView109"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="등받이 없는 의자 준비"
+                android:textColor="@color/subColor800"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/textView107"
+                app:layout_constraintStart_toEndOf="@+id/textView107"
+                app:layout_constraintTop_toTopOf="@+id/textView107" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView29"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="20dp"
-        app:cardBackgroundColor="@color/mainColor"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView41"
-        app:layout_constraintStart_toEndOf="@+id/cardView41"
-        app:layout_constraintTop_toTopOf="@+id/cardView41" />
+            <TextView
+                android:id="@+id/textView114"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:lineSpacingExtra="8sp"
+                android:text="앉은 후면 측정을 위해\n측정 전, 등받이가 없는 의자를 준비해주세요"
+                android:textColor="@color/subColor800"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView107" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView41"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="20dp"
-        app:cardBackgroundColor="@color/subColor200"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lavSC4" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView40"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="20dp"
+                app:cardBackgroundColor="@color/subColor200"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView41"
+                app:layout_constraintEnd_toStartOf="@+id/cardView41"
+                app:layout_constraintTop_toTopOf="@+id/cardView41" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView50"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        app:cardBackgroundColor="@color/subColor200"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:layout_constraintEnd_toStartOf="@+id/cardView40"
-        app:layout_constraintTop_toBottomOf="@id/lavSC4" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView29"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="20dp"
+                app:cardBackgroundColor="@color/mainColor"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView41"
+                app:layout_constraintStart_toEndOf="@+id/cardView41"
+                app:layout_constraintTop_toTopOf="@+id/cardView41" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView51"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        app:cardBackgroundColor="@color/subColor200"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:layout_constraintStart_toEndOf="@+id/cardView29"
-        app:layout_constraintTop_toBottomOf="@id/lavSC4" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView41"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/subColor200"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lavSC4" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView50"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                app:cardBackgroundColor="@color/subColor200"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toStartOf="@+id/cardView40"
+                app:layout_constraintTop_toBottomOf="@id/lavSC4" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView51"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/subColor200"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:layout_constraintStart_toEndOf="@+id/cardView29"
+                app:layout_constraintTop_toBottomOf="@id/lavSC4" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

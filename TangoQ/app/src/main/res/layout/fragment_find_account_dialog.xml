@@ -104,7 +104,7 @@
                         android:background="@drawable/bckgnd_12_edit_text"
                         android:ems="10"
                         android:hint="휴대폰 번호를 입력해주세요"
-                        android:inputType="phone"
+                        android:inputType="text|textEmailAddress"
                         android:paddingLeft="12dp"
                         android:paddingTop="16dp"
                         android:paddingRight="16dp"

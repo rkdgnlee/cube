@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
@@ -33,7 +34,9 @@ class SequenceBSDialogFragment : BottomSheetDialogFragment() {
             avm.currentPart.value = avm.selectPart.value
             dismiss()
         }
-
+        val bottomSheet = view.parent as View
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     private fun setAdapter() {

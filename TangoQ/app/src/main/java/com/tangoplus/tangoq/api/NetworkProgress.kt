@@ -53,9 +53,11 @@ object NetworkProgress {
                             } else {
                                 0f
                             }
-                            // Log.v("총,진행시간", "$duration, $progress, percent: $percent")
+                             Log.v("총,진행시간", "$duration, $progress, percent: $percent")
                             pv3s.add(percent)
                         }
+
+
                     }
                     val progresses = mutableListOf<ProgressUnitVO>()
                     if (ja != null) {
@@ -82,7 +84,7 @@ object NetworkProgress {
                         }
                     }
                     val sortedProgresses = progresses.sortedBy { it.uvpSn }.toMutableList()
-                    Log.v("sorted", "${sortedProgresses.map { it.uvpSn }}")
+                    Log.w("총,진행시간", "$pv3s")
                     callback(pv3s, sortedProgresses)
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -146,7 +148,7 @@ object NetworkProgress {
             }
         })
     }
-    // 가장 최신 정보를 가져오는게 좋다.
+    // program 진행 기록의 마지막 운동 기록 가져오기
     suspend fun getProgress(myUrl: String, bodySn : JSONObject, context: Context, callback: (Triple<Int, Int, Int>, List<List<ProgressUnitVO>>?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodySn.toString().toRequestBody(mediaType)
@@ -161,7 +163,6 @@ object NetworkProgress {
                     val responseBody = response.body?.string()
                     val bodyJson = JSONObject(responseBody.toString())
                     Log.v("bodyJson", "$bodyJson")
-
 
                     val latest = bodyJson.optJSONObject("latest")
                     val progressHistorySn = latest?.optInt("progress_history_sn")

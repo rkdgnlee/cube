@@ -47,7 +47,13 @@ class PinChangeDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPinChangeDialogBinding.inflate(inflater)
+
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_DialogFragment)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,7 +64,6 @@ class PinChangeDialogFragment : DialogFragment() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
 
         binding.clPCD2.visibility = View.GONE
         binding.btnPCDConfirm.text = "다음으로"
@@ -187,7 +192,5 @@ class PinChangeDialogFragment : DialogFragment() {
         binding.btnPCDConfirm.isEnabled = false
         binding.btnPCDConfirm.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor400, null))
     }
-
-
 
 }

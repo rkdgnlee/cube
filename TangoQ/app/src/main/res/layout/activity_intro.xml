@@ -10,8 +10,8 @@
     tools:context=".IntroActivity">
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,14 +26,12 @@
                 android:id="@+id/imageView43"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="-20dp"
                 android:scaleType="centerCrop"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent="0.5"
+                app:layout_constraintHeight_percent="0.475"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvIntroComment"
-                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintTop_toBottomOf="@+id/tvIntroComment"
                 app:srcCompat="@drawable/intro_banner" />
 
             <!--    <androidx.viewpager2.widget.ViewPager2-->
@@ -149,6 +147,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:layout_marginBottom="120dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/mainContainerColor"
                 android:insetTop="0dp"
@@ -194,13 +193,13 @@
                 android:id="@+id/textView125"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:text="SNS 로그인 / 회원가입"
                 android:textColor="@color/subColor300"
                 android:textSize="16dp"
-                app:layout_constraintEnd_toEndOf="@+id/cardView20"
-                app:layout_constraintStart_toStartOf="@+id/cardView18"
-                app:layout_constraintTop_toBottomOf="@+id/cardView19" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView43" />
 
             <ImageView
                 android:id="@+id/ivIntroLogo"

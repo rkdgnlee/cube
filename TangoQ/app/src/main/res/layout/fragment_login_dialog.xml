@@ -79,6 +79,58 @@
                 app:layout_constraintStart_toStartOf="@+id/etLDEmail"
                 app:layout_constraintTop_toBottomOf="@+id/etLDEmail" />
 
+            <ImageButton
+                android:id="@+id/ibtnLDIdClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="#00FFFFFF"
+                android:contentDescription="clearEtLdId"
+                android:src="@drawable/icon_text_clear"
+                app:layout_constraintBottom_toBottomOf="@+id/etLDEmail"
+                app:layout_constraintEnd_toEndOf="@+id/etLDEmail"
+                app:layout_constraintTop_toTopOf="@+id/etLDEmail" />
+
+            <ImageButton
+                android:id="@+id/ibtnLDPwClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="#00FFFFFF"
+                android:contentDescription="clearetLDPW"
+                android:src="@drawable/icon_text_clear"
+                app:layout_constraintBottom_toBottomOf="@+id/etLDPw"
+                app:layout_constraintEnd_toEndOf="@+id/etLDPw"
+                app:layout_constraintTop_toTopOf="@+id/etLDPw" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="운동 다짐은\nTango Body와 함께"
+                android:textColor="@color/subColor800"
+                android:textSize="26dp"
+                android:textStyle="bold"
+                android:transitionName="transComment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView39" />
+
+            <ImageView
+                android:id="@+id/imageView39"
+                android:layout_width="58dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="30dp"
+                android:transitionName="transLogo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/app_logo" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clLDResetLock"
                 android:layout_width="0dp"
@@ -155,7 +207,8 @@
                     android:background="@drawable/bckgnd_12_edit_text"
                     android:ems="10"
                     android:hint="인증번호를 입력해주세요"
-                    android:inputType="textPassword"
+                    android:inputType="number"
+                    android:maxLength="6"
                     android:padding="16dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/subColor150"
@@ -170,9 +223,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="10dp"
-                    android:text="인증번호가 오지 않는다면, 재전송 을 눌러 다시 시도해주세요"
+                    android:text="인증번호가 오지 않는다면, 버튼을 눌러 다시 시도해주세요"
                     android:textColor="@color/subColor400"
                     android:textSize="13dp"
+                    android:visibility="invisible"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/etLDCode" />
 
@@ -188,26 +242,6 @@
                     app:layout_constraintStart_toEndOf="@+id/tvLDEmailAlert"
                     app:layout_constraintTop_toTopOf="@+id/tvLDEmailAlert" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnLDVerify"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="32dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/effect_ibtn_12dp"
-                    android:backgroundTint="@color/mainColor"
-                    android:padding="16dp"
-                    android:stateListAnimator="@null"
-                    android:text="인증하기"
-                    android:textColor="@color/whiteText"
-                    android:textSize="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvLDEmailAlert" />
-
                 <TextView
                     android:id="@+id/textView64"
                     android:layout_width="0dp"
@@ -221,6 +255,107 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView60" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clLDResetPassword"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/clLDResetLock">
+
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="20dp"
+                    android:text="비밀번호 재설정"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvLDPWCondition"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="20dp"
+                    android:textColor="@color/subColor800"
+                    android:textSize="13dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView14"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView14"
+                    app:layout_constraintTop_toTopOf="@+id/textView14" />
+
+                <EditText
+                    android:id="@+id/etLDResetPassword"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/bckgnd_12_edit_text"
+                    android:ems="10"
+                    android:hint="비밀번호를 재설정해주세요"
+                    android:inputType="textPassword"
+                    android:padding="16dp"
+                    android:textColor="@color/subColor800"
+                    android:textColorHint="@color/subColor200"
+                    android:textSize="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView14" />
+
+                <TextView
+                    android:id="@+id/tvLDPWVerifyCondition"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="20dp"
+                    android:textColor="@color/subColor800"
+                    android:textSize="13dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView34"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView34"
+                    app:layout_constraintTop_toTopOf="@+id/textView34" />
+
+                <EditText
+                    android:id="@+id/etLDResetPasswordConfirm"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/bckgnd_12_edit_text"
+                    android:ems="10"
+                    android:hint="다시 한 번 입력해주세요"
+                    android:inputType="textPassword"
+                    android:padding="16dp"
+                    android:textColor="@color/subColor800"
+                    android:textColorHint="@color/subColor200"
+                    android:textSize="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView34" />
+
+                <TextView
+                    android:id="@+id/textView34"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="20dp"
+                    android:text="비밀번호 확인"
+                    android:textColor="@color/subColor800"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etLDResetPassword" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.AppCompatButton
@@ -240,7 +375,7 @@
                 app:cornerRadius="12dp"
                 app:layout_constraintEnd_toEndOf="@+id/etLDPw"
                 app:layout_constraintStart_toStartOf="@+id/etLDPw"
-                app:layout_constraintTop_toBottomOf="@+id/clLDResetLock" />
+                app:layout_constraintTop_toBottomOf="@+id/clLDResetPassword" />
 
             <TextView
                 android:id="@+id/tvLDFind"
@@ -258,58 +393,6 @@
                 app:layout_constraintStart_toStartOf="@+id/btnLDLogin"
                 app:layout_constraintTop_toBottomOf="@+id/btnLDLogin"
                 app:layout_constraintVertical_bias="0.0" />
-
-            <ImageButton
-                android:id="@+id/ibtnLDIdClear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="#00FFFFFF"
-                android:contentDescription="clearEtLdId"
-                android:src="@drawable/icon_text_clear"
-                app:layout_constraintBottom_toBottomOf="@+id/etLDEmail"
-                app:layout_constraintEnd_toEndOf="@+id/etLDEmail"
-                app:layout_constraintTop_toTopOf="@+id/etLDEmail" />
-
-            <ImageButton
-                android:id="@+id/ibtnLDPwClear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/effect_ibtn_12dp"
-                android:backgroundTint="#00FFFFFF"
-                android:contentDescription="clearetLDPW"
-                android:src="@drawable/icon_text_clear"
-                app:layout_constraintBottom_toBottomOf="@+id/etLDPw"
-                app:layout_constraintEnd_toEndOf="@+id/etLDPw"
-                app:layout_constraintTop_toTopOf="@+id/etLDPw" />
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                android:text="운동 다짐은\nTango Body와 함께"
-                android:textColor="@color/subColor800"
-                android:textSize="26dp"
-                android:textStyle="bold"
-                android:transitionName="transComment"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView39" />
-
-            <ImageView
-                android:id="@+id/imageView39"
-                android:layout_width="58dp"
-                android:layout_height="48dp"
-                android:layout_marginTop="30dp"
-                android:transitionName="transLogo"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/app_logo" />
 
             <TextView
                 android:id="@+id/tvLDAlert"

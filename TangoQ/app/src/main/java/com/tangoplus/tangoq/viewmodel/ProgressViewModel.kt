@@ -14,7 +14,7 @@ import java.time.LocalDate
 class ProgressViewModel : ViewModel() {
     // main
     var fromProgramCustom = false
-
+    var isExpanded = false
 
     // Main-Custom 현재 program의 주차 - 회차 담아놓는 곳
     var currentProgram : ProgramVO? = null
@@ -69,10 +69,20 @@ class ProgressViewModel : ViewModel() {
         val sns = Triple(recommendationSn, selectedWeek.value?.plus(1) ?: 1, selectedSequence.value?.plus(1) ?: 1)
         Log.v("현재주차가져오기", "$sns")
         postProgressInCurrentProgram(context.getString(R.string.API_progress), sns, context) { pv3s, progressUnits -> // MutableList<ProgressUnitVO>
-            currentProgresses = progressUnits
-            Log.v("현재주차꺼", "${currentProgresses.map { it.cycleProgress }}")
+            val programExerciseCount = currentProgram?.exercises?.size ?: 0
+            currentProgresses = if (progressUnits.size > programExerciseCount) {
+                val croppedProgresses = progressUnits.sortedBy { it.uvpSn }.subList(0 , programExerciseCount).toMutableList()
+                Log.v("croppedPRogres", "${croppedProgresses.map { it.uvpSn }}, ${croppedProgresses.map { it.cycleProgress }}")
+                croppedProgresses
+            } else {
+                progressUnits
+            }
+            seqHpvs = if (progressUnits.size > programExerciseCount) {
+                pv3s.map { it * 2 }
+            } else pv3s
+            Log.v("현재주차꺼", "$pv3s $seqHpvs ${currentProgresses.map { it.cycleProgress }}")
             // pv3도 넘겨줘야함
-            seqHpvs = pv3s
+
         }
     }
 

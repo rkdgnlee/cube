@@ -140,17 +140,16 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="60dp"
                         android:background="@color/white"
-                        android:text="_"
                         android:textColor="@color/subColor800"
                         android:textSize="18dp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/ibtnPCDBack"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toEndOf="@+id/ibtnPCDBack"
-                        app:layout_constraintTop_toTopOf="@+id/ibtnPCDBack" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageButton
                         android:id="@+id/ibtnPCDTop"
@@ -260,7 +259,7 @@
                         android:layout_marginStart="20dp"
                         android:text="총 5개"
                         android:textColor="@color/subColor800"
-                        android:textSize="16sp"
+                        android:textSize="16dp"
                         app:layout_constraintBottom_toBottomOf="@+id/linearLayout26"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/linearLayout26" />

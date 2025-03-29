@@ -48,7 +48,7 @@ object NetworkUser {
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val responseBody = response.body?.string()
-//                        Log.v("trySelfLogin", "$responseBody")
+                        Log.v("trySelfLogin", "$responseBody")
                         val bodyJo = JSONObject(responseBody.toString())
                         if (bodyJo.optJSONObject("login_data") == null) {
                             callback(null)
@@ -81,7 +81,11 @@ object NetworkUser {
     fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = userJsonObject.toString().toRequestBody(mediaType)
-        val client = getClient(context)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 연결 타임아웃
+            .readTimeout(5, TimeUnit.SECONDS)    // 읽기 타임아웃
+            .writeTimeout(5, TimeUnit.SECONDS)   // 쓰기 타임아웃
+            .build()
         val request = Request.Builder()
             .url("${myUrl}oauth.php")
             .post(body)
@@ -129,6 +133,57 @@ object NetworkUser {
         })
     }
 
+    // 소셜 로그인에서 이메일만 받아서 보내기
+    suspend fun identifyEmail(myUrl: String, emailBody: JSONObject, callback: (JSONObject?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = emailBody.toString().toRequestBody(mediaType)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}.php")
+            .post(body)
+            .build()
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).enqueue(object: Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        Log.e("FailedToEmail", "failed To identify Email: ${e.message}")
+                        CoroutineScope(Dispatchers.Main).launch {
+                            callback(null)
+                        }
+                    }
+                    override fun onResponse(call: Call, response: Response) {
+                        val responseBody = response.body?.string()
+                        val bodyJo = responseBody?.let { JSONObject(it) }
+                        CoroutineScope(Dispatchers.Main).launch {
+                            callback(bodyJo)
+                        }
+                    }
+                })
+            } catch (e: NetworkErrorException) {
+                Log.e("identifyEmail", "Network Error Login By identifyEmail : ${e.message}")
+                callback(null)
+            } catch (e: IllegalStateException) {
+                Log.e("identifyEmail", "IllegalState Error Login By identifyEmail : ${e.message}")
+                callback(null)
+            } catch (e: IllegalArgumentException) {
+                Log.e("identifyEmail", "IllegalArgument Error Login By identifyEmail : ${e.message}")
+                callback(null)
+            } catch (e: SocketTimeoutException) {
+                Log.e("identifyEmail", "Socket Timeout Error Login By identifyEmail : ${e.message}")
+                callback(null)
+            } catch (e: Exception) {
+                Log.e("identifyEmail", "Error Login By identifyEmail : ${e.message}")
+                callback(null)
+            }
+        }
+    }
+
+
+
     // Id, Pw 로그인
     suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -150,7 +205,7 @@ object NetworkUser {
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-                     Log.v("자체로그인Success", "$responseBody")
+//                    Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     CoroutineScope(Dispatchers.Main).launch {
@@ -517,10 +572,10 @@ object NetworkUser {
                 Log.e("이메일보내기failed", "Failed to enqueue request")
                 callback(500)
             }
+
             override fun onResponse(call: Call, response: Response) {
                try {
                    val responseBody = response.body?.string()
-
                    val jo = responseBody?.let{ JSONObject(it) }
                    Log.v("이메일보내기", "${jo}")
                    val code = jo?.optInt("status")
