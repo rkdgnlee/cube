@@ -65,7 +65,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         val case = arguments?.getInt(ARG_SETUP_CASE) ?: 1
         binding.clMSDAgreement1.visibility = View.VISIBLE
         binding.clMSDAgreement2.visibility = View.VISIBLE
@@ -74,12 +74,10 @@ class MeasureSetupDialogFragment : DialogFragment() {
                 binding.ibtnMSDNameClear.setOnClickListener{ binding.etMSDName.setText("")}
                 binding.tvMSDSkip.setOnClickListener { dismiss() }
                 binding.ibtnMSDAgreement1.setOnClickListener {
-                    val dialog = AgreementDetailDialogFragment.newInstance("agreement4")
-                    dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+                    showAgreement4()
                 }
                 binding.ibtnMSDAgreement2.setOnClickListener {
-                    val dialog = AgreementDetailDialogFragment.newInstance("agreement5")
-                    dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+                    showAgreement5()
                 }
                 binding.clMSDAgreement1.setOnClickListener {
                     mvm.setupAgreement1.value = if (mvm.setupAgreement1.value == true) false else true
@@ -113,19 +111,11 @@ class MeasureSetupDialogFragment : DialogFragment() {
                                 mvm.setupAgreement1.value == true &&
                                 mvm.setupAgreement2.value == true)
                     }
-
                     addSource(mvm.setupNameCondition) { update() }
                     addSource(mvm.setupAgreement1) { update() }
                     addSource(mvm.setupAgreement2) { update() }
                 }
-//        val buttonEnabled = MediatorLiveData<Boolean>().apply {
-//            addSource(svm.idCondition) { idValid ->
-//                value = idValid == true && svm.mobileCondition.value == true
-//            }
-//            addSource(svm.mobileCondition) { mobileValid ->
-//                value = mobileValid == true && svm.idCondition.value == true
-//            }
-//        }
+
                 buttonEnabled.observe(viewLifecycleOwner) { isEnabled ->
                     binding.btnMSDFinish.isEnabled = isEnabled
                     binding.btnMSDFinish.backgroundTintList = ColorStateList.valueOf(resources.getColor(
@@ -136,11 +126,24 @@ class MeasureSetupDialogFragment : DialogFragment() {
                     dismiss()
                     (activity as MeasureSkeletonActivity).finish()
                 }
+                val userName = userJson?.optString("user_name")
+                mvm.setupName = userName ?: ""
             }
             1 -> {
-                binding.clMSDAgreement1.visibility = View.GONE
-                binding.clMSDAgreement2.visibility = View.GONE
+                binding.ivMSDAgreement1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_part_checkbox_enabled))
+                binding.ivMSDAgreement2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_part_checkbox_enabled))
+                binding.clMSDAgreement1.setOnSingleClickListener { showAgreement4() }
+                binding.clMSDAgreement2.setOnSingleClickListener { showAgreement5() }
+
+                binding.btnMSDDeny.visibility = View.GONE
                 binding.btnMSDFinish.text = "설정 완료"
+
+                mvm.setupNameCondition.observe(viewLifecycleOwner) { isEnabled ->
+                    binding.btnMSDFinish.isEnabled = isEnabled
+                    binding.btnMSDFinish.backgroundTintList = ColorStateList.valueOf(resources.getColor(
+                        if (isEnabled) R.color.mainColor else R.color.subColor400
+                    ))
+                }
             }
             else -> {
 
@@ -164,10 +167,8 @@ class MeasureSetupDialogFragment : DialogFragment() {
             }
         })
 
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-        val userName = userJson?.optString("user_name")
-        binding.etMSDName.setText(userName)
-        mvm.setupName = userName ?: ""
+        binding.etMSDName.setText(mvm.setupName)
+
         binding.ibtnMSDNameClear.setOnClickListener{ binding.etMSDName.setText("")}
         binding.tvMSDSkip.setOnClickListener { dismiss() }
 
@@ -184,4 +185,13 @@ class MeasureSetupDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
     }
 
+    private fun showAgreement4() {
+        val dialog = AgreementDetailDialogFragment.newInstance("agreement4")
+        dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+    }
+
+    private fun showAgreement5() {
+        val dialog = AgreementDetailDialogFragment.newInstance("agreement5")
+        dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+    }
 }

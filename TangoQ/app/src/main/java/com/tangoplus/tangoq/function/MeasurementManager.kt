@@ -392,8 +392,8 @@ object MeasurementManager {
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to "정면 - 양 팔꿉 기울기",
                 "front_horizontal_distance_sub_elbow" to "정면 - 양 팔꿉 높이 차",
-                "front_vertical_angle_shoulder_elbow_left" to "팔꿉 - 왼쪽 어깨와 팔꿉 기울기"),
-            2 to mapOf("front_elbow_align_angle_left_shoulder_elbow_wrist" to "팔꿉 - 왼쪽 어깨-팔꿈치-손목 기울기"),
+                "front_vertical_angle_shoulder_elbow_left" to "왼쪽 어깨와 팔꿉 기울기"),
+            2 to mapOf("front_elbow_align_angle_left_shoulder_elbow_wrist" to "왼쪽 어깨-팔꿈치-손목 기울기"),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to "어깨와 팔꿉 기울기",
                 "side_left_vertical_angle_elbow_wrist" to "팔꿉와 손목 기울기",
                 "side_left_vertical_angle_shoulder_elbow_wrist" to "어깨-팔꿉-손목 기울기")
@@ -402,7 +402,7 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_elbow" to "정면 - 양 팔꿉 기울기",
                 "front_horizontal_distance_sub_elbow" to "정면 - 양 팔꿉 높이 차",
                 "front_vertical_angle_shoulder_elbow_right" to "오른쪽 어깨와 팔꿉 기울기"),
-            2 to mapOf("front_elbow_align_angle_right_shoulder_elbow_wrist" to "팔꿉 - 오른쪽 어깨-팔꿈치-손목 기울기"),
+            2 to mapOf("front_elbow_align_angle_right_shoulder_elbow_wrist" to "오른쪽 어깨-팔꿈치-손목 기울기"),
             4 to mapOf("side_right_vertical_angle_shoulder_elbow" to "오른쪽 어깨와 팔꿉 기울기",
                 "side_right_vertical_angle_elbow_wrist" to "오른쪽 팔꿉와 손목 기울기",
                 "side_right_vertical_angle_shoulder_elbow_wrist" to "오른쪽 어깨-팔꿉-손목 기울기")

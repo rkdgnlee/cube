@@ -146,24 +146,81 @@
 
         </LinearLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clEmailVerify"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llEmail">
+
+            <EditText
+                android:id="@+id/etEmailAuthNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bckgnd_12_edit_text"
+                android:ems="10"
+                android:hint="인증번호를 입력해주세요"
+                android:inputType="number"
+                android:maxLength="6"
+                android:padding="16dp"
+                android:textColor="@color/subColor800"
+                android:textColorHint="@color/subColor100"
+                android:textSize="18dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvEmailResendMessage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:text="인증번호가 오지 않는다면, 재전송을 눌러 코드를 요청하세요. "
+                android:textColor="@color/subColor800"
+                android:textSize="14dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etEmailAuthNumber" />
+
+            <TextView
+                android:id="@+id/tvEmailCountDown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:text="남은시간: 2:00"
+                android:textColor="@color/subColor800"
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvEmailResendMessage" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnEmailConfirm"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/mainColor"
             android:padding="16dp"
             android:stateListAnimator="@null"
-            android:text="이메일 중복확인"
+            android:text="인증 번호 전송"
             android:textColor="@color/whiteText"
             android:textSize="18dp"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/llEmail" />
+            app:layout_constraintTop_toBottomOf="@+id/clEmailVerify" />
 
         <LinearLayout
             android:id="@+id/llPwCondition"

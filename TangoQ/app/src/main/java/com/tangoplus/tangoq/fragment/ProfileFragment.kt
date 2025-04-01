@@ -130,10 +130,16 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
 
         svm.setWeight.observe(viewLifecycleOwner) { weight ->
-            binding.tvPWeight.text = weight.toString() + "kg"
+            binding.tvPWeight.text = if (weight in 20..200) {
+                weight.toString() + "kg"
+            } else
+                "미설정"
         }
         svm.setHeight.observe(viewLifecycleOwner) { height ->
-            binding.tvPHeight.text = height.toString() + "cm"
+            binding.tvPHeight.text = if (height in 80..250) {
+                height.toString() + "cm"
+            } else
+                "미설정"
         }
         svm.setBirthday.observe(viewLifecycleOwner) { birthday ->
             if (birthday.length >= 8) {

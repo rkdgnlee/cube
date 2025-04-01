@@ -244,7 +244,7 @@
             android:padding="16dp"
             android:stateListAnimator="@null"
             android:text="측정하기"
-            android:textColor="@color/white"
+            android:textColor="@color/whiteText"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -317,7 +317,7 @@
         android:background="@drawable/bckgnd_rectangle_12"
         android:backgroundTint="@color/white_overlay"
         android:elevation="4dp"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clMeasureSkeletonTop">

@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="86dp"
+    android:layout_height="100dp"
     android:layout_marginBottom="20dp"
     android:background="@color/subColor150">
 
     <View
         android:id="@+id/view10"
-        android:layout_width="76dp"
+        android:layout_width="94dp"
         android:layout_height="0dp"
         android:layout_margin="4dp"
         android:background="@color/subColor300"

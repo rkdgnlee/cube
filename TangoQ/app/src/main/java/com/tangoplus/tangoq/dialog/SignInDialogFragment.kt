@@ -1,39 +1,23 @@
 package com.tangoplus.tangoq.dialog
 
-import android.annotation.SuppressLint
-import android.content.ContentValues
-import android.os.Build
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentSignInDialogBinding
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import com.tangoplus.tangoq.api.NetworkUser.mobileDuplicateCheck
-import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.tangoplus.tangoq.adapter.etc.SignInVPAdapter
-import org.json.JSONException
-import org.json.JSONObject
 
 class SignInDialogFragment : DialogFragment() {
     private lateinit var binding : FragmentSignInDialogBinding
@@ -77,9 +61,6 @@ class SignInDialogFragment : DialogFragment() {
         binding.vpSignIn.isUserInputEnabled = false
         loadingDialog = LoadingDialogFragment.newInstance("회원가입전송")
 
-        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-        auth = FirebaseAuth.getInstance()
-        auth.setLanguageCode("kr")
         binding.ibtnSignInFinish.setOnClickListener {
             if (binding.vpSignIn.currentItem == 1) {
                 setonPreviousPage()
@@ -112,31 +93,11 @@ class SignInDialogFragment : DialogFragment() {
 
     }
 
-
-
-
-    private fun setVerifyCountDown(retryAfter: Int) {
-        if (retryAfter != -1) {
-            svm.countDownTimer?.cancel() // 기존 카운트다운 취소
-//            svm.countDownTimer = object : CountDownTimer((retryAfter * 1000).toLong(), 1000) {
-//                override fun onTick(millisUntilFinished: Long) {
-//                    val remainingSeconds = millisUntilFinished / 1000
-//                    val minutes = remainingSeconds / 60
-//                    val seconds = remainingSeconds % 60
-//                    binding.tvAuthCountDown.visibility = View.VISIBLE
-//                    binding.tvAuthCountDown.text = "${minutes}분 ${seconds}초"
-//                }
-//                override fun onFinish() {
-//                    binding.tvAuthCountDown.visibility = View.INVISIBLE
-//                }
-//            }.start()
-        }
-    }
-
-
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
     fun setonNextPage() {

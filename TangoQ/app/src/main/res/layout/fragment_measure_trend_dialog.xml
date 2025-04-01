@@ -366,7 +366,7 @@
 
                 <TextView
                     android:id="@+id/tvMTDAlert"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="이전 날짜를 선택해\n비교해보세요"
@@ -374,9 +374,10 @@
                     android:textSize="20dp"
                     app:layout_constraintBottom_toBottomOf="@id/clMTD"
                     app:layout_constraintEnd_toEndOf="@id/clMTD"
-                    app:layout_constraintHorizontal_bias="0.1"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@id/clMTD"
-                    app:layout_constraintTop_toTopOf="@id/clMTD" />
+                    app:layout_constraintTop_toTopOf="@id/clMTD"
+                    app:layout_constraintWidth_percent="0.5" />
 
                 <LinearLayout
                     android:id="@+id/linearLayout14"

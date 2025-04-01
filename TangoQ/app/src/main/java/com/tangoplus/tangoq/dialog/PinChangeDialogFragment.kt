@@ -24,6 +24,7 @@ import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignBottom
+import com.skydoves.balloon.showAlignTop
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.databinding.FragmentPinChangeDialogBinding
@@ -179,7 +180,7 @@ class PinChangeDialogFragment : DialogFragment() {
             .setLifecycleOwner(viewLifecycleOwner)
             .setOnBalloonDismissListener { callback() }
             .build()
-        binding.textView67.showAlignBottom(balloon)
+        binding.etPCDPin.showAlignTop(balloon)
         balloon.dismissWithDelay(3000L)
         balloon.setOnBalloonClickListener { balloon.dismiss() }
     }

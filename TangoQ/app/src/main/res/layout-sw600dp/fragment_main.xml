@@ -303,7 +303,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="40dp"
-                        android:layout_marginBottom="80dp"
+                        android:layout_marginBottom="40dp"
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/mainColor"
                         android:drawablePadding="0dp"

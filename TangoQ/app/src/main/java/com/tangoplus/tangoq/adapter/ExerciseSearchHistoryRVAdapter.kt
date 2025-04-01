@@ -19,6 +19,7 @@ class ExerciseSearchHistoryRVAdapter(private val historys: MutableList<Pair<Int,
         val tvHI : TextView = view.findViewById(R.id.tvHI)
         val ibtnHI: ImageButton = view.findViewById(R.id.ibtnHI)
         val dHI : MaterialDivider = view.findViewById(R.id.dHI)
+        val tvHIDate : TextView = view.findViewById(R.id.tvHIDate)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -38,7 +39,13 @@ class ExerciseSearchHistoryRVAdapter(private val historys: MutableList<Pair<Int,
             } else {
                 holder.dHI.visibility = View.GONE
             }
-            holder.tvHI.text = currentItem.second
+
+            val fullHistory = currentItem.second
+            val historyDateIndex = fullHistory.lastIndexOf("날짜")
+            val historyUnit = fullHistory.substring(0, historyDateIndex)
+            val historyDate = fullHistory.substring(historyDateIndex + 2, fullHistory.length)
+            holder.tvHI.text = historyUnit
+            holder.tvHIDate.text = "검색 날짜: $historyDate"
 
             holder.ibtnHI.setOnSingleClickListener{
                 historyDeleteListener.onHistoryDelete(currentItem)

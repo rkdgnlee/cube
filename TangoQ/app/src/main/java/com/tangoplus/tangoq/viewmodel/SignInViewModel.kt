@@ -28,11 +28,22 @@ class SignInViewModel: ViewModel() {
     var pw = MutableLiveData("")
     var setGender = MutableLiveData("")    // 아이디 비밀번호 찾기
 
+    // FindAccount
+    val mobileAuthCondition = MutableLiveData(false)
+    var countDownTimer : CountDownTimer? = null
 
+    // 회원가입 condition
+    // PASS나 문자인증에서 받아온 값들
+    val passName = MutableLiveData("")
+    val passMobile = MutableLiveData("")
+    var nameCondition = MutableLiveData(false)
     val mobileCondition = MutableLiveData(false)
+    val emailIdCondition = MutableLiveData(false)
+    val domainCondition = MutableLiveData(false)
+    val emailVerify = MutableLiveData(false)
+
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
-
     val pwBothTrue = MediatorLiveData<Boolean>().apply {
         value = false
         addSource(pwCondition) { condition ->
@@ -43,17 +54,6 @@ class SignInViewModel: ViewModel() {
         }
     }
 
-    val mobileAuthCondition = MutableLiveData(false)
-    var countDownTimer : CountDownTimer? = null
-
-    // 회원가입 condition
-    // PASS나 문자인증에서 받아온 값들
-    val passName = MutableLiveData("")
-    val passMobile = MutableLiveData("")
-    val emailIdCondition = MutableLiveData(false)
-    val domainCondition = MutableLiveData(false)
-    val phoneCondition = MutableLiveData(false)
-    val emailVerify = MutableLiveData(false)
 
     val passAuthCondition = MediatorLiveData<Boolean>().apply {
         value = false
@@ -77,16 +77,18 @@ class SignInViewModel: ViewModel() {
 
     val allTrueLiveData = MediatorLiveData<Boolean>().apply {
         val checkAllTrue = {
-            val v1 = emailCondition.value ?: false
-            val v2 = emailVerify.value ?: false
-            val v3 = phoneCondition.value ?: false
-            val v4 = pwBothTrue.value ?: false
-            value = v1 && v2 && v3 && v4
+            val v1 = emailCondition.value ?: false // 이메일 형식
+            val v2 = emailVerify.value ?: false // 이메일 인증
+            val v3 = passAuthCondition.value ?: false // 핸드폰 번호 인증
+            val v4 = pwBothTrue.value ?: false // 비밀번호 형식
+            val v5 = nameCondition.value ?: false // 비밀번호 형식
+            value = v1 && v2 && v3 && v4 && v5
         }
         addSource(emailCondition) { checkAllTrue() }
         addSource(emailVerify) { checkAllTrue() }
-        addSource(phoneCondition) { checkAllTrue() }
+        addSource(passAuthCondition) { checkAllTrue() }
         addSource(pwBothTrue) { checkAllTrue() }
+        addSource(nameCondition) { checkAllTrue() }
     }
 
     // ------# 약관 동의 #------

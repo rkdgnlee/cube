@@ -92,6 +92,26 @@ class MeasureFragment : Fragment() {
                 mvm.selectedMeasureIndex.value = index
             }
         }
+
+        binding.tvMScoreGuide.setOnSingleClickListener {
+            val balloonGuide = Balloon.Builder(requireContext())
+                .setWidthRatio(0.6f)
+                .setHeight(BalloonSizeSpec.WRAP)
+                .setText("지난 5개의 측정 지표인 종합 점수의 흐름을 판단하는 그래프입니다.\n지난 측정과 자세를 비교해보세요")
+                .setTextColorResource(R.color.subColor800)
+                .setTextSize(15f)
+                .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                .setArrowSize(0)
+                .setMargin(10)
+                .setPadding(12)
+                .setCornerRadius(8f)
+                .setBackgroundColorResource(R.color.white)
+                .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+                .setLifecycleOwner(viewLifecycleOwner)
+                .build()
+            balloonGuide.showAlignEnd(binding.tvMScoreGuide)
+        }
+
         // ------# 싱글턴 패턴 객체 가져오기 #------
         val singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         measures = singletonMeasure.measures ?: mutableListOf()

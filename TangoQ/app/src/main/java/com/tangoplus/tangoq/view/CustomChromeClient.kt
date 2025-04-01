@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.view
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +9,9 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.net.toUri
+import com.tangoplus.tangoq.R
 
 
 class CustomWebChromeClient(private val context: Context) : WebChromeClient() {

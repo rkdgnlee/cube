@@ -170,10 +170,11 @@
                             android:layout_marginEnd="20dp"
                             android:layout_weight="1"
                             android:drawableEnd="@drawable/icon_arrow_right"
+                            android:drawableTint="@color/subColor800"
                             android:gravity="center_vertical"
                             android:text=" 측정 기록"
                             android:textColor="@color/black"
-                            android:textSize="18dp" />
+                            android:textSize="20dp" />
 
                         <TextView
                             android:id="@+id/tvMMeasureHistory"
@@ -187,7 +188,7 @@
                             android:gravity="center_vertical"
                             android:text="최근 측정 기록 -     .  .  "
                             android:textColor="@color/subColor800"
-                            android:textSize="14dp" />
+                            android:textSize="16dp" />
                     </LinearLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -230,13 +231,16 @@
                             android:id="@+id/ivMPosition"
                             android:layout_width="28dp"
                             android:layout_height="24dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
                             android:contentDescription="showBalloon"
                             android:padding="4dp"
                             android:src="@drawable/icon_arrow_board"
                             app:layout_constraintBottom_toTopOf="@+id/vMPercent"
                             app:layout_constraintEnd_toEndOf="@+id/vMPercent"
                             app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintStart_toStartOf="@+id/vMPercent" />
+                            app:layout_constraintStart_toStartOf="@+id/vMPercent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <View
                             android:id="@+id/view26"
@@ -438,7 +442,7 @@
                         app:layout_constraintTop_toTopOf="@+id/tvMDuration" />
 
                     <TextView
-                        android:id="@+id/textView31"
+                        android:id="@+id/tvMScoreGuide"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -460,7 +464,7 @@
                         android:backgroundTint="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView31">
+                        app:layout_constraintTop_toBottomOf="@+id/tvMScoreGuide">
 
                     </com.github.mikephil.charting.charts.LineChart>
 

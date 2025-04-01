@@ -118,7 +118,8 @@ class MainActivity : AppCompatActivity() {
                 Log.v("현재 네트워크 타입", securityType)
             }
         }
-
+        val networkType = wifiManager.checkNetworkType()
+        Log.v("현재 네트워크 타입", networkType)
         // ------# 접근 방지 #------
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
@@ -184,7 +185,7 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
 
-        if (!singletonMeasure.measures.isNullOrEmpty()) { // 값이 하나라도 있을 때만 가져오기.
+        if (!singletonMeasure.measures.isNullOrEmpty() && mvm.selectedMeasureDate.value.isNullOrEmpty() ) { // 값이 하나라도 있을 때만 가져오기.
             mvm.selectedMeasure = singletonMeasure.measures?.get(0)
             mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
         }

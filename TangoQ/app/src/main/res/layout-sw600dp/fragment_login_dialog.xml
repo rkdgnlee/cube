@@ -319,7 +319,7 @@
                 android:padding="24dp"
                 android:stateListAnimator="@null"
                 android:text="로그인"
-                android:textColor="@color/white"
+                android:textColor="@color/whiteText"
                 android:textSize="24dp"
                 app:layout_constraintEnd_toEndOf="@+id/etLDPw"
                 app:layout_constraintStart_toStartOf="@+id/etLDPw"

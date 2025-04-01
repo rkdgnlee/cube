@@ -155,6 +155,8 @@
                         android:background="@drawable/bckgnd_rectangle_12"
                         android:backgroundTint="@color/subColor100"
                         android:orientation="vertical"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
                         app:layout_constraintBottom_toBottomOf="@+id/cardView7"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/cardView7"
@@ -167,11 +169,12 @@
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="20dp"
                             android:layout_weight="1"
+                            android:drawableTint="@color/subColor800"
                             android:gravity="center_vertical"
                             android:text="측정 기록"
-                            android:textColor="@color/black"
+                            android:textColor="@color/subColor800"
                             android:textSize="18dp"
-                            app:drawableEndCompat="@drawable/icon_arrow_right" />
+                            app:drawableEndCompat="@drawable/icon_arrow_right_small" />
 
                         <TextView
                             android:id="@+id/tvMMeasureHistory"
@@ -434,7 +437,7 @@
                         app:layout_constraintTop_toTopOf="@+id/tvMDuration" />
 
                     <TextView
-                        android:id="@+id/textView31"
+                        android:id="@+id/tvMScoreGuide"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -456,7 +459,7 @@
                         android:backgroundTint="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView31">
+                        app:layout_constraintTop_toBottomOf="@+id/tvMScoreGuide">
 
                     </com.github.mikephil.charting.charts.LineChart>
 

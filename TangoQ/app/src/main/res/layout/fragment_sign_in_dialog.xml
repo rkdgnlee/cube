@@ -1,105 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clSignIn"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".dialog.SignInDialogFragment">
 
-    <TextView
-        android:id="@+id/tvSignInGuide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="회원가입을 시작할게요"
-        android:textColor="@color/subColor800"
-        android:textSize="24dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/ibtnSignInFinish"
-        app:layout_constraintStart_toEndOf="@+id/ibtnSignInFinish"
-        app:layout_constraintTop_toTopOf="@+id/ibtnSignInFinish" />
-
-    <com.shuhart.stepview.StepView
-        android:id="@+id/svSignIn"
-        android:layout_width="0dp"
-        android:layout_height="84dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSignInGuide"
-        app:sv_animationDuration="250"
-        app:sv_animationType="Circle"
-        app:sv_background="@color/white"
-        app:sv_doneCircleColor="@color/thirdColor"
-        app:sv_doneCircleRadius="20dp"
-        app:sv_doneStepLineColor="@color/white"
-        app:sv_doneStepMarkColor="@color/white"
-        app:sv_doneTextColor="@color/secondaryColor"
-        app:sv_nextStepCircleColor="@color/subColor100"
-        app:sv_nextStepCircleEnabled="true"
-        app:sv_nextStepLineColor="@color/white"
-        app:sv_nextTextColor="@color/white"
-        app:sv_selectedCircleColor="@color/thirdColor"
-        app:sv_selectedCircleRadius="20dp"
-        app:sv_selectedStepNumberColor="@color/white"
-        app:sv_selectedTextColor="@color/secondaryColor"
-        app:sv_stepNumberTextSize="20dp"
-        app:sv_stepsNumber="3"
-        app:sv_textPadding="6dp"
-        app:sv_textSize="16dp" />
-
-
-    <com.skydoves.progressview.ProgressView
-        android:id="@+id/pvSignIn"
-        android:layout_width="0dp"
-        android:layout_height="4dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="20dp"
-        android:background="@color/white"
-        android:contentDescription="showProgressSignIn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/svSignIn"
-        app:progressView_colorBackground="@color/secondContainerColor"
-        app:progressView_colorProgress="@color/thirdColor"
-        app:progressView_progressFromPrevious="true"
-        app:strokeWidth="4dp" />
-
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvSignIn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pvSignIn">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/vpSignIn"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:animateLayoutChanges="true" />
-        </FrameLayout>
+            <ImageButton
+                android:id="@+id/ibtnSignInFinish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:padding="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_arrow_left" />
+
+            <TextView
+                android:id="@+id/tvSignInGuide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="회원가입을 시작할게요"
+                android:textColor="@color/subColor800"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/ibtnSignInFinish"
+                app:layout_constraintStart_toEndOf="@+id/ibtnSignInFinish"
+                app:layout_constraintTop_toTopOf="@+id/ibtnSignInFinish" />
+
+            <com.shuhart.stepview.StepView
+                android:id="@+id/svSignIn"
+                android:layout_width="0dp"
+                android:layout_height="84dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvSignInGuide"
+                app:sv_animationDuration="250"
+                app:sv_animationType="Circle"
+                app:sv_background="@color/white"
+                app:sv_doneCircleColor="@color/thirdColor"
+                app:sv_doneCircleRadius="20dp"
+                app:sv_doneStepLineColor="@color/white"
+                app:sv_doneStepMarkColor="@color/white"
+                app:sv_doneTextColor="@color/secondaryColor"
+                app:sv_nextStepCircleColor="@color/subColor100"
+                app:sv_nextStepCircleEnabled="true"
+                app:sv_nextStepLineColor="@color/white"
+                app:sv_nextTextColor="@color/white"
+                app:sv_selectedCircleColor="@color/thirdColor"
+                app:sv_selectedCircleRadius="20dp"
+                app:sv_selectedStepNumberColor="@color/white"
+                app:sv_selectedTextColor="@color/secondaryColor"
+                app:sv_stepNumberTextSize="20dp"
+                app:sv_stepsNumber="3"
+                app:sv_textPadding="6dp"
+                app:sv_textSize="16dp" />
+
+
+            <com.skydoves.progressview.ProgressView
+                android:id="@+id/pvSignIn"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/white"
+                android:contentDescription="showProgressSignIn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/svSignIn"
+                app:progressView_colorBackground="@color/secondContainerColor"
+                app:progressView_colorProgress="@color/thirdColor"
+                app:progressView_progressFromPrevious="true"
+                app:strokeWidth="4dp" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nsvSignIn"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pvSignIn">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/vpSignIn"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </FrameLayout>
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <ImageButton
-        android:id="@+id/ibtnSignInFinish"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/effect_ibtn_12dp"
-        android:padding="4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/icon_arrow_left" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

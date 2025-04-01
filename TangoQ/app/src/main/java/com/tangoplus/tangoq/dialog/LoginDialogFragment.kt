@@ -415,8 +415,10 @@ class LoginDialogFragment : DialogFragment() {
         binding.btnLDLogin.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
         binding.tvLDAlert.visibility = View.VISIBLE
         binding.tvLDAlert.text = "반복적인 로그인 시도로 해당 계정 로그인이 제한됩니다\n잠금을 위해 이메일 인증을 진행해주세요"
+
         if (retryAfter != -1) {
-            object : CountDownTimer((retryAfter * 1000).toLong(), 1000) {
+            viewModel.countDownTimer = null
+            viewModel.countDownTimer = object : CountDownTimer((retryAfter * 1000).toLong(), 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     val remainingSeconds = millisUntilFinished / 1000
                     val minutes = remainingSeconds / 60
@@ -426,7 +428,8 @@ class LoginDialogFragment : DialogFragment() {
                 override fun onFinish() {
                     enabledLogin()
                 }
-            }.start()
+            }
+            (viewModel.countDownTimer as CountDownTimer).start()
         }
     }
 
@@ -569,5 +572,11 @@ class LoginDialogFragment : DialogFragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.countDownTimer?.cancel()
+        viewModel.countDownTimer = null
     }
 }

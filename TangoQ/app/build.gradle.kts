@@ -27,6 +27,7 @@ android {
         release {
             isDebuggable = false
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -56,7 +57,8 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")
 
     // 스켈레톤
-    implementation("com.google.mediapipe:tasks-vision:0.20230731")
+
+    implementation("com.google.mediapipe:tasks-vision:0.10.21")
     implementation("androidx.window:window:1.3.0")
 
     // 외부 라이브러리
@@ -150,6 +152,7 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("androidx.webkit:webkit:1.13.0")
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.core.ktx)

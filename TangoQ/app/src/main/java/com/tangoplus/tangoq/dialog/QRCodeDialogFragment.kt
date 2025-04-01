@@ -137,6 +137,7 @@ class QRCodeDialogFragment : DialogFragment() {
                         val status = loginWithPin(getString(R.string.API_kiosk), otp.toInt(), userJson.optString("user_uuid"))
                         Log.v("스테이터스", "$status")
                         withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "코드: ${status}", Toast.LENGTH_LONG).show()
                             when (status) {
                                 200 -> {
                                     Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
@@ -197,6 +198,7 @@ class QRCodeDialogFragment : DialogFragment() {
                     Log.v("decodeResult", it.text)
                     val status = loginWithQRCode(getString(R.string.API_kiosk), userJson.optString("user_uuid"))
                     withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "코드: ${status}", Toast.LENGTH_LONG).show()
                         when (status) {
                             200 -> {
                                 Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
@@ -274,9 +276,6 @@ class QRCodeDialogFragment : DialogFragment() {
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
         }, 500)
-
-//        val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-//        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun showBarcodeView() {
@@ -288,6 +287,13 @@ class QRCodeDialogFragment : DialogFragment() {
             codeScanner.startPreview()
         }
 
+    }
+
+    // 카메라 리소스 정리
+    override fun onDestroyView() {
+        super.onDestroyView()
+        codeScanner.stopPreview()
+        codeScanner.releaseResources()
     }
 
     override fun onResume() {

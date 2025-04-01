@@ -329,7 +329,7 @@ class FindAccountDialogFragment : DialogFragment() {
                     val minutes = remainingSeconds / 60
                     val seconds = remainingSeconds % 60
                     binding.tvFADCountDown.visibility = View.VISIBLE
-                    binding.tvFADCountDown.text = "${minutes}분 ${seconds}초"
+                    binding.tvFADCountDown.text = "남은 시간: ${minutes}분 ${seconds}초"
                 }
                 override fun onFinish() {
                     binding.tvFADCountDown.visibility = View.INVISIBLE
@@ -384,6 +384,7 @@ class FindAccountDialogFragment : DialogFragment() {
         binding.btnFADConfirm.isEnabled = false
         svm.isFindEmail.value = true
     }
+
     private fun setEmailAuth () {
         binding.tvFADAuth.text = "이메일 인증"
         binding.etFADAuth.apply {
@@ -436,10 +437,16 @@ class FindAccountDialogFragment : DialogFragment() {
                         // 재전송안내 문구 세팅
                         binding.tvFADReAuth.visibility = View.VISIBLE
                         setVerifyCountDown(120)
-                        // 버튼 활성화
-                        binding.etFADAuthNumber.isEnabled = true
-                        binding.btnFADConfirm.isEnabled = true
 
+                        // 버튼 활성화
+                        binding.etFADAuthNumber.apply {
+                            visibility = View.VISIBLE
+                            isEnabled = true
+                        }
+                        binding.btnFADConfirm.apply {
+                            visibility = View.VISIBLE
+                            isEnabled = true
+                        }
                     } else {
                         Toast.makeText(requireContext(), "이메일이 올바르지 않습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
                     }

@@ -98,7 +98,7 @@ class AnalyzeFragment : Fragment() {
         todayInWeek = sortTodayInWeek()
         pvm.selectedDate = LocalDate.now()
         isResume = false
-
+        setShimmer(true)
         // 클릭 리스너 달기
         binding.ibtnAAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
@@ -120,10 +120,8 @@ class AnalyzeFragment : Fragment() {
                 }, 400)
             }
         }
-        setShimmer(true)
-        updateUI()
-        setShimmer(false)
 
+        updateUI()
         // ------! calendar 시작 !------
         binding.monthText.text = "${YearMonth.now().year}월 ${getCurrentMonthInKorean(currentMonth)}"
 
@@ -146,45 +144,50 @@ class AnalyzeFragment : Fragment() {
             }
         }
         binding.cvACalendar.apply {
-            setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
-            scrollToMonth(currentMonth)
-
             monthScrollListener = { month ->
-                initMonthData()
                 currentMonth = month.yearMonth
                 binding.monthText.text = "${currentMonth.year}년 ${getCurrentMonthInKorean(currentMonth)}"
                 setCalendarMonthData()
                 binding.cvACalendar.notifyCalendarChanged()
+
+                Log.v("날짜선택됨", "1 ${pvm.selectedDate}")
             }
+
+            setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
+            scrollToMonth(currentMonth)
         }
 
         binding.nextMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
-            initMonthData()
             if (currentMonth != YearMonth.now()) {
                 currentMonth = currentMonth.plusMonths(1)
                 setCalendarMonthData()
+                pvm.selectedDate = null
+                Log.v("날짜선택됨", "3 ${pvm.selectedDate}")
+
             }
         }
 
         binding.previousMonthButton.setOnClickListener {
             // 선택된 날짜 초기화
-            initMonthData()
             if (currentMonth > YearMonth.now().minusMonths(18)) {
                 currentMonth = currentMonth.minusMonths(1)
                 setCalendarMonthData()
+                pvm.selectedDate = null
+                Log.v("날짜선택됨", "4 ${pvm.selectedDate}")
+
             }
         }
 
         binding.monthText.setOnClickListener {
-            initMonthData()
             updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
+            Log.v("날짜선택됨", "5 ${pvm.selectedDate}")
+
         }
 
         // ------# 운동 기록 날짜 받아오기 #------
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         showDailyProgress(6)
-
         binding.cvACalendar.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthHeaderViewContainer> {
             override fun create(view: View) = MonthHeaderViewContainer(view)
             override fun bind(container: MonthHeaderViewContainer, data: CalendarMonth) {
@@ -290,6 +293,7 @@ class AnalyzeFragment : Fragment() {
         container.date.background = null
         container.removeBadge()
         val now = LocalDate.now()
+
         when {
             avm.existedMonthProgresses.value.contains(day.date.toString()) -> {
                 if (day.date == pvm.selectedDate) {
@@ -302,7 +306,6 @@ class AnalyzeFragment : Fragment() {
                 }
             }
             day.date == pvm.selectedDate -> {
-//                Log.v("현재날짜", "${day.date}, ${pvm.selectedDate}")
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
             }
@@ -385,14 +388,6 @@ class AnalyzeFragment : Fragment() {
         binding.cvACalendar.scrollToMonth(currentMonth)
     }
 
-    private fun initMonthData() {
-        val oldDate = pvm.selectedDate
-        pvm.selectedDate = null
-        oldDate?.let { binding.cvACalendar.notifyDateChanged(it) }
-        setAdapter(listOf())
-        binding.tvADate.text = "날짜를 선택해주세요"
-    }
-
     // 버튼으로 월이 바꼈을 때,
     private fun updateMonthProgress(date: String) {
 
@@ -401,6 +396,8 @@ class AnalyzeFragment : Fragment() {
             if (dateList != null) {
                 avm.updateMonthProgress(dateList)
             }
+            Log.v("날짜선택됨", "6 ${pvm.selectedDate}")
+
 //            Log.v("VMProgresses", "${avm.existedMonthProgresses}")
         }
     }
@@ -524,7 +521,6 @@ class AnalyzeFragment : Fragment() {
         if (index != null) {
             pvm.selectedDate = LocalDate.now().minusDays((6 - index).toLong())
         }
-//        Log.v("막대그래프 클릭", "${pvm.selectedDate}")
 
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         lifecycleScope.launch {
@@ -546,6 +542,9 @@ class AnalyzeFragment : Fragment() {
                 }
             }
             withContext(Dispatchers.Main) {
+                // 이곳에서 오늘 날짜 초기화
+                pvm.selectedDate = LocalDate.now()
+                Log.v("날짜선택됨", "7 ${pvm.selectedDate}")
                 binding.cvACalendar.notifyCalendarChanged()
             }
         }
@@ -591,6 +590,7 @@ class AnalyzeFragment : Fragment() {
 
             // 상단 프로그레스 받아오기
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
+            setShimmer(false)
             if (progressResult != null) {
                 binding.clAProgress2.visibility =View.VISIBLE
                 binding.tvANoProgram.visibility = View.GONE
@@ -643,22 +643,29 @@ class AnalyzeFragment : Fragment() {
                         binding.cvACalendar.notifyCalendarChanged()
                     }
                 }
+                Log.v("날짜선택됨", "8 ${pvm.selectedDate}")
+
+                pvm.selectedDate = LocalDate.now()
                 isResume = true
-                setShimmer(false)
+
             } else {
+                setShimmer(false)
                 binding.clAProgress2.visibility = View.INVISIBLE
                 binding.tvANoProgram.visibility = View.VISIBLE
-                setShimmer(false)
 //                binding.tvAProgressGuide.visibility = View.GONE
 //                binding.cvAProgress.visibility = View.GONE
             }
         }
-
     }
+
+    // 달력의 월 변경으로 데이터 초기화
     private fun setCalendarMonthData() {
         updateMonthView()
         updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
         setAdapter(listOf())
+        binding.tvADate.text = "날짜를 선택해주세요"
+        val oldDate = pvm.selectedDate
+        oldDate?.let { binding.cvACalendar.notifyDateChanged(it) }
         pvm.selectedDate = null
     }
 

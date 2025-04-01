@@ -149,7 +149,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/ivEIStage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.35"
+        app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toEndOf="@+id/ivEIStage"
         app:layout_constraintTop_toTopOf="@+id/ivEIStage"
         app:srcCompat="@drawable/icon_recycle" />

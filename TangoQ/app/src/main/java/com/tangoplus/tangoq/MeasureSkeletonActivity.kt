@@ -154,7 +154,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     *   5. updateUI
     *
     *   그 외 previousStep
-    *
     * */
     // ------! POSE LANDMARKER 설정 시작 !------
     companion object {
@@ -884,7 +883,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             dialog3.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.ibtnMeasureSkeletonSetup.setOnSingleClickListener {
-            dialog4.show(supportFragmentManager, "MeasureSetupDialogFragment")
+            val dialog5 = MeasureSetupDialogFragment.newInstance(1)
+            dialog5.show(supportFragmentManager, "MeasureSetupDialogFragment")
         }
         // ------! 다시 찍기 관리 시작 !------
         seqStep.observe(this@MeasureSkeletonActivity) { count ->

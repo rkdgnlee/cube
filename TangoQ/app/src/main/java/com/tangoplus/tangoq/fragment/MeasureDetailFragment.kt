@@ -15,10 +15,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
@@ -162,13 +165,18 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
             webColor = resources.getColor(R.color.white, null)
             webAlpha = 100
             webLineWidthInner = 1f
+            setOnChartValueSelectedListener(object  : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    Log.v("값 선택", "값 선택")
+                }
+                override fun onNothingSelected() {}
+            })
             xAxis.apply {
                 setDrawGridLines(true)
                 valueFormatter = IndexAxisValueFormatter(raderXParts)
                 textColor = resources.getColor(R.color.subColor400, null)
                 textSize = if (isTablet(requireContext())) 20f else 13f   // 텍스트 크기 증가
                 yOffset = 40f
-
 
             }
             yAxis.apply {

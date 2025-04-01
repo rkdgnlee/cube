@@ -101,7 +101,7 @@ class StringRVAdapter(private val fragment: Fragment,
 
                         listOf("이두", "두 갈래 포함하는 위팔 육군", "윗팔 두갈래", "팔꿈치 폄") to "i_du",
                         listOf("삼두", "위팔 세갈래") to "sam_du",
-                        listOf("회내", "옆청", "긴엄지굽힘", "요측수근굴", "척측수근굴", "손가락폄근") to "hoe_nae",
+                        listOf("회내", "옆청", "긴엄지굽힘", "요측수근굴", "척측수근굴", "손가락폄근", "굽힘근") to "hoe_nae",
                         listOf("전완", "회외", "손뒤침", "노쪽손목굽힘", "자쪽손목굽힘", "상지 폄 근육", "엎침", "짧은노쪽손목폄", "긴노쪽손목폄", "손가락근육", "긴손바닥", "손목근육") to "jeon_wan",
                         listOf("수근 신근") to "su_geon_sin",
                         listOf("대흉" ) to "dae_hyung",

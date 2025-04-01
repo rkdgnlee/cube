@@ -139,7 +139,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         lifecycleScope.launch {
             val result = async {
                 fetchProgramData() // 프로그램 데이터 한 번만 가져오기
-                calculateInitialWeek()
+                calculateCurrentWeek()
             }
             result.await()
             pvm.selectedWeek.observe(viewLifecycleOwner) {
@@ -503,8 +503,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             } else {
                                 LocalDate.now().plusDays(1)
                             }
-                            // 당일날 모두 끝났을 때 체크
-                            if (isAllFinish && rightNow == recentUpdateDate) {
+                            // 당일날 모두 끝났을 때 체크 ( 현재 주차가 나왔을 때만 )
+                            if (isAllFinish && rightNow == recentUpdateDate && pvm.selectedWeek.value == pvm.currentWeek) {
                                 pvm.dailySeqFinished = true
                                 if (dailyFinishDialog?.isVisible == false || dailyFinishDialog?.isAdded == false) {
                                     dailyFinishDialog?.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
@@ -551,8 +551,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
     }
 
-    private suspend fun calculateInitialWeek() {
-        Log.e("init", "initialize calculateInitialWeekAndSequence")
+    private suspend fun calculateCurrentWeek() {
+        Log.e("init", "initialize calculateCurrentWeek")
         withContext(Dispatchers.IO) {
             val jo = JSONObject().apply {
                 put("recommendation_sn", pvm.recommendationSn)

@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/whiteText">
+        android:background="@color/white">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clName"
@@ -44,7 +44,7 @@
                 android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="휴대폰 인증을 진행해주세요"
+                android:hint="이름을 입력해주세요"
                 android:inputType="text"
                 android:padding="16dp"
                 android:textColor="@color/subColor700"
@@ -54,6 +54,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvNameGuide" />
+
+            <TextView
+                android:id="@+id/tvNameCondition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="이름 형식이 올바르지 않습니다"
+                android:textColor="@color/subColor800"
+                android:textSize="14dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/tvNameGuide"
+                app:layout_constraintStart_toEndOf="@+id/tvNameGuide"
+                app:layout_constraintTop_toTopOf="@+id/tvNameGuide" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -90,7 +103,7 @@
                 android:background="@drawable/bckgnd_12_edit_text"
                 android:ems="10"
                 android:enabled="false"
-                android:hint="휴대폰 인증을 진행해주세요"
+                android:hint="휴대폰 번호를 입력해주세요"
                 android:inputType="phone"
                 android:maxLength="13"
                 android:paddingLeft="12dp"
@@ -115,7 +128,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:stateListAnimator="@null"
-                android:text="휴대폰 인증"
+                android:text="인증번호 전송"
                 android:textColor="@color/whiteText"
                 android:textSize="18dp"
                 app:cornerRadius="12dp"
@@ -127,11 +140,11 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSignIn"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/subColor400"
@@ -147,6 +160,66 @@
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+            app:layout_constraintTop_toBottomOf="@+id/clMobileVerify" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMobileVerify"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+            <EditText
+                android:id="@+id/etMobileCode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bckgnd_12_edit_text"
+                android:ems="10"
+                android:hint="인증번호를 입력해주세요"
+                android:inputType="number"
+                android:padding="16dp"
+                android:textColor="@color/subColor800"
+                android:textColorHint="@color/subColor150"
+                android:textSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvMobileResendMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="인증번호가 오지 않는다면, 재전송을 눌러주세요."
+                android:textColor="@color/subColor800"
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etMobileCode" />
+
+            <TextView
+                android:id="@+id/tvMobileCountDown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:text="남은 시간: 2분 00 초"
+                android:textColor="@color/subColor800"
+                android:textSize="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMobileResendMessage" />
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Button"
+                app:layout_constraintTop_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

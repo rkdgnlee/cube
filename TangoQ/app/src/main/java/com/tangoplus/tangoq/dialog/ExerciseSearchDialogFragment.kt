@@ -36,6 +36,8 @@ import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnExerciseClickListener
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, OnHistoryClickListener, OnExerciseClickListener {
@@ -168,12 +170,14 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
     }
 
     override fun onHistoryClick(history: String) {
-        binding.etESDSearch.setText(history)
+        val historyContent = history.substring(0, history.lastIndexOf("날짜"))
+        binding.etESDSearch.setText(historyContent)
         binding.etESDSearch.requestFocus()
+        binding.etESDSearch.setSelection(binding.etESDSearch.length())
     }
 
     override fun exerciseClick(name: String) {
-        prefsManager.setStoredHistory(binding.etESDSearch.text.toString())
+        prefsManager.setStoredHistory(binding.etESDSearch.text.toString() + "날짜" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
         setSearchAdapter()
         Handler(Looper.getMainLooper()).postDelayed({
             binding.etESDSearch.setText("")
