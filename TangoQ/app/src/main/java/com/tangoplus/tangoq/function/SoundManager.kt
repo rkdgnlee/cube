@@ -38,14 +38,6 @@ object SoundManager {
             soundPool?.play(id, 1f, 1f, 1, 0,  1f)
         }
     }
-//    fun playBackgroundMusic(context: Context, soundResId: Int) {
-//        mediaPlayer?.release() // 기존 재생 중인 음악 해제
-//        mediaPlayer = MediaPlayer.create(context, soundResId).apply {
-//            isLooping = true  // 배경음악 반복 재생
-//            setVolume(0.6f, 0.6f)
-//            start()
-//        }
-//    }
 
     fun release() {
         soundPool?.release()

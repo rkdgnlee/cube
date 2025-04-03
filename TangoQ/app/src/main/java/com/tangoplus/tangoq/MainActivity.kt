@@ -21,8 +21,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.setPadding
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
@@ -41,7 +39,6 @@ import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlertDialogFragment
-import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment

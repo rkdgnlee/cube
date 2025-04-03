@@ -14,10 +14,6 @@ class SignInViewModel: ViewModel() {
 
     // sns 회원가입 시 담아서 쓰는 데이터들
     var snsJo = JSONObject()
-    var snsEmail = ""
-    var snsName = ""
-    var snsProviderId = ""
-    var isSnsSignIn = false
 
     // ------# 로그인 #------
     var currentEmailCon = MutableLiveData(false)
@@ -27,7 +23,7 @@ class SignInViewModel: ViewModel() {
     var fullEmail = MutableLiveData("")
     var pw = MutableLiveData("")
     var setGender = MutableLiveData("")    // 아이디 비밀번호 찾기
-
+    var selectGender = MutableLiveData("")
     // FindAccount
     val mobileAuthCondition = MutableLiveData(false)
     var countDownTimer : CountDownTimer? = null
@@ -41,6 +37,7 @@ class SignInViewModel: ViewModel() {
     val emailIdCondition = MutableLiveData(false)
     val domainCondition = MutableLiveData(false)
     val emailVerify = MutableLiveData(false)
+    var insertToken = ""
 
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
@@ -53,7 +50,7 @@ class SignInViewModel: ViewModel() {
             value = (pwCondition.value ?: false) && compare
         }
     }
-
+    val isNextPage = MutableLiveData(false)
 
     val passAuthCondition = MediatorLiveData<Boolean>().apply {
         value = false

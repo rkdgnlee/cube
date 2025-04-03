@@ -368,7 +368,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         jo.put("week_number", pvm.weekNumber)
         jo.put("cycle", pvm.cycle)
 
-        Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()}, jo: $jo, totalDuration: $totalDurationMs")
+        Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()},currentPositionSeconds: $currentPositionSeconds,  jo: $jo, totalDuration: $totalDurationMs")
         val currentUvpSns = pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()
         if (pvm.uvpSns?.isNotEmpty() == true && currentUvpSns != null) {
             patchProgress1Item(getString(R.string.API_progress), currentUvpSns, jo, this@PlayFullScreenActivity) { }

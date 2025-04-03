@@ -99,7 +99,7 @@ class WithdrawalFragment : Fragment() {
             if (responseCode == 200) {
                 requireActivity().runOnUiThread {
                     MaterialAlertDialogBuilder(requireContext() , R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                        setMessage("탈퇴가 완료됐습니다.")
+                        setMessage("탈퇴가 완료됐습니다. 이용해 주셔서 감사합니다.")
                         setPositiveButton("예") { _, _ ->
                             val intent = Intent(requireContext(), IntroActivity::class.java)
                             singletonUserInstance.jsonObject = null

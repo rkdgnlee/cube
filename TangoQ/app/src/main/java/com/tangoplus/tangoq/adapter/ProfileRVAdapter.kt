@@ -34,6 +34,7 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.fragment.WithdrawalFragment
+import com.tangoplus.tangoq.function.AuthManager.maskedProfileData
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import org.json.JSONObject
 import java.lang.IllegalArgumentException
@@ -246,15 +247,15 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "생년월일" -> {
                                 (vm as SignInViewModel).setBirthday.observe(fragment.viewLifecycleOwner) { birthday ->
-                                    Log.v("생년월일", "$birthday, ${birthday.length}")
-                                    holder.tvPfInfo.text = if (birthday == "0" || birthday == "" || birthday == "null") "미설정" else birthday
+
+                                    holder.tvPfInfo.text =
+                                        if (birthday in listOf("0", "", "null", "0000-00-00")) "미설정" else birthday
                                 }
                                 if (holder.tvPfInfo.text != "미설정") holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                                 holder.ivPf.setImageResource(R.drawable.icon_cake)
                             }
                             "성별" -> {
                                 (vm as SignInViewModel).setGender.observe(fragment.viewLifecycleOwner) { genderString ->
-                                    Log.v("성별string", "$genderString, ${genderString.length}")
                                     if (genderString == null || genderString == "" || genderString == "null") {
                                         holder.tvPfInfo.text = "미설정"
                                     } else if (genderString == "여자") {
@@ -344,42 +345,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
         return profileMenuList.size
     }
 
-    private fun maskedProfileData(resultString: String) : String {
-        val atIndex = resultString.indexOf('@')
-        if (atIndex == -1) {
-            val except010String = resultString.substring(3, resultString.length).replace("-", "")
-            val maskedString = except010String.mapIndexed{ index, char ->
-                when {
-                    index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
-                    index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
-                    else -> char
-                }
-            }.joinToString("")
 
-            return maskedString
-        }  // @ 기호가 없으면 원본 그대로 반환
-
-        val username = resultString.substring(0, atIndex)
-        val domain = resultString.substring(atIndex)
-        val maskedUsername = username.mapIndexed { index, char ->
-
-            when {
-                index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
-                index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
-                else -> char
-            }
-        }.joinToString("")
-
-        val maskedDomain = domain.mapIndexed { index, char ->
-            when {
-                index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
-                index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
-                else -> char
-            }
-        }.joinToString("")
-
-        return maskedUsername + maskedDomain
-    }
 
 
 }

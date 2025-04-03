@@ -259,10 +259,18 @@ object NetworkUser {
         }
     }
 
-    suspend fun insertUser(myUrl: String,  idPw: JSONObject, callback: (Int) -> Unit) {
+    suspend fun insertUser(myUrl: String,  idPw: JSONObject, insertToken: String,callback: (Int) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = idPw.toString().toRequestBody(mediaType)
-        val client = OkHttpClient()
+        val client = OkHttpClient.Builder()
+            .addInterceptor{ chain ->
+                var request = chain.request()
+                request = request.newBuilder()
+                    .header("Authorization", "Bearer $insertToken")
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
         val request = Request.Builder()
             .url("${myUrl}register.php")
             .post(body)
@@ -429,6 +437,195 @@ object NetworkUser {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
                         Log.e("mobileOTP실패", "ResponseCode: ${response.code}")
+                        return@withContext response.code
+                    }
+
+                    response.body?.string()?.let { responseString ->
+                        val bodyJo = JSONObject(responseString)
+                        Log.v("mobileOTP보내기", "$bodyJo")
+                        return@withContext bodyJo.optInt("status")
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("UserIndex", "${e.message}")
+                500
+            } catch (e: IllegalArgumentException) {
+                Log.e("UserIllegal", "${e.message}")
+                500
+            } catch (e: IllegalStateException) {
+                Log.e("UserIllegal", "${e.message}")
+                500
+            } catch (e: NullPointerException) {
+                Log.e("UserNull", "${e.message}")
+                500
+            } catch (e: java.lang.Exception) {
+                Log.e("UserException", "${e.message}")
+                500
+            }
+        }
+    }
+
+    suspend fun verifyMobileOTP(myUrl: String, bodyJo: String) : Pair<String, Int>? {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodyJo.toRequestBody(mediaType)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 서버 연결 타임아웃 (10초)
+            .readTimeout(8, TimeUnit.SECONDS)    // 응답 읽기 타임아웃 (30초)
+            .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
+            .build()
+
+        val request = Request.Builder()
+            .url("${myUrl}sms/verify_sms.php")
+            .post(body)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("mobile인증확인", "ResponseCode: ${response.code}")
+                        return@withContext null
+                    }
+
+                    response.body?.string()?.let { responseString ->
+                        val responseJo = JSONObject(responseString)
+                        Log.v("mobile인증확인", "$responseJo")
+                        return@withContext Pair(responseJo.optString("data"), responseJo.optInt("status"))
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("mobileCondition Error", "IndexOutOfBoundsException: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("mobileCondition Error", "IllegalArgumentException: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("mobileCondition Error", "IllegalStateException: ${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e("mobileCondition Error", "NullPointerException: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("mobileCondition Error", "Exception: ${e.message}")
+                null
+            }
+        }
+    }
+
+    // 소셜 회원가입 시 사용하는 핸드폰 본인확인 인증 - 차이점: 소셜 계정의 email을 받아서
+    suspend fun sendMobileOTPToSNS(myUrl: String, bodyJo: String) : Int? {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodyJo.toRequestBody(mediaType)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 서버 연결 타임아웃 (10초)
+            .readTimeout(8, TimeUnit.SECONDS)    // 응답 읽기 타임아웃 (30초)
+            .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}sms/curl_send.php")
+            .post(body)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("mobileOTP실패", "ResponseCode: ${response.code}")
+                        return@withContext response.code
+                    }
+
+                    response.body?.string()?.let { responseString ->
+                        val bodyJo = JSONObject(responseString)
+                        Log.v("mobileOTP보내기", "$bodyJo")
+                        return@withContext bodyJo.optInt("status")
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("UserIndex", "${e.message}")
+                500
+            } catch (e: IllegalArgumentException) {
+                Log.e("UserIllegal", "${e.message}")
+                500
+            } catch (e: IllegalStateException) {
+                Log.e("UserIllegal", "${e.message}")
+                500
+            } catch (e: NullPointerException) {
+                Log.e("UserNull", "${e.message}")
+                500
+            } catch (e: java.lang.Exception) {
+                Log.e("UserException", "${e.message}")
+                500
+            }
+        }
+    }
+
+    suspend fun verifyMobileOTPToSNS(myUrl: String, bodyJo: String) : Pair<String, Int>? {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodyJo.toRequestBody(mediaType)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 서버 연결 타임아웃 (10초)
+            .readTimeout(8, TimeUnit.SECONDS)    // 응답 읽기 타임아웃 (30초)
+            .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
+            .build()
+
+        val request = Request.Builder()
+            .url("${myUrl}sms/verify_sms.php")
+            .post(body)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("mobile인증확인", "ResponseCode: ${response.code}")
+                        return@withContext null
+                    }
+
+                    response.body?.string()?.let { responseString ->
+                        val responseJo = JSONObject(responseString)
+                        Log.v("mobile인증확인", "$responseJo")
+                        return@withContext Pair(responseJo.optString("data"), responseJo.optInt("status"))
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("mobileCondition Error", "IndexOutOfBoundsException: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("mobileCondition Error", "IllegalArgumentException: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("mobileCondition Error", "IllegalStateException: ${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e("mobileCondition Error", "NullPointerException: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("mobileCondition Error", "Exception: ${e.message}")
+                null
+            }
+        }
+    }
+
+
+    // 아이디 찾기 / 이메일 가져오기
+    suspend fun sendMobileOTPToFindEmail(myUrl: String, bodyJo: String) : Int? {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodyJo.toRequestBody(mediaType)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 서버 연결 타임아웃 (10초)
+            .readTimeout(8, TimeUnit.SECONDS)    // 응답 읽기 타임아웃 (30초)
+            .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}service/find_user_email.php")
+            .post(body)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("mobileOTP실패", "ResponseCode: ${response.code}")
                         return@withContext null
                     }
 
@@ -457,7 +654,7 @@ object NetworkUser {
         }
     }
 
-    suspend fun verifyMobileOTP(myUrl: String, bodyJo: String) : Int? {
+    suspend fun verityMobileOTPToFindEmail(myUrl: String, bodyJo: String) : String? {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodyJo.toRequestBody(mediaType)
         val client = OkHttpClient.Builder()
@@ -467,7 +664,7 @@ object NetworkUser {
             .build()
 
         val request = Request.Builder()
-            .url("${myUrl}sms/verify_sms.php")
+            .url("${myUrl}service/verify_find_email.php")
             .post(body)
             .build()
 
@@ -475,13 +672,116 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("mobile인증번호", "ResponseCode: ${response.code}")
+                        Log.e("mobile인증확인", "ResponseCode: ${response.code}")
+                        return@withContext when (response.code) {
+                            401 -> "otpFailed"
+                            else -> null
+                        }
+                    }
+
+                    response.body?.string()?.let { responseString ->
+                        val responseJo = JSONObject(responseString)
+                        Log.v("mobile인증확인", "$responseJo, ${responseJo.optInt("status")}")
+                        return@withContext when (responseJo.optInt("status")) {
+                            0 -> responseJo.optString("email")
+                            401 -> "otpFailed" // otp 만료 및 otp 올바르지 않음
+                            else -> null // 이외 서버에러 등
+                        }
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("mobileCondition Error", "IndexOutOfBoundsException: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("mobileCondition Error", "IllegalArgumentException: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("mobileCondition Error", "IllegalStateException: ${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e("mobileCondition Error", "NullPointerException: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("mobileCondition Error", "Exception: ${e.message}")
+                null
+            }
+        }
+    }
+
+    suspend fun sendEmailOTP(myUrl: String, bodyJo: String) : Pair<Int, String?>? {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodyJo.toRequestBody(mediaType)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 서버 연결 타임아웃 (10초)
+            .readTimeout(8, TimeUnit.SECONDS)    // 응답 읽기 타임아웃 (30초)
+            .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}service/verify_duplicate.php")
+            .post(body)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("emailOTP실패", "ResponseCode: ${response.code}")
+                        val responseBody = response.body?.string()
+                        val provider = responseBody?.let { JSONObject(it).optString("provider") }
+                        return@withContext Pair(response.code, provider)
+                    }
+
+                    response.body?.string()?.let { responseString ->
+                        val responseJo = JSONObject(responseString)
+                        val provider = responseJo.optString("provider") ?: ""
+                        Log.v("emailOTP보내기", "$responseJo")
+                        return@withContext Pair(responseJo.optInt("status"), provider)
+                    }
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("UserIndex", "${e.message}")
+                Pair(500, null)
+            } catch (e: IllegalArgumentException) {
+                Log.e("UserIllegal", "${e.message}")
+                Pair(500, null)
+            } catch (e: IllegalStateException) {
+                Log.e("UserIllegal", "${e.message}")
+                Pair(500, null)
+            } catch (e: NullPointerException) {
+                Log.e("UserNull", "${e.message}")
+                Pair(500, null)
+            } catch (e: java.lang.Exception) {
+                Log.e("UserException", "${e.message}")
+                Pair(500, null)
+            }
+        }
+    }
+
+    suspend fun verifyEmailOTP(myUrl: String, bodyJo: String) : Int? {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val body = bodyJo.toRequestBody(mediaType)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS) // 서버 연결 타임아웃 (10초)
+            .readTimeout(8, TimeUnit.SECONDS)    // 응답 읽기 타임아웃 (30초)
+            .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
+            .build()
+
+        val request = Request.Builder()
+            .url("${myUrl}service/verify_reg_otp.php")
+            .post(body)
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("emailVerify", "ResponseCode: ${response.code}")
                         return@withContext null
                     }
 
                     response.body?.string()?.let { responseString ->
                         val bodyJo = JSONObject(responseString)
-                        Log.v("mobile인증번호", "$bodyJo")
+                        Log.v("emailVerify", "$bodyJo")
                         return@withContext bodyJo.optInt("status")
                     }
                 }
@@ -504,7 +804,6 @@ object NetworkUser {
         }
     }
 
-
     fun findUserEmail(myUrl: String, joBody: String, callback: (String) -> Unit) {
 
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -521,7 +820,7 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                // Log.v("userId", "$responseBody")
+                 Log.v("userId", "$responseBody")
                 val jo = responseBody?.let { JSONObject(it) }
                 val id = jo?.optString("email")
                 if (id != null) {

@@ -1,41 +1,35 @@
 package com.tangoplus.tangoq.dialog
 
+import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.auth.FirebaseAuth
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentSignInDialogBinding
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.adapter.etc.SignInVPAdapter
+import androidx.core.graphics.drawable.toDrawable
+import com.tangoplus.tangoq.db.MeasureDatabase
+import com.tangoplus.tangoq.fragment.MainFragment
 
 class SignInDialogFragment : DialogFragment() {
     private lateinit var binding : FragmentSignInDialogBinding
     private lateinit var loadingDialog : LoadingDialogFragment
-    private var verificationId = ""
     val svm : SignInViewModel by activityViewModels()
-    private lateinit var auth : FirebaseAuth
-
-    companion object {
-        const val ARG_IS_SNS = "argumentsIsSns"
-        fun newInstance(isSnsLogin: Boolean) : SignInDialogFragment {
-            val fragment = SignInDialogFragment()
-            val args = Bundle()
-            args.putBoolean(ARG_IS_SNS, isSnsLogin)
-            fragment.arguments = args
-            return fragment
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +48,6 @@ class SignInDialogFragment : DialogFragment() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        svm.isSnsSignIn = arguments?.getBoolean(ARG_IS_SNS) ?: false
 
         binding.pvSignIn.progress = 30f
         binding.vpSignIn.adapter = SignInVPAdapter(this@SignInDialogFragment)
@@ -65,16 +58,7 @@ class SignInDialogFragment : DialogFragment() {
             if (binding.vpSignIn.currentItem == 1) {
                 setonPreviousPage()
             } else {
-                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                    setMessage("회원가입을 종료하시겠습니까?")
-                    setPositiveButton("예", {_, _ ->
-                        dialog?.dismiss()
-                    })
-                    setNegativeButton("아니오", {_, _ ->
-                        dismiss()
-                    })
-                    show()
-                }
+                showExitDialog()
             }
         }
 
@@ -96,14 +80,37 @@ class SignInDialogFragment : DialogFragment() {
     override fun onResume() {
         super.onResume()
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
     fun setonNextPage() {
         binding.vpSignIn.setCurrentItem(1, true)
     }
-    fun setonPreviousPage() {
+    private fun setonPreviousPage() {
         binding.vpSignIn.setCurrentItem(0, true)
+    }
+    private fun showExitDialog() {
+        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+            setMessage("회원가입을 종료하시겠습니까?")
+            setPositiveButton("예") { _, _ ->
+                dialog?.dismiss()
+            }
+            setNegativeButton("아니오") { _, _ -> }
+            show()
+        }
+    }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.setCancelable(false)
+        dialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                showExitDialog()
+                true // 이벤트 소비
+            } else {
+                false
+            }
+        }
+        return dialog
     }
 }

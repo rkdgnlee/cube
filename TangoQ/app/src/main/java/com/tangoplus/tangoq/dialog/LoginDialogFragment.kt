@@ -11,12 +11,10 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
-import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
-import android.text.style.LeadingMarginSpan
 import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.KeyEvent
@@ -35,7 +33,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tangoplus.tangoq.IntroActivity
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.api.NetworkUser
 import com.tangoplus.tangoq.db.Singleton_t_user
@@ -52,14 +49,14 @@ import com.tangoplus.tangoq.api.NetworkUser.verifyPWCode
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.fadeInView
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.scrollToView
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.function.AuthManager
+import com.tangoplus.tangoq.function.AuthManager.setRetryAuthMessage
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.regex.Pattern
 
@@ -393,23 +390,6 @@ class LoginDialogFragment : DialogFragment() {
         })
     }
 
-    private fun setVerifyCountDown(retryAfter: Int) {
-        if (retryAfter != -1) {
-            object : CountDownTimer((retryAfter * 1000).toLong(), 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    val remainingSeconds = millisUntilFinished / 1000
-                    val minutes = remainingSeconds / 60
-                    val seconds = remainingSeconds % 60
-                    binding.tvLDAlertTime.visibility = View.VISIBLE
-                    binding.tvLDAlertTime.text = "${minutes}분 ${seconds}초"
-                }
-                override fun onFinish() {
-                    binding.tvLDAlertTime.visibility = View.INVISIBLE
-                }
-            }.start()
-        }
-    }
-
     private fun disabledLogin(retryAfter: Int) {
         binding.btnLDLogin.isEnabled = false
         binding.btnLDLogin.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
@@ -443,70 +423,63 @@ class LoginDialogFragment : DialogFragment() {
         if (dialog?.isShowing == true) {
             MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setMessage("${viewModel.saveEmail}로 인증하시겠습니까?")
-                setPositiveButton("예", {_, _ ->
+                setPositiveButton("예") { _, _ ->
                     val jo = JSONObject().apply {
                         put("email", viewModel.saveEmail)
                     }
                     sendPWCode(getString(R.string.API_user), jo.toString()) {
-                        Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT)
+                            .show()
                         viewModel.saveEmail = binding.etLDEmail.text.toString()
                         // 재전송안내 문구 세팅
-                        binding.tvLDEmailAlert.visibility = View.VISIBLE
-                        setVerifyCountDown(120)
+                        binding.tvLDReAuth.visibility = View.VISIBLE
+                        setReSendMessage()
 
                         // 버튼 활성화
                         binding.etLDCode.isEnabled = true
                         binding.btnLDLogin.apply {
                             isEnabled = true
-                            backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                            backgroundTintList =
+                                ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
                         }
                     }
-                })
-                setNegativeButton("아니오", {_ ,_ ->
-                })
+                }
+                setNegativeButton("아니오") { _, _ ->
+                }
                 show()
             }
         }
     }
+    private fun setReSendMessage() {
+        binding.tvLDReAuth.visibility = View.VISIBLE
+        val madb = MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+            setTitle("인증번호 재전송")
+            setMessage("${viewModel.fullEmail.value}\n이메일로 인증번호를 다시 전송하시겠습니까?")
+            setPositiveButton("예") { _, _ ->
 
+                // 인증번호 다시 보내기
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val jo = JSONObject().apply {
+                        put("email", viewModel.fullEmail.value)
+                    }
 
+                }
+            }
+            setNegativeButton("아니오") { _, _ -> }
+        }
+        setRetryAuthMessage(requireContext(), viewModel, binding.tvLDReAuth, binding.tvLDCountDown, madb)
+    }
     private fun setResetPWCheck() {
         // 로그인 버튼 변경
         binding.btnLDLogin.text = "비밀번호 변경"
 
 
         // 비밀번호 재설정 patternCheck
-        val pwPattern = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*#?&^])[A-Za-z[0-9]$@$!%*#?&^]{8,20}$" // 영문, 특수문자, 숫자 8 ~ 20자 패턴
-        val pwPatternCheck = Pattern.compile(pwPattern)
-        binding.etLDResetPassword.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.pwCondition.value = pwPatternCheck.matcher(binding.etLDResetPassword.text.toString()).find()
-                if (viewModel.pwCondition.value == true) {
-                    binding.tvLDPWCondition.setTextColor(binding.tvLDPWCondition.resources.getColor(R.color.mainColor, null))
-                    binding.tvLDPWCondition.text = "사용 가능합니다"
-                } else {
-                    binding.tvLDPWCondition.setTextColor(binding.tvLDPWCondition.resources.getColor(R.color.deleteColor, null))
-                    binding.tvLDPWCondition.text = "영문, 숫자, 특수문자( ! @ # $ % ^ & * ?)를 모두 포함해서 8~20자리를 입력해주세요"
-                }
-            }
-        })
+        val pwTextWatcher = AuthManager.pwPatternCheck(viewModel, binding.etLDResetPassword, binding.tvLDPWCondition, false)
+        binding.etLDResetPassword.addTextChangedListener(pwTextWatcher)
 
-        binding.etLDResetPasswordConfirm.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.pwCompare.value = (binding.etLDResetPassword.text.toString() == binding.etLDResetPasswordConfirm.text.toString())
-                if (viewModel.pwCompare.value == true) {
-                    binding.tvLDPWVerifyCondition.setTextColor(binding.tvLDPWVerifyCondition.resources.getColor(R.color.mainColor, null))
-                    binding.tvLDPWVerifyCondition.text = "일치합니다"
-                } else {
-                    binding.tvLDPWVerifyCondition.setTextColor(binding.tvLDPWVerifyCondition.resources.getColor(R.color.deleteColor, null))
-                    binding.tvLDPWVerifyCondition.text = "일치하지 않습니다"
-                }
-            }
-        })
+        val pwRepeatTextWatcher = AuthManager.pwPatternCheck(viewModel, binding.etLDResetPasswordConfirm, binding.tvLDPWVerifyCondition, true)
+        binding.etLDResetPasswordConfirm.addTextChangedListener(pwRepeatTextWatcher)
 
         viewModel.pwBothTrue.observe(viewLifecycleOwner) {
             binding.btnLDLogin.isEnabled = it

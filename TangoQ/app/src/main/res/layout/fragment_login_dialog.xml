@@ -218,7 +218,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout20" />
 
                 <TextView
-                    android:id="@+id/tvLDEmailAlert"
+                    android:id="@+id/tvLDReAuth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -231,16 +231,16 @@
                     app:layout_constraintTop_toBottomOf="@+id/etLDCode" />
 
                 <TextView
-                    android:id="@+id/tvLDAlertTime"
+                    android:id="@+id/tvLDCountDown"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:text="02:00"
                     android:textColor="@color/subColor500"
                     android:textSize="13dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvLDEmailAlert"
-                    app:layout_constraintStart_toEndOf="@+id/tvLDEmailAlert"
-                    app:layout_constraintTop_toTopOf="@+id/tvLDEmailAlert" />
+                    app:layout_constraintBottom_toBottomOf="@+id/tvLDReAuth"
+                    app:layout_constraintStart_toEndOf="@+id/tvLDReAuth"
+                    app:layout_constraintTop_toTopOf="@+id/tvLDReAuth" />
 
                 <TextView
                     android:id="@+id/textView64"

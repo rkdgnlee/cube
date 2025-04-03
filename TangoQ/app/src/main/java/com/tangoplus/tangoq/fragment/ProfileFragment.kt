@@ -75,13 +75,17 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         svm.snsCount = 0
         // ------! 싱글턴에서 가져오기 !------
         svm.User.value = userJson
-        Log.v("userJson보기", "${svm.setBirthday.value}")
+
         svm.setHeight.value = svm.User.value?.optInt("height")
         svm.setWeight.value = svm.User.value?.optInt("weight")
         svm.setEmail.value = svm.User.value?.optString("email")
+
+
         svm.setBirthday.value = svm.User.value?.optString("birthday")
         svm.setMobile.value = svm.User.value?.optString("mobile").toString()
-        svm.setGender.value = svm.User.value?.optString("gender")
+
+        val getGender = svm.User.value?.optString("gender")
+        svm.setGender.value = if (getGender in listOf("", "null", null)) null else getGender
         Log.v("userJson보기", "${svm.setBirthday.value}")
 
 //        Log.v("Singleton>Profile", "$userJson")
@@ -142,8 +146,8 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                 "미설정"
         }
         svm.setBirthday.observe(viewLifecycleOwner) { birthday ->
-            if (birthday.length >= 8) {
-                Log.v("버스데이", "$birthday")
+            if (birthday != null && birthday.length >= 8 && birthday != "0000-00-00") {
+                Log.v("버스데이", birthday)
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = (c.get(Calendar.YEAR) - birthday.substring(0, 4).toInt()).toString() + "세"
             }

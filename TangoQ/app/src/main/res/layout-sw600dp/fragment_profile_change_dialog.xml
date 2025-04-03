@@ -240,25 +240,50 @@
             app:layout_constraintTop_toTopOf="@+id/etPCDMobile"
             app:layout_constraintWidth_percent="0.325" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPCDAuthConfirm"
+        <EditText
+            android:id="@+id/etPCDAuthNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="40dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:backgroundTint="@color/mainColor"
+            android:background="@drawable/bckgnd_12_edit_text"
+            android:ems="10"
+            android:hint="인증번호를 입력해주세요"
+            android:inputType="number"
+            android:maxLength="6"
             android:padding="20dp"
-            android:stateListAnimator="@null"
-            android:text="인증 확인"
-            android:textColor="@color/white"
+            android:textColor="@color/subColor800"
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etPCDMobile" />
 
+        <TextView
+            android:id="@+id/tvPCDReAuth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="40dp"
+            android:text="인증번호가 오지 않는다면, 재전송 을 눌러 다시 시도해주세요"
+            android:textColor="@color/subColor500"
+            android:textSize="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etPCDAuthNumber" />
 
+        <TextView
+            android:id="@+id/tvPCDCountDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="5dp"
+            android:text="남은시간: 1분 59초"
+            android:textColor="@color/subColor500"
+            android:textSize="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPCDReAuth" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -292,7 +317,8 @@
                 android:text="남성"
                 android:textColor="@color/subColor800"
                 android:textSize="28dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:buttonTint="@color/tint_main_sub200" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/mrbPCDFemale"
@@ -303,7 +329,8 @@
                 android:text="여성"
                 android:textColor="@color/subColor800"
                 android:textSize="28dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:buttonTint="@color/tint_main_sub200" />
         </RadioGroup>
 
         <LinearLayout

@@ -18,7 +18,7 @@ import com.tangoplus.tangoq.dialog.AgreementDetailDialogFragment
 
 class AgreementBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding: FragmentAgreementBSDialogBinding
-    val viewModel : SignInViewModel by activityViewModels()
+    private val svm : SignInViewModel by activityViewModels()
     private var agreeAll = MutableLiveData(false)
     private val agreement1 = MutableLiveData(false)
     private val agreement2 = MutableLiveData(false)
@@ -80,9 +80,9 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
             agreement3.value = newValue
             agreeAll.value = newValue
             essentialAgree.value = newValue
-            viewModel.agreementMk1.value = newValue
-            viewModel.agreementMk2.value = newValue
-            viewModel.marketingAgree.value = newValue
+            svm.agreementMk1.value = newValue
+            svm.agreementMk2.value = newValue
+            svm.marketingAgree.value = newValue
         }
 
         // ------! 나가기 !------
@@ -121,8 +121,8 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
                 if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
             )
             agreement3.value = newValue
-            viewModel.agreementMk1.value = newValue
-            viewModel.agreementMk2.value = newValue
+            svm.agreementMk1.value = newValue
+            svm.agreementMk2.value = newValue
         }
 
         agreement1.observe(viewLifecycleOwner) {
@@ -155,27 +155,27 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
 
         // ------! 마케팅 정보 수신 동의 !------
         binding.clAgreementMk1.setOnClickListener{
-            val newValue = viewModel.agreementMk1.value?.not() ?: false
+            val newValue = svm.agreementMk1.value?.not() ?: false
             binding.ivAgreementMk1.setImageResource(
                 if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
             )
-            viewModel.agreementMk1.value = newValue
+            svm.agreementMk1.value = newValue
         }
         binding.clAgreementMk2.setOnClickListener{
-            val newValue = viewModel.agreementMk2.value?.not() ?: false
+            val newValue = svm.agreementMk2.value?.not() ?: false
             binding.ivAgreementMk2.setImageResource(
                 if (newValue) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
             )
-            viewModel.agreementMk2.value = newValue
+            svm.agreementMk2.value = newValue
         }
 
-        viewModel.agreementMk1.observe(viewLifecycleOwner) {
+        svm.agreementMk1.observe(viewLifecycleOwner) {
             updateAgreeAllState()
             updateAgreeMarketingAllState()
 //            Log.v("광고성1", "${viewModel.agreementMk1.value}")
         }
 
-        viewModel.agreementMk2.observe(viewLifecycleOwner) {
+        svm.agreementMk2.observe(viewLifecycleOwner) {
             updateAgreeAllState()
             updateAgreeMarketingAllState()
 //            Log.v("광고성2", "${viewModel.agreementMk2.value}")
@@ -206,7 +206,7 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
 
     // ------# 전체 동의 #------
     private fun updateAgreeAllState() {
-        val allChecked = agreement1.value == true && agreement2.value == true && agreement3.value == true && viewModel.agreementMk1.value == true && viewModel.agreementMk2.value == true
+        val allChecked = agreement1.value == true && agreement2.value == true && agreement3.value == true && svm.agreementMk1.value == true && svm.agreementMk2.value == true
         if (agreeAll.value != allChecked) {
             agreeAll.value = allChecked
             binding.ivAgreementAll.setImageResource(
@@ -220,9 +220,9 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
     }
 
     private fun updateAgreeMarketingAllState() {
-        val allChecked = viewModel.agreementMk1.value == true && viewModel.agreementMk2.value == true
-        if (viewModel.marketingAgree.value != allChecked) {
-            viewModel.marketingAgree.value = allChecked
+        val allChecked = svm.agreementMk1.value == true && svm.agreementMk2.value == true
+        if (svm.marketingAgree.value != allChecked) {
+            svm.marketingAgree.value = allChecked
             binding.ivAgreement3.setImageResource(
                 if (allChecked) R.drawable.icon_part_checkbox_enabled else R.drawable.icon_part_checkbox_disabled
             )

@@ -47,6 +47,7 @@ import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
 import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.dialog.MobileAuthDialogFragment
 import com.tangoplus.tangoq.dialog.SignInDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
@@ -80,6 +81,9 @@ class IntroActivity : AppCompatActivity() {
             insets
         }
         // ------! activity 사전 설정 끝 !------
+
+//        val authDialog = MobileAuthDialogFragment()
+//        authDialog.show(supportFragmentManager, null)
 
         // ------# 접근 방지 #------
 
@@ -393,7 +397,9 @@ class IntroActivity : AppCompatActivity() {
             }
             // 이메일 정보가 없어서 일단은 회원가입 창으로 이동.
             404, 405, 409, 419, 416 -> {
-                val dialog = SignInDialogFragment.newInstance(true)
+                // TODO 이곳에서 일단 sns 회원가입한 적이 없는 계정이 처리 됨.
+                sViewModel.snsJo = responseJo
+                val dialog = SignInDialogFragment()
                 dialog.show(supportFragmentManager, "SignInDialogFragment")
             }
             else -> {
@@ -419,6 +425,26 @@ class IntroActivity : AppCompatActivity() {
                         val dialog = LoginDialogFragment()
                         dialog.show(supportFragmentManager, "LoginDialogFragment")
                     }, 1500)
+                }
+                409 -> {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        Toast.makeText(this@IntroActivity, "기존 이메일 계정으로 로그인을 진행해주세요.", Toast.LENGTH_SHORT).show()
+                    }, 500)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val dialog = LoginDialogFragment()
+                        dialog.show(supportFragmentManager, "LoginDialogFragment")
+                    }, 1500)
+                }
+                4091, 4092, 4093 -> {
+                    val toastText = when (code) {
+                        4091 -> "구글"
+                        4092 -> "네이버"
+                        4093 -> "카카오"
+                        else -> ""
+                    }
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        Toast.makeText(this@IntroActivity, "$toastText 간편 로그인을 진행해주세요.", Toast.LENGTH_SHORT).show()
+                    }, 500)
                 }
                 202 -> {
                     Handler(Looper.getMainLooper()).postDelayed({
