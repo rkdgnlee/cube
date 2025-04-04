@@ -30,7 +30,7 @@ class TrendCurveView @JvmOverloads constructor(
 
     private var points = listOf<Pair<Float, Float>>()
     private var resampledPoints = listOf<Pair<Float, Float>>()
-    private var margin = 20f // 기본 마진 값
+    private var margin = 10f // 기본 마진 값
     private var boundingBox = RectF()
     private val resampleSize = 35
     private var isMirrored = false // 좌우 반전 여부

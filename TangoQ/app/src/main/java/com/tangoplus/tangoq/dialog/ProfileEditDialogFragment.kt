@@ -40,7 +40,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
     lateinit var binding : FragmentProfileEditDialogBinding
     private val svm : SignInViewModel by activityViewModels()
     lateinit var userSn : String
-    private var profilemenulist = mutableListOf<String>()
+    private var profileMenus = mutableListOf<String>()
     private var profileUpdateListener: ProfileUpdateListener? = null
     private lateinit var biometricManager : BiometricManager
     private lateinit var singletonUser : Singleton_t_user
@@ -74,14 +74,27 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
             insets
         }
         binding.ibtnPEDBack.setOnSingleClickListener { dismiss() }
+
+        // 회원탈퇴
+        binding.tvWithDrawal.setOnSingleClickListener {
+            val provider = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("provider") ?: ""
+            Log.v("provider", provider)
+            if (provider == "null" || provider == "") {
+                val dialog = InputDialogFragment.newInstance(2)
+                dialog.show(requireActivity().supportFragmentManager, "InputDialogFragment")
+            } else {
+                Toast.makeText(requireContext(), "소셜로그인으로 로그인한 계정입니다.", Toast.LENGTH_SHORT).show()
+                val withDrawalDialog = WithDrawalDialogFragment()
+                withDrawalDialog.show(requireActivity().supportFragmentManager, "withDrawalDialogFragment")
+            }
+        }
         // ------# 초기 생체인증 init #------
         biometricManager = BiometricManager(this)
         biometricManager.authenticate(
             onSuccess = {
-//                Log.v("개인정보편집", "${svm.User.value}")
                 userSn = svm.User.value?.optString("sn").toString()
                 // ------! 정보 목록 recyclerView 연결 시작 !------
-                profilemenulist = mutableListOf(
+                profileMenus = mutableListOf(
                     "이름",
                     "이메일",
                     "비밀번호",
@@ -91,7 +104,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                     "생년월일",
                     "성별"
                 )
-                setAdapter(profilemenulist)
+                setAdapter(profileMenus)
                 // ------! 개인정보수정 rv 연결 끝 !------
 
                 // ------! 소셜 계정 로그인 연동 시작 !------
@@ -180,7 +193,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         binding.rvPED.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val adapter = ProfileRVAdapter(this@ProfileEditDialogFragment, this@ProfileEditDialogFragment, false, "profileEdit", svm)
         adapter.userJson = svm.User.value ?: JSONObject()
-        adapter.profileMenuList = list
+        adapter.profileMenus = list
         binding.rvPED.adapter = adapter
         binding.sflPED.visibility = View.GONE
         binding.sflPED.stopShimmer()
@@ -190,9 +203,7 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
         super.onResume()
         // full Screen code
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-//        setAdapter(profilemenulist, binding.rvPED)
     }
 
     private fun checkSNSLogin(jsonObject: JSONObject?) : Triple<Boolean, Boolean, Boolean> {

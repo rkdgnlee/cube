@@ -53,36 +53,9 @@ object ExtendedFunctions {
             return {
                 BadgeUtils.detachBadgeDrawable(badgeDrawable, badgeView)
                 sharedPref.edit().putBoolean(badgeKey, false).apply()
-//                Log.v("clickBadge", "badgekey : $badgeKey, clickBadge: ${sharedPref.getBoolean(badgeKey, false)}")
             }
         }
         return null
-    }
-
-    fun dialogFragmentResize(context: Context, df: DialogFragment, width: Float = 0.8f, height: Float = 0.7f) {
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-        if (Build.VERSION.SDK_INT < 30) {
-            val display = windowManager.defaultDisplay
-            val size = Point()
-
-            display.getSize(size)
-
-            val window = df.dialog?.window
-
-            val x = (size.x * width).toInt()
-            val y = (size.y * height).toInt()
-            window?.setLayout(x, y)
-        } else {
-            val rect = windowManager.currentWindowMetrics.bounds
-
-            val window = df.dialog?.window
-
-            val x = (rect.width() * width).toInt()
-            val y = (rect.height() * height).toInt()
-
-            window?.setLayout(x, y)
-        }
     }
 
     fun isKorean(str: String): Boolean {

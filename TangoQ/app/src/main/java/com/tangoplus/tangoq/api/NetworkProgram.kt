@@ -67,6 +67,4 @@ object NetworkProgram {
             }
         }
     }
-
-
 }

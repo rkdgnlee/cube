@@ -1,8 +1,10 @@
-package com.tangoplus.tangoq.fragment
+package com.tangoplus.tangoq.dialog
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.Spannable
@@ -11,18 +13,18 @@ import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.IntroActivity
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.databinding.FragmentWithdrawalBinding
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
+import com.tangoplus.tangoq.databinding.FragmentWithdrawalDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
@@ -31,8 +33,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class WithdrawalFragment : Fragment() {
-    lateinit var binding : FragmentWithdrawalBinding
+class WithDrawalDialogFragment : DialogFragment() {
+    lateinit var binding : FragmentWithdrawalDialogBinding
     private lateinit var singletonUserInstance: Singleton_t_user
     private lateinit var singletonMeasureInstance: Singleton_t_measure
 
@@ -40,15 +42,16 @@ class WithdrawalFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentWithdrawalBinding.inflate(inflater)
+        binding = FragmentWithdrawalDialogBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        binding.ibtnWBack.setOnSingleClickListener { dismiss() }
         // ------# 화면 확장 및 세팅 & 싱글턴 초기화 #------
+
         binding.btnWd.isEnabled = false
         singletonUserInstance = Singleton_t_user.getInstance(requireContext())
         singletonMeasureInstance = Singleton_t_measure.getInstance(requireContext())
@@ -134,5 +137,12 @@ class WithdrawalFragment : Fragment() {
         val colorStateList = ColorStateList(states, colors)
         binding.btnWd.backgroundTintList = colorStateList
         binding.btnWd.isEnabled = isChecked
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 }

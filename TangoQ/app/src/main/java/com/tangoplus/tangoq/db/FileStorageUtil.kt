@@ -271,18 +271,18 @@ object FileStorageUtil {
     enum class FileType {
         IMAGE, VIDEO, JSON
     }
-
-    private fun calculateFileHash(file: File): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        file.inputStream().use { input ->
-            val buffer = ByteArray(1024)
-            var bytesRead: Int
-            while (input.read(buffer).also { bytesRead = it } != -1) {
-                digest.update(buffer, 0, bytesRead)
-            }
-        }
-        return digest.digest().joinToString("") { "%02x".format(it) }
-    }
+//
+//    private fun calculateFileHash(file: File): String {
+//        val digest = MessageDigest.getInstance("SHA-256")
+//        file.inputStream().use { input ->
+//            val buffer = ByteArray(1024)
+//            var bytesRead: Int
+//            while (input.read(buffer).also { bytesRead = it } != -1) {
+//                digest.update(buffer, 0, bytesRead)
+//            }
+//        }
+//        return digest.digest().joinToString("") { "%02x".format(it) }
+//    }
 
 //    fun isFileIntegrityValid(file: File, expectedHash: String): Boolean {
 //        return calculateFileHash(file) == expectedHash

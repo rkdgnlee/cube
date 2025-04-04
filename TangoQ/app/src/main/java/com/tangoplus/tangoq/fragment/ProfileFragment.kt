@@ -116,16 +116,16 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "키오스크 핀번호 재설정",
 
 //            "연동 관리",
-            "푸쉬 알림 설정",
+
             "자주 묻는 질문",
             "문의하기",
-
             "공지사항",
+
+            "알림 설정",
             "앱 버전",
             "개인정보 처리방침",
             "서비스 이용약관",
             "로그아웃",
-            "회원탈퇴"
         )
         setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
         setAdapter(profilemenulist.subList(4,7), binding.rvPHelp, 1)
@@ -208,12 +208,12 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
     private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
         if (index != 0 ) {
             val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", svm)
-            adapter.profileMenuList = list
+            adapter.profileMenus = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         } else {
             val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", svm)
-            adapter.profileMenuList = list
+            adapter.profileMenus = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }

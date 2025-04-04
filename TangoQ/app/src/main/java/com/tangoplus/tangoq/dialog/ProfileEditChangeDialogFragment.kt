@@ -1,34 +1,21 @@
 package com.tangoplus.tangoq.dialog
 
-import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.ContentValues
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
 import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.AlphaAnimation
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -40,30 +27,20 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProfileChangeDialogBinding
-import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
 import com.tangoplus.tangoq.api.NetworkUser.sendMobileOTP
-import com.tangoplus.tangoq.api.NetworkUser.sendPWCode
 import com.tangoplus.tangoq.api.NetworkUser.verifyMobileOTP
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.AuthManager.setRetryAuthMessage
-import com.tangoplus.tangoq.function.AuthManager.setVerifyCountDown
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class ProfileEditChangeDialogFragment : DialogFragment() {
@@ -261,7 +238,35 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                     override fun afterTextChanged(s: Editable?) {
-                        svm.birthdayCondition.value = birthdayPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        val patternMatches = birthdayPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        var isBeforeToday = false
+                        if (patternMatches && s?.length == 8) {
+                            try {
+                                val inputYear = s.substring(0, 4).toInt()
+                                val inputMonth = s.substring(4, 6).toInt()
+                                val inputDay = s.substring(6, 8).toInt()
+
+                                // 현재 날짜 정보 (어제까지만 허용하므로 2025-04-03까지)
+                                val currentYear = 2025
+                                val currentMonth = 4
+                                val currentDay = 3  // 어제 날짜 (4월 3일)
+
+                                // 날짜 비교
+                                isBeforeToday = when {
+                                    inputYear < currentYear -> true
+                                    inputYear > currentYear -> false
+                                    else -> when {  // 같은 연도
+                                        inputMonth < currentMonth -> true
+                                        inputMonth > currentMonth -> false
+                                        else -> inputDay <= currentDay  // 같은 월
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                isBeforeToday = false
+                            }
+                        }
+                        svm.birthdayCondition.value = patternMatches && isBeforeToday
+
                         if (svm.birthdayCondition.value == true) {
                             enabledButton()
                         } else {

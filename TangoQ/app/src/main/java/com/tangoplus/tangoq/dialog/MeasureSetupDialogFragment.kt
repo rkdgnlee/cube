@@ -20,13 +20,9 @@ import androidx.lifecycle.MediatorLiveData
 import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentMeasureSetupDialogBinding
-import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
-import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import java.util.regex.Pattern
 
 class MeasureSetupDialogFragment : DialogFragment() {
@@ -120,7 +116,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
                     binding.btnMSDFinish.isEnabled = isEnabled
                     binding.btnMSDFinish.backgroundTintList = ColorStateList.valueOf(resources.getColor(
                         if (isEnabled) R.color.mainColor else R.color.subColor400
-                    ))
+                        , null))
                 }
                 binding.btnMSDDeny.setOnSingleClickListener {
                     dismiss()
@@ -142,7 +138,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
                     binding.btnMSDFinish.isEnabled = isEnabled
                     binding.btnMSDFinish.backgroundTintList = ColorStateList.valueOf(resources.getColor(
                         if (isEnabled) R.color.mainColor else R.color.subColor400
-                    ))
+                    , null))
                 }
             }
             else -> {
@@ -178,10 +174,9 @@ class MeasureSetupDialogFragment : DialogFragment() {
             dismiss()
         }
     }
-    @Deprecated("Deprecated in Java")
-    @SuppressLint("UseCompatLoadingForDrawables")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+
+    override fun onResume() {
+        super.onResume()
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
     }
 

@@ -441,9 +441,9 @@ object NetworkUser {
                     }
 
                     response.body?.string()?.let { responseString ->
-                        val bodyJo = JSONObject(responseString)
-                        Log.v("mobileOTP보내기", "$bodyJo")
-                        return@withContext bodyJo.optInt("status")
+                        val responseJo = JSONObject(responseString)
+                        Log.v("mobileOTP보내기", "$responseJo")
+                        return@withContext responseJo.optInt("status")
                     }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -535,9 +535,9 @@ object NetworkUser {
                     }
 
                     response.body?.string()?.let { responseString ->
-                        val bodyJo = JSONObject(responseString)
-                        Log.v("mobileOTP보내기", "$bodyJo")
-                        return@withContext bodyJo.optInt("status")
+                        val responseJo = JSONObject(responseString)
+                        Log.v("mobileOTP보내기", "$responseJo")
+                        return@withContext responseJo.optInt("status")
                     }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -626,7 +626,7 @@ object NetworkUser {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
                         Log.e("mobileOTP실패", "ResponseCode: ${response.code}")
-                        return@withContext null
+                        return@withContext response.code
                     }
 
                     response.body?.string()?.let { responseString ->
@@ -776,7 +776,7 @@ object NetworkUser {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
                         Log.e("emailVerify", "ResponseCode: ${response.code}")
-                        return@withContext null
+                        return@withContext response.code
                     }
 
                     response.body?.string()?.let { responseString ->
@@ -802,34 +802,6 @@ object NetworkUser {
                 500
             }
         }
-    }
-
-    fun findUserEmail(myUrl: String, joBody: String, callback: (String) -> Unit) {
-
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = joBody.toRequestBody(mediaType)
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("${myUrl}find_user_id.php")
-            .post(body)
-            .build()
-        client.newCall(request).enqueue(object: Callback{
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("IDPW찾기Failed", "Failed to execute request!")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                 Log.v("userId", "$responseBody")
-                val jo = responseBody?.let { JSONObject(it) }
-                val id = jo?.optString("email")
-                if (id != null) {
-                    callback(id)
-                } else {
-                    callback("")
-                }
-            }
-        })
     }
 
     fun verifyPWCode(myUrl: String, joBody: String, callback: (JSONObject?) -> Unit) {
@@ -977,38 +949,7 @@ object NetworkUser {
             }
         })
     }
-    
-    // ------# webView에 PASS창 띄우기 #------
-    fun sendMOKResult(myUrl: String, bodyJo: String ,callback: (JSONObject?) -> Unit )  {
-        val mediaType = "application/json charset=utf-8".toMediaTypeOrNull()
-        val body = bodyJo.toRequestBody(mediaType)
-        val client = OkHttpClient.Builder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(5, TimeUnit.SECONDS)
-            .writeTimeout(5, TimeUnit.SECONDS)
-            .build()
-        val request = Request.Builder()
-            .url("${myUrl}sendMOKResult")
-            .post(body)
-            .build()
-        client.newCall(request).enqueue(object: Callback{
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("Token응답실패", "Failed to execute request")
-                callback(null)
-            }
 
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                if (responseBody != null) {
-                    Log.v("MOKLog", responseBody)
-                }
-                val jo = JSONObject(responseBody.toString())
-                callback(jo)
-            }
-        })
-    }
-    
-    
     // ------! 프로필 사진 시작 !------
     suspend fun sendProfileImage(context: Context, myUrl: String, sn: String, requestBody: RequestBody, callback: (String) -> Unit) {
         val client = getClient(context)

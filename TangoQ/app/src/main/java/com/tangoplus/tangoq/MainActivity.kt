@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -22,27 +21,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
-import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.db.MeasureDatabase
-import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import com.tangoplus.tangoq.function.WifiManager
-import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlertDialogFragment
+import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
-import com.tangoplus.tangoq.fragment.WithdrawalFragment
+import com.tangoplus.tangoq.dialog.WithDrawalDialogFragment
+import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.viewmodel.AppViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -131,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                 is AnalyzeFragment -> binding.bnbMain.selectedItemId = R.id.analyze
                 is MeasureFragment, is MeasureHistoryFragment, is MeasureDetailFragment -> binding.bnbMain.selectedItemId = R.id.measure
                 is ExerciseFragment, is ExerciseDetailFragment -> binding.bnbMain.selectedItemId = R.id.exercise
-                is ProfileFragment, is WithdrawalFragment -> binding.bnbMain.selectedItemId = R.id.profile
+                is ProfileFragment -> binding.bnbMain.selectedItemId = R.id.profile
             }
         }
 
@@ -247,7 +246,12 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // ------! 0일 때만 피드백 켜지게 !------
-        val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
+        val feedbackData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent?.getSerializableExtra("feedback_finish", Triple::class.java) as? Triple<Int, Int, Int>
+        } else {
+            @Suppress("DEPRECATION")
+            intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
+        }
 //        Log.v("intent>feedback", "$feedbackData")
         if (feedbackData != null) {
             if (pvm.isDialogShown.value == false) {

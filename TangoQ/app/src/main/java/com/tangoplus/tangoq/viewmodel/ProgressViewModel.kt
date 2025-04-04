@@ -54,8 +54,6 @@ class ProgressViewModel : ViewModel() {
         selectedDailyTime.value = 0
     }
 
-    var isFirstRun = false
-
     fun calculateCurrentSeq(weekIndex: Int): Int {
         return if (weekIndex <= currentWeek) {
             // 현재 1~4주차 까지 다들어간 곳에서 seq를 찾는데, 여기서 해당 값을 통해 받아와야함

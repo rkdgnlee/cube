@@ -83,7 +83,9 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
                 android:gravity="end"
                 app:boxBackgroundColor="@color/secondContainerColor"
                 app:boxBackgroundMode="outline"
@@ -96,7 +98,6 @@
                 app:endIconTint="@color/subColor800"
                 app:layout_constraintBottom_toBottomOf="@+id/tvMHCount"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent="0.05"
                 app:layout_constraintTop_toTopOf="@+id/tvMHCount"
                 app:layout_constraintWidth_percent="0.2">
 

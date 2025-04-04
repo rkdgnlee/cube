@@ -90,7 +90,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                 val currentItem = subCategorys[position]
                 val categoryName=  currentItem.first + " (${currentItem.second})"
                 holder.tvSCName.text = categoryName
-                val adapterPosition = holder.adapterPosition
+                val adapterPosition = holder.bindingAdapterPosition
                 holder.tvSCName.setBackgroundResource(R.drawable.bckgnd_rectangle_20)
                 if (adapterPosition == selectedPosition) {
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondaryColor)

@@ -303,52 +303,56 @@ class MainFragment : Fragment() {
     private fun existedMeasurementGuide() {
         binding.clM2.isEnabled = false
         binding.clM2.isClickable = false
-        TooltipManager.createGuide(
-            context = requireContext(),
-            text = "최근 측정에서 나온\n위험 부위를 탭해서 확인해보세요",
-            anchor = binding.rvM1,
-            gravity = Gravity.BOTTOM,
-            dismiss = {
+        lifecycleScope.launch {
+            TooltipManager.createGuide(
+                context = requireContext(),
+                text = "최근 측정에서 나온\n위험 부위를 탭해서 확인해보세요",
+                anchor = binding.rvM1,
+                gravity = Gravity.BOTTOM,
+                dismiss = {
 
-                TooltipManager.createGuide(
-                    context = requireContext(),
-                    text = "탭하여 지난 측정 결과 선택하세요\n측정 결과와 지난 프로그램을 볼 수 있습니다",
-                    anchor = binding.tvMMeasureDate,
-                    gravity = Gravity.BOTTOM,
-                    dismiss = {
-                        TooltipManager.createGuide(
-                            context = requireContext(),
-                            text = "탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
-                            anchor = binding.rvM2,
-                            gravity = Gravity.TOP,
-                            dismiss = {
-                                binding.clM2.isEnabled = false
-                                binding.clM2.isClickable = false
-                            })
-                    }
-                )
-            }
-        )
+                    TooltipManager.createGuide(
+                        context = requireContext(),
+                        text = "탭하여 지난 측정 결과 선택하세요\n측정 결과와 지난 프로그램을 볼 수 있습니다",
+                        anchor = binding.tvMMeasureDate,
+                        gravity = Gravity.BOTTOM,
+                        dismiss = {
+                            TooltipManager.createGuide(
+                                context = requireContext(),
+                                text = "탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
+                                anchor = binding.rvM2,
+                                gravity = Gravity.TOP,
+                                dismiss = {
+                                    binding.clM2.isEnabled = false
+                                    binding.clM2.isClickable = false
+                                })
+                        }
+                    )
+                }
+            )
+        }
     }
 
     private fun notExistedMeasurementGuide() {
-        TooltipManager.createGuide(
+        lifecycleScope.launch {
+            TooltipManager.createGuide(
 
-            context = requireContext(),
-            text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
-            anchor = binding.tvMOverall,
-            gravity = Gravity.BOTTOM,
-            dismiss = {
+                context = requireContext(),
+                text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
+                anchor = binding.tvMOverall,
+                gravity = Gravity.BOTTOM,
+                dismiss = {
 
-                TooltipManager.createGuide(
-                    context = requireContext(),
-                    text = "측정을 시작해서 몸의 균형상태를 확인해 보세요",
-                    anchor = binding.btnMProgram,
-                    gravity = Gravity.BOTTOM,
-                    dismiss = {
-                    }
-                )
-            }
-        )
+                    TooltipManager.createGuide(
+                        context = requireContext(),
+                        text = "측정을 시작해서 몸의 균형상태를 확인해 보세요",
+                        anchor = binding.btnMProgram,
+                        gravity = Gravity.BOTTOM,
+                        dismiss = {
+                        }
+                    )
+                }
+            )
+        }
     }
 }

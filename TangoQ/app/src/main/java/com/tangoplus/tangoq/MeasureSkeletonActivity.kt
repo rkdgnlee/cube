@@ -39,6 +39,7 @@ import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -108,6 +109,7 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.getRealDistanceY
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.MeasureSetupDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getServerUUID
 import com.tangoplus.tangoq.function.SoundManager
 import com.tangoplus.tangoq.function.SoundManager.playSound
@@ -495,6 +497,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 }
             }.show()
         }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         // ------! STEP CIRCLE !------
         binding.svMeasureSkeleton.state.animationType(StepView.ANIMATION_CIRCLE)
@@ -932,6 +935,22 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
         // ------! 수직 감도 사라지기 보이기 끝 !------
     }
+
+    // 뒤로가기 버튼 잠금
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            MaterialAlertDialogBuilder(this@MeasureSkeletonActivity, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                setMessage("측정을 종료하시겠습니까?")
+                setPositiveButton("예") { _, _ ->
+                    finish()
+                }
+                setNegativeButton("아니오") { _, _ -> }
+                show()
+            }
+        }
+    }
+
+
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
             val z = event.values[2]

@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
@@ -98,12 +99,11 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             }
         }
     }
-    @Deprecated("Deprecated in Java")
-    @SuppressLint("UseCompatLoadingForDrawables")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+
+    override fun onResume() {
+        super.onResume()
         dialog?.window?.setDimAmount(0.9f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20))
+        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle_20))
         dialogFragmentResize()
     }
     private fun dialogFragmentResize() {

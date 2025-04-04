@@ -30,10 +30,8 @@ import com.tangoplus.tangoq.dialog.InputDialogFragment
 import com.tangoplus.tangoq.dialog.PinChangeDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.ProfileFragment
-import com.tangoplus.tangoq.fragment.WithdrawalFragment
 import com.tangoplus.tangoq.function.AuthManager.maskedProfileData
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import org.json.JSONObject
@@ -45,7 +43,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                        val case: String,
                        private val vm: ViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
-    var profileMenuList = mutableListOf<String>()
+    var profileMenus = mutableListOf<String>()
 
     private val viewTypeNormal = 0
     private val viewTypeSpecial = 1
@@ -78,7 +76,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = profileMenuList[position]
+        val currentItem = profileMenus[position]
         when (holder.itemViewType) {
             viewTypeNormal -> {
                 val ViewHolder = holder as ViewHolder
@@ -95,7 +93,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             "앱 버전" -> holder.ivPf.setImageResource(R.drawable.icon_copy)
                             "개인정보 처리방침" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
                             "서비스 이용약관" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
-                            "로그아웃", "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
+                            "로그아웃"-> holder.ivPf.setImageResource(R.drawable.icon_logout)
                         }
                         // ------! 앱 버전 text 설정 시작 !------
                         ViewHolder.tvPfSettingsName.text = currentItem
@@ -170,23 +168,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                         setNegativeButton("아니오") { _, _ -> }
                                     }.show()
                                 }
-                                "회원탈퇴" -> {
-                                    val provider = Singleton_t_user.getInstance(fragment.requireContext()).jsonObject?.optString("provider") ?: ""
-                                    Log.v("provider", provider)
-                                    if (provider == "null" || provider == "") {
-                                        val dialog = InputDialogFragment.newInstance(2)
-                                        dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
-                                    } else {
-                                        Toast.makeText(fragment.requireContext(), "소셜로그인으로 로그인한 계정입니다.", Toast.LENGTH_SHORT).show()
-                                        fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                                            setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                                            replace(R.id.flMain, WithdrawalFragment())
 
-                                            commit()
-                                        }
-                                    }
-
-                                }
                             }
                         }
                     }
@@ -342,7 +324,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
         }
     }
     override fun getItemCount(): Int {
-        return profileMenuList.size
+        return profileMenus.size
     }
 
 

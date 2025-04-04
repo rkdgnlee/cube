@@ -11,7 +11,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
@@ -24,12 +23,12 @@ import com.kakao.sdk.common.KakaoSdk
 import com.navercorp.nid.NaverIdLoginSDK
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.databinding.ActivitySplashBinding
-import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.api.NetworkUser.trySelfLogin
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedJwtJo
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
@@ -44,7 +43,6 @@ import kotlinx.coroutines.launch
 class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
-    private lateinit var launcher: ActivityResultLauncher<Intent>
     private lateinit var ssm : SaveSingletonManager
     private val timeoutHandler = Handler(Looper.getMainLooper())
     private val timeoutRunnable = Runnable {
@@ -96,8 +94,6 @@ class SplashActivity : AppCompatActivity() {
         KakaoSdk.init(this, getString(R.string.kakao_client_id))
         firebaseAuth = Firebase.auth
 
-        val googleUserExist = Firebase.auth.currentUser
-        val naverTokenExist = NaverIdLoginSDK.getState()
         ssm = SaveSingletonManager(this@SplashActivity, this)
         // ------! API 초기화 끝 !------
 
@@ -105,7 +101,7 @@ class SplashActivity : AppCompatActivity() {
         when (isNetworkAvailable(this)) {
             true -> {
                 // ------! 푸쉬 알림 시작 !-----
-
+                AlarmReceiver()
                 FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
                         Log.w("firebaseMessaging", "FETCHING FCM registration token failed : ${task.exception?.message}")
@@ -118,7 +114,7 @@ class SplashActivity : AppCompatActivity() {
                 // ------! 푸쉬 알림 끝 !------
 
                 // ------! 인 앱 알림 시작 !------
-                AlarmReceiver()
+
                 cacheDir.deleteRecursively()
                 // ------# 다크모드 및 설정 불러오기  #------
                 val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
@@ -129,13 +125,13 @@ class SplashActivity : AppCompatActivity() {
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
 
-
-                    if (getEncryptedJwtJo(this@SplashActivity)?.let { isValidToken(it) } == true) {
+                if (getEncryptedJwtJo(this@SplashActivity)?.let { isValidToken(it) } == true) {
                     lifecycleScope.launch(Dispatchers.Main) {
+                        // TODO trySelfLogin에서 버전에 대해서 알려주고 여기서 로그인 전 해당 데이터를 토대로 앱이 업데이트가 필수적이라면 앱스토어로 경로 이동해줘야함.
                         trySelfLogin(getString(R.string.API_user), this@SplashActivity, getEncryptedRefreshJwt(this@SplashActivity)) { jo ->
                             if (jo != null) {
                                 storeUserInSingleton(this@SplashActivity, jo)
-//                                Log.v("Spl>selfLogin", "자체 자동 로그인 성공: ${jo} ${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
+    //                                Log.v("Spl>selfLogin", "자체 자동 로그인 성공: ${jo} ${Singleton_t_user.getInstance(this@SplashActivity).jsonObject}")
                                 val userUUID = Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("user_uuid") ?: ""
                                 val userInfoSn =  Singleton_t_user.getInstance(this@SplashActivity).jsonObject?.optString("sn")?.toInt() ?: 0
                                 ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
@@ -173,7 +169,7 @@ class SplashActivity : AppCompatActivity() {
         val name = getString(R.string.channel_name)
         val descriptionText = getString(R.string.channel_description)
         val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val mChannel = NotificationChannel(descriptionText , name, importance)
+        val mChannel = NotificationChannel(name, descriptionText , importance)
         mChannel.description = descriptionText
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -193,7 +189,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun navigateDeepLink() {
         val data: Uri? = intent?.data
-//        Log.v("splash>deeplink", "data: $data")
+        Log.v("splash>deeplink", "data: $data")
         if (data != null) {
             // 딥링크 처리
             DeepLinkManager.handleDeepLink(this, data)

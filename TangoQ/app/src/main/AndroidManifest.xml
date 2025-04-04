@@ -131,6 +131,10 @@
         </provider>
 
         <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="TangoBody" />
+
+        <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/app_logo" />
         <meta-data
@@ -142,7 +146,6 @@
         <meta-data
             android:name="androidx.work.impl.WorkManagerInitializer"
             android:value="true" />
-
         <receiver
             android:name=".broadcastReceiver.AlarmReceiver"
             android:exported="true" />

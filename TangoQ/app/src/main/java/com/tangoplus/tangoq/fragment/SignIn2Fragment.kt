@@ -274,9 +274,9 @@ class SignIn2Fragment : Fragment() {
                                             }
                                         }
                                     }
-                                    409 -> {
-
-                                    }
+                                    400 -> Toast.makeText(requireContext(), "사용자 정보가 올바르지 않습니다. 입력한 정보를 확인해주세요", Toast.LENGTH_LONG).show()
+                                    500 -> Toast.makeText(requireContext(), "서버 에러입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
+                                    else -> Toast.makeText(requireContext(), "회원가입을 진행할 수 없습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
                                 }
                             }
                         }
@@ -317,9 +317,18 @@ class SignIn2Fragment : Fragment() {
                     val statusCode = sendMobileOTP(getString(R.string.API_user), bodyJo.toString())
                     withContext(Dispatchers.Main) {
                         when (statusCode) {
-                            1 -> {
+                            1, 200, 201 -> {
                                 Toast.makeText(requireContext(), "인증번호를 전송했습니다. 휴대폰을 확인해주세요", Toast.LENGTH_SHORT).show()
                                 setReSendMessage()
+                            }
+                            401 -> {
+                                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                    setTitle("알림")
+                                    setMessage("만료 혹은 올바르지 않은 인증번호입니다. 다시 시도해주세요")
+                                    setPositiveButton("예", {_, _ ->
+                                        binding.etMobileCode.setText("")
+                                    })
+                                }.show()
                             }
                             else -> {
                                 Toast.makeText(requireContext(), "인증번호 전송에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
@@ -363,13 +372,9 @@ class SignIn2Fragment : Fragment() {
                 MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                     setMessage("이미 존재하는 핸드폰 번호입니다. 재확인 후 다시 시도해주세요")
                     setPositiveButton("예", { _, _ ->
-                        binding.etMobile.apply {
-
-                        }
+                        binding.etMobile.setText("")
                     })
-                    setNegativeButton("아니오", {_, _ ->
 
-                    })
                 }.show()
             }
             400 -> {

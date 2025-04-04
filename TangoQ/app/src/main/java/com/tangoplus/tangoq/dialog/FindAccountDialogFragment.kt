@@ -189,7 +189,7 @@ class FindAccountDialogFragment : DialogFragment() {
         val pwTextWatcher = pwPatternCheck(svm, binding.etFADResetPassword, binding.tvFADPWCondition, false)
         binding.etFADResetPassword.addTextChangedListener(pwTextWatcher)
 
-        val pwRepeatTextWatcher = pwPatternCheck(svm, binding.etFADResetPassword, binding.tvFADPWCondition, true)
+        val pwRepeatTextWatcher = pwPatternCheck(svm, binding.etFADResetPasswordConfirm, binding.tvFADPWVerifyCondition, true)
         binding.etFADResetPasswordConfirm.addTextChangedListener(pwRepeatTextWatcher)
 
         binding.btnFADConfirm.setOnSingleClickListener{
@@ -203,11 +203,8 @@ class FindAccountDialogFragment : DialogFragment() {
                     resetPW(getString(R.string.API_user), svm.resetJwt, bodyJo.toString()) { code ->
                         when (code) {
                             200 -> {
-                                val intent = Intent(requireActivity(), IntroActivity::class.java)
-                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                intent.putExtra("SignInFinished", 202)
+                                Toast.makeText(requireContext(), "비밀번호 변경이 완료됐습니다. 로그인해주세요 !", Toast.LENGTH_SHORT).show()
                                 dismiss()
-                                startActivity(intent)
                             }
                             400 -> Toast.makeText(requireContext(), "올바르지 않은 요청입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
                             else -> {
@@ -343,11 +340,27 @@ class FindAccountDialogFragment : DialogFragment() {
                                     imm.showSoftInput(binding.etFADAuthNumber, InputMethodManager.SHOW_IMPLICIT)
                                 }, 250)
                             }
-
+                            404 -> {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "올바르지 않은 휴대폰 번호 입니다. 다시 시도해주세요.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                enabledInputData()
+                                binding.etFADAuth.setText("")
+                                binding.etFADAuth.apply {
+                                    requestFocus()
+                                    setText("")
+                                    postDelayed({
+                                        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                                        imm.showSoftInput(binding.etFADAuth, InputMethodManager.SHOW_IMPLICIT)
+                                    }, 250)
+                                }
+                            }
                             else -> {
                                 Toast.makeText(
                                     requireContext(),
-                                    "인증번호 전송에 실패했습니다. 휴대폰 번호를 확인해주세요",
+                                    "인증번호 전송에 실패했습니다. 잠시 후 다시 시도해주세요",
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 enabledInputData()
@@ -372,6 +385,12 @@ class FindAccountDialogFragment : DialogFragment() {
     }
 
     private fun verifyMobileCode() {
+        if (dialog?.isShowing == true) {
+            loadingDialog?.show(
+                requireActivity().supportFragmentManager,
+                "LoadingDialogFragment"
+            )
+        }
         val configureMobile = svm.passMobile.value?.replace("-", "")
         val bodyJo = JSONObject().apply {
             put("mobile", configureMobile)
@@ -382,6 +401,13 @@ class FindAccountDialogFragment : DialogFragment() {
             val findEmail = verityMobileOTPToFindEmail(getString(R.string.API_user), bodyJo.toString())
             Log.v("findEmail", "$findEmail")
             withContext(Dispatchers.Main) {
+
+                // 로딩창 닫기
+                if (dialog?.isShowing == true) {
+                    loadingDialog?.dismiss()
+                }
+
+                // 경로 처리
                 when (findEmail) {
                     "otpFailed" -> {
                         svm.mobileCondition.value = true
@@ -553,29 +579,33 @@ class FindAccountDialogFragment : DialogFragment() {
                         loadingDialog?.dismiss()
                     }
                     // 결과 처리
-                    if (code in listOf(200, 201)) {
-                        Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT).show()
-                        // 재전송안내 문구 세팅
-                        binding.tvFADReAuth.visibility = View.VISIBLE
-                        setReSendMessage()
+                    when (code) {
+                        201, 201 -> {
+                            Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT).show()
+                            // 재전송안내 문구 세팅
+                            binding.tvFADReAuth.visibility = View.VISIBLE
+                            setReSendMessage()
 
-                        // 버튼 활성화
-                        disabledSendButton()
-                        enabledInputCode()
-                        binding.btnFADConfirm.visibility = View.GONE
+                            // 버튼 활성화
+                            disabledSendButton()
+                            enabledInputCode()
+                            binding.btnFADConfirm.visibility = View.GONE
 
-                        binding.etFADAuthNumber.apply {
-                            requestFocus()
-                            postDelayed({
-                                val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                                imm.showSoftInput(binding.etFADAuthNumber, InputMethodManager.SHOW_IMPLICIT)
-                            }, 250)
+                            binding.etFADAuthNumber.apply {
+                                requestFocus()
+                                postDelayed({
+                                    val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                                    imm.showSoftInput(binding.etFADAuthNumber, InputMethodManager.SHOW_IMPLICIT)
+                                }, 250)
+                            }
                         }
-
-                    } else {
-                        Toast.makeText(requireContext(), "이메일이 올바르지 않습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                        404 -> {
+                            Toast.makeText(requireContext(), "존재하지 않는 계정입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            Toast.makeText(requireContext(), "이메일이 올바르지 않습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                        }
                     }
-
                 }
             }
             setNegativeButton("아니오", null)
@@ -605,7 +635,11 @@ class FindAccountDialogFragment : DialogFragment() {
 
                         binding.btnFADConfirm.text = "비밀번호 재설정"
                         binding.btnFADConfirm.visibility = View.VISIBLE
-
+                        binding.etFADResetPassword.apply {
+                            requestFocus()
+                            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                            imm.showSoftInput(binding.etFADAuthNumber, InputMethodManager.SHOW_IMPLICIT)
+                        }
                         // 비밀번호 재설정 창이 나오고 일치 여부 observe
                         svm.pwBothTrue.observe(viewLifecycleOwner) {
                             binding.btnFADConfirm.isEnabled = it

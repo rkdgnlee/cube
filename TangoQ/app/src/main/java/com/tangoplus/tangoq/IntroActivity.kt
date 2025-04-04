@@ -47,6 +47,7 @@ import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserDeleteJson
 import com.tangoplus.tangoq.api.NetworkUser.getUserBySdk
+import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.dialog.MobileAuthDialogFragment
 import com.tangoplus.tangoq.dialog.SignInDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
@@ -82,8 +83,7 @@ class IntroActivity : AppCompatActivity() {
         }
         // ------! activity 사전 설정 끝 !------
 
-//        val authDialog = MobileAuthDialogFragment()
-//        authDialog.show(supportFragmentManager, null)
+
 
         // ------# 접근 방지 #------
 
@@ -324,11 +324,20 @@ class IntroActivity : AppCompatActivity() {
         val status = responseJo.optInt("status")
         when (status) {
             200 -> {
-                // 해당 이메일 정보가 이미 있는데 소셜 로그인으로 기존에 한 경우
-
+                // 해당 이메일 정보가 이미 있는데 다시 누른 경우
+                val loginData = responseJo.optJSONObject("login_data")
+                if (loginData != null) {
+                    storeUserInSingleton(this@IntroActivity, loginData)
+                    val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid") ?: ""
+                    val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt() ?: 0
+                    ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                        mainInit()
+                    }
+                }
             }
             201 -> {
-                // 해당 이메일 정보가 있긴한데, 자체 회원가입으로 진행한 계정이 있을 경우
+                // 해당 이메일 정보가 있긴한데, 자체 회원가입으로 진행한 계정이 있을 경우 연동 여부를 물어야함
+                // TODO -> 일단 response에 다 담겨옴 (내가 이걸 가지고 있다가 연동 하지않는 창을 띄운 후 -> 아니오 일경우 로그인으로 경로 이동 -> 예일 경우 update해버림 됨.
 
             }
             202 -> {
@@ -339,61 +348,16 @@ class IntroActivity : AppCompatActivity() {
                 bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
                     override fun onFinish(agree: Boolean) {
                         if (agree) {
-
-                            // 업데이트를 한다? -> 강제로 회원가입이 된거임. 엄격하게 필수동의항목을 동의하지 않으면 회원가입X이기 때문에 -> 정보를 넣어서 t_user_info에 정보가 있는지에 대해 판단해주는 api가 있으면 수정 가능.
-//                            jsonObj.put("sms_receive", if (sViewModel.agreementMk1.value == true) "1" else "0")
-//                            jsonObj.put("email_receive", if (sViewModel.agreementMk2.value == true) "1" else "0")
-//                            CoroutineScope(Dispatchers.IO).launch {
-//                                fetchUserUPDATEJson(this@IntroActivity, getString(R.string.API_user), jsonObj.toString(), jo.optInt("sn").toString())
-//                            }
-//                            Log.v("Intro>SMS", "$jsonObj")
-//                            Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-//
-//                             기존 입력 jo + 동의 항목인 jsonObj 통합
-//                            jo.put("sms_receive", "1")
-//                            jo.put("email_receive", "1")
-//                            jo.put("device_sn", "1")
-
-//                            storeUserInSingleton(this@IntroActivity, jo)
-                            createKey(getString(R.string.SECURE_KEY_ALIAS))
-                            Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
-                            val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")
-                            val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()
-                            if (userUUID != null && userInfoSn != null) {
-                                ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
-                                    mainInit()
-                                }
-                            }
+                            prepareLogin()
                         } else {
-                            // ------! 동의 하지 않음 -> 삭제 후 intro 유지 !------
-                            if (Firebase.auth.currentUser != null) {
-                                Firebase.auth.signOut()
-                                Log.d("로그아웃", "Firebase sign out successful")
-                            } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
-                                NaverIdLoginSDK.logout()
-                                Log.d("로그아웃", "Naver sign out successful")
-                            } else if (AuthApiClient.instance.hasToken()) {
-                                UserApiClient.instance.logout { error->
-                                    if (error != null) {
-                                        Log.e("로그아웃", "KAKAO Sign out failed", error)
-                                    } else {
-                                        Log.e("로그아웃", "KAKAO Sign out successful")
-                                    }
-                                }
-                            }
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                fetchUserDeleteJson(this@IntroActivity, getString(R.string.API_user), "")
-                                withContext(Dispatchers.Main) {
-                                    this@IntroActivity.let { Toast.makeText(it, "이용약관 동의가 있어야 서비스 이용이 가능합니다", Toast.LENGTH_SHORT).show() }
-                                    enabledAllLoginBtn()
-                                }
-                            }
+
                         }
                     }
                 })
             }
             203 -> {
-
+                val authDialog = MobileAuthDialogFragment()
+                authDialog.show(supportFragmentManager, null)
             }
             // 이메일 정보가 없어서 일단은 회원가입 창으로 이동.
             404, 405, 409, 419, 416 -> {
@@ -446,24 +410,6 @@ class IntroActivity : AppCompatActivity() {
                         Toast.makeText(this@IntroActivity, "$toastText 간편 로그인을 진행해주세요.", Toast.LENGTH_SHORT).show()
                     }, 500)
                 }
-                202 -> {
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        Toast.makeText(this@IntroActivity, "수정이 완료됐습니다\n로그인을 진행해주세요 !", Toast.LENGTH_SHORT).show()
-                    }, 500)
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        val dialog = LoginDialogFragment()
-                        dialog.show(supportFragmentManager, "LoginDialogFragment")
-                    }, 1500)
-                }
-                409 -> {
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        Toast.makeText(this@IntroActivity, "잘못된 접근입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                    }, 500)
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        val dialog = LoginDialogFragment()
-                        dialog.show(supportFragmentManager, "LoginDialogFragment")
-                    }, 1200)
-                }
                 402 -> {
                     Handler(Looper.getMainLooper()).postDelayed({
                         Toast.makeText(this@IntroActivity, "이미 가입된 회원입니다. 아이디/비밀번호 찾기를 진행해주세요", Toast.LENGTH_SHORT).show()
@@ -508,5 +454,16 @@ class IntroActivity : AppCompatActivity() {
         binding.btnOAuthLoginImg.isEnabled = true
         binding.btnIntroLogin.isEnabled = true
         binding.btnIntroSignIn.isEnabled = true
+    }
+    private fun prepareLogin() {
+        createKey(getString(R.string.SECURE_KEY_ALIAS))
+        Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(this@IntroActivity).jsonObject}")
+        val userUUID = Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("user_uuid")
+        val userInfoSn =  Singleton_t_user.getInstance(this@IntroActivity).jsonObject?.optString("sn")?.toInt()
+        if (userUUID != null && userInfoSn != null) {
+            ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
+                mainInit()
+            }
+        }
     }
 }

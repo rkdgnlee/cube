@@ -252,7 +252,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     } else {
                         val fileName = urlTuples[index].measure_server_file_name
                         val jsonName = urlTuples[index].measure_server_json_name
-//                        Log.v("urlTuples", "jpg: ${fileName}, json: $jsonName")
                         saveJobs.add(async {
                             try {
                                 saveFileFromUrl(context, fileName, FileStorageUtil.FileType.IMAGE)
@@ -274,9 +273,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                 }
 
                 Log.v("downloadFiles", "Total save jobs")
-
                 saveJobs.awaitAll()
-
                 Log.v("파일다운로드", "finish saveJobs")
                 Result.success(Unit)
             } catch (e: ClassNotFoundException) {
@@ -368,14 +365,11 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             val mDao = md.measureDao()
 
             val info = mDao.getInfoByMobileSn(mobileInfoSn)
-//            Log.v("1itemInfo", "$info")
             val statics = mutableListOf<MeasureStatic>()
             for (i in 0 until mobileStaticSns.size) {
                 statics.add(mDao.getStaticByMobileSn(mobileStaticSns[i]))
-//                Log.v("1itemStatic$i", "${statics[i]}")
             }
             val dynamic = mDao.getDynamicByMobileSn(mobileDynamicSn)
-//            Log.v("1itemDynamic", "$dynamic")
             val ja = JSONArray()
 
             val uris = mutableListOf<String>()
@@ -405,9 +399,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             }
 
             val dangerParts =  getDangerParts(info)
-//            Log.v("dangerParts", "$dangerParts")
+
             if (info.sn != null) {
-//                Log.v("싱글턴Measure넣기전", "info.sn : ${info.sn}")
                 val measureVO = MeasureVO(
                     deviceSn = 0,
                     sn = info.sn,
@@ -514,7 +507,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             }
         }
     }
-
 
     // 최근 measureResult를 Room에서 꺼내서 만들기 - 없는 값만 확인후 추가.
     fun MeasureStatic.toJson(): String {

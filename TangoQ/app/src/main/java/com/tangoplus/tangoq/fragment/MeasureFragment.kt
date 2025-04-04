@@ -341,6 +341,7 @@ class MeasureFragment : Fragment() {
                 lcLegend.formSize = 0f
             }
             lineChart.apply {
+                setExtraOffsets(22f, 0f ,22f ,0f)
                 data = LineData(lcLineDataSet)
 //                animateX(1000, Easing.EaseInOutBack)
                 setTouchEnabled(true)

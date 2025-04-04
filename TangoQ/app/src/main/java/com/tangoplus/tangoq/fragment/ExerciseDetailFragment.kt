@@ -88,13 +88,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
-//        binding.ibtnEDBack.setOnSingleClickListener {
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flMain, ExerciseFragment())
-//                commit()
-//            }
-//        }
-//        Log.v("PTD에서나옴", "$categoryId, $sn")
+
         binding.sflED.startShimmer()
         binding.tvEDMainCategoryName.text = when (categoryId?.get(0)) {
             1 -> "기본 밸런스 및 스트레칭"

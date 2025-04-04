@@ -21,6 +21,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.api.NetworkUser.sendMobileOTP
 import com.tangoplus.tangoq.api.NetworkUser.sendMobileOTPToSNS
 import com.tangoplus.tangoq.api.NetworkUser.verifyMobileOTP
+import com.tangoplus.tangoq.api.NetworkUser.verifyMobileOTPToSNS
 import com.tangoplus.tangoq.databinding.FragmentMobileAuthDialogBinding
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
@@ -185,7 +186,7 @@ class MobileAuthDialogFragment : DialogFragment() {
             put("otp", binding.etMADMobileCode.text)
         }
         lifecycleScope.launch(Dispatchers.IO) {
-            val response = verifyMobileOTP(getString(R.string.API_user), bodyJo.toString())
+            val response = verifyMobileOTPToSNS(getString(R.string.API_user), bodyJo.toString())
             withContext(Dispatchers.Main) {
                 navigateMobileVerify(response)
             }
@@ -241,7 +242,6 @@ class MobileAuthDialogFragment : DialogFragment() {
                 setReSendMessage()
                 binding.etMADMobileCode.postDelayed({
                     binding.etMADMobileCode.requestFocus()
-
                 }, 250)
                 binding.tvMADReAuth.visibility = View.VISIBLE
 
@@ -257,9 +257,7 @@ class MobileAuthDialogFragment : DialogFragment() {
                     setPositiveButton("예") { _, _ ->
 
                     }
-                    setNegativeButton("아니오") { _, _ ->
 
-                    }
                 }.show()
             }
             400 -> {
@@ -307,7 +305,13 @@ class MobileAuthDialogFragment : DialogFragment() {
                 }
             }
             401 -> {
-                Toast.makeText(requireContext(), "올바르지 않거나 만료된 번호입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setTitle("알림")
+                    setMessage("만료 혹은 올바르지 않은 인증번호입니다. 다시 시도해주세요")
+                    setPositiveButton("예", {_, _ ->
+                        binding.etMADMobileCode.setText("")
+                    })
+                }.show()
             }
             500 -> {
                 Toast.makeText(requireContext(), "서버 오류 입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
@@ -335,4 +339,5 @@ class MobileAuthDialogFragment : DialogFragment() {
         isCancelable = false
         dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle_20))
     }
+
 }

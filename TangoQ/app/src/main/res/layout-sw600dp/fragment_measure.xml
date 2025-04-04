@@ -370,7 +370,8 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="100dp"
                     android:background="@drawable/bckgnd_2_main_20"
-                    android:padding="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
                     android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -382,6 +383,7 @@
                         android:id="@+id/imageView24"
                         android:layout_width="0dp"
                         android:layout_height="10dp"
+                        android:layout_marginStart="10dp"
                         android:src="@drawable/line_dash_horizontal"
                         app:layout_constraintBottom_toBottomOf="@+id/lcM"
                         app:layout_constraintEnd_toEndOf="@+id/lcM"
@@ -393,6 +395,7 @@
                         android:id="@+id/imageView28"
                         android:layout_width="0dp"
                         android:layout_height="10dp"
+                        android:layout_marginStart="10dp"
                         android:src="@drawable/line_dash_horizontal"
                         app:layout_constraintBottom_toBottomOf="@+id/lcM"
                         app:layout_constraintEnd_toEndOf="@+id/lcM"
@@ -402,7 +405,7 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cvM"
-                        android:layout_width="28dp"
+                        android:layout_width="0dp"
                         android:layout_height="0dp"
                         app:cardCornerRadius="6dp"
                         app:cardElevation="0dp"
@@ -410,7 +413,8 @@
                         app:layout_constraintEnd_toEndOf="@+id/lcM"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="@+id/lcM"
-                        app:layout_constraintTop_toTopOf="@+id/lcM">
+                        app:layout_constraintTop_toTopOf="@+id/lcM"
+                        app:layout_constraintWidth_percent="0.075">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -435,7 +439,7 @@
                         android:id="@+id/imageView12"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
+                        android:layout_marginStart="30dp"
                         android:src="@drawable/icon_graph_legend"
                         app:layout_constraintBottom_toBottomOf="@+id/tvMDuration"
                         app:layout_constraintStart_toStartOf="parent"
@@ -457,9 +461,9 @@
                         android:id="@+id/lcM"
                         android:layout_width="0dp"
                         android:layout_height="256dp"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="30dp"
                         android:layout_marginTop="16dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginEnd="30dp"
                         android:background="@drawable/gradient_top_white_90"
                         android:backgroundTint="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -472,7 +476,9 @@
                         android:id="@+id/btnM2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
                         android:layout_marginTop="30dp"
+                        android:layout_marginEnd="20dp"
                         android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/subColor100"
                         android:padding="20dp"
@@ -480,6 +486,7 @@
                         android:text="+ 기록 더 보기"
                         android:textColor="@color/subColor700"
                         android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvM8" />
@@ -488,7 +495,7 @@
                         android:id="@+id/tvMDuration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="30dp"
                         android:background="@drawable/bckgnd_rectangle_12"
                         android:backgroundTint="@color/subColor100"
                         android:paddingStart="12dp"
@@ -505,7 +512,6 @@
                         android:id="@+id/tvM1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
                         android:layout_marginTop="5dp"
                         android:layout_weight="1"
                         android:gravity="center"
@@ -514,7 +520,7 @@
                         android:textSize="18dp"
                         app:layout_constraintEnd_toEndOf="@+id/cvM"
                         app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/lcM"
                         app:layout_constraintTop_toBottomOf="@+id/lcM" />
 
                     <TextView
@@ -527,9 +533,9 @@
                         android:text="날짜"
                         android:textColor="@color/subColor400"
                         android:textSize="18dp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toEndOf="@id/lcM"
                         app:layout_constraintHorizontal_bias="0.25"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/lcM"
                         app:layout_constraintTop_toBottomOf="@+id/lcM" />
 
                     <TextView
@@ -556,9 +562,9 @@
                         android:text="날짜"
                         android:textColor="@color/subColor400"
                         android:textSize="18dp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toEndOf="@id/lcM"
                         app:layout_constraintHorizontal_bias="0.75"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/lcM"
                         app:layout_constraintTop_toBottomOf="@+id/lcM" />
 
                     <TextView
@@ -566,13 +572,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:layout_marginEnd="12dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="02.27"
                         android:textColor="@color/subColor400"
                         android:textSize="18dp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toEndOf="@id/lcM"
                         app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="@+id/lcM"
                         app:layout_constraintTop_toBottomOf="@+id/lcM" />

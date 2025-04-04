@@ -16,7 +16,6 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 
@@ -102,10 +101,8 @@ class ProgramAlertDialogFragment : DialogFragment() {
         binding.tvPAD.textSize = if (isTablet(requireContext())) 22f else 16f
     }
 
-    @Deprecated("Deprecated in Java")
-    @SuppressLint("UseCompatLoadingForDrawables")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle_20,))
     }
 }

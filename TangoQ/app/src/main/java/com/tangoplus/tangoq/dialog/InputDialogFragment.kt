@@ -24,12 +24,8 @@ import androidx.lifecycle.lifecycleScope
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.api.NetworkUser.verifyPW
 import com.tangoplus.tangoq.databinding.FragmentInputDialogBinding
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.fragment.WithdrawalFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
-import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -101,6 +97,7 @@ class InputDialogFragment : DialogFragment() {
             verifyPW(requireContext(), getString(R.string.API_user), jo) { status ->
                 when (status) {
                     200 -> {
+                        Toast.makeText(requireContext(), "비밀번호 확인을 완료했습니다", Toast.LENGTH_LONG).show()
                         when (case) {
                             // 비밀번호 변경
                             1 -> {
@@ -112,11 +109,8 @@ class InputDialogFragment : DialogFragment() {
                             // 회원탈퇴
                             2 -> {
                                 dismiss()
-                                requireActivity().supportFragmentManager.beginTransaction().apply {
-                                    setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                                    replace(R.id.flMain, WithdrawalFragment())
-                                    commit()
-                                }
+                                val withDrawalDialog = WithDrawalDialogFragment()
+                                withDrawalDialog.show(requireActivity().supportFragmentManager, "withDrawalDialogFragment")
                             }
                             -1 -> {
                                 dismiss()
@@ -128,7 +122,7 @@ class InputDialogFragment : DialogFragment() {
                     else -> {
                         Toast.makeText(requireContext(), "적절하지 않은 비밀번호입니다\n다시 시도해주세요", Toast.LENGTH_SHORT).show()
                         binding.etIDPw.setText("")
-                        visibleKeyboard()
+
                     }
                 }
             }
@@ -146,19 +140,9 @@ class InputDialogFragment : DialogFragment() {
         binding.btnIDConfirm.isEnabled = false
     }
 
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setDimAmount(0.7f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
-//        dialog?.setCancelable(false)
-        if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this, width =  0.7f, height = 0.25f)
-        } else {
-            dialogFragmentResize(requireContext(), this, width =  0.9f, height = 0.35f)
-        }
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle_20))
     }
 
     private fun visibleKeyboard() {

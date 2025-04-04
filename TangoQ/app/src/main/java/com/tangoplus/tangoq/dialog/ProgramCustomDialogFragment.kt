@@ -86,7 +86,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -107,6 +106,15 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
     }
 
+    /* 1. program 데이터 가져오기 + 마지막 운동 기록 가져오기
+    *  2. 마지막 운동 기록에서 현재 week 판단
+    *  3. week -> 관찰을 통해 seq 계산
+    *  4. 해당 exerciseItem들과 결합해서 표출
+    *  5. 프로그램 줃간 실행 시 
+    * */
+
+
+
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -119,6 +127,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
         // -------# 기본 셋팅 #-------
         initVMValue()
+        binding.clPCD.visibility = View.GONE
         binding.ibtnPCDBack.setOnClickListener { dismiss() }
         // main으로 돌아갈시 업데이트
         pvm.fromProgramCustom = true
@@ -305,6 +314,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                     Handler(Looper.getMainLooper()).postDelayed({
                         binding.sflPCD.visibility = View.GONE
                         binding.sflPCD.stopShimmer()
+                        binding.clPCD.visibility = View.VISIBLE
                     }, 150)
                     binding.tvPCDWeek.setOnClickListener {
                         val dialog = ProgramWeekBSDialogFragment()

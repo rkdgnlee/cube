@@ -24,9 +24,8 @@ object ImageProcessingUtil {
         poseLandmarkResult: PoseLandmarkResult,
         sequence: Int,
         painParts: MutableList<Pair<String, Float>>,
-        context: Context
+
     ) : Bitmap {
-//        Log.v("스케일과오프셋", "scaleFactor: (${scaleFactorX}, ${scaleFactorY}), offset: ($offSetX, $offSetY)")
 
         val matrix = if (sequence in listOf(0, 2, 5, 6)) {
             Matrix().apply {

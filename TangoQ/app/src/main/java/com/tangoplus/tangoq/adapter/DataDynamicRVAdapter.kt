@@ -81,8 +81,8 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
                         holder.tvDDAI2.text = titles[leftIndex]
                     }
                     holder.llDDAILegend.visibility = View.GONE
-                    holder.cvDDAI1.setMirrored(true)
-                    holder.cvDDAI2.setMirrored(true)
+                    holder.cvDDAI1.setMirrored(false)
+                    holder.cvDDAI2.setMirrored(false)
                 }
             }
         }

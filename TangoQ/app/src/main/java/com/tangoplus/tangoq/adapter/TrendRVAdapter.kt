@@ -87,9 +87,7 @@ class TrendRVAdapter(private val fragment: Fragment,
             } else if (!leftAnalysises.isNullOrEmpty() && !rightAnalysises.isNullOrEmpty()) {
                 val leftAnalysisUnits = leftAnalysises[position]
                 val rightAnalysisUnits = rightAnalysises[position]
-//                Log.v("왼쪽", "$leftAnalysisUnits")
-//                Log.v("오른쪽", "${rightAnalysisUnits.map { it.columnName }}")
-//                Log.v("오른쪽", "${rightAnalysisUnits.map { it.rawData }}")
+
                 val leftScore = calculatePercent(leftAnalysisUnits)
                 val rightScore = calculatePercent(rightAnalysisUnits)
                 val state = if (leftScore == rightScore) {
@@ -120,8 +118,6 @@ class TrendRVAdapter(private val fragment: Fragment,
                 )
 
                 holder.tvMTIComment.text = spannableString
-//                val collectedComment = createSummary(rightAnalysisUnits) + createAdvise(filteredParts?.get(position), rightScore.toInt(), state)
-//                holder.tvMTIComment.text = collectedComment
 
                 // 코멘트가 만들어진 후 코멘트와 같이 점수 state 설정
                 setStateFlavor(holder, state)
@@ -177,30 +173,6 @@ class TrendRVAdapter(private val fragment: Fragment,
         }
         holder.tvMTIComment.text = spannableString
     }
-//    private fun createAnalysises(analysis: MutableList<MutableList<AnalysisVO>>, position: Int) : MutableList<List<AnalysisUnitVO>> {
-//        val processedData = mutableListOf<List<AnalysisUnitVO>>()
-//        matchedTripleIndexes.forEach { tripleList ->
-//            val analysisUnits = mutableListOf<AnalysisUnitVO>()
-//
-//            tripleList.forEach { (seq, index, unitIndex) ->
-//                // seq로 rightAnalysises에서 해당 리스트를 가져옴
-//                val analysisList = analysis.getOrNull(position)
-//                // index로 해당 AnalysisVO를 가져옴
-//                val analysisVO = analysisList?.getOrNull(index)
-//                // unitIndex로 AnalysisUnitVO를 가져옴
-//                val analysisUnitVO = analysisVO?.labels?.getOrNull(unitIndex)
-////                        Log.v("analysisUniVO", "${analysisUnitVO?.rawDataName}")
-//                // null이 아니면 리스트에 추가
-//                if (analysisUnitVO != null) {
-//                    analysisUnits.add(analysisUnitVO)
-//                }
-//            }
-//
-//            // 각 관절마다 추출한 AnalysisUnitVO 리스트를 최종 데이터에 추가
-//            processedData.add(analysisUnits)
-//        }
-//        return processedData
-//    }
 
     private fun calculatePercent(processedData: MutableList<AnalysisUnitVO>) : Float {
         val calculatePercent = processedData.map { calculateBoundedScore(it.columnName, abs(it.rawData), it.rawDataBound)}.map { if (it <= 50f) 50f else it }

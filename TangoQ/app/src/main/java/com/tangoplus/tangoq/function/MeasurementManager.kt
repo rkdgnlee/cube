@@ -817,7 +817,6 @@ object MeasurementManager {
                                     poseLandmarkResult,
                                     seq,
                                     measureVO.dangerParts,
-                                    fragment.requireContext()
                                 )
                                 isSet = true
                                 // ------# MeasureDetail의 Solo #------

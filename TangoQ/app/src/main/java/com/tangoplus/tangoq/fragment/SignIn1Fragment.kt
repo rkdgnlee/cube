@@ -365,6 +365,7 @@ class SignIn1Fragment : Fragment() {
             setNegativeButton("아니오") { _, _ -> }
         }
         setRetryAuthMessage(requireActivity(), svm, binding.tvEmailResendMessage, binding.tvEmailCountDown, madb)
+
     }
 
     private fun navigateEmailCodeCase(responsePair : Pair<Int, String?>?) {

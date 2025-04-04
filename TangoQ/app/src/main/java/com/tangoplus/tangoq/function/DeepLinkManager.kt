@@ -28,12 +28,12 @@ object DeepLinkManager {
             else -> "DEFAULT"
         }
         val intent = Intent(context, MainActivity::class.java).apply {
+            Log.v("dlm>handle", "uri: $uri, deepLinkPath: $deepLinkPath")
             putExtra(DEEP_LINK_PATH_KEY, deepLinkPath)
             if (deepLinkPath == "PT") {
                 val exerciseId = uri.getQueryParameter("exercise")
                 putExtra(EXERCISE_ID_KEY, exerciseId)
             }
-            Log.v("dlm>handle", "uri: $uri, deepLinkPath: $deepLinkPath")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         context.startActivity(intent)

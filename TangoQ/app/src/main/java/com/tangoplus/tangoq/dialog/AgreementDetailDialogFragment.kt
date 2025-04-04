@@ -12,7 +12,6 @@ import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentAgreementDetailDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import java.io.BufferedReader
@@ -124,17 +123,14 @@ class AgreementDetailDialogFragment : DialogFragment() {
         binding.btnAgreement.setOnSingleClickListener { dismiss() }
         return builder.create()
     }
-    @SuppressLint("UseCompatLoadingForDrawables")
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-//        dialog?.window?.setDimAmount(0.6f)
+
+    override fun onResume() {
+        super.onResume()
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-//        dialogFragmentResize(requireContext(), this@AgreementDetailDialogFragment)
     }
 
 }
