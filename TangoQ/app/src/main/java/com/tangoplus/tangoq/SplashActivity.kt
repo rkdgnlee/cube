@@ -124,8 +124,13 @@ class SplashActivity : AppCompatActivity() {
                     if (darkMode) AppCompatDelegate.MODE_NIGHT_YES
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
-
-                if (getEncryptedJwtJo(this@SplashActivity)?.let { isValidToken(it) } == true) {
+                val encryptedJwtJo = getEncryptedJwtJo(this@SplashActivity)
+                Log.v("encryptedJwtJo", "${encryptedJwtJo?.length()}, ${encryptedJwtJo?.let {
+                    isValidToken(
+                        it
+                    )
+                }}")
+                if (encryptedJwtJo != null && isValidToken(encryptedJwtJo)) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         // TODO trySelfLogin에서 버전에 대해서 알려주고 여기서 로그인 전 해당 데이터를 토대로 앱이 업데이트가 필수적이라면 앱스토어로 경로 이동해줘야함.
                         trySelfLogin(getString(R.string.API_user), this@SplashActivity, getEncryptedRefreshJwt(this@SplashActivity)) { jo ->
@@ -145,7 +150,8 @@ class SplashActivity : AppCompatActivity() {
                     }
                 } // 로그인 정보가 없을 경우
                 else {
-                    introInit()
+                    Log.v("invalidRefresh", "intro Init")
+                    logout(this@SplashActivity, 0)
                 }
 
                 timeoutHandler.postDelayed(timeoutRunnable, 20000)

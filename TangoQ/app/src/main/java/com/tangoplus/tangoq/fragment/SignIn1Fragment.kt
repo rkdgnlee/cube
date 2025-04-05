@@ -77,11 +77,12 @@ class SignIn1Fragment : Fragment() {
         svm.emailIdCondition.value = false
         svm.domainCondition.value = false
         binding.clPw.visibility = View.GONE
-
+        svm.tempId = ""
+        svm.insertToken = ""
 
         setSnsLoginVisibility(false)
         binding.etEmailId.apply {
-            binding.etEmailId.postDelayed({
+            postDelayed({
                 binding.etEmailId.requestFocus()
                 val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(binding.etEmailId, InputMethodManager.SHOW_IMPLICIT)

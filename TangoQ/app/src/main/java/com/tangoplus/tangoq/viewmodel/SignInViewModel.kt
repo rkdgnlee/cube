@@ -12,9 +12,6 @@ class SignInViewModel: ViewModel() {
     // 회원가입에 담는 user
     val User = MutableLiveData(JSONObject())
 
-    // sns 회원가입 시 담아서 쓰는 데이터들
-    var snsJo = JSONObject()
-
     // ------# 로그인 #------
     var currentEmailCon = MutableLiveData(false)
     var currentPwCon = MutableLiveData(false)
@@ -87,6 +84,10 @@ class SignInViewModel: ViewModel() {
         addSource(pwBothTrue) { checkAllTrue() }
         addSource(nameCondition) { checkAllTrue() }
     }
+
+    // 소셜 회원가입 연동에 필요한 temp_id 등
+    var tempId = "" // token은 insertToken
+    var provider = ""
 
     // ------# 약관 동의 #------
     val agreementMk1 = MutableLiveData(false)

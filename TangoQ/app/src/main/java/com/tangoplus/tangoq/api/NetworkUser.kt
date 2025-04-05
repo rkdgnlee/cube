@@ -2,7 +2,6 @@ package com.tangoplus.tangoq.api
 
 import android.accounts.NetworkErrorException
 import android.content.Context
-import android.net.http.NetworkException
 import android.util.Log
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
@@ -79,7 +78,7 @@ object NetworkUser {
     // ------! 토큰 + 사용자 정보로 로그인 유무 확인 !------
     // 각 플랫폼 sdk를 통해서 버튼 눌렀을 때 처음 처리 (이메일 확인 후 처리할 건지 말건지)
 
-    fun getUserBySdk(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
+    fun oauthUser(myUrl: String, userJsonObject: JSONObject, context: Context, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = userJsonObject.toString().toRequestBody(mediaType)
         val client = OkHttpClient.Builder()
@@ -94,34 +93,35 @@ object NetworkUser {
 
         client.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("failedSdkLogin", "Failed to execute request")
+                Log.e("oauthResponse", "Failed to execute request")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 try {
-                    Log.e("responseCode", "${response.code}")
+                    Log.e("oauthResponse", "$response")
+                    val responseBody = response.body?.string()  // ?.substringAfter("response: ")
+                    Log.v("oauthResult", "$responseBody")
                     if (response.code == 500) {
                         return callback(null)
                     }
-                    val responseBody = response.body?.string()  // ?.substringAfter("response: ")
-                    Log.v("oauthResult", "$responseBody")
-                    val responseJo = responseBody?.let { JSONObject(it).optInt("status") }
-                    Log.v("responseJo", "$responseJo")
-                    if (responseJo !in listOf(200, 201, 202)) {
+                    val dataJo = responseBody?.let { JSONObject(it) }
+                    val statusCode = dataJo?.optInt("status")
+                    Log.v("responseJo", "$statusCode")
 
-                        // TODO 여기서 oauth.php의 responseCode를 보고 여기서 처리
-                        // TODO 1. 최초 회원가입 2. 기존 이메일이 있는 user면 바로 결과처리 (토큰 저장, user정보 callback으로 보내기)
-                        return callback(null)
-                    } else {
-                        val jo = responseBody?.let { JSONObject(it) }
-                        // ------! 토큰 저장 !------
+                    return when (statusCode) {
+                        200, 201 -> {
+                            // 기존 소셜 계정이 있는 사람이 로그인/
+                            val jsonObj = JSONObject()
+                            jsonObj.put("access_jwt", dataJo.optString("access_jwt"))
+                            jsonObj.put("refresh_jwt", dataJo.optString("refresh_jwt"))
+                            saveEncryptedJwtToken(context, jsonObj)
+                            Log.v("tokenNotify", "successed to Save Token. ${jsonObj.length()}")
+                            callback(dataJo)
+                        }
+                        else -> {
+                            callback(dataJo)
+                        }
 
-                        val jsonObj = JSONObject()
-                        jsonObj.put("access_jwt", jo?.optString("access_jwt"))
-                        jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
-                        saveEncryptedJwtToken(context, jsonObj)
-
-                        return callback(jo)
                     }
                 } catch (e: NetworkErrorException) {
                     Log.e("sdkError", "Network Error Login By SDK : ${e.message}")
@@ -137,57 +137,6 @@ object NetworkUser {
             }
         })
     }
-
-    // 소셜 로그인에서 이메일만 받아서 보내기
-//    suspend fun identifyEmail(myUrl: String, emailBody: JSONObject, callback: (JSONObject?) -> Unit) {
-//        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-//        val body = emailBody.toString().toRequestBody(mediaType)
-//        val client = OkHttpClient.Builder()
-//            .connectTimeout(10, TimeUnit.SECONDS)
-//            .readTimeout(10, TimeUnit.SECONDS)
-//            .writeTimeout(10, TimeUnit.SECONDS)
-//            .build()
-//        val request = Request.Builder()
-//            .url("${myUrl}.php")
-//            .post(body)
-//            .build()
-//        return withContext(Dispatchers.IO) {
-//            try {
-//                client.newCall(request).enqueue(object: Callback {
-//                    override fun onFailure(call: Call, e: IOException) {
-//                        Log.e("FailedToEmail", "failed To identify Email: ${e.message}")
-//                        CoroutineScope(Dispatchers.Main).launch {
-//                            callback(null)
-//                        }
-//                    }
-//                    override fun onResponse(call: Call, response: Response) {
-//                        val responseBody = response.body?.string()
-//                        val bodyJo = responseBody?.let { JSONObject(it) }
-//                        CoroutineScope(Dispatchers.Main).launch {
-//                            callback(bodyJo)
-//                        }
-//                    }
-//                })
-//            } catch (e: NetworkErrorException) {
-//                Log.e("identifyEmail", "Network Error Login By identifyEmail : ${e.message}")
-//                callback(null)
-//            } catch (e: IllegalStateException) {
-//                Log.e("identifyEmail", "IllegalState Error Login By identifyEmail : ${e.message}")
-//                callback(null)
-//            } catch (e: IllegalArgumentException) {
-//                Log.e("identifyEmail", "IllegalArgument Error Login By identifyEmail : ${e.message}")
-//                callback(null)
-//            } catch (e: SocketTimeoutException) {
-//                Log.e("identifyEmail", "Socket Timeout Error Login By identifyEmail : ${e.message}")
-//                callback(null)
-//            } catch (e: Exception) {
-//                Log.e("identifyEmail", "Error Login By identifyEmail : ${e.message}")
-//                callback(null)
-//            }
-//        }
-//    }
-
-
 
     // Id, Pw 로그인
     suspend fun getUserIdentifyJson(myUrl: String,  idPw: JSONObject, callback: (JSONObject?) -> Unit) {
@@ -512,7 +461,7 @@ object NetworkUser {
         }
     }
 
-    // 소셜 회원가입 시 사용하는 핸드폰 본인확인 인증 - 차이점: 소셜 계정의 email을 받아서
+    // 알리고 사용 휴대폰 - 본인인증 확인
     suspend fun sendMobileOTPToSNS(myUrl: String, bodyJo: String) : Int? {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodyJo.toRequestBody(mediaType)
@@ -522,7 +471,7 @@ object NetworkUser {
             .writeTimeout(8, TimeUnit.SECONDS)   // 요청 쓰기 타임아웃 (15초)
             .build()
         val request = Request.Builder()
-            .url("${myUrl}sms/curl_send.php")
+            .url("${myUrl}sms/oauth_sms_send.php")
             .post(body)
             .build()
 
@@ -559,7 +508,8 @@ object NetworkUser {
         }
     }
 
-    suspend fun verifyMobileOTPToSNS(myUrl: String, bodyJo: String) : Pair<String, Int>? {
+
+    suspend fun verifyMobileOTPToSNS(myUrl: String, bodyJo: String) : JSONObject? {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodyJo.toRequestBody(mediaType)
         val client = OkHttpClient.Builder()
@@ -569,22 +519,22 @@ object NetworkUser {
             .build()
 
         val request = Request.Builder()
-            .url("${myUrl}sms/verify_sms.php")
+            .url("${myUrl}sms/verify_oauth_sms.php")
             .post(body)
             .build()
 
         return withContext(Dispatchers.IO) {
             try {
                 client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        Log.e("mobile인증확인", "ResponseCode: ${response.code}")
-                        return@withContext null
-                    }
+//                    if (!response.isSuccessful) {
+//                        Log.e("mobile인증확인", "sns verify failed: ResponseCode: ${response.code}, ${response.body?.string()}")
+//                        return@withContext null
+//                    }
 
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
-                        Log.v("mobile인증확인", "$responseJo")
-                        return@withContext Pair(responseJo.optString("data"), responseJo.optInt("status"))
+                        Log.v("mobile인증확인", "sns verify: $responseJo")
+                        return@withContext responseJo
                     }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -605,7 +555,96 @@ object NetworkUser {
             }
         }
     }
+    fun linkOAuthAccount(myUrl: String, token: String, body: String, callback: (JSONObject?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val joBody = body.toRequestBody(mediaType)
 
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}oauth_mobile_verify_and_login.php")
+            .post(joBody)
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("sns연동", "Failed to enqueue request")
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                try {
+                    val responseBody = response.body?.string()
+                    val jo = responseBody?.let{ JSONObject(it) }
+                    Log.v("sns연동", "${jo}")
+                    callback(jo)
+                } catch (e: NetworkErrorException) {
+                    Log.e("sns연동Error", "Error by verifyPW NetworkErrorException : ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("sns연동Error", "Error by verifyPW IllegalStateException : ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("sns연동Error", "Error by verifyPW IllegalArgumentException : ${e.message}")
+                } catch (e: SocketTimeoutException) {
+                    Log.e("sns연동Error", "Error by verifyPW SocketTimeoutException : ${e.message}")
+                } catch (e: Exception) {
+                    Log.e("sns연동Error", "Error by verifyPW Exception : ${e.message}")
+                }
+            }
+        })
+    }
+
+    fun insertSNSUser(myUrl: String, token:String, body: String, callback: (JSONObject?) -> Unit) {
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val joBody = body.toRequestBody(mediaType)
+
+        val authInterceptor = Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+            chain.proceed(newRequest)
+        }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+        val request = Request.Builder()
+            .url("${myUrl}oauth_mobile_verify_and_login.php")
+            .post(joBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("sns회원가입", "Failed to enqueue request")
+                callback(null)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                try {
+                    val responseBody = response.body?.string()
+                    val jo = responseBody?.let{ JSONObject(it) }
+                    Log.v("sns회원가입", "${jo}")
+                    callback(jo)
+                } catch (e: NetworkErrorException) {
+                    Log.e("sns회원가입Error", "Error by verifyPW NetworkErrorException : ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e("sns회원가입Error", "Error by verifyPW IllegalStateException : ${e.message}")
+                } catch (e: IllegalArgumentException) {
+                    Log.e("sns회원가입Error", "Error by verifyPW IllegalArgumentException : ${e.message}")
+                } catch (e: SocketTimeoutException) {
+                    Log.e("sns회원가입Error", "Error by verifyPW SocketTimeoutException : ${e.message}")
+                } catch (e: Exception) {
+                    Log.e("sns회원가입Error", "Error by verifyPW Exception : ${e.message}")
+                }
+            }
+        })
+    }
 
     // 아이디 찾기 / 이메일 가져오기
     suspend fun sendMobileOTPToFindEmail(myUrl: String, bodyJo: String) : Int? {

@@ -87,6 +87,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -112,8 +113,6 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     *  4. 해당 exerciseItem들과 결합해서 표출
     *  5. 프로그램 줃간 실행 시 
     * */
-
-
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

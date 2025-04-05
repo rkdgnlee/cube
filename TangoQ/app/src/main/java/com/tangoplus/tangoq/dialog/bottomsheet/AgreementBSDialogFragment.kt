@@ -51,6 +51,15 @@ class AgreementBSDialogFragment : BottomSheetDialogFragment() {
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
+        agreement1.value = false
+        agreement2.value = false
+        agreement3.value = false
+        agreeAll.value = false
+        essentialAgree.value = false
+        svm.agreementMk1.value = false
+        svm.agreementMk2.value = false
+        svm.marketingAgree.value = false
+
         // -----! 개인정보 동의항목 체크 시작 !-----
         binding.clAgreementAll.setOnClickListener {
             val newValue = agreeAll.value?.not() ?: false

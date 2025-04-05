@@ -1,7 +1,11 @@
 package com.tangoplus.tangoq.dialog
 
+import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -9,33 +13,56 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.kakao.sdk.auth.AuthApiClient
+import com.kakao.sdk.user.UserApiClient
+import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.exception.NaverIdLoginSDKNotInitializedException
+import com.navercorp.nid.oauth.NidOAuthLoginState
+import com.tangoplus.tangoq.IntroActivity
+import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.api.NetworkUser.insertSNSUser
+import com.tangoplus.tangoq.api.NetworkUser.logoutDenyRefreshJwt
 import com.tangoplus.tangoq.api.NetworkUser.sendMobileOTP
 import com.tangoplus.tangoq.api.NetworkUser.sendMobileOTPToSNS
-import com.tangoplus.tangoq.api.NetworkUser.verifyMobileOTP
+import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.api.NetworkUser.verifyMobileOTPToSNS
 import com.tangoplus.tangoq.databinding.FragmentMobileAuthDialogBinding
+import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.AuthManager.setRetryAuthMessage
+import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
+import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
+import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.lang.RuntimeException
 import java.util.regex.Pattern
 
 class MobileAuthDialogFragment : DialogFragment() {
     private lateinit var binding: FragmentMobileAuthDialogBinding
     val svm : SignInViewModel by activityViewModels()
+    private lateinit var ssm : SaveSingletonManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -48,11 +75,79 @@ class MobileAuthDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 초기설정
+        binding.ibtnMADExit.setOnSingleClickListener {
+            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                setTitle("연동 해제")
+                setMessage("휴대폰 인증을 종료하시겠습니까?")
+                setPositiveButton("예") {_, _ ->
+                    dismiss()
+                    activity?.lifecycleScope?.launch {
+                        logoutDenyRefreshJwt(getString(R.string.API_user), requireContext()) { code -> }
+                    }
+                    WorkManager.getInstance(requireContext()).cancelUniqueWork("TokenCheckWork")
+                    try {
+                        if (Firebase.auth.currentUser != null) {
+                            Firebase.auth.signOut()
+                            Log.d("로그아웃", "Firebase sign out successful")
+                        } else if (NaverIdLoginSDK.getState() == NidOAuthLoginState.OK) {
+                            if (NaverIdLoginSDK.isInitialized()) {
+                                NaverIdLoginSDK.logout()
+                            }
+                            Log.d("로그아웃", "Naver sign out successful")
+                        } else if (AuthApiClient.instance.hasToken()) {
+                            UserApiClient.instance.logout { error->
+                                if (error != null) {
+                                    Log.e("로그아웃", "KAKAO Sign out failed", error)
+                                } else {
+                                    Log.e("로그아웃", "KAKAO Sign out successful")
+                                }
+                            }
+                        }
+                        saveEncryptedJwtToken(requireContext(), null)
 
+                        // 싱글턴에 들어갔던거 전부 비우기
+                        Singleton_t_user.getInstance(requireContext()).jsonObject = null
+                        Singleton_t_measure.getInstance(requireContext()).measures = null
+                    } catch (e: NaverIdLoginSDKNotInitializedException) {
+                        Log.e("NILError", "네아로 is not initialized. (${e.message})")
+                    } catch (e: RuntimeException) {
+                        Log.e("네아로오류", "ThreadException : ${e.message}")
+                    } catch (e: UninitializedPropertyAccessException) {
+                        Log.e("카카오오류", "KaKao UninitializedProperty Exception : ${e.message}")
+                    } catch (e: Exception) {
+                        Log.e("카카오오류", "KaKao UninitializedProperty Exception : ${e.message}")
+                    } catch (e: IllegalStateException) {
+                        Log.e("logoutError", "LogoutIllegalState: ${e.message}")
+                    } catch (e: java.lang.IllegalArgumentException) {
+                        Log.e("logoutError", "LogoutIllegalArgument: ${e.message}")
+                    } catch (e: NullPointerException) {
+                        Log.e("logoutError", "LogoutNullPointer: ${e.message}")
+                    } catch (e: InterruptedException) {
+                        Log.e("logoutError", "LogoutInterrupted: ${e.message}")
+                    } catch (e: IndexOutOfBoundsException) {
+                        Log.e("logoutError", "LogoutIndexOutOfBounds: ${e.message}")
+                    } catch (e: Exception) {
+                        Log.e("logoutError", "Logout: ${e.message}")
+                    }
+                }
+                setNegativeButton("아니오") {_, _ -> }
+                show()
+            }
+        }
+
+        binding.etMADMobile.postDelayed({
+            binding.etMADMobile.requestFocus()
+            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.etMADMobile, InputMethodManager.SHOW_IMPLICIT)
+        }, 250)
+
+        ssm = SaveSingletonManager(requireContext(), requireActivity())
+        binding.etMADMobileCode.visibility = View.GONE
         binding.tvMADReAuth.visibility = View.GONE
         binding.tvMADCountDown.visibility = View.GONE
         binding.etMADMobileCode.isEnabled = false
         disabledSignInBtn()
+        binding.btnMADSignIn.visibility = View.GONE
 
         svm.countDownTimer?.cancel()
         svm.mobileCondition.value = false
@@ -184,11 +279,16 @@ class MobileAuthDialogFragment : DialogFragment() {
         val bodyJo = JSONObject().apply {
             put("mobile", svm.passMobile.value?.replace("-", ""))
             put("otp", binding.etMADMobileCode.text)
+            put("temp_id", svm.tempId)
+            put("email", svm.fullEmail.value)
         }
+        Log.v("bodyJo", "$bodyJo")
         lifecycleScope.launch(Dispatchers.IO) {
             val response = verifyMobileOTPToSNS(getString(R.string.API_user), bodyJo.toString())
             withContext(Dispatchers.Main) {
-                navigateMobileVerify(response)
+                if (response != null) {
+                    navigateMobileVerify(response)
+                }
             }
         }
     }
@@ -207,24 +307,26 @@ class MobileAuthDialogFragment : DialogFragment() {
                 }
                 // 인증번호 다시 보내기
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val statusCode = sendMobileOTPToSNS(getString(R.string.API_user), bodyJo.toString())
+                    val statusCode =
+                        sendMobileOTPToSNS(getString(R.string.API_user), bodyJo.toString()) ?: 0
                     withContext(Dispatchers.Main) {
                         when (statusCode) {
-                            1 -> {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "인증번호를 전송했습니다. 휴대폰을 확인해주세요",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            200, 201, 1 -> {
+                                Toast.makeText(requireContext(), "인증번호를 전송했습니다. 휴대폰을 확인해주세요", Toast.LENGTH_SHORT).show()
                                 setReSendMessage()
-                            }
+                                binding.etMADMobileCode.postDelayed({
+                                    binding.etMADMobileCode.requestFocus()
+                                }, 250)
+                                binding.tvMADReAuth.visibility = View.VISIBLE
 
+                                disabledSendBtn()
+                                binding.etMADMobile.apply {
+                                    isEnabled = false
+                                    backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor100, null))
+                                }
+                            }
                             else -> {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "인증번호 전송에 실패했습니다. 다시 시도해주세요",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(requireContext(), "인증번호 전송에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -240,9 +342,16 @@ class MobileAuthDialogFragment : DialogFragment() {
             200, 201, 1 -> {
                 Toast.makeText(requireContext(), "인증번호를 전송했습니다. 휴대폰을 확인해주세요", Toast.LENGTH_SHORT).show()
                 setReSendMessage()
-                binding.etMADMobileCode.postDelayed({
-                    binding.etMADMobileCode.requestFocus()
-                }, 250)
+                binding.etMADMobileCode.apply {
+                    visibility = View.VISIBLE
+                    isEnabled = true
+                    postDelayed({
+                        binding.etMADMobileCode.requestFocus()
+                        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.showSoftInput(binding.etMADMobileCode, InputMethodManager.SHOW_IMPLICIT)
+                    }, 250)
+                }
+
                 binding.tvMADReAuth.visibility = View.VISIBLE
 
                 disabledSendBtn()
@@ -251,48 +360,24 @@ class MobileAuthDialogFragment : DialogFragment() {
                     backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor100, null))
                 }
             }
-            409 -> {
-                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                    setMessage("이미 존재하는 핸드폰 번호입니다. 재확인 후 다시 시도해주세요")
-                    setPositiveButton("예") { _, _ ->
-
-                    }
-
-                }.show()
-            }
-            400 -> {
-                Toast.makeText(requireContext(), "휴대폰 번호가 올바르지 않습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-            }
-            422 -> {
-                Toast.makeText(requireContext(), "휴대폰번호가 존재하지 않습니다", Toast.LENGTH_SHORT).show()
-            }
-            429 -> {
-                Toast.makeText(requireContext(), "요청 가능 횟수를 초과헀습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-            }
-            500 -> {
-                Toast.makeText(requireContext(), "서버 오류 입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-            }
             else -> {
                 Toast.makeText(requireContext(), "인증번호 전송에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
         }
     }
-    private fun navigateMobileVerify(response : Pair<String, Int>?) {
-        when (response?.second) {
+    private fun navigateMobileVerify(response : JSONObject) {
+        when (response.optInt("status")) {
             200, 201 -> {
+                svm.insertToken = response.optString("jwt")
+                svm.mobileAuthCondition.value = true
 
-                svm.passAuthCondition.value = true
-                svm.countDownTimer?.cancel()
                 binding.btnMADSignIn.visibility = View.VISIBLE
 
                 // 완료 후 모바일 인증 잠금
+                enabledSignInBtn()
                 binding.etMADMobileCode.apply {
                     isEnabled = false
                     backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor100, null))
-                }
-                if (response.first.length > 20) {
-                    Log.v("토큰받아오기", response.first)
-                    svm.insertToken = response.first
                 }
 
                 // agreement
@@ -313,6 +398,118 @@ class MobileAuthDialogFragment : DialogFragment() {
                     })
                 }.show()
             }
+            409 -> {
+                when (response.optBoolean("linkage")) {
+                    true -> {
+                        svm.insertToken = response.optString("jwt")
+                        MaterialAlertDialogBuilder( requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                            setTitle("연동 여부")
+                            setMessage("현재 존재하는 계정입니다. 기존 계정과 연동하시겠습니까?")
+                            setPositiveButton("예") {_, _ ->
+                                when (response.optString("option")) {
+                                    // TODO 여기서 연동 api 써야함
+                                    // ssddal@naver.com(네이버 소셜) -> ssddal@naver.com(기존 회원가입) 연동
+                                    "email" -> {
+                                        Toast.makeText(requireContext(), "email연동성공", Toast.LENGTH_SHORT).show()
+                                    }
+                                    // ssddal@naver.com(네이버 소셜) -> rkdgnlee@gmail.com(기존 회원가입) 연동
+                                    "mobile" -> {
+                                        Toast.makeText(requireContext(), "mobile연동성공", Toast.LENGTH_SHORT).show()
+                                    }
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                            setNegativeButton("아니오") {_,_ ->  }
+                            setCancelable(false)
+                            show()
+                        }
+
+                    }
+                    false -> {
+                        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                            setTitle("알림")
+                            setMessage("이미 회원가입 한 회원입니다. 로그인 혹은 이메일 찾기를 진행해주세요")
+                            setPositiveButton("예") {_, _ ->
+                                dismiss()
+                            }
+                        }
+                    }
+                }
+                svm.countDownTimer?.cancel()
+                binding.etMADMobileCode.setText("")
+
+            }
+            500 -> {
+                Toast.makeText(requireContext(), "서버 오류 입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setTitle("알림")
+                    setMessage("만료 혹은 올바르지 않은 인증번호입니다. 다시 시도해주세요")
+                    setPositiveButton("예", {_, _ ->
+                        binding.etMADMobileCode.setText("")
+                    })
+                }.show()
+            }
+        }
+    }
+    private fun navigateSNSInsert(responseJo : JSONObject) {
+        val responseCode = responseJo.optInt("status")
+        when (responseCode) {
+            200, 201 -> {
+                storeUserInSingleton(requireContext(), responseJo)
+                createKey(getString(R.string.SECURE_KEY_ALIAS))
+                Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+                val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")
+                val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt()
+                if (userUUID != null && userInfoSn != null) {
+                    ssm.getMeasures(userUUID, userInfoSn,  CoroutineScope(Dispatchers.IO)) {
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finishAffinity()
+                    }
+                }
+            }
+            409 -> {
+                when (responseJo.optBoolean("linkage")) {
+                    true -> {
+                        MaterialAlertDialogBuilder( requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                            setTitle("연동 여부")
+                            setMessage("현재 존재하는 계정입니다. 기존 계정과 연동하시겠습니까?")
+                            setPositiveButton("예") {_, _ ->
+                                when (responseJo.optString("option")) {
+                                    // ssddal@naver.com(네이버 소셜) -> ssddal@naver.com(기존 회원가입) 연동
+                                    "email" -> {
+                                        Toast.makeText(requireContext(), "email연동성공", Toast.LENGTH_SHORT).show()
+                                    }
+                                    // ssddal@naver.com(네이버 소셜) -> rkdgnlee@gmail.com(기존 회원가입) 연동
+                                    "mobile" -> {
+                                        Toast.makeText(requireContext(), "mobile연동성공", Toast.LENGTH_SHORT).show()
+                                    }
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                            setNegativeButton("아니오") {_,_ ->  }
+                            setCancelable(false)
+                            show()
+                        }
+
+                    }
+                    false -> {
+                        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                            setTitle("알림")
+                            setMessage("이미 회원가입 한 회원입니다. 로그인 혹은 이메일 찾기를 진행해주세요")
+                            setPositiveButton("예") {_, _ ->
+                                dismiss()
+                            }
+                        }
+                    }
+                }
+            }
             500 -> {
                 Toast.makeText(requireContext(), "서버 오류 입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
             }
@@ -321,12 +518,28 @@ class MobileAuthDialogFragment : DialogFragment() {
             }
         }
     }
+
     private fun showAgreementBottomSheetDialog(context: FragmentActivity) {
         val bottomSheetFragment = AgreementBSDialogFragment()
         bottomSheetFragment.setOnFinishListener(object : AgreementBSDialogFragment.OnAgreeListener {
             override fun onFinish(agree: Boolean) {
                 if (agree) {
-                    // TODO 동의 후 경로 설정
+                    val jo = JSONObject().apply {
+                        put("mobile", svm.passMobile.value?.replace("-", ""))
+                        put("provider", svm.provider)
+                        put("user_sn", 0)
+                        put("device_sn", 0)
+                        put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
+                        put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
+                    }
+                    insertSNSUser(getString(R.string.API_user), svm.insertToken, jo.toString()) { responseJo ->
+                        if (responseJo != null) {
+                            navigateSNSInsert(responseJo)
+                        } else {
+                            Toast.makeText(requireContext(), "로그인에 실패했습니다\n관리자 문의가 필요합니다", Toast.LENGTH_LONG).show()
+                            logout(requireActivity(), 0)
+                        }
+                    }
                 }
             }
         })
@@ -337,7 +550,8 @@ class MobileAuthDialogFragment : DialogFragment() {
     override fun onResume() {
         super.onResume()
         isCancelable = false
-        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle_20))
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
-
 }
