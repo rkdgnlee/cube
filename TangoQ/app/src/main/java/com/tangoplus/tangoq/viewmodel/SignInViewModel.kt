@@ -34,7 +34,12 @@ class SignInViewModel: ViewModel() {
     val emailIdCondition = MutableLiveData(false)
     val domainCondition = MutableLiveData(false)
     val emailVerify = MutableLiveData(false)
-    var insertToken = ""
+
+    // 소셜 회원가입 연동에 필요한 temp_id 등
+    var tempId = ""
+    var provider = ""
+    var insertToken = "" // token은 insertToken
+    var sdkToken = ""
 
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
@@ -85,9 +90,7 @@ class SignInViewModel: ViewModel() {
         addSource(nameCondition) { checkAllTrue() }
     }
 
-    // 소셜 회원가입 연동에 필요한 temp_id 등
-    var tempId = "" // token은 insertToken
-    var provider = ""
+
 
     // ------# 약관 동의 #------
     val agreementMk1 = MutableLiveData(false)

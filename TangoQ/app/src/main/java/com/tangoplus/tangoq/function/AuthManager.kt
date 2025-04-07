@@ -100,7 +100,7 @@ object AuthManager {
     fun setRetryAuthMessage(context: Context, svm: SignInViewModel, tv: TextView, tvCountDown: TextView, madb: MaterialAlertDialogBuilder) {
         val fullText = tv.text
         svm.countDownTimer?.cancel()
-        setVerifyCountDown(tvCountDown, 120) {
+        setVerifyCountDown(tvCountDown, 300) {
             svm.countDownTimer = it
         }
         val spnbString = SpannableString(fullText)

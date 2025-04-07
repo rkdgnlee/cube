@@ -142,8 +142,8 @@ class StringRVAdapter(private val fragment: Fragment,
 
             is CbViewHolder -> {
                 if (xmlName == "measure") {
-                    val currentItem2 = nameList?.get(position)
-                    holder.cbWI.text = "${currentItem?.substring(0, 10)} ${currentItem2}"
+//                    val currentItem2 = nameList?.get(position)
+                    holder.cbWI.text = "${currentItem?.substring(0, 10)}" //${currentItem2}
                     val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
                     holder.cbWI.isChecked = isInitiallyChecked
                     updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)

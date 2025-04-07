@@ -59,16 +59,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.regex.Pattern
+import androidx.core.graphics.drawable.toDrawable
 
 class LoginDialogFragment : DialogFragment() {
     lateinit var binding: FragmentLoginDialogBinding
     val viewModel : SignInViewModel by activityViewModels()
-
+    private lateinit var loadingDialog : LoadingDialogFragment
     private lateinit var ssm : SaveSingletonManager
     private lateinit var prefs : PreferencesManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentLoginDialogBinding.inflate(inflater)
         return binding.root
@@ -91,6 +92,7 @@ class LoginDialogFragment : DialogFragment() {
         }
 
         // ------# 로그인 count 저장 #------
+        loadingDialog = LoadingDialogFragment.newInstance("회원가입전송")
         viewModel.fullEmail.value = ""
         prefs = PreferencesManager(requireContext())
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -145,55 +147,8 @@ class LoginDialogFragment : DialogFragment() {
                     imm.hideSoftInputFromWindow(view.windowToken, 0)
                     tryLogin()
                 }
-                "코드 인증" -> {
-                    val bodyJo = JSONObject().apply {
-                        put("email", viewModel.saveEmail)
-                        put("otp", binding.etLDCode.text)
-                    }
-                    verifyPWCode(getString(R.string.API_user), bodyJo.toString()) { jo ->
-                        if (jo != null) {
-                            val code = jo.optInt("status")
-                            when (code) {
-                                200 -> {
-                                    viewModel.resetJwt = jo.optString("jwt_for_pwd")
-                                    val emailJo = JSONObject().apply {
-                                        put("email", viewModel.saveEmail)
-                                    }
-                                    resetLock(getString(R.string.API_user), viewModel.resetJwt, emailJo.toString()) { innerCode ->
-                                        when (innerCode) {
-                                            200 -> {
-                                                lifecycleScope.launch (Dispatchers.Main) {
-                                                    Toast.makeText(requireContext(), "인증에 성공했습니다. 비밀번호를 재설정해주세요", Toast.LENGTH_LONG).show()
-
-                                                    // 비밀번호 재설정 절차
-                                                    binding.btnLDLogin.text = "비밀번호 변경"
-                                                    binding.clLDResetLock.visibility = View.GONE
-                                                    fadeInView(binding.clLDResetPassword)
-
-                                                    setResetPWCheck()
-                                                }
-                                            }
-                                            401 -> {
-                                                lifecycleScope.launch (Dispatchers.Main) {
-                                                    Toast.makeText(requireContext(), "올바르지 않은 요청입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else -> {
-                                    Toast.makeText(requireContext(), "서버 에러입니다. 관리자에게 문의해주세요", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        } else {
-                            Log.e("failed Verified", "failed To VerifiedCode")
-                            Toast.makeText(requireContext(), "인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-                "비밀번호 변경" -> {
-                    resetPassword()
-                }
+                "코드 인증" -> { verifyEmailCode() }
+                "비밀번호 변경" -> { resetPassword() }
             }
 
         } // ------! 로그인 끝 !------
@@ -209,7 +164,7 @@ class LoginDialogFragment : DialogFragment() {
     override fun onResume() {
         super.onResume()
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
@@ -334,7 +289,18 @@ class LoginDialogFragment : DialogFragment() {
                 }
             )
             setPositiveButton("확인") { _, _ ->
-                binding.etLDLockEmail.setText("${binding.etLDEmail.text}")
+                binding.etLDLockEmail.apply {
+                    setText("${binding.etLDEmail.text}")
+                    binding.etLDLockEmail.postDelayed({
+                        requestFocus()
+                        setSelection(binding.etLDLockEmail.length())
+                        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.showSoftInput(binding.etLDLockEmail, InputMethodManager.SHOW_IMPLICIT)
+                        scrollToView(binding.etLDLockEmail, binding.nsvLogin)
+                    }, 250)
+                }
+
+
             }
             create()
         }.show()
@@ -356,6 +322,7 @@ class LoginDialogFragment : DialogFragment() {
     }
 
     private fun setLockFunc() {
+        setTextChangedListener()
         binding.etLDLockEmail.setText("")
         binding.etLDCode.setText("")
         // ------# 키보드 focus자동 이동 #------
@@ -419,22 +386,113 @@ class LoginDialogFragment : DialogFragment() {
         binding.tvLDAlert.visibility = View.GONE
     }
 
+    private fun setTextChangedListener() {
+        binding.etLDCode.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s?.length == 6) {
+                    verifyEmailCode()
+                }
+            }
+        })
+
+        binding.etLDResetPasswordConfirm.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                resetPassword()
+                true  // 이벤트 처리가 완료되었음을 반환
+            } else {
+                false // 다른 동작들은 그대로 유지
+            }
+        }
+    }
+    private fun verifyEmailCode() {
+        val bodyJo = JSONObject().apply {
+            put("email", viewModel.saveEmail)
+            put("otp", binding.etLDCode.text)
+        }
+        verifyPWCode(getString(R.string.API_user), bodyJo.toString()) { jo ->
+            if (jo != null) {
+                val code = jo.optInt("status")
+                when (code) {
+                    200 -> {
+                        viewModel.resetJwt = jo.optString("jwt_for_pwd")
+                        val emailJo = JSONObject().apply {
+                            put("email", viewModel.saveEmail)
+                        }
+                        resetLock(getString(R.string.API_user), viewModel.resetJwt, emailJo.toString()) { innerCode ->
+                            when (innerCode) {
+                                200 -> {
+                                    lifecycleScope.launch (Dispatchers.Main) {
+                                        Toast.makeText(requireContext(), "인증에 성공했습니다. 비밀번호를 재설정해주세요", Toast.LENGTH_LONG).show()
+
+                                        // 비밀번호 재설정 절차
+                                        binding.btnLDLogin.text = "비밀번호 변경"
+                                        binding.clLDResetLock.visibility = View.GONE
+                                        fadeInView(binding.clLDResetPassword)
+                                        setResetPWCheck()
+
+                                        // focus
+                                        binding.etLDResetPassword.apply {
+                                            requestFocus()
+                                            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                                            postDelayed({
+                                                imm.showSoftInput(binding.etLDResetPassword, InputMethodManager.SHOW_IMPLICIT)
+                                                scrollToView(binding.etLDResetPassword, binding.nsvLogin)
+                                            }, 250)
+                                        }
+                                    }
+                                }
+                                401 -> {
+                                    lifecycleScope.launch (Dispatchers.Main) {
+                                        Toast.makeText(requireContext(), "올바르지 않은 요청입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    401 -> {
+                        Toast.makeText(requireContext(), "올바르지 않은 OTP입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                        binding.etLDCode.setText("")
+
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(), "서버 에러입니다. 관리자에게 문의해주세요", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Log.e("failed Verified", "failed To VerifiedCode")
+                Toast.makeText(requireContext(), "인증에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     private fun sendEmailAuthCode() {
         if (dialog?.isShowing == true) {
             MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setMessage("${viewModel.saveEmail}로 인증하시겠습니까?")
                 setPositiveButton("예") { _, _ ->
+                    if (dialog?.isShowing == true) {
+                        loadingDialog.show(requireActivity().supportFragmentManager, "loadingDialogFragment")
+                    }
                     val jo = JSONObject().apply {
                         put("email", viewModel.saveEmail)
                     }
                     sendPWCode(getString(R.string.API_user), jo.toString()) {
-                        Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT).show()
+                        if (dialog?.isShowing == true) {
+                            loadingDialog.dismiss()
+                        }
                         viewModel.saveEmail = binding.etLDEmail.text.toString()
                         // 재전송안내 문구 세팅
                         binding.tvLDReAuth.visibility = View.VISIBLE
                         setReSendMessage()
-
+                        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                        binding.etLDCode.requestFocus()
+                        binding.etLDCode.postDelayed({
+                            imm.showSoftInput(binding.etLDCode, InputMethodManager.SHOW_IMPLICIT)
+                            scrollToView(binding.etLDCode, binding.nsvLogin)
+                        }, 250)
                         // 버튼 활성화
                         binding.etLDCode.isEnabled = true
                         binding.btnLDLogin.apply {
@@ -456,13 +514,34 @@ class LoginDialogFragment : DialogFragment() {
             setTitle("인증번호 재전송")
             setMessage("${viewModel.fullEmail.value}\n이메일로 인증번호를 다시 전송하시겠습니까?")
             setPositiveButton("예") { _, _ ->
-
-                // 인증번호 다시 보내기
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val jo = JSONObject().apply {
-                        put("email", viewModel.fullEmail.value)
+                if (dialog?.isShowing == true) {
+                    loadingDialog.show(requireActivity().supportFragmentManager, "loadingDialogFragment")
+                }
+                val jo = JSONObject().apply {
+                    put("email", viewModel.saveEmail)
+                }
+                sendPWCode(getString(R.string.API_user), jo.toString()) {
+                    Toast.makeText(requireContext(), "인증번호를 이메일로 전송했습니다.", Toast.LENGTH_SHORT).show()
+                    if (dialog?.isShowing == true) {
+                        loadingDialog.dismiss()
                     }
-
+                    viewModel.saveEmail = binding.etLDEmail.text.toString()
+                    // 재전송안내 문구 세팅
+                    binding.tvLDReAuth.visibility = View.VISIBLE
+                    setReSendMessage()
+                    val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    binding.etLDCode.requestFocus()
+                    binding.etLDCode.postDelayed({
+                        imm.showSoftInput(binding.etLDCode, InputMethodManager.SHOW_IMPLICIT)
+                        scrollToView(binding.etLDCode, binding.nsvLogin)
+                    }, 250)
+                    // 버튼 활성화
+                    binding.etLDCode.isEnabled = true
+                    binding.btnLDLogin.apply {
+                        isEnabled = true
+                        backgroundTintList =
+                            ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                    }
                 }
             }
             setNegativeButton("아니오") { _, _ -> }

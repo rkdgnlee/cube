@@ -459,7 +459,7 @@ class SignIn1Fragment : Fragment() {
         when (statusCode) {
             200, 201 -> {
                 binding.clPw.visibility = View.VISIBLE
-                Toast.makeText(requireContext(), "인증이 완료됐습니다 비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "인증이 완료됐습니다 비밀번호를 입력해주세요", Toast.LENGTH_LONG).show()
                 // 인증 검증에 관련된 VIew 멈추고 숨기기
                 svm.countDownTimer?.cancel()
 

@@ -85,6 +85,7 @@ class MainFragment : Fragment() {
         if (sn != null) {
             prefsManager.setUserSn(sn)
         }
+        Log.v("유저제이슨", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
 
         latestRecSn = prefsManager.getLatestRecommendation()
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures

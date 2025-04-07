@@ -201,9 +201,10 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
 
     override fun onResume() {
         super.onResume()
-        // full Screen code
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+
     }
 
     private fun checkSNSLogin(jsonObject: JSONObject?) : Triple<Boolean, Boolean, Boolean> {

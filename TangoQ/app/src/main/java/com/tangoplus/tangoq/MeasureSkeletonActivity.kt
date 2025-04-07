@@ -392,7 +392,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             viewModel.setMinPosePresenceConfidence(poseLandmarkerHelper.minPosePresenceConfidence)
             viewModel.setDelegate(poseLandmarkerHelper.currentDelegate)
             backgroundExecutor.execute { poseLandmarkerHelper.clearPoseLandmarker() }
-
+            mCountDown.cancel()
             if (hideIndicator) {
                 sensorManager.unregisterListener(this)
             }
@@ -407,6 +407,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         backgroundExecutor.awaitTermination(
             Long.MAX_VALUE, TimeUnit.NANOSECONDS
         )
+        mCountDown.cancel()
         sensorManager.unregisterListener(this)
         hideIndicatorHandler.removeCallbacks(hideIndicatorRunnable)
         release()
@@ -1064,9 +1065,12 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 binding.clMeasureSkeletonCount.visibility = View.INVISIBLE
                 binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
 
-                Handler(Looper.getMainLooper()).postDelayed({ val dialog = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
-                    dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment") }, 1000)
-
+                Handler(Looper.getMainLooper()).postDelayed({
+                    val dialog = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
+                    if (!this@MeasureSkeletonActivity.isFinishing) {
+                        dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment") }
+                    }
+                    , 1000)
                 val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${seqStep.value!!.toInt()}", "drawable", packageName))
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)

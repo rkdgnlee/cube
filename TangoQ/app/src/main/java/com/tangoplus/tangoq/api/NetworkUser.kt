@@ -159,7 +159,7 @@ object NetworkUser {
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-//                    Log.v("자체로그인Success", "$responseBody")
+                    Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     CoroutineScope(Dispatchers.Main).launch {
@@ -555,7 +555,7 @@ object NetworkUser {
             }
         }
     }
-    fun linkOAuthAccount(myUrl: String, token: String, body: String, callback: (JSONObject?) -> Unit) {
+    fun linkOAuthAccount(myUrl: String, token: String, body: String, context: Context, callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val joBody = body.toRequestBody(mediaType)
 
@@ -570,7 +570,7 @@ object NetworkUser {
             .addInterceptor(authInterceptor)
             .build()
         val request = Request.Builder()
-            .url("${myUrl}oauth_mobile_verify_and_login.php")
+            .url("${myUrl}oauth_link_account.php")
             .post(joBody)
             .build()
         client.newCall(request).enqueue(object : Callback {
@@ -582,9 +582,19 @@ object NetworkUser {
             override fun onResponse(call: Call, response: Response) {
                 try {
                     val responseBody = response.body?.string()
-                    val jo = responseBody?.let{ JSONObject(it) }
-                    Log.v("sns연동", "${jo}")
-                    callback(jo)
+                    val bodyJo = JSONObject(responseBody.toString())
+                    Log.v("oauthLink토큰", "$bodyJo")
+                    if (bodyJo.optJSONObject("login_data") != null) {
+                        val jwtJo = JSONObject().apply {
+                            put("access_jwt", bodyJo.optString("access_jwt"))
+                            put("refresh_jwt", bodyJo.optString("refresh_jwt"))
+                        }
+                        saveEncryptedJwtToken(context, jwtJo)
+                        return callback(bodyJo)
+                    }
+                    return callback(bodyJo)
+
+
                 } catch (e: NetworkErrorException) {
                     Log.e("sns연동Error", "Error by verifyPW NetworkErrorException : ${e.message}")
                 } catch (e: IllegalStateException) {
@@ -600,7 +610,7 @@ object NetworkUser {
         })
     }
 
-    fun insertSNSUser(myUrl: String, token:String, body: String, callback: (JSONObject?) -> Unit) {
+    fun insertSNSUser(myUrl: String, token:String, body: String, context: Context,  callback: (JSONObject?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val joBody = body.toRequestBody(mediaType)
 
@@ -628,19 +638,27 @@ object NetworkUser {
             override fun onResponse(call: Call, response: Response) {
                 try {
                     val responseBody = response.body?.string()
-                    val jo = responseBody?.let{ JSONObject(it) }
-                    Log.v("sns회원가입", "${jo}")
-                    callback(jo)
+                    val bodyJo = JSONObject(responseBody.toString())
+                    Log.v("oauthLink토큰", "$bodyJo")
+                    if (bodyJo.optJSONObject("login_data") != null) {
+                        val jwtJo = JSONObject().apply {
+                            put("access_jwt", bodyJo.optString("access_jwt"))
+                            put("refresh_jwt", bodyJo.optString("refresh_jwt"))
+                        }
+                        saveEncryptedJwtToken(context, jwtJo)
+                        return callback(bodyJo)
+                    }
+                    return callback(bodyJo)
                 } catch (e: NetworkErrorException) {
-                    Log.e("sns회원가입Error", "Error by verifyPW NetworkErrorException : ${e.message}")
+                    Log.e("sns회원가입Error", "Error by insertSNSUser NetworkErrorException : ${e.message}")
                 } catch (e: IllegalStateException) {
-                    Log.e("sns회원가입Error", "Error by verifyPW IllegalStateException : ${e.message}")
+                    Log.e("sns회원가입Error", "Error by insertSNSUser IllegalStateException : ${e.message}")
                 } catch (e: IllegalArgumentException) {
-                    Log.e("sns회원가입Error", "Error by verifyPW IllegalArgumentException : ${e.message}")
+                    Log.e("sns회원가입Error", "Error by insertSNSUser IllegalArgumentException : ${e.message}")
                 } catch (e: SocketTimeoutException) {
-                    Log.e("sns회원가입Error", "Error by verifyPW SocketTimeoutException : ${e.message}")
+                    Log.e("sns회원가입Error", "Error by insertSNSUser SocketTimeoutException : ${e.message}")
                 } catch (e: Exception) {
-                    Log.e("sns회원가입Error", "Error by verifyPW Exception : ${e.message}")
+                    Log.e("sns회원가입Error", "Error by insertSNSUser Exception : ${e.printStackTrace()}")
                 }
             }
         })
@@ -764,8 +782,8 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("emailOTP실패", "ResponseCode: ${response.code}")
                         val responseBody = response.body?.string()
+                        Log.e("emailOTP실패", "ResponseCode: ${response.code}, ${responseBody}")
                         val provider = responseBody?.let { JSONObject(it).optString("provider") }
                         return@withContext Pair(response.code, provider)
                     }
@@ -813,10 +831,10 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             try {
                 client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        Log.e("emailVerify", "ResponseCode: ${response.code}")
-                        return@withContext response.code
-                    }
+//                    if (!response.isSuccessful) {
+//                        Log.e("emailVerify", "ResponseCode: ${response.code}")
+//                        return@withContext response.code
+//                    }
 
                     response.body?.string()?.let { responseString ->
                         val bodyJo = JSONObject(responseString)
@@ -947,6 +965,7 @@ object NetworkUser {
                 val responseBody = response.body?.string()
                 val jo = responseBody?.let{ JSONObject(it) }
                 val code = jo?.optInt("status")
+                Log.e("resetPw", "resetPw: $jo")
                 if (code != null) {
                     callback(code)
                 }
@@ -1003,7 +1022,7 @@ object NetworkUser {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     if (responseBody != null) {
-                        // Log.w("profileImage", "Success to execute request: $responseBody")
+                         Log.w("profileImage", "Success to execute request: ${response.code} $responseBody")
                         callback(extractProfileImageUrl(responseBody))
                     }
                 }
@@ -1023,7 +1042,8 @@ object NetworkUser {
     // ------! 프로필 사진 끝 !------
     fun storeUserInSingleton(context: Context, jsonObj :JSONObject) {
         Singleton_t_user.getInstance(context).jsonObject = jsonObj.optJSONObject("login_data")
-        Singleton_t_user.getInstance(context).jsonObject?.put("profile_file_path", jsonObj.optJSONObject("profile_file_path")?.optString("file_path"))
+        Log.v("유저데이타", "${Singleton_t_user.getInstance(context).jsonObject}")
+//        Singleton_t_user.getInstance(context).jsonObject?.put("profile_file_path", jsonObj.optJSONObject("profile_file_path")?.optString("file_path"))
     }
 
     // ------# 핀번호 로그인 #------

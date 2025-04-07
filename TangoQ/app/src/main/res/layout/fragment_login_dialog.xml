@@ -219,14 +219,16 @@
 
                 <TextView
                     android:id="@+id/tvLDReAuth"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="10dp"
-                    android:text="인증번호가 오지 않는다면, 버튼을 눌러 다시 시도해주세요"
+                    android:layout_marginEnd="32dp"
+                    android:text="인증번호가 오지 않는다면, 재전송을 눌러 코드를 요청하세요. "
                     android:textColor="@color/subColor400"
                     android:textSize="13dp"
                     android:visibility="invisible"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/etLDCode" />
 
@@ -234,13 +236,14 @@
                     android:id="@+id/tvLDCountDown"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="5dp"
                     android:text="02:00"
                     android:textColor="@color/subColor500"
                     android:textSize="13dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvLDReAuth"
-                    app:layout_constraintStart_toEndOf="@+id/tvLDReAuth"
-                    app:layout_constraintTop_toTopOf="@+id/tvLDReAuth" />
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvLDReAuth" />
 
                 <TextView
                     android:id="@+id/textView64"

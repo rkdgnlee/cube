@@ -66,6 +66,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import java.io.File
 import kotlin.math.max
+import androidx.core.graphics.drawable.toDrawable
 
 class MeasureTrendDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureTrendDialogBinding
@@ -77,7 +78,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var ssm : SaveSingletonManager
     private lateinit var measureResult : JSONArray
-    private var updateUI = false
+
     // 영상재생
     private var simpleExoPlayer1: SimpleExoPlayer? = null
     private var simpleExoPlayer2: SimpleExoPlayer? = null
@@ -114,7 +115,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMeasureTrendDialogBinding.inflate(inflater)
         return binding.root
@@ -408,9 +409,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
         }
     }
 
-    private fun setAdapter(analyzesLeft: MutableList<MutableList<AnalysisUnitVO>>?,
-                           analyzesRight : MutableList<MutableList<AnalysisUnitVO>>?,
-                           currentSeq : Int = 0) {
+    private fun setAdapter(
+        analyzesLeft: MutableList<MutableList<AnalysisUnitVO>>?,
+        analyzesRight: MutableList<MutableList<AnalysisUnitVO>>?,
+        currentSeq: Int = 0,
+    ) {
 
         val filteredLeftAnalysises = if (currentSeq == 1) {
             analyzesLeft?.filterIndexed{ index, _ -> index in listOf(1, 2, 7, 8, 9, 10 ) }?.toMutableList()
@@ -532,7 +535,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
     override fun onResume() {
         super.onResume()
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
@@ -541,7 +544,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
             true -> {
                 lifecycleScope.launch {
                     rightJa = avm.rightMeasurement.value?.measureResult?.getJSONArray(1) ?: JSONArray()
-                    initPlayer(isRight)
+                    initPlayer(true)
                     simpleExoPlayer2?.addListener(object : Player.Listener {
                         override fun onPlaybackStateChanged(playbackState: Int) {
                             super.onPlaybackStateChanged(playbackState)
@@ -550,11 +553,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 val videoDuration = simpleExoPlayer2?.duration ?: 0L
                                 lifecycleScope.launch {
                                     while (simpleExoPlayer2?.isPlaying == true) {
-//                                        if (!updateUI) updateVideoUI(isRight)
-                                        updateVideoUI(isRight)
+                                        if (!pvm.rightUpdateUI) updateVideoUI(isRight)
+//                                        updateVideoUI(isRight)
                                         updateFrameData(true, videoDuration, rightJa.length())
                                         delay(24)
-                                        Handler(Looper.getMainLooper()).postDelayed( { updateUI = true },1500)
+                                        pvm.rightUpdateUI = true
                                     }
                                 }
                             } else if (playbackState == Player.STATE_ENDED) {
@@ -573,8 +576,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
 //                    Log.v("동적측정json", "${avm.leftMeasurement.value?.measureResult?.getJSONArray(1)}")
                     leftJa = avm.leftMeasurement.value?.measureResult?.getJSONArray(1) ?: JSONArray()
 //                    Log.v("leftJa길이", "${leftJa.length()}")
-                    initPlayer(isRight)
-
+                    initPlayer(false)
+                    Log.e("왼쪽플레이어init", "setPlayer false")
                     simpleExoPlayer1?.addListener(object : Player.Listener {
                         override fun onPlaybackStateChanged(playbackState: Int) {
                             super.onPlaybackStateChanged(playbackState)
@@ -583,10 +586,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 val videoDuration = simpleExoPlayer1?.duration ?: 0L
                                 lifecycleScope.launch {
                                     while (simpleExoPlayer1?.isPlaying == true) {
-                                        if (!updateUI) updateVideoUI(isRight)
-                                        updateFrameData(isRight, videoDuration, leftJa.length())
+                                        Log.e("비디오레이아웃", "${pvm.leftUpdateUI}")
+                                        if (!pvm.leftUpdateUI) updateVideoUI(false)
+                                        updateFrameData(false, videoDuration, leftJa.length())
                                         delay(24)
-                                        Handler(Looper.getMainLooper()).postDelayed( { updateUI = true },1500)
+                                        pvm.leftUpdateUI = true
                                     }
                                 }
                             } else if (playbackState == Player.STATE_ENDED) {
@@ -686,6 +690,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 }
             }
             false -> {
+                Log.e("왼쪽플레이어init", "initPlayer false")
+
                 setClickListener(false)
                 simpleExoPlayer1 = SimpleExoPlayer.Builder(requireContext()).build()
                 binding.pvMTDLeft.player = simpleExoPlayer1
@@ -1037,7 +1043,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
     private fun transformCoordinates(
         result: PoseLandmarkResult,
         originalWidth: Int, originalHeight: Int,
-        targetWidth: Int, targetHeight: Int
+        targetWidth: Int, targetHeight: Int,
     ): PoseLandmarkResult {
 
         // 원본 영상에서 크롭된 부분 계산 (FFmpeg 코드와 동일하게)
@@ -1083,71 +1089,55 @@ class MeasureTrendDialogFragment : DialogFragment() {
         when (isRight) {
             true -> {
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendRightUri?.toUri()?: "".toUri())
-                val displayMetrics = DisplayMetrics()
-                requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-                val screenWidth = displayMetrics.widthPixels
-
-                val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
-//                Log.v("aspectRatio", "$aspectRatio")
+                val aspectRatio = videoWidth.toFloat() / videoHeight.toFloat()
+                Log.v("aspectRatio", "오른쪽: $aspectRatio")
 
                 if (aspectRatio > 1) {
-                    val adjustedHeight = (screenWidth * aspectRatio).toInt()
-
-                    val resizingValue = if (isTablet(requireContext())) {
-                        if (aspectRatio > 1) {
-                            0.5f
-                        } else { // 가로 (키오스크 일 때 원본 유지 )
-                            1f
-                        }
-                    } else 0.5f // 태블릿이 아닐 때는 상관없음.
+                    setPlayerByCroppedVideo(true, videoWidth.toFloat() , videoHeight.toFloat())
+                } else {
+                    val resizingValue = 0.5f
+                    Log.v("오른쪽ratio", "$aspectRatio, $resizingValue")
 
                     // clMA의 크기 조절
+                    val displayMetrics = DisplayMetrics()
+                    requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+                    val screenWidth = displayMetrics.widthPixels
+                    val adjustedHeight = (screenWidth / aspectRatio).toInt()
+
                     val params = binding.clMTDRight.layoutParams
                     params.width = (screenWidth  * resizingValue).toInt()
                     params.height = (adjustedHeight * resizingValue).toInt()
                     binding.clMTDRight.layoutParams = params
 
-                    // llMARV를 clMA 아래에 위치시키기
-                    val constraintSet = ConstraintSet()
-                    constraintSet.clone(binding.clMTD)
-                    constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
-                    constraintSet.applyTo(binding.clMTD)
-
-                } else {
-
                 }
-
-                // PlayerView 크기 조절 (필요한 경우)
             }
             false -> {
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendLeftUri?.toUri()?: "".toUri())
-                val displayMetrics = DisplayMetrics()
-                requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-                val screenWidth = displayMetrics.widthPixels
+                val aspectRatio = videoWidth.toFloat() / videoHeight.toFloat() // 9: 16
+                Log.v("aspectRatio", "왼쪽: $aspectRatio")
+                if (aspectRatio > 1) {
+                    setPlayerByCroppedVideo(false, videoWidth.toFloat() , videoHeight.toFloat())
+                    Log.v("플레이어 틀어지나요", "setPlayerByCroppedVideo, false")
+                } else {
+                    val resizingValue = 0.5f
+                    Log.v("왼쪽ratio", "$aspectRatio, $resizingValue")
 
-                val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
-                val adjustedHeight = (screenWidth * aspectRatio).toInt()
+                    // clMA의 크기 조절
+                    val displayMetrics = DisplayMetrics()
+                    requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+                    val screenWidth = displayMetrics.widthPixels
+                    val adjustedHeight = (screenWidth / aspectRatio).toInt()
 
-                val resizingValue = if (isTablet(requireContext())) {
-                    if (aspectRatio > 1) {
-                        0.5f
-                    } else { // 가로 (키오스크 일 때 원본 유지 )
-                        1f
-                    }
-                } else 0.5f // 태블릿이 아닐 때는 상관없음.
+                    val params = binding.clMTDLeft.layoutParams
+                    params.width = (screenWidth * resizingValue).toInt()
+                    params.height = (adjustedHeight * resizingValue).toInt()
+                    binding.clMTDLeft.layoutParams = params
 
-                // clMA의 크기 조절
-                val params = binding.clMTDLeft.layoutParams
-                params.width = (screenWidth  * resizingValue).toInt()
-                params.height = (adjustedHeight * resizingValue).toInt()
-                binding.clMTDLeft.layoutParams = params
-
+                }
                 val constraintSet = ConstraintSet()
                 constraintSet.clone(binding.clMTD)
                 constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
                 constraintSet.applyTo(binding.clMTD)
-
-//                binding.clMTDLeft.requestLayout()
             }
         }
         val clMTDParams = binding.clMTD.layoutParams
@@ -1212,7 +1202,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                    params.width = screenWidth / 2
                    params.height = adjustedHeight
                    binding.clMTDLeft.layoutParams = params
-
+                   Log.v("왼쪽croppedVideo", "$aspectRatio2, ${screenWidth / 2 }, $adjustedHeight")
                    // llMARV를 clMA 아래에 위치시키기
                    val constraintSet = ConstraintSet()
                    constraintSet.clone(binding.clMTD)

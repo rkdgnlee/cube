@@ -112,11 +112,13 @@ class MeasureSetupDialogFragment : DialogFragment() {
                     addSource(mvm.setupAgreement2) { update() }
                 }
 
-                buttonEnabled.observe(viewLifecycleOwner) { isEnabled ->
-                    binding.btnMSDFinish.isEnabled = isEnabled
-                    binding.btnMSDFinish.backgroundTintList = ColorStateList.valueOf(resources.getColor(
-                        if (isEnabled) R.color.mainColor else R.color.subColor400
-                        , null))
+                buttonEnabled.observe(viewLifecycleOwner) { enabled ->
+                    binding.btnMSDFinish.apply {
+                        isEnabled = enabled
+                        backgroundTintList = ColorStateList.valueOf(resources.getColor(
+                            if (isEnabled) R.color.mainColor else R.color.subColor400
+                            , null))
+                    }
                 }
                 binding.btnMSDDeny.setOnSingleClickListener {
                     dismiss()
@@ -148,10 +150,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
 
         // 버튼 셋엄
         val namePatternCheck = Pattern.compile(
-            "^(?:" +
-                    "[가-힣]{2,5}|" +  // 한글 2-5글자
-                    "[a-zA-Z]{3,15}" + // 영어 3-15글자
-                    ")$"
+            "^(?:[가-힣]{2,5}|[a-zA-Z]{2,})(?: [가-힣]{2,5}| [a-zA-Z]{2,})?(?: [가-힣]{2,5}| [a-zA-Z]{2,})?\$"
         )
         binding.etMSDName.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }

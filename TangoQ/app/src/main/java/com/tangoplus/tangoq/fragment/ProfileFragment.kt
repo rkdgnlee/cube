@@ -6,6 +6,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -47,7 +49,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -247,20 +251,26 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 //                    val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
                     val mimeType = "image/jpeg"
                     val imageFile = requireContext().uriToFile(uri, fileName)
-                    imageFile?.let {
-                        val requestBody = MultipartBody.Builder()
-                            .setType(MultipartBody.FORM)
-                            .addFormDataPart(
-                                "profile_image",
-                                fileName,
-                                it.asRequestBody(mimeType.toMediaTypeOrNull())
-                            )
-                            .build()
+                    if (imageFile != null) {
+                        val shrinkFile = compressImageFile(requireContext(), imageFile)
+                        val requestBody = shrinkFile?.asRequestBody(mimeType.toMediaTypeOrNull())?.let {
+                            MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart(
+                                    "profile_image",
+                                    fileName,
+                                    it
+                                )
+                                .build()
+
+                        }
                         CoroutineScope(Dispatchers.IO).launch {
-                            sendProfileImage(requireContext(), getString(R.string.API_user),
-                                userJson?.optString("sn").toString(), requestBody) { imageUrl ->
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    Singleton_t_user.getInstance(requireContext()).jsonObject?.put("profile_file_path", imageUrl.replace("\\", ""))
+                            if (requestBody != null) {
+                                sendProfileImage(requireContext(), getString(R.string.API_user),
+                                    userJson?.optString("sn").toString(), requestBody) { imageUrl ->
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        Singleton_t_user.getInstance(requireContext()).jsonObject?.put("profile_file_path", imageUrl.replace("\\", ""))
+                                    }
                                 }
                             }
                         }
@@ -322,9 +332,9 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                 }
 
                 // ----- 이미지 로드 시작 -----
-                val imageUri = userJson.optString("profile_file_path")
-                Log.v("imageUri", imageUri)
-                if (imageUri != "") {
+                val imageUri = userJson.optString("profile_file_path") ?: null
+                if (imageUri != "" && !imageUri.isNullOrEmpty() && imageUri != "null") {
+                    Log.v("inside ImageUri", imageUri)
                     Glide.with(this)
                         .load(imageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
@@ -399,6 +409,28 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                     )
                 }
             }
+        }
+    }
+    fun compressImageFile(context: Context, file: File, maxSizeInBytes: Long = 2 * 1024 * 1024): File? {
+        val bitmap = BitmapFactory.decodeFile(file.path)
+        var quality = 100
+        var stream: ByteArrayOutputStream
+        var compressedBytes: ByteArray
+
+        do {
+            stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+            compressedBytes = stream.toByteArray()
+            quality -= 5
+        } while (compressedBytes.size > maxSizeInBytes && quality > 10)
+
+        return try {
+            val compressedFile = File(context.cacheDir, "compressed_${file.name}")
+            compressedFile.writeBytes(compressedBytes)
+            compressedFile
+        } catch (e: IOException) {
+            e.message
+            null
         }
     }
 }

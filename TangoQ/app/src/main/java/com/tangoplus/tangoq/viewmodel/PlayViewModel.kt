@@ -18,6 +18,9 @@ class PlayViewModel : ViewModel() {
 
     var videoUrl: String? = null
 
+    var leftUpdateUI = false
+    var rightUpdateUI = false
+
     // playFullScreen에서 url, ids 담기
     var baseUrls = arrayListOf<String>()
     var sns: MutableList<String>? = null

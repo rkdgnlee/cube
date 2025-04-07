@@ -56,11 +56,12 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
                 measure.get(i).regDate
             }.distinct()
         } ?: emptyList()
-        val names = measures?.let { measure ->
-            List(measure.size) { i ->
-                measure.get(i).userName
-            }
-        } ?: emptyList()
+//        val names = measures?.let { measure ->
+//            List(measure.size) { i ->
+//                measure.get(i).userName
+//            }
+//        } ?: emptyList()
+        val names = listOf<String>()
 //        Log.v("MeasureBS", "$dates")
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMBSD.layoutManager = layoutManager

@@ -201,14 +201,16 @@ class FindAccountDialogFragment : DialogFragment() {
                         put("new_password", encryptePW)
                     }
                     resetPW(getString(R.string.API_user), svm.resetJwt, bodyJo.toString()) { code ->
-                        when (code) {
-                            200 -> {
-                                Toast.makeText(requireContext(), "비밀번호 변경이 완료됐습니다. 로그인해주세요 !", Toast.LENGTH_SHORT).show()
-                                dismiss()
-                            }
-                            400 -> Toast.makeText(requireContext(), "올바르지 않은 요청입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-                            else -> {
-                                Toast.makeText(requireContext(), "서버 에러입니다. 관리자에게 문의해주세요", Toast.LENGTH_SHORT).show()
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            when (code) {
+                                200 -> {
+                                    Toast.makeText(requireContext(), "비밀번호 변경이 완료됐습니다. 로그인해주세요 !", Toast.LENGTH_SHORT).show()
+                                    dismiss()
+                                }
+                                400 -> Toast.makeText(requireContext(), "올바르지 않은 요청입니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                                else -> {
+                                    Toast.makeText(requireContext(), "서버 에러입니다. 관리자에게 문의해주세요", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     }
