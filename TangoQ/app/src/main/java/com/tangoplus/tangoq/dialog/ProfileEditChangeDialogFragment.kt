@@ -558,9 +558,29 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                                     imm?.showSoftInput(binding.etPCDAuthNumber, InputMethodManager.SHOW_IMPLICIT)
                                 }, 250)
                             }
+                            409 -> {
+                                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                    setMessage("이미 존재하는 핸드폰 번호입니다. 재확인 후 다시 시도해주세요")
+                                    setPositiveButton("예", { _, _ ->
+                                        binding.etPCDMobile.setText("")
+                                    })
+
+                                }.show()
+                            }
+                            400 -> {
+                                Toast.makeText(requireContext(), "휴대폰 번호가 올바르지 않습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                            422 -> {
+                                Toast.makeText(requireContext(), "휴대폰번호가 존재하지 않습니다", Toast.LENGTH_SHORT).show()
+                            }
+                            429 -> {
+                                Toast.makeText(requireContext(), "요청 가능 횟수를 초과헀습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                            500 -> {
+                                Toast.makeText(requireContext(), "서버 오류 입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
                             else -> {
                                 Toast.makeText(requireContext(), "인증번호 전송에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
-
                             }
                         }
                     }

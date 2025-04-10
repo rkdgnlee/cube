@@ -43,7 +43,7 @@ class AnalysisViewModel : ViewModel() {
         return measures.map { measure ->
             DateDisplay(
                 fullDateTime = measure.regDate,
-                displayDate = "${measure.regDate.substring(0, 11)}\n${measure.userName}"
+                displayDate = "${measure.regDate.substring(0, 11)}" // ${measure.userName}
             )
         }
     }

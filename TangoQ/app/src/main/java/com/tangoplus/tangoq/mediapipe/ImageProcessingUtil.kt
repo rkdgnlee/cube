@@ -72,21 +72,7 @@ object ImageProcessingUtil {
             color = Color.parseColor("#FFFFFF") // 내부 색
             style = Paint.Style.FILL // 내부만 채우기
         }
-        val textPaint = Paint().apply {
-            color = Color.parseColor("#000000")
-            textSize = 48f
-            isAntiAlias = true
-            textAlign = Paint.Align.CENTER
 
-        }
-        val outerCirclePaint = Paint().apply {
-            color = Color.parseColor("#41000000")
-            style = Paint.Style.FILL
-        }
-        val innerCirclePaint = Paint().apply {
-            color = Color.parseColor("#FFFFFF")
-            style = Paint.Style.FILL
-        }
         val nose = plr.getOrNull(0)
         val leftEar = plr.getOrNull(7)
         val rightEar = plr.getOrNull(8)
@@ -313,25 +299,51 @@ object ImageProcessingUtil {
         }
 //        resultBitmap.scale(-1, 1)
 
-        // left right  표시 넣기
+        return drawDirectionUIOnBitmap(resultBitmap, sequence)
+    }
+    fun drawDirectionUIOnBitmap(
+        bitmap: Bitmap,
+        sequence: Int
+    ): Bitmap {
+        val resultBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(resultBitmap)
+
+        val textPaint = Paint().apply {
+            color = Color.parseColor("#000000")
+            textSize = 48f
+            isAntiAlias = true
+            textAlign = Paint.Align.CENTER
+        }
+        val outerCirclePaint = Paint().apply {
+            color = Color.parseColor("#41000000")
+            style = Paint.Style.FILL
+        }
+        val innerCirclePaint = Paint().apply {
+            color = Color.parseColor("#FFFFFF")
+            style = Paint.Style.FILL
+        }
+
         val leftCircleX = 100f
         val leftCircleY = 100f
         val circleRadius = 48f
         val innerRadius = 10f
+
         if (sequence in listOf(5, 6)) {
             canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
             canvas.drawCircle(leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
-            canvas.drawText("R", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
-            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
-            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
-            canvas.drawText("L", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+            canvas.drawText("R", leftCircleX, leftCircleY + textPaint.textSize / 3, textPaint)
+
+            canvas.drawCircle(resultBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(resultBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("L", resultBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3, textPaint)
         } else if (sequence !in listOf(3, 4)) {
             canvas.drawCircle(leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
             canvas.drawCircle(leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
-            canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
-            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
-            canvas.drawCircle(originalBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
-            canvas.drawText("R", originalBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3 , textPaint)
+            canvas.drawText("L", leftCircleX, leftCircleY + textPaint.textSize / 3, textPaint)
+
+            canvas.drawCircle(resultBitmap.width - leftCircleX, leftCircleY, circleRadius, outerCirclePaint)
+            canvas.drawCircle(resultBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
+            canvas.drawText("R", resultBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3, textPaint)
         }
 
         return resultBitmap

@@ -60,7 +60,7 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
     private val mvm : MeasureViewModel by activityViewModels()
     private val avm : AnalysisViewModel by activityViewModels()
     private lateinit var adapterAnalysises : List<AnalysisVO>
-
+    private lateinit var partStates : MutableList<Pair<String, Float>>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -108,11 +108,7 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
         }
         // ------# measure 에 맞게 UI 수정 #------
         measure = mvm.selectedMeasure
-
         avm.mdMeasureResult = measure?.measureResult?.optJSONArray(1) ?: JSONArray()
-        if (avm.mdMeasureResult != JSONArray()) {
-            avm.currentPart.value = "목관절"
-        }
         updateUI()
         setHorizonAdapter()
         // ------# 10각형 레이더 차트 #------
@@ -239,12 +235,16 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
     }
 
     private fun setHorizonAdapter() {
-        val partStates = matchedIndexs.map { part ->
+        partStates = matchedIndexs.map { part ->
             measure?.dangerParts?.find { it.first == part }  ?: (part to 0f)
         }. toMutableList().apply {
             val zeroItem = filter { it.second == 0f }
             removeAll(zeroItem)
             addAll(zeroItem)
+        }
+        if (avm.mdMeasureResult != JSONArray()) {
+
+            avm.currentPart.value = partStates.get(0).first
         }
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         val adapter = MainPartRVAdapter(this@MeasureDetailFragment, partStates, avm, "measureDetail")

@@ -183,6 +183,7 @@ class LoginDialogFragment : DialogFragment() {
             lifecycleScope.launch {
                 getUserIdentifyJson(getString(R.string.API_user), jsonObject) { jo ->
                     Log.v("loginResult", "$jo")
+                    val isAccessEmpty = jo?.optString("access_jwt")?.isBlank()
                     if (jo == null) {
                         dialog.dismiss()
                         Handler(Looper.getMainLooper()).post {
@@ -197,45 +198,46 @@ class LoginDialogFragment : DialogFragment() {
                                 }
                             }
                         }
-                    }
-                    val statusCode = jo?.optInt("status") ?: 0
-                    val retryAfter = jo?.optInt("retry_after") ?: 0
-//                    Log.v("코드", "$statusCode")
-
-                    if (statusCode == 0) {
+                    } else if (isAccessEmpty != true) {
                         val jsonObj = JSONObject()
-                        jsonObj.put("access_jwt", jo?.optString("access_jwt"))
-                        jsonObj.put("refresh_jwt", jo?.optString("refresh_jwt"))
+                        jsonObj.put("access_jwt", jo.optString("access_jwt"))
+                        jsonObj.put("refresh_jwt", jo.optString("refresh_jwt"))
                         saveEncryptedJwtToken(requireContext(), jsonObj)
 
                         requireActivity().runOnUiThread {
                             binding.btnLDLogin.isEnabled = false
                             viewModel.User.value = null
                             // ------! 싱글턴 + 암호화 저장 시작 !------
-                            if (jo != null ) {
-                                // ------# 최초 로그인 #------
-                                // ------# 기존 로그인 #------
-                                NetworkUser.storeUserInSingleton(requireContext(), jo)
-                                createKey(getString(R.string.SECURE_KEY_ALIAS))
+                            // ------# 최초 로그인 #------
+                            // ------# 기존 로그인 #------
+                            NetworkUser.storeUserInSingleton(requireContext(), jo)
+                            createKey(getString(R.string.SECURE_KEY_ALIAS))
 //                                        saveEncryptedToken(requireContext(), getString(R.string.SECURE_KEY_ALIAS), encryptToken(getString(R.string.SECURE_KEY_ALIAS), jsonObject))
-                                val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid") ?: ""
-                                val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt() ?: -1
-                                val safeContext = context
-                                if (safeContext != null) {
-                                    dialog.dismiss()
-                                    ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
+                            val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid") ?: ""
+                            val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt() ?: -1
+                            val safeContext = context
+                            if (safeContext != null) {
+                                dialog.dismiss()
+                                ssm.getMeasures(userUUID, userInfoSn, CoroutineScope(Dispatchers.IO)) {
 //                                        Log.v("자체로그인완료", "${Singleton_t_user.getInstance(safeContext).jsonObject}")
-                                        Handler(Looper.getMainLooper()).postDelayed({
-                                            val intent = Intent(safeContext, MainActivity::class.java)
-                                            safeContext.startActivity(intent)
-                                            (safeContext as? Activity)?.finishAffinity()
-                                        }, 250)
-                                    }
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        val intent = Intent(safeContext, MainActivity::class.java)
+                                        safeContext.startActivity(intent)
+                                        (safeContext as? Activity)?.finishAffinity()
+                                    }, 250)
                                 }
                             }
                             // ------! 싱글턴 + 암호화 저장 끝 !------
                         }
                     } else {
+                        val errorCode = jo.optInt("line")
+                        val statusCode = if (errorCode != 0) {
+                            jo.optInt("code")
+                        } else {
+                            jo.optInt("status")
+                        }
+                        val socialAccount = jo.optString("social_account") ?: ""
+                        val retryAfter = jo.optInt("retry_after") ?: 0
                         requireActivity().runOnUiThread {
                             dialog.dismiss()
                             makeMaterialDialog(
@@ -243,9 +245,11 @@ class LoginDialogFragment : DialogFragment() {
                                     401, 404 -> 0
                                     429 -> 1
                                     423 -> 2
-                                    else -> 0
+                                    422 -> 3
+                                    else -> -1
                                 },
-                                retryAfter
+                                retryAfter,
+                                socialAccount
                             )
 
                             binding.etLDPw.text.clear()
@@ -255,12 +259,14 @@ class LoginDialogFragment : DialogFragment() {
             }
         }
     }
-    private fun makeMaterialDialog(case: Int, retryAfter : Int) {
+    private fun makeMaterialDialog(case: Int, retryAfter : Int, socialAccount: String = "") {
 
         val message = when (case) {
             0 -> "비밀번호 또는 아이디가 올바르지 않습니다.\n로그인을 3회 이상 실패했을 경우 일정 시간 제한될 수 있습니다."
             1 -> "반복적인 로그인 실패로, 로그인이 ${retryAfter}초 동안 제한됩니다."
             2 -> "비밀번호를 5회 틀려 계정이 잠겼습니다.\n이메일 인증을 통해 잠금을 해제해주세요"
+            3 -> "소셜 회원가입 계정입니다. $socialAccount 로그인을 진행 해주세요"
+            -1 -> "서버 오류입니다. 잠시 후 다시 시도해주세요"
             else -> ""
         }
 
@@ -317,6 +323,9 @@ class LoginDialogFragment : DialogFragment() {
 
                 fadeInView(binding.clLDResetLock)
                 setLockFunc()
+            }
+            -1 -> {
+                enabledLogin()
             }
         }
     }

@@ -258,7 +258,7 @@ class AnalyzeFragment : Fragment() {
         } // ------! calendar 끝 !------
 
         binding.btnAExercise.setOnSingleClickListener {
-            if (evm.latestUVP != null) {
+            if (!evm.latestUVP.isNullOrEmpty()) {
                 val programSn = evm.latestProgram?.programSn ?: -1
                 val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
                 ProgramCustomDialogFragment.newInstance(programSn, recSn)
@@ -267,10 +267,10 @@ class AnalyzeFragment : Fragment() {
                 MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                     setTitle("알림")
                     setMessage("프로그램 기록이 없습니다.\n측정으로 이동합니다.")
-                    setPositiveButton("확인", { _ , _ ->
+                    setPositiveButton("예", { _ , _ ->
                         (activity as MainActivity).launchMeasureSkeletonActivity()
                     })
-                    setNegativeButton("취소", {_, _ ->
+                    setNegativeButton("아니오", {_, _ ->
 
                     })
                 }.show()
@@ -591,13 +591,15 @@ class AnalyzeFragment : Fragment() {
             // 상단 프로그레스 받아오기
             val progressResult = getLatestProgresses(getString(R.string.API_progress), requireContext())
             setShimmer(false)
+
             if (progressResult != null) {
                 binding.clAProgress2.visibility =View.VISIBLE
                 binding.tvANoProgram.visibility = View.GONE
-                Log.v("progressResult", "${progressResult.first}")
                 evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
                 evm.latestProgram = progressResult.second
+                Log.v("progressResult", "${evm.latestUVP}")
                 if (!evm.latestUVP.isNullOrEmpty()) {
+                    Log.v("progressResult", "${evm.latestUVP}")
                     val currentEId = evm.latestUVP?.get(0)?.exerciseId
                     val currentExerciseItem = evm.latestProgram?.exercises?.find { it.exerciseId?.toInt() == currentEId }
                     val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"
@@ -642,6 +644,13 @@ class AnalyzeFragment : Fragment() {
                     avm.existedMonthProgresses.collectLatest { dates ->
                         binding.cvACalendar.notifyCalendarChanged()
                     }
+                } else if (progressResult.first.isEmpty()) {
+                    setShimmer(false)
+                    binding.clAProgress2.visibility = View.INVISIBLE
+                    binding.tvANoProgram.apply {
+                        visibility = View.VISIBLE
+                        text = "진행중인 프로그램이 없습니다\n운동을 시작해보세요"
+                    }
                 }
                 Log.v("날짜선택됨", "8 ${pvm.selectedDate}")
 
@@ -651,7 +660,10 @@ class AnalyzeFragment : Fragment() {
             } else {
                 setShimmer(false)
                 binding.clAProgress2.visibility = View.INVISIBLE
-                binding.tvANoProgram.visibility = View.VISIBLE
+                binding.tvANoProgram.apply {
+                    visibility = View.VISIBLE
+                    text = "진행중인 프로그램이 없습니다\n측정을 진행해주세요"
+                }
 //                binding.tvAProgressGuide.visibility = View.GONE
 //                binding.cvAProgress.visibility = View.GONE
             }

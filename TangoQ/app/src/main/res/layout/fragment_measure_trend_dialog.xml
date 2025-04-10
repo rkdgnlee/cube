@@ -211,15 +211,23 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView35"
+                                <androidx.cardview.widget.CardView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:background="#00FFFFFF"
-                                    android:gravity="center"
-                                    android:text="L"
-                                    android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:layout_margin="2.5dp"
+                                    app:cardBackgroundColor="@color/whiteText"
+                                    app:cardCornerRadius="20dp">
+
+                                    <TextView
+                                        android:id="@+id/textView35"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:text="L"
+                                        android:textColor="#000000"
+                                        android:textSize="13dp" />
+                                </androidx.cardview.widget.CardView>
+
                             </androidx.cardview.widget.CardView>
 
                             <androidx.cardview.widget.CardView
@@ -236,15 +244,24 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView122"
+                                <androidx.cardview.widget.CardView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:background="#00FFFFFF"
-                                    android:gravity="center"
-                                    android:text="R"
-                                    android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:layout_margin="2.5dp"
+                                    app:cardBackgroundColor="@color/whiteText"
+                                    app:cardCornerRadius="20dp">
+
+                                    <TextView
+                                        android:id="@+id/textView122"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#00FFFFFF"
+                                        android:gravity="center"
+                                        android:text="R"
+                                        android:textColor="#000000"
+                                        android:textSize="13dp" />
+                                </androidx.cardview.widget.CardView>
+
                             </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
@@ -307,15 +324,24 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView134"
+                                <androidx.cardview.widget.CardView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:background="#00FFFFFF"
-                                    android:gravity="center"
-                                    android:text="L"
-                                    android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:layout_margin="2.5dp"
+                                    app:cardBackgroundColor="@color/whiteText"
+                                    app:cardCornerRadius="20dp">
+
+                                    <TextView
+                                        android:id="@+id/textView134"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#00FFFFFF"
+                                        android:gravity="center"
+                                        android:text="L"
+                                        android:textColor="#000000"
+                                        android:textSize="13dp" />
+                                </androidx.cardview.widget.CardView>
+
                             </androidx.cardview.widget.CardView>
 
                             <androidx.cardview.widget.CardView
@@ -332,15 +358,24 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView136"
+                                <androidx.cardview.widget.CardView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:background="#00FFFFFF"
-                                    android:gravity="center"
-                                    android:text="R"
-                                    android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:layout_margin="2.5dp"
+                                    app:cardBackgroundColor="@color/whiteText"
+                                    app:cardCornerRadius="20dp">
+
+                                    <TextView
+                                        android:id="@+id/textView3"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#00FFFFFF"
+                                        android:gravity="center"
+                                        android:text="R"
+                                        android:textColor="#000000"
+                                        android:textSize="13dp" />
+                                </androidx.cardview.widget.CardView>
+
                             </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
@@ -522,7 +557,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="20dp"
                     android:text="비교할 자세를 골라주세요"
                     android:textColor="@color/subColor800"
                     android:textSize="18dp"

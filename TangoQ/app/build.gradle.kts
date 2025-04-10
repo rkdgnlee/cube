@@ -57,7 +57,6 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")
 
     // 스켈레톤
-
     implementation("com.google.mediapipe:tasks-vision:0.10.21")
     implementation("androidx.window:window:1.3.0")
 
@@ -149,6 +148,8 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("androidx.media3:media3-exoplayer:1.5.1")
     implementation("androidx.media3:media3-effect:1.5.1")
+    implementation("androidx.media3:media3-common:1.2.0")
+    implementation("androidx.media3:media3-transformer:1.2.0")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.OptIn
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -47,10 +48,8 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
-import com.tangoplus.tangoq.function.MeasurementManager.matchedTripleIndexes
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.SaveSingletonManager
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult
@@ -67,6 +66,7 @@ import org.json.JSONArray
 import java.io.File
 import kotlin.math.max
 import androidx.core.graphics.drawable.toDrawable
+import androidx.media3.common.util.UnstableApi
 
 class MeasureTrendDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureTrendDialogBinding
@@ -121,6 +121,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         return binding.root
     }
 
+    @UnstableApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // api35이상 화면 크기 조절
@@ -244,6 +245,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
     }
 
     // 오른쪽 actv에 대한 listener
+    @UnstableApi
     private fun setACTVClickListener(position: Int) {
         // 날짜 선택
         val selectedDate = binding.actvMTDRight.adapter.getItem(position) as DateDisplay
@@ -277,7 +279,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
             }
         }
     }
+
     // 버튼 UI
+    @UnstableApi
+    @OptIn(UnstableApi::class)
     private fun updateButtonState() {
         val buttons = listOf(binding.tvMTD1, binding.tvMTD2, binding.tvMTD3, binding.tvMTD4, binding.tvMTD5, binding.tvMTD6, binding.tvMTD7)
 
@@ -416,8 +421,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
     ) {
 
         val filteredLeftAnalysises = if (currentSeq == 1) {
+            // 동적 측정일 때
             analyzesLeft?.filterIndexed{ index, _ -> index in listOf(1, 2, 7, 8, 9, 10 ) }?.toMutableList()
         } else {
+            // 정적 측정일 떄
             analyzesLeft?.mapNotNull { analysisList ->
                 if (analysisList.any { it.seq == currentSeq }) {
                     analysisList
@@ -427,8 +434,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
             }?.toMutableList()
         }
         val filteredRightAnalysises = if (currentSeq == 1) {
-            analyzesRight?.filterIndexed{ index, _ -> index in listOf(1, 2, 7,8,9,10) }?.toMutableList()
+            // 동적 측정일 때
+            analyzesRight?.filterIndexed{ index, _ -> index in listOf(1, 2, 7, 8, 9, 10) }?.toMutableList()
         } else {
+
+            // 정적 측정일 떄
             analyzesRight?.mapNotNull { analysisList ->
                 if (analysisList.any { it.seq == currentSeq }) {
                     analysisList
@@ -448,35 +458,56 @@ class MeasureTrendDialogFragment : DialogFragment() {
             }
         }
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val adapter = TrendRVAdapter(this@MeasureTrendDialogFragment, filteredLeftAnalysises, filteredRightAnalysises, filteredIndexes?.map { matchedIndexs[it] })
+        val adapter = TrendRVAdapter(this@MeasureTrendDialogFragment, filteredLeftAnalysises, filteredRightAnalysises, filteredIndexes?.map { matchedIndexs[it] }, avm.currentIndex)
         binding.rvMTD.layoutManager = layoutManager
         binding.rvMTD.adapter = adapter
     }
 
 
-    // 13 > 3개의 AnalysisVO임. == 관절 1개의 3개가 들어간 raw 하나를 말하는 것.
+    // 13 > 3개의 AnalysisVO임. == 관절 1개의 3개가 들어간 raw 하나를 말하는 것. Trend에서 사용.
     private fun transformAnalysisUnit(ja : JSONArray) : MutableList<MutableList<AnalysisUnitVO>> {
-        val analyzes1 = mutableListOf<MutableList<MutableList<AnalysisUnitVO>>>()
-        matchedUris.forEach { (part, seqList) -> // 13가지 관절 전부다
-            val analyzes2 = mutableListOf<MutableList<AnalysisUnitVO>>()
-            seqList.forEachIndexed { index, i -> // 각 시퀀스별로
-                val analyzes3 = getAnalysisUnits(requireContext(), part, i, ja) // 지금 여기서 1이 들어가서 문제가 생긴듯?
-                analyzes2.add(analyzes3)
-            }
-            analyzes1.add(analyzes2)
-        }
-        val analysis1 = mutableListOf<MutableList<AnalysisUnitVO>>()
-        // 지금 모든 값들이 다 들어가있는데 matchedTripleIndexes를 통해서 13개의 각각의
-        Log.v("analyse1", "${analyzes1.size}, ${analyzes1.map { it.size }}")
-        matchedTripleIndexes.mapIndexed { indexx, item3 ->
+        val result = mutableListOf<MutableList<AnalysisUnitVO>>()
 
-            val analysis2 = item3.map { (seq, matchedIndex, index1) ->
-                analyzes1[indexx][matchedIndex][index1] // 해당 index에서 가져오기
-            }.toMutableList()
-            analysis1.add(analysis2)
+        matchedUris.forEach { (part, seqList) -> // 13개 관절 각각에 대해
+            val analysisUnitsForPart = mutableListOf<AnalysisUnitVO>()
+
+            // 해당 부위의 모든 시퀀스에서 분석 유닛을 가져와서 하나의 리스트로 합치기
+            seqList.forEach { seq ->
+                val unitsForSeq = getAnalysisUnits(requireContext(), part, seq, ja)
+                analysisUnitsForPart.addAll(unitsForSeq)
+            }
+
+            // 각 부위별로 모은 분석 유닛들을 결과 리스트에 추가
+            result.add(analysisUnitsForPart)
         }
-        Log.v("유닛3개로", "${analysis1.size}, ${analysis1.map { it.map { it.columnName } }}")
-        return analysis1
+
+        Log.v("모든분석유닛", "${result.size}, ${result.map { it.size }}, ${result.map { it.map { it.columnName } }}")
+        return result
+//        val analyzes1 = mutableListOf<MutableList<MutableList<AnalysisUnitVO>>>()
+//
+//        matchedUris.forEach { (part, seqList) -> // 13가지 관절 전부다
+//            val analyzes2 = mutableListOf<MutableList<AnalysisUnitVO>>()
+//            seqList.forEachIndexed { index, i -> // 각 시퀀스별로
+//                val analyzes3 = getAnalysisUnits(requireContext(), part, i, ja) // 지금 여기서 1이 들어가서 문제가 생긴듯?
+//                analyzes2.add(analyzes3)
+//            }
+//            analyzes1.add(analyzes2)
+//        }
+//        Log.v("analyse1", "${analyzes1.size}, ${analyzes1.map { it.size }} ${analyzes1.map { it.map { it.size } }}")
+//
+//        val analysis1 = mutableListOf<MutableList<AnalysisUnitVO>>()
+//        // 지금 모든 값들이 다 들어가있는데 matchedTripleIndexes를 통해서 13개의 각각의
+//
+//
+//        matchedTripleIndexes.mapIndexed { indexx, item3 ->
+//
+//            val analysis2 = item3.map { (seq, matchedIndex, index1) ->
+//                analyzes1[indexx][matchedIndex][index1] // 해당 index에서 가져오기
+//            }.toMutableList()
+//            analysis1.add(analysis2)
+//        }
+//        Log.v("유닛3개로", "${analysis1.size}, ${analysis1.map { it.map { it.columnName } }}")
+//        return analysis1
     }
 
     private suspend fun setMeasureFiles(inputRegDate: String?, isRight: Boolean) {
@@ -539,6 +570,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
+    @UnstableApi
     private fun setPlayer(isRight: Boolean) {
         when (isRight) {
             true -> {
@@ -577,7 +609,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     leftJa = avm.leftMeasurement.value?.measureResult?.getJSONArray(1) ?: JSONArray()
 //                    Log.v("leftJa길이", "${leftJa.length()}")
                     initPlayer(false)
-                    Log.e("왼쪽플레이어init", "setPlayer false")
+
                     simpleExoPlayer1?.addListener(object : Player.Listener {
                         override fun onPlaybackStateChanged(playbackState: Int) {
                             super.onPlaybackStateChanged(playbackState)
@@ -606,6 +638,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
         }
     }
 
+    @UnstableApi
     private fun initPlayer(isRight: Boolean) {
 // 동영상 처리 로딩
         val loadingDialog = LoadingDialogFragment.newInstance("동영상")
@@ -623,6 +656,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     val inputPath = avm.trendRightUri.toString() // 기존 파일 경로
                     val tempOutputPath = "${context?.cacheDir}/right_temp_video.mp4" // 임시 파일
 
+                    // 이미 처리한 영상 파일이 남아있을 때
                     if (avm.rightEditedFile != null && avm.rightEditedFile!!.exists()) {
                         Log.v("rightFileExisted", "${avm.rightEditedFile}")
                         setPlayerByCroppedVideo(true, videoWidth.toFloat(), videoHeight.toFloat())
@@ -667,8 +701,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     }
                 } else {
                     lifecycleScope.launch {
-                        // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
-
 //                    Log.v("VMTrendRight", "${avm.trendRightUri}")
                         val mediaItem = MediaItem.fromUri(Uri.parse(avm.trendRightUri))
                         val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))

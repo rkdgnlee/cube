@@ -191,14 +191,18 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         // 검색결과에 대한 필터링 넣기
         if (queryString.isNotEmpty()) {
             val filteredPattern = queryString.lowercase(Locale.getDefault()).trim()
-            for (indices in evm.allExercises) {
-                if (indices.exerciseName?.lowercase(Locale.getDefault())?.contains(filteredPattern) == true) {
-                    filteredList.add(indices)
+            evm.allExercises.let { allExercises ->
+                if (allExercises != null) {
+                    for (indices in allExercises) {
+                        if (indices.exerciseName?.lowercase(Locale.getDefault())?.contains(filteredPattern) == true) {
+                            filteredList.add(indices)
+                        }
+                    }
                 }
             }
         }
 
-        val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, null,null,"E")
+        val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, evm.allExerciseHistorys,null,"ESD")
         adapter1.exerciseClickListener = this@ExerciseSearchDialogFragment
         setAdapter(adapter1, binding.rv1)
         if (filteredList.isEmpty()) {

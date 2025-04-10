@@ -10,7 +10,7 @@ import com.tangoplus.tangoq.vo.ProgressUnitVO
 class ExerciseViewModel : ViewModel() {
 
     // 모든 운동 exerciseFragment에서 받아서 VM에 넣는 곳
-    var allExercises : MutableList<ExerciseVO>
+    var allExercises : MutableList<ExerciseVO>?
     var allExerciseHistorys: MutableList<ExerciseHistoryVO>?
 
 

@@ -67,7 +67,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
         binding.rvMBSD.layoutManager = layoutManager
         val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), names.toMutableList(),"measure",  mvm)
         binding.rvMBSD.adapter = adapter
-
+        binding.rvMBSD.scrollToPosition(dates.indexOf(mvm.selectedMeasureDate.value?.fullDateTime) - 1)
         setupButtons()
         binding.btnMBSD.setOnSingleClickListener {
 
@@ -80,13 +80,13 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
             * */
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val currentMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectMeasureDate.value}
+                    val currentMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectMeasureDate.value?.fullDateTime}
                     val uriTuples = currentMeasure?.sn?.let { it -> ssm.get1MeasureUrls(it) }
                     if (uriTuples != null) {
                         ssm.downloadFiles(uriTuples)
                         val editedMeasure = ssm.insertUrlToMeasureVO(uriTuples, currentMeasure)
                         // singleton의 인덱스 찾아서 ja와 값 넣기
-                        val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == mvm.selectMeasureDate.value }
+                        val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == mvm.selectMeasureDate.value?.fullDateTime }
                         if (singletonIndex != null && singletonIndex >= 0) {
                             withContext(Dispatchers.Main) {
                                 singletonMeasure.measures?.set(singletonIndex, editedMeasure)

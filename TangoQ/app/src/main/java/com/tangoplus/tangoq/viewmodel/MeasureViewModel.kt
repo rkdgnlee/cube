@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.db.MeasureDynamic
+import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.DateDisplay
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -16,8 +18,8 @@ import java.time.format.DateTimeFormatter
 class MeasureViewModel : ViewModel() {
 
     // 메인 측정 날짜 선택 담을 공간 index임
-    var selectMeasureDate = MutableLiveData<String>()
-    var selectedMeasureDate = MutableLiveData<String>()
+    var selectMeasureDate = MutableLiveData<DateDisplay>()
+    var selectedMeasureDate = MutableLiveData<DateDisplay>()
     var currentMeasureDate = 0
     var selectedMeasureIndex = MutableLiveData<Int>()
     var previousMeasureIndex = 4
@@ -27,7 +29,7 @@ class MeasureViewModel : ViewModel() {
     // MeasureDetail 담을 공간
     var selectedMeasure : MeasureVO? = null
 
-    // MeasureSkeleton 담을 공간
+
 
     // room에 저장할 static들이 담기는 곳
     val infoResultJa = JSONArray()
@@ -44,6 +46,15 @@ class MeasureViewModel : ViewModel() {
 
     val staticJsonFiles = mutableListOf<File>()
     var dynamicJsonFile : File? = null
+
+    // measureSkeleton 전송
+    lateinit var measureinfo : MeasureInfo
+    val motherJo = JSONObject()
+    var mobileInfoSn = 0
+    var mobileDynamicSn = 0
+    var mobileStaticSns = mutableListOf<Int>()
+    // 전송 실패를 판단하는 flag
+    var transmitFailed = false
 
     // 핸드폰번호, 이름 세팅 vm
     var setupName = ""
@@ -64,7 +75,7 @@ class MeasureViewModel : ViewModel() {
     var toeData = listOf<Pair<Float, Float>>()
 
     init {
-        selectedMeasureDate.value = ""
+//        selectedMeasureDate.value = DateDisplay("", "")
         selectedMeasure = MeasureVO(-1,-1, "","", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
     }
 

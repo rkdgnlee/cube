@@ -34,6 +34,8 @@ class SequenceBSDialogFragment : BottomSheetDialogFragment() {
             avm.currentPart.value = avm.selectPart.value
             dismiss()
         }
+
+        // 태블릿 가로모드일 때 바텀시트가 안나오는 현상 고치기.
         val bottomSheet = view.parent as View
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -44,5 +46,6 @@ class SequenceBSDialogFragment : BottomSheetDialogFragment() {
         val adapter = StringRVAdapter(this@SequenceBSDialogFragment, avm.currentParts?.toMutableList(), null, "seq",avm)
         binding.rvSBSD.layoutManager = layoutManager
         binding.rvSBSD.adapter = adapter
+        avm.currentParts?.indexOf(avm.currentPart.value)?.let { binding.rvSBSD.scrollToPosition(it - 1) }
     }
 }

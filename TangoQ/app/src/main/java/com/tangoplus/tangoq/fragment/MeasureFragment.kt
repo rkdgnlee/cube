@@ -44,6 +44,7 @@ import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
+import com.tangoplus.tangoq.vo.DateDisplay
 import com.tangoplus.tangoq.vo.MeasureVO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -132,7 +133,8 @@ class MeasureFragment : Fragment() {
 //                            "${binding.tvMBadge.text}",
 //                            ContextCompat.getColor(requireContext(), R.color.thirdColor)
 //                        )
-                        val historyInitString = "최근 측정 기록: ${measures?.get(0)?.regDate?.substring(0, 10)?.replace("-", ". ")}"
+                        binding.tvMEmptyGraph.visibility = View.GONE
+                        val historyInitString = "최근 측정 기록: ${measures?.get(0)?.regDate?.substring(0, 10)}" // ?.replace("-", ". ")
                         binding.tvMMeasureHistory.text =historyInitString
                         val userString = "${userJson?.optString("user_name")}님의 기록"
                         binding.tvMName.text = userString
@@ -156,8 +158,8 @@ class MeasureFragment : Fragment() {
                                             withContext(Dispatchers.Main) {
                                                 singletonMeasure.measures?.set(singletonIndex, editedMeasure)
                                                 mvm.selectedMeasure = editedMeasure
-                                                mvm.selectedMeasureDate.value = currentMeasure.regDate
-                                                mvm.selectMeasureDate.value = currentMeasure.regDate
+                                                mvm.selectedMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
+                                                mvm.selectMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
 
                                                 Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
                                                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -191,6 +193,7 @@ class MeasureFragment : Fragment() {
                         }
                         binding.tvM1Trend.isEnabled = true
                     } else {
+                        binding.tvMEmptyGraph.visibility = View.VISIBLE
                         binding.tvMTotalScore.text = "-"
                         binding.tvMMeasureHistory.text = "측정기록없음"
                         binding.tvMName.text = "${userJson?.optString("user_name")}님의 기록"
@@ -341,7 +344,7 @@ class MeasureFragment : Fragment() {
                 lcLegend.formSize = 0f
             }
             lineChart.apply {
-                setExtraOffsets(22f, 0f ,22f ,0f)
+                if (isTablet(requireContext())) setExtraOffsets(22f, 0f ,22f ,0f)
                 data = LineData(lcLineDataSet)
 //                animateX(1000, Easing.EaseInOutBack)
                 setTouchEnabled(true)
@@ -478,7 +481,7 @@ class MeasureFragment : Fragment() {
                         "최근 측정 기록: "
                     } else {
                         "선택된 날짜: "
-                    } + "${measures?.get(4 - it)?.regDate?.substring(0, 10)?.replace("-", ". ")}"
+                    } + "${measures?.get(4 - it)?.regDate?.substring(0, 10)}" // ?.replace("-", ". ")
                     binding.tvMMeasureHistory.text = historyText
                     binding.tvMTotalScore.text = userPercentile.toString()
 
@@ -538,6 +541,20 @@ class MeasureFragment : Fragment() {
             else -> 0.5f
         } // 이동할 목표 위치
 
+        val tvCase = when (percent) {
+            in 0f .. 0.33f -> 0
+            in 0.33f .. 0.66f -> 1
+            in 0.66f .. 1f -> 2
+            else -> -1
+        } // 이동할 목표 위치
+
+        val percentList = listOf(binding.tvMLow, binding.tvMMiddle, binding.tvMHigh)
+        if (tvCase != -1) {
+            percentList.forEachIndexed { index, tv ->
+                if (index == tvCase) tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor800))
+                else tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor400))
+            }
+        }
         // ValueAnimator 생성
         val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
             duration = 1000L // 1초 동안 애니메이션

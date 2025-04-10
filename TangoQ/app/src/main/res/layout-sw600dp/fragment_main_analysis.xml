@@ -56,7 +56,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvMP"
+        android:id="@+id/nsvMA"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="64dp"
@@ -154,7 +154,7 @@
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clAI"
+                android:id="@+id/clMA"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -164,7 +164,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout16">
 
                 <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-                    android:id="@+id/ssivAI1"
+                    android:id="@+id/ssivMA1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -175,7 +175,7 @@
                     app:layout_constraintWidth_percent="0.5" />
 
                 <TextView
-                    android:id="@+id/tvAIPart1"
+                    android:id="@+id/tvMAPart1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
@@ -188,11 +188,11 @@
                     android:text="정면 측정"
                     android:textColor="#FFFFFF"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/ssivAI1"
-                    app:layout_constraintStart_toStartOf="@id/ssivAI1" />
+                    app:layout_constraintEnd_toEndOf="@+id/ssivMA1"
+                    app:layout_constraintStart_toStartOf="@id/ssivMA1" />
 
                 <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-                    android:id="@+id/ssivAI2"
+                    android:id="@+id/ssivMA2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -203,7 +203,7 @@
                     app:layout_constraintWidth_percent="0.5" />
 
                 <TextView
-                    android:id="@+id/tvAIPart2"
+                    android:id="@+id/tvMAPart2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
@@ -216,11 +216,11 @@
                     android:text="팔꿉 측정"
                     android:textColor="#FFFFFF"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/ssivAI2"
-                    app:layout_constraintStart_toStartOf="@id/ssivAI2" />
+                    app:layout_constraintEnd_toEndOf="@+id/ssivMA2"
+                    app:layout_constraintStart_toStartOf="@id/ssivMA2" />
 
                 <FrameLayout
-                    android:id="@+id/flAI"
+                    android:id="@+id/flMA"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:visibility="gone"
@@ -231,7 +231,7 @@
                     app:layout_constraintVertical_bias="0.0">
 
                     <com.google.android.exoplayer2.ui.PlayerView
-                        android:id="@+id/pvAI"
+                        android:id="@+id/pvMA"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         app:auto_show="true"
@@ -298,18 +298,18 @@
                 </FrameLayout>
 
                 <com.tangoplus.tangoq.mediapipe.OverlayView
-                    android:id="@+id/ovAI"
+                    android:id="@+id/ovMA"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@id/flAI"
-                    app:layout_constraintEnd_toEndOf="@id/flAI"
-                    app:layout_constraintStart_toStartOf="@id/flAI"
-                    app:layout_constraintTop_toTopOf="@id/flAI" />
+                    app:layout_constraintBottom_toBottomOf="@id/flMA"
+                    app:layout_constraintEnd_toEndOf="@id/flMA"
+                    app:layout_constraintStart_toStartOf="@id/flMA"
+                    app:layout_constraintTop_toTopOf="@id/flMA" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvAI"
+                android:id="@+id/rvMA"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -338,7 +338,7 @@
                 android:textSize="18dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clAI" />
+                app:layout_constraintTop_toBottomOf="@+id/clMA" />
 
             <ImageView
                 android:id="@+id/ivMAIcon"

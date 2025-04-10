@@ -28,6 +28,7 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnDisconnectListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.vo.DateDisplay
 
 class StringRVAdapter(private val fragment: Fragment,
                       private val stringList: MutableList<String>?,
@@ -147,15 +148,16 @@ class StringRVAdapter(private val fragment: Fragment,
                     val isInitiallyChecked = position == (vm as MeasureViewModel).currentMeasureDate
                     holder.cbWI.isChecked = isInitiallyChecked
                     updateCheckboxTextColor(holder.cbWI, isInitiallyChecked)
-
+                    val currentDate =
+                        currentItem?.let { DateDisplay(it, currentItem.substring(0, 11)) }
                     vm.selectMeasureDate.observe(fragment.viewLifecycleOwner) { selectMeasureDate ->
-                        val isChecked = currentItem == selectMeasureDate
+                        val isChecked = currentDate == selectMeasureDate
                         holder.cbWI.isChecked = isChecked
                         updateCheckboxTextColor(holder.cbWI, isChecked)
                     }
 
                     holder.cbWI.setOnSingleClickListener {
-                        vm.selectMeasureDate.value = currentItem
+                        vm.selectMeasureDate.value = currentDate
 //                        Log.v("selectedDate", "selectMeasureDate: ${vm.selectMeasureDate.value}, currentItem: ${vm.selectedMeasureDate.value}")
                     }
 

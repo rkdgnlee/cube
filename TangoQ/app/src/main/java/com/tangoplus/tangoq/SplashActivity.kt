@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -57,6 +58,8 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
         SoundManager.init(this@SplashActivity)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
 //        // ------! integrity API 시작 !------
 //        val standardIntegrityManager = IntegrityManagerFactory.createStandard(applicationContext)
 //        val cloudProjectNumber = 196772683133
@@ -154,7 +157,7 @@ class SplashActivity : AppCompatActivity() {
                     logout(this@SplashActivity, 0)
                 }
 
-                timeoutHandler.postDelayed(timeoutRunnable, 20000)
+                timeoutHandler.postDelayed(timeoutRunnable, 30000)
                 // ------! 카카오 토큰 있음 끝 !------
                 // ------! 화면 경로 설정 끝 !------
             }

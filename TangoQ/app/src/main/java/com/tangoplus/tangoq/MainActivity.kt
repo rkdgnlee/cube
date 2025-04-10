@@ -20,6 +20,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
@@ -42,6 +44,7 @@ import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
 import com.tangoplus.tangoq.dialog.WithDrawalDialogFragment
 import com.tangoplus.tangoq.function.DeepLinkManager
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.AppViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val pvm : PlayViewModel by viewModels()
     private val mvm : MeasureViewModel by viewModels()
+    private val avm : AnalysisViewModel by viewModels()
     private lateinit var appViewModel: AppViewModel
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
@@ -181,9 +185,9 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
 
-        if (!singletonMeasure.measures.isNullOrEmpty() && mvm.selectedMeasureDate.value.isNullOrEmpty() ) { // 값이 하나라도 있을 때만 가져오기.
+        if (!singletonMeasure.measures.isNullOrEmpty()) { // 값이 하나라도 있을 때만 가져오기.
             mvm.selectedMeasure = singletonMeasure.measures?.get(0)
-            mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+            mvm.selectedMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
         }
         handleIntent(intent)
 
@@ -199,8 +203,10 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val finishedMeasure = result.data?.getBooleanExtra("finishedMeasure", false) ?: false
                 if (finishedMeasure) {
-                    mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
-                    mvm.selectMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+
+                    // 측정이 완료됐을 때 방금 측정한 최신 measure을 선택.
+                    mvm.selectedMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
+                    mvm.selectMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
                     mvm.selectedMeasure = singletonMeasure.measures?.get(0)
                     val bnb : BottomNavigationView = findViewById(R.id.bnbMain)
                     bnb.selectedItemId = R.id.measure
@@ -213,7 +219,6 @@ class MainActivity : AppCompatActivity() {
                         replace(R.id.flMain, measureDetailFragment)
                         commit()
                     }
-
                 }
             }
         }

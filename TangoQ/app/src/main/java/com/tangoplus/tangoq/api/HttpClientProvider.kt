@@ -170,21 +170,4 @@ object HttpClientProvider {
         }
     }
 
-//    fun scheduleTokenCheck(context: Context) {
-//        val tokenCheckRequest = PeriodicWorkRequestBuilder<TokenCheckWorker>(15, TimeUnit.MINUTES)
-////            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST) // 강제 실행
-//            .setConstraints(
-//                Constraints.Builder()
-//                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // 네트워크 필요 없음
-//                    .setRequiresBatteryNotLow(false) // 배터리 부족 시 실행 허용
-//                    .setRequiresCharging(false) // 충전 중이 아니어도 실행
-//                    .build()
-//            )
-//            .build()
-//
-//        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-//            "TokenCheckWork",
-//            ExistingPeriodicWorkPolicy.KEEP
-//            ,tokenCheckRequest)
-//    }
 }

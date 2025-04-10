@@ -106,7 +106,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             }
 
             filteredDataList = categoryId?.map { id ->
-                evm.allExercises.filter { it.exerciseCategoryId == id.toString() }
+                evm.allExercises?.filter { it.exerciseCategoryId == id.toString() } ?: listOf()
             }?.flatten()?.toMutableList()
 
             // -----! 카테고리  시작 !-----

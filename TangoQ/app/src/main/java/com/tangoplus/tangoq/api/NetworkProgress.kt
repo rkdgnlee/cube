@@ -109,7 +109,7 @@ object NetworkProgress {
     // ------# 현재 프로그램 프로그레스만 가져오기 #------
 
     // 시청기록 1개 보내기 (서버에 저장)
-    fun patchProgress1Item(myUrl: String, uvpSn: Int, bodyJo: JSONObject, context: Context, callback: (ProgressUnitVO) -> Unit) {
+    fun patchProgress1Item(myUrl: String, uvpSn: Int, bodyJo: JSONObject, context: Context, callback: (ProgressUnitVO?) -> Unit) {
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val body = bodyJo.toString().toRequestBody(mediaType)
         val client = getClient(context)
@@ -124,26 +124,46 @@ object NetworkProgress {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
+                try {
+                    val responseBody = response.body?.string()
 //                 Log.v("patch>Progress1Item", "$responseBody")
-                val jo = JSONObject(responseBody.toString()).optJSONObject("update_video_progress")
-                if (jo != null) {
-                    val progressUnitVO = ProgressUnitVO(
-                        uvpSn = jo.optInt("uvp_sn"),
-                        userSn = jo.optInt("user_sn"),
-                        exerciseId = jo.optInt("content_sn"),
-                        recommendationSn = jo.optInt("recommendation_sn"),
-                        weekNumber = jo.optInt("week_number"),
-                        weekStartAt = jo.optString("week_start_at"),
-                        weekEndAt = jo.optString("week_end_at"),
-                        countSet = jo.optInt("count_set"),
-                        requiredSet = jo.optInt("required_set"),
-                        duration = jo.optInt("duration"),
-                        progress = jo.optInt("progress"),
-                        updatedAt = jo.optString("updated_at"),
-                        isWatched = jo.optInt("is_watched")
-                    )
-                    callback(progressUnitVO)
+                    val jo = JSONObject(responseBody.toString()).optJSONObject("update_video_progress")
+                    if (jo != null) {
+                        val progressUnitVO = ProgressUnitVO(
+                            uvpSn = jo.optInt("uvp_sn"),
+                            userSn = jo.optInt("user_sn"),
+                            exerciseId = jo.optInt("content_sn"),
+                            recommendationSn = jo.optInt("recommendation_sn"),
+                            weekNumber = jo.optInt("week_number"),
+                            weekStartAt = jo.optString("week_start_at"),
+                            weekEndAt = jo.optString("week_end_at"),
+                            countSet = jo.optInt("count_set"),
+                            requiredSet = jo.optInt("required_set"),
+                            duration = jo.optInt("duration"),
+                            progress = jo.optInt("progress"),
+                            updatedAt = jo.optString("updated_at"),
+                            isWatched = jo.optInt("is_watched")
+                        )
+                        callback(progressUnitVO)
+                    }
+                } catch (e: IndexOutOfBoundsException) {
+                    Log.e("patchProgressError", "IndexOutOfBounds: ${e.message}")
+                    callback(null)
+                } catch (e: IllegalArgumentException) {
+                    Log.e("patchProgressError", "IllegalArgumentException: ${e.message}")
+                    callback(null)
+                } catch (e: IllegalStateException) {
+                    Log.e("patchProgressError", "IllegalStateException: ${e.message}")
+                    callback(null)
+                } catch (e: IOException) {
+                    Log.e("patchProgressError", "IOException: ${e.message}")
+                    callback(null)
+                }  catch (e: NullPointerException) {
+                    Log.e("patchProgressError", "NullPointerException: ${e.message}")
+                    callback(null)
+                } catch (e: java.lang.Exception) {
+                    Log.e("patchProgressError", "Post Progress(latest): ${e.message}")
+                    callback(null)
                 }
             }
         })
@@ -217,6 +237,9 @@ object NetworkProgress {
                 callback(Triple(-1, -1, -1), mutableListOf())
             } catch (e: IllegalStateException) {
                 Log.e("ProgressIllegal", "Post Progress(latest): ${e.message}")
+                callback(Triple(-1, -1, -1), mutableListOf())
+            } catch (e: IOException) {
+                Log.e("patchProgressError", "IOException: ${e.message}")
                 callback(Triple(-1, -1, -1), mutableListOf())
             } catch (e: NullPointerException) {
                 Log.e("ProgressNull", "Post Progress(latest): ${e.message}")
@@ -316,7 +339,10 @@ object NetworkProgress {
             } catch (e: IllegalStateException) {
                 Log.e("ProgressIllegal", "latestProgress: ${e.message}")
                 null
-            }catch (e: NullPointerException) {
+            }  catch (e: IOException) {
+                Log.e("ProgressIO", "latestProgress: ${e.message}")
+                null
+            } catch (e: NullPointerException) {
                 Log.e("ProgressNull", "latestProgress: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
@@ -364,6 +390,9 @@ object NetworkProgress {
                 null
             } catch (e: SocketTimeoutException) {
                 Log.e("ProgressTimeout", "getWeek: ${e.message}")
+                null
+            }  catch (e: IOException) {
+                Log.e("ProgressIO", "getWeek: ${e.message}")
                 null
             }  catch (e: NullPointerException) {
                 Log.e("ProgressNull", "getWeek: ${e.message}")
@@ -435,6 +464,9 @@ object NetworkProgress {
             } catch (e: NullPointerException) {
                 Log.e("ProgressNull", "getDaily: ${e.message}")
                 null
+            }  catch (e: IOException) {
+                Log.e("ProgressNull", "getDaily: ${e.message}")
+                null
             } catch (e: SocketTimeoutException) {
                 Log.e("ProgressTimeout", "getDaily: ${e.message}")
                 null
@@ -453,15 +485,13 @@ object NetworkProgress {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-
-                if (!response.isSuccessful) {
-                    Log.e("MonthProgressFailed" ,"response is Null")
-                    return@withContext null
-                }
-
-                val responseBody = response.body?.string()
-                try {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Log.e("MonthProgressFailed" ,"response is Null")
+                        return@withContext null
+                    }
+                    val responseBody = response.body?.string()
                     val bodyJa = responseBody?.let { JSONObject(it).optJSONArray("data") }
                     val result = mutableSetOf<String>()
                     if (bodyJa != null) {
@@ -472,24 +502,27 @@ object NetworkProgress {
                     }
                     Log.v("getMonthProgress", "$result")
                     return@use result
-                } catch (e: IndexOutOfBoundsException) {
-                    Log.e("ProgressIndex", "MonthProgressFailed: ${e.message}")
-                    mutableSetOf()
-                } catch (e: IllegalArgumentException) {
-                    Log.e("ProgressIllegal", "MonthProgressFailed: ${e.message}")
-                    mutableSetOf()
-                } catch (e: IllegalStateException) {
-                    Log.e("ProgressIllegal", "MonthProgressFailed: ${e.message}")
-                    mutableSetOf()
-                } catch (e: NullPointerException) {
-                    Log.e("ProgressNull", "MonthProgressFailed: ${e.message}")
-                    mutableSetOf()
-                } catch (e: java.lang.Exception) {
-                    Log.e("ProgressException", "MonthProgressFailed: ${e.message}")
-                    mutableSetOf()
                 }
-
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("ProgressIndex", "MonthProgressFailed: ${e.message}")
+                mutableSetOf()
+            } catch (e: IllegalArgumentException) {
+                Log.e("ProgressIllegal", "MonthProgressFailed: ${e.message}")
+                mutableSetOf()
+            } catch (e: IllegalStateException) {
+                Log.e("ProgressIllegal", "MonthProgressFailed: ${e.message}")
+                mutableSetOf()
+            }  catch (e: IOException) {
+                Log.e("ProgressIO", "MonthProgressFailed: ${e.message}")
+                mutableSetOf()
+            } catch (e: NullPointerException) {
+                Log.e("ProgressNull", "MonthProgressFailed: ${e.message}")
+                mutableSetOf()
+            } catch (e: java.lang.Exception) {
+                Log.e("ProgressException", "MonthProgressFailed: ${e.message}")
+                mutableSetOf()
             }
+
         }
     }
 }

@@ -1,7 +1,9 @@
 package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,8 +13,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,7 +35,6 @@ import com.tangoplus.tangoq.dialog.GuideDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
-import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
@@ -42,6 +45,8 @@ import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
+import io.github.douglasjunior.androidSimpleTooltip.OverlayView
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -112,10 +117,11 @@ class MainFragment : Fragment() {
                 // ------# 초기 measure 설정 #------
                 if (!measures.isNullOrEmpty()) {
                     if (mvm.selectedMeasureDate.value == null) {
-                        mvm.selectedMeasureDate.value = measures?.get(0)?.regDate
+                        mvm.selectedMeasureDate.value =
+                            measures?.let { avm.createDateDisplayList(it).get(0) }
                     }
                     if (mvm.selectMeasureDate.value == null) {
-                        mvm.selectMeasureDate.value = measures?.get(0)?.regDate
+                        mvm.selectMeasureDate.value = measures?.let { avm.createDateDisplayList(it).get(0) }
                     }
                     val setNavToMD = listOf(binding.clM1, binding.tvMOverall)
                     setNavToMD.forEach {
@@ -202,7 +208,7 @@ class MainFragment : Fragment() {
                             lifecycleScope.launch(Dispatchers.Main) {
 
                                 Log.v("날짜 비교", "$selectedDate, ${measures!!.map { it.regDate }} ")
-                                val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
+                                val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate.fullDateTime })
                                 if (dateIndex != null) {
 
                                     measures?.get(dateIndex)?.recommendations
@@ -304,56 +310,96 @@ class MainFragment : Fragment() {
     private fun existedMeasurementGuide() {
         binding.clM2.isEnabled = false
         binding.clM2.isClickable = false
-        lifecycleScope.launch {
-            TooltipManager.createGuide(
-                context = requireContext(),
-                text = "최근 측정에서 나온\n위험 부위를 탭해서 확인해보세요",
-                anchor = binding.rvM1,
-                gravity = Gravity.BOTTOM,
-                dismiss = {
-
-                    TooltipManager.createGuide(
-                        context = requireContext(),
-                        text = "탭하여 지난 측정 결과 선택하세요\n측정 결과와 지난 프로그램을 볼 수 있습니다",
-                        anchor = binding.tvMMeasureDate,
-                        gravity = Gravity.BOTTOM,
-                        dismiss = {
-                            TooltipManager.createGuide(
-                                context = requireContext(),
-                                text = "탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
-                                anchor = binding.rvM2,
-                                gravity = Gravity.TOP,
+        context.let { safeContext ->
+            if (safeContext != null) {
+                createGuide(
+                    context = safeContext,
+                    text = "최근 측정에서 나온\n위험 부위를 탭해서 확인해보세요",
+                    anchor = binding.rvM1,
+                    gravity = Gravity.BOTTOM,
+                    dismiss = {
+                        if (safeContext != null) {
+                            createGuide(
+                                context = safeContext,
+                                text = "탭하여 지난 측정 결과 선택하세요\n측정 결과와 지난 프로그램을 볼 수 있습니다",
+                                anchor = binding.tvMMeasureDate,
+                                gravity = Gravity.BOTTOM,
                                 dismiss = {
-                                    binding.clM2.isEnabled = false
-                                    binding.clM2.isClickable = false
-                                })
+                                    if (safeContext != null) {
+                                        createGuide(
+                                            context = safeContext,
+                                            text = "탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
+                                            anchor = binding.rvM2,
+                                            gravity = Gravity.TOP,
+                                            dismiss = {
+                                                binding.clM2.isEnabled = false
+                                                binding.clM2.isClickable = false
+                                            }
+                                        )
+                                    }
+                                }
+                            )
                         }
-                    )
-                }
-            )
+
+                    }
+                )
+            }
+
         }
     }
 
     private fun notExistedMeasurementGuide() {
-        lifecycleScope.launch {
-            TooltipManager.createGuide(
-
-                context = requireContext(),
-                text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
-                anchor = binding.tvMOverall,
-                gravity = Gravity.BOTTOM,
-                dismiss = {
-
-                    TooltipManager.createGuide(
-                        context = requireContext(),
-                        text = "측정을 시작해서 몸의 균형상태를 확인해 보세요",
-                        anchor = binding.btnMProgram,
-                        gravity = Gravity.BOTTOM,
-                        dismiss = {
+        context.let { safeContext ->
+            if (safeContext != null) {
+                createGuide(
+                    context = requireContext(),
+                    text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
+                    anchor = binding.tvMOverall,
+                    gravity = Gravity.BOTTOM,
+                    dismiss = {
+                        if (safeContext != null) {
+                            createGuide(
+                                context = requireContext(),
+                                text = "측정을 시작해서 몸의 균형상태를 확인해 보세요",
+                                anchor = binding.btnMProgram,
+                                gravity = Gravity.BOTTOM,
+                                dismiss = {
+                                }
+                            )
                         }
-                    )
-                }
-            )
+                    }
+                )
+            }
         }
+    }
+
+    fun createGuide(
+        context: Context,
+        text: String,
+        anchor: View,
+        gravity: Int,
+        dismiss: () -> Unit
+    ) {
+        SimpleTooltip.Builder(context).apply {
+            anchorView(anchor)
+            backgroundColor(ContextCompat.getColor(context, R.color.mainColor))
+            arrowColor(Color.parseColor("#00FFFFFF"))
+            gravity(gravity)
+            animated(true)
+            transparentOverlay(false)
+            contentView(R.layout.tooltip)
+            highlightShape( OverlayView.HIGHLIGHT_SHAPE_RECTANGULAR_ROUNDED)
+
+            onShowListener {
+                val tooltipTextView: TextView = it.findViewById(R.id.tooltip_instruction)
+                tooltipTextView.text = text
+            }
+            onDismissListener {
+                dismiss()
+            }
+            build()
+                .show()
+        }
+
     }
 }

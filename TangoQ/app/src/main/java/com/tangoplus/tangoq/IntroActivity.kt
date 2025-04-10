@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.webkit.CookieManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -200,6 +201,7 @@ class IntroActivity : AppCompatActivity() {
         val oauthLoginCallback = object : OAuthLoginCallback {
             override fun onError(errorCode: Int, message: String) {
                 onFailure(errorCode, message)
+                Toast.makeText(this@IntroActivity, "네이버 로그인에 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
                 enabledAllLoginBtn()
             }
             override fun onFailure(httpStatus: Int, message: String) {
@@ -270,10 +272,12 @@ class IntroActivity : AppCompatActivity() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e("카카오톡", "카카오톡 로그인 실패 ${error.message}")
+                Toast.makeText(this@IntroActivity, "카카오톡 계정와 연동이 실패했습니다", Toast.LENGTH_SHORT).show()
                 enabledAllLoginBtn()
                 when {
                     error.toString() == AuthErrorCause.AccessDenied.toString() -> {
                         enabledAllLoginBtn()
+                        Toast.makeText(this@IntroActivity, "카카오톡 계정의 정보 동의가 필요합니다", Toast.LENGTH_LONG).show()
                         Log.e("카카오톡", "접근이 거부 됨(동의 취소) ${error.message}")
                     }
                 }

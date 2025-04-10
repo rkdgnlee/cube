@@ -37,6 +37,7 @@ import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
+import com.tangoplus.tangoq.function.SecurePreferencesManager.deleteDirectory
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
@@ -50,6 +51,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import java.io.File
 
 class MainAnalysisFragment : Fragment() {
     lateinit var binding : FragmentMainAnalysisBinding
@@ -104,6 +106,7 @@ class MainAnalysisFragment : Fragment() {
         mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
         avm.mdMeasureResult = JSONArray()
 
+
         // viewModel에 들어가있던 동적 자세 기록들 초기화
 
         pvm.videoUrl = null
@@ -111,8 +114,8 @@ class MainAnalysisFragment : Fragment() {
 
         simpleExoPlayer?.let { pvm.savePlayerState(it, "") }
 
-        avm.currentPart.observe(viewLifecycleOwner) { part ->
-            val painPart = avm.currentParts?.find { it == part }
+        avm.currentPart.observe(viewLifecycleOwner) { currentPart ->
+            val painPart = avm.currentParts?.find { it == currentPart }
             val seqs = matchedUris[painPart]
             val groupedAnalyses = mutableMapOf<Int, MutableList<MutableList<AnalysisUnitVO>>>()
 
@@ -194,43 +197,43 @@ class MainAnalysisFragment : Fragment() {
             // 이미지
             if (simpleExoPlayer != null) {
                 // clMA의 크기 조절
-                val params = binding.clAI.layoutParams
+                val params = binding.clMA.layoutParams
                 params.width = DisplayMetrics().widthPixels
-                params.height = binding.ssivAI1.height
-                binding.clAI.layoutParams = params
+                params.height = binding.ssivMA1.height
+                binding.clMA.layoutParams = params
             }
             releasePlayer()
             binding.cvExoLeft.visibility = View.GONE
             binding.cvExoRight.visibility = View.GONE
-            binding.flAI.visibility = View.GONE
-            binding.ovAI.visibility = View.GONE
-            binding.tvAIPart1.visibility = View.VISIBLE
-            binding.tvAIPart2.visibility = View.VISIBLE
-            binding.ssivAI1.visibility = View.VISIBLE
-            binding.ssivAI2.visibility = View.VISIBLE
+            binding.flMA.visibility = View.GONE
+            binding.ovMA.visibility = View.GONE
+            binding.tvMAPart1.visibility = View.VISIBLE
+            binding.tvMAPart2.visibility = View.VISIBLE
+            binding.ssivMA1.visibility = View.VISIBLE
+            binding.ssivMA2.visibility = View.VISIBLE
             // mainPartAnalysis 연결
             val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 //            Log.v("인덱스이외값전부", "${avm.currentIndex}, ${adapterAnalysises.find { it.indexx == avm.currentIndex }}")
             val adapter = MainPartAnalysisRVAdapter(this@MainAnalysisFragment, adapterAnalysises.find { it.indexx == avm.currentIndex }?.labels) // avm.currentIndex가 2인데 adapterAnalysises에는 0, 5밖에없어서 indexOutOfBoundException이 나옴.
-            binding.rvAI.layoutManager = layoutManager
-            binding.rvAI.adapter = adapter
+            binding.rvMA.layoutManager = layoutManager
+            binding.rvMA.adapter = adapter
             if (!updateUI) updateUI = false
         } else {
             // 영상
-            binding.ssivAI1.visibility = View.GONE
-            binding.ssivAI2.visibility = View.GONE
-            binding.tvAIPart1.visibility = View.GONE
-            binding.tvAIPart2.visibility = View.GONE
+            binding.ssivMA1.visibility = View.GONE
+            binding.ssivMA2.visibility = View.GONE
+            binding.tvMAPart1.visibility = View.GONE
+            binding.tvMAPart2.visibility = View.GONE
             binding.cvExoLeft.visibility = View.VISIBLE
             binding.cvExoRight.visibility = View.VISIBLE
-            binding.flAI.visibility = View.VISIBLE
-            binding.ovAI.visibility = View.VISIBLE
+            binding.flMA.visibility = View.VISIBLE
+            binding.ovMA.visibility = View.VISIBLE
             setPlayer()
             // 0, 1, 2 (이미지 일 때)
-            val params = binding.clAI.layoutParams
-            params.width = binding.flAI.width
-            params.height = binding.flAI.height
-            binding.clAI.layoutParams = params
+            val params = binding.clMA.layoutParams
+            params.width = binding.flMA.width
+            params.height = binding.flMA.height
+            binding.clMA.layoutParams = params
         }
 
         binding.tvMASummary.text =
@@ -252,33 +255,33 @@ class MainAnalysisFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             when (avm.currentIndex) {
                 0 -> {
-                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 0, binding.ssivAI1, "mainPart")
-                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 2, binding.ssivAI2, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 0, binding.ssivMA1, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 2, binding.ssivMA2, "mainPart")
                     withContext(Dispatchers.Main) {
-                        binding.tvAIPart1.text = "정면 측정"
-                        binding.tvAIPart2.text = "팔꿉 측정"
-                        binding.clAI.requestLayout()
+                        binding.tvMAPart1.text = "정면 측정"
+                        binding.tvMAPart2.text = "팔꿉 측정"
+                        binding.clMA.requestLayout()
                     }
                 }
                 1 -> {
 
-                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 3, binding.ssivAI1, "mainPart")
-                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 4, binding.ssivAI2, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 3, binding.ssivMA1, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 4, binding.ssivMA2, "mainPart")
                     withContext(Dispatchers.Main) {
-                        binding.tvAIPart1.text = "좌측 측정"
-                        binding.tvAIPart2.text = "우측 측정"
-                        binding.tvAIPart1.requestLayout()
-                        binding.tvAIPart2.requestLayout()
+                        binding.tvMAPart1.text = "좌측 측정"
+                        binding.tvMAPart2.text = "우측 측정"
+                        binding.tvMAPart1.requestLayout()
+                        binding.tvMAPart2.requestLayout()
                     }
                 }
                 2 -> {
-                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 5, binding.ssivAI1, "mainPart")
-                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 6, binding.ssivAI2, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 5, binding.ssivMA1, "mainPart")
+                    setImage(this@MainAnalysisFragment, mvm.selectedMeasure, 6, binding.ssivMA2, "mainPart")
                     withContext(Dispatchers.Main) {
-                        binding.tvAIPart1.text = "후면 측정"
-                        binding.tvAIPart2.text = "앉은 후면"
-                        binding.tvAIPart1.requestLayout()
-                        binding.tvAIPart2.requestLayout()
+                        binding.tvMAPart1.text = "후면 측정"
+                        binding.tvMAPart2.text = "앉은 후면"
+                        binding.tvMAPart1.requestLayout()
+                        binding.tvMAPart2.requestLayout()
                     }
                 }
                 3 -> {
@@ -343,8 +346,8 @@ class MainAnalysisFragment : Fragment() {
         // viewModel의 이전 영상 보존값들 초기화
 
         simpleExoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        binding.pvAI.player = simpleExoPlayer
-        binding.pvAI.controllerShowTimeoutMs = 1100
+        binding.pvMA.player = simpleExoPlayer
+        binding.pvMA.controllerShowTimeoutMs = 1100
         lifecycleScope.launch {
             // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
             videoUrl = pvm.videoUrl ?: mvm.selectedMeasure?.fileUris?.get(1).toString()
@@ -361,9 +364,9 @@ class MainAnalysisFragment : Fragment() {
                 simpleExoPlayer?.playWhenReady = pvm.getPlayWhenReady()
             }
         }
-        binding.pvAI.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
-        binding.pvAI.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
-        binding.pvAI.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
+        binding.pvMA.findViewById<ImageButton>(R.id.exo_replay_5).visibility = View.GONE
+        binding.pvMA.findViewById<ImageButton>(R.id.exo_exit).visibility = View.GONE
+        binding.pvMA.findViewById<ImageButton>(R.id.exo_forward_5).visibility = View.GONE
     }
 
     private fun setClickListener() {
@@ -464,21 +467,21 @@ class MainAnalysisFragment : Fragment() {
 
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
             requireActivity().runOnUiThread {
-                binding.ovAI.scaleX = -1f
-                binding.ovAI.setResults(
+                binding.ovMA.scaleX = -1f
+                binding.ovMA.setResults(
                     poseLandmarkResult,
                     videoWidth,
                     videoHeight,
                     OverlayView.RunningMode.VIDEO
                 )
-                binding.ovAI.invalidate()
+                binding.ovMA.invalidate()
             }
         }
     }
 
     private fun updateVideoUI() {
-        binding.ssivAI1.visibility = View.GONE
-        binding.ssivAI2.visibility = View.GONE
+        binding.ssivMA1.visibility = View.GONE
+        binding.ssivMA2.visibility = View.GONE
         val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -502,14 +505,15 @@ class MainAnalysisFragment : Fragment() {
         }
 
         // clMA의 크기 조절
-        val params = binding.clAI.layoutParams
+        val params = binding.clMA.layoutParams
         params.width = (screenWidth  * resizingValue).toInt()
         params.height = (adjustedHeight * resizingValue).toInt()
-        binding.clAI.layoutParams = params
+        binding.clMA.layoutParams = params
 
         val connections = listOf(
             15, 16, 23, 25, 26 // 좌측 골반의 pose번호를 가져옴
         )
+
         val coordinates = extractVideoCoordinates(dynamicJa)
         val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
         for (connection in connections) {
@@ -533,8 +537,8 @@ class MainAnalysisFragment : Fragment() {
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles)
-        binding.rvAI.layoutManager = linearLayoutManager1
-        binding.rvAI.adapter = dynamicAdapter
+        binding.rvMA.layoutManager = linearLayoutManager1
+        binding.rvMA.adapter = dynamicAdapter
     }
 
     override fun onPause() {

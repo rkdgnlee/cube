@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-02T04:03:00.034769200Z">
+        <DropdownSelection timestamp="2025-04-09T00:32:54.889063100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\tangoplus\.android\avd\Pixel_6_API_33_1.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=H09124J1G02948" />
             </handle>
           </Target>
         </DropdownSelection>

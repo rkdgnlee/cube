@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq
 
 import android.util.Log
+import com.tangoplus.tangoq.function.MeasurementManager
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.Math.toDegrees
@@ -350,6 +351,55 @@ class MathTest {
             else index // 7 미만인 경우 그대로 사용
             println(swapIndex)
         }
+
+    }
+    fun normalizeAngle(angle: Float): Float {
+        return if (angle < 0) angle + 360f else angle
+    }
+    fun calculateState(rawData: Float, boundPair: Triple<Float, Float, Float>) : Int {
+//        val normalizedRaw = if (rawData < 0) -(normalizeAngle(rawData) % 180) else normalizeAngle(rawData) % 180
+        // 180을 기준으로 하는 정면만 정규화를 통해서 0에 맞춰서 값을 게산.
+        val normalizedRaw = rawData
+        val boundCenter = when {
+            (boundPair.first < -90f) -> { // -180일 때
+                -(normalizeAngle(boundPair.first) % 180)
+            }
+//            (boundPair.first > 90f) -> {
+//                normalizeAngle(boundPair.first) % 180
+//            }
+            else -> {
+                boundPair.first
+            }
+        }
+        println("normalizedRaw: $normalizedRaw, boundCenter: $boundCenter, 원시 데이터: $boundPair")
+        return when {
+            abs(boundCenter - rawData) <= 0.1f -> 1 // 오차가 거의 없으면 걍 1
+            normalizedRaw < (boundCenter - boundPair.third) || normalizedRaw > (boundCenter + boundPair.third) -> 3
+            normalizedRaw < (boundCenter - boundPair.second) ||  normalizedRaw > (boundCenter + boundPair.second) -> 2
+            else -> 1
+        }
+    }
+    @Test
+    fun stateTest() {
+////        val result1 = calculateState(179.52928f, Triple(-180f, 2.2f, 3.59f))
+//        val result2 = calculateState(-179.52928f, Triple(-180f, 2.2f, 3.59f))
+//
+////        val result3 = calculateState(179.52928f, Triple(180f, 2.2f, 3.59f))
+//        val result4 = calculateState(-179.52928f, Triple(180f, 2.2f, 3.59f))
+////        println(result1)
+//        println(result2)
+////        println(result3)
+//        println(result4)
+
+        val result5 = calculateState(-2.926f, Triple(0.1f, 2.1f, 3.5f))
+        val result6 = calculateState(-2.926f, Triple(-0.1f, 2.1f, 3.5f))
+
+        val result7 = calculateState(2.926f, Triple(0.1f, 2.1f, 3.5f))
+        val result8 = calculateState(2.926f, Triple(-0.1f, 2.1f, 3.5f))
+        println(result5)
+        println(result6)
+        println(result7)
+        println(result8)
 
     }
 }

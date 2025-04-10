@@ -103,23 +103,4 @@ object DeviceService {
 //            return@use response.code
 //        }
 //    }
-
-    // pose landmark build용 (null 처리) emulator 확인 함수
-    fun isEmulator(): Boolean {
-        return Build.PRODUCT.contains("sdk") ||
-                Build.PRODUCT.contains("emulator") ||
-                Build.PRODUCT.contains("android_x86") ||
-                Build.HARDWARE.contains("goldfish") ||
-                Build.HARDWARE.contains("ranchu") ||
-                Build.MODEL.contains("sdk") ||
-                Build.MODEL.contains("emulator") ||
-                Build.MANUFACTURER.contains("Genymotion") ||
-                Build.MANUFACTURER == "Google" ||
-                Build.BRAND.contains("generic") ||
-                Build.DEVICE.contains("generic") ||
-                Build.FINGERPRINT.contains("generic") ||
-                Build.FINGERPRINT.contains("unknown") ||
-                Build.FINGERPRINT.startsWith("generic") ||
-                Build.FINGERPRINT.startsWith("unknown")
-    }
 }

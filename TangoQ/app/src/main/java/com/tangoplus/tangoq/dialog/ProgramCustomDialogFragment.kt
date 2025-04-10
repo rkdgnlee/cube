@@ -198,6 +198,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         intent.putExtra("current_position", currentSequenceProgresses[startIndex].cycleProgress.toLong())
                         requireContext().startActivity(intent)
                         startActivityForResult(intent, 8080)
+                        startActivityForResult(intent, 8080)
                         Log.w("인텐트담은것들", "${videoUrls}, $exerciseIds, $uvpIds")
                     } else {
                         Log.e("ExerciseProgress", "Invalid startIndex: $startIndex")
@@ -411,8 +412,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         val selectedWeekValue = pvm.selectedWeek.value
         val selectedSeqValue = pvm.selectedSequence.value
         if (selectedWeekValue != null && pvm.currentProgresses.isNotEmpty()) {
-            // 현재 week에서 벗어남
-            if (selectedWeekValue < pvm.currentWeek) {
+            // 지난 week
+            if (selectedWeekValue < pvm.currentWeek || selectedWeekValue > pvm.currentWeek) {
                 (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(1)
                 binding.btnPCDRight.apply {
                     isEnabled = false
@@ -452,6 +453,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             }
         }
     }
+
     fun dismissThisFragment() {
         dismiss()
     }

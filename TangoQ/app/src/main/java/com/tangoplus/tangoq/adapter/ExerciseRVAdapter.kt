@@ -68,7 +68,7 @@ class ExerciseRVAdapter (
     }
     override fun getItemViewType(position: Int): Int {
         return when (xmlName) {
-            "E", "ED", "PCD" -> 0
+            "E", "ED", "ESD", "PCD" -> 0
             "PTD" -> 1
             else -> throw IllegalArgumentException("invalid view type")
         }
@@ -101,7 +101,7 @@ class ExerciseRVAdapter (
 
         when (holder) {
             is MainViewHolder -> {
-                if (xmlName in listOf("E", "ED", "PCD")) {
+                if (xmlName in listOf("E", "ESD",  "ED", "PCD")) {
 
 
                     // -----! recyclerview에서 운동군 보여주기 !------
@@ -131,7 +131,7 @@ class ExerciseRVAdapter (
                         .into(holder.ivEIThumbnail)
 
                     // ExerciseDetail탭 시청기록 (유튜브같은)
-                    if (xmlName == "ED" && !historys.isNullOrEmpty()) {
+                    if (xmlName in listOf("ED", "ESD") && !historys.isNullOrEmpty()) {
                         holder.tvEIFinish.visibility = View.INVISIBLE
                         val historyUnit = historys.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
                         historyUnit?.let {
@@ -231,7 +231,6 @@ class ExerciseRVAdapter (
                             }
                         }
                     }
-
                 }
             }
             // ------! play thumbnail 추천 운동 시작 !------

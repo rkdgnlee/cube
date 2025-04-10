@@ -20,6 +20,7 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.vo.DateDisplay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -77,7 +78,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                                 if (singletonIndex != null && singletonIndex >= 0) {
                                     singletonMeasure.set(singletonIndex, editedMeasure)
                                     viewModel.selectedMeasure = editedMeasure
-                                    viewModel.selectedMeasureDate.value = editedMeasure.regDate
+                                    viewModel.selectedMeasureDate.value = DateDisplay(editedMeasure.regDate, editedMeasure.regDate.substring(0, 11))
                                     // 뱃지 제거
                                     hideBadgeFunction?.invoke()
                                     // 다운로드 후 이동

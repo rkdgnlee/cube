@@ -43,6 +43,7 @@ import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import androidx.core.net.toUri
 
 class PlayThumbnailDialogFragment : DialogFragment() {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
@@ -74,7 +75,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentPlayThumbnailDialogBinding.inflate(inflater)
         return binding.root
@@ -199,10 +200,10 @@ class PlayThumbnailDialogFragment : DialogFragment() {
         lifecycleScope.launch {
             val responseArrayList = evm.allExercises
             try {
-                val verticalDataList = responseArrayList.filter {
+                val verticalDataList = responseArrayList?.filter {
                     it.relatedJoint?.contains(pvm.exerciseData?.relatedJoint?.split(", ")?.get(0) ?: "") == true
                 }
-                val shuffledList = verticalDataList.shuffled().take(10.coerceAtMost(verticalDataList.size)).toMutableList()
+                val shuffledList = verticalDataList?.shuffled()?.take(10.coerceAtMost(verticalDataList.size))?.toMutableList()
                 val adapter = ExerciseRVAdapter(this@PlayThumbnailDialogFragment, shuffledList, null, null,  null,"PTD")
                 binding.rvPTn.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -224,7 +225,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 
         // ------# share #------
         binding.ibtnPTDShare.setOnSingleClickListener {
-            val url = Uri.parse("https://tangopluscompany.github.io/deep-link-redirect/#/1?exercise=${pvm.exerciseData?.exerciseId}")
+            val url = "https://tangopluscompany.github.io/deep-link-redirect/#/1?exercise=${pvm.exerciseData?.exerciseId}".toUri()
             val intent = Intent(Intent.ACTION_SEND)
             intent.putExtra(Intent.EXTRA_TEXT, url.toString())
             intent.type = "text/plain" // 공유할 데이터의 타입을 설정 (텍스트)

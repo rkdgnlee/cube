@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter
 @Entity(tableName = "t_measure_static")
 data class MeasureStatic(
     @PrimaryKey(autoGenerate = true) var mobile_sn: Int = 0,
+    var mobile_info_sn: Int? = null,
     val server_sn: Int? = null, // info의 sn을 말함.
     val device_sn: Int = 0,
     val local_sn: Int = 0, // 이거는

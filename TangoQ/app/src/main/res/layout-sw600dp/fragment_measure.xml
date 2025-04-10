@@ -172,7 +172,7 @@
                             android:drawableEnd="@drawable/icon_arrow_right"
                             android:drawableTint="@color/subColor800"
                             android:gravity="center_vertical"
-                            android:text=" 측정 기록"
+                            android:text="측정 기록"
                             android:textColor="@color/black"
                             android:textSize="20dp" />
 
@@ -303,7 +303,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/clMPercent">
 
                         <TextView
-                            android:id="@+id/textView37"
+                            android:id="@+id/tvMLow"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -313,7 +313,7 @@
                             android:textSize="16dp" />
 
                         <TextView
-                            android:id="@+id/textView42"
+                            android:id="@+id/tvMMiddle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -323,7 +323,7 @@
                             android:textSize="16dp" />
 
                         <TextView
-                            android:id="@+id/textView43"
+                            android:id="@+id/tvMHigh"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -708,6 +708,19 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/imageView28" />
 
+                    <TextView
+                        android:id="@+id/tvMEmptyGraph"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:text="측정 기록이 없습니다\n상단 버튼을 눌러 측정을 시작해보세요"
+                        android:textColor="@color/subColor800"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/btnM2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
