@@ -232,11 +232,23 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
                 // 가로축
                 val extraLineWidth = 150
-                canvas.drawLine(leftIndexX + extraLineWidth  , leftIndexY, rightIndexX - extraLineWidth, rightIndexY, axisPaint)
-                canvas.drawLine(leftKneeX + extraLineWidth, leftKneeY, rightKneeX - extraLineWidth, rightKneeY, axisPaint)
-                canvas.drawLine(leftHipX + extraLineWidth, leftHipY, rightHipX - extraLineWidth, rightHipY, axisPaint)
-                canvas.drawLine(leftKneeX + extraLineWidth, leftKneeY, rightKneeX - extraLineWidth, rightKneeY, axisPaint)
-                canvas.drawLine((leftAnkleX + rightAnkleX) / 2, leftAnkleY + 200, (leftAnkleX + rightAnkleX) / 2, noseY - 200, axisPaint)
+                val isFrontLens = leftIndexX > rightIndexX
+                when (isFrontLens) {
+                    true -> {
+                        canvas.drawLine(leftIndexX + extraLineWidth  , leftIndexY, rightIndexX - extraLineWidth, rightIndexY, axisPaint)
+                        canvas.drawLine(leftKneeX + extraLineWidth, leftKneeY, rightKneeX - extraLineWidth, rightKneeY, axisPaint)
+                        canvas.drawLine(leftHipX + extraLineWidth, leftHipY, rightHipX - extraLineWidth, rightHipY, axisPaint)
+                        canvas.drawLine(leftKneeX + extraLineWidth, leftKneeY, rightKneeX - extraLineWidth, rightKneeY, axisPaint)
+                        canvas.drawLine((leftAnkleX + rightAnkleX) / 2, leftAnkleY + extraLineWidth, (leftAnkleX + rightAnkleX) / 2, noseY - extraLineWidth, axisPaint)
+                    }
+                    false -> {
+                        canvas.drawLine(leftIndexX - extraLineWidth  , leftIndexY, rightIndexX + extraLineWidth, rightIndexY, axisPaint)
+                        canvas.drawLine(leftKneeX - extraLineWidth, leftKneeY, rightKneeX + extraLineWidth, rightKneeY, axisPaint)
+                        canvas.drawLine(leftHipX - extraLineWidth, leftHipY, rightHipX + extraLineWidth, rightHipY, axisPaint)
+                        canvas.drawLine(leftKneeX - extraLineWidth, leftKneeY, rightKneeX + extraLineWidth, rightKneeY, axisPaint)
+                        canvas.drawLine((leftAnkleX + rightAnkleX) / 2, leftAnkleY + extraLineWidth, (leftAnkleX + rightAnkleX) / 2, noseY - extraLineWidth, axisPaint)
+                    }
+                }
                 //세로축
                 canvas.drawLine(leftHipX, leftHipY - 100, leftHipX, leftAnkleY + 100, axisPaint)
                 canvas.drawLine(rightHipX, rightHipY - 100, rightHipX, rightAnkleY + 100, axisPaint)

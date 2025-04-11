@@ -1,18 +1,12 @@
 package com.tangoplus.tangoq.fragment
 
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.Entry
@@ -26,18 +20,14 @@ import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
-import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.adapter.MainPartRVAdapter
 import com.tangoplus.tangoq.adapter.MeasureDetailRVAdapter
-import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
@@ -47,10 +37,7 @@ import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.AnalysisVO
-import org.apache.commons.math3.geometry.euclidean.twod.Line
 import org.json.JSONArray
-import java.io.File
-import java.io.FileOutputStream
 
 
 class MeasureDetailFragment : Fragment(), OnCategoryClickListener {

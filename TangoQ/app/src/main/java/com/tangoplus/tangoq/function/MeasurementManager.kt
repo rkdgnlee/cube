@@ -226,7 +226,7 @@ object MeasurementManager {
         ),
         // 어깨
         mapOf(
-            0 to mapOf("front_horizontal_angle_shoulder" to Triple(-180f, 2.1f, 4.7f),
+            0 to mapOf("front_horizontal_angle_shoulder" to Triple(-180f, 2.1f, 3.9f),
                 "front_horizontal_distance_sub_shoulder" to Triple(0f, 1.9f, 3.2f)), //*&*
             3 to mapOf("side_left_horizontal_distance_shoulder" to Triple(1.3f, 5.3f, 7.1f)), //*&*
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 2.5f, 4f),
@@ -236,7 +236,7 @@ object MeasurementManager {
             )
         ),
         mapOf( // 179 -> 양수 -> 오른쪽이 안좋은 거 // -0.76
-            0 to mapOf("front_horizontal_angle_shoulder" to Triple(180f, 2.1f, 4.7f),
+            0 to mapOf("front_horizontal_angle_shoulder" to Triple(180f, 2.1f, 3.9f),
                 "front_horizontal_distance_sub_shoulder" to Triple(0f, 1.9f, 3.2f)), //*&*
             4 to mapOf("side_right_horizontal_distance_shoulder" to Triple(1.3f, 5.3f, 7.1f)), //*&*
             5 to mapOf("back_vertical_angle_shoudler_center_hip" to Triple(90f, 2.5f, 4f),
@@ -248,7 +248,7 @@ object MeasurementManager {
         // 좌측 팔꿉
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to Triple(-180f, 1.9f, 3.5f),
-                "front_horizontal_distance_sub_elbow" to Triple(0f, 2.11f, 3.32f),
+                "front_horizontal_distance_sub_elbow" to Triple(0f, 1.31f, 2.72f),
                 "front_vertical_angle_shoulder_elbow_left" to Triple(79f, 5.2f, 9.8f)),
             2 to mapOf("front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(4f,6f, 9f)),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to Triple(90f, 3.3f, 8.6f),
@@ -257,7 +257,7 @@ object MeasurementManager {
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 1.9f, 3.5f),
-                "front_horizontal_distance_sub_elbow" to Triple(0f, 2.11f, 3.32f),
+                "front_horizontal_distance_sub_elbow" to Triple(0f, 1.31f, 2.72f),
                 "front_vertical_angle_shoulder_elbow_right" to Triple(103f, 5.2f, 9.8f)),
             2 to mapOf("front_elbow_align_angle_right_shoulder_elbow_wrist" to Triple(4f,6f, 9f)),
             4 to mapOf("side_right_vertical_angle_shoulder_elbow" to Triple(90f,3.3f, 8.6f),
@@ -283,21 +283,21 @@ object MeasurementManager {
         ),
         // 좌측 골반
         mapOf(
-            0 to mapOf("front_horizontal_angle_hip" to Triple(-180f, 2.2f, 3.59f),
-                "front_horizontal_distance_sub_hip" to Triple(0f,1.9f, 2.8f),
+            0 to mapOf("front_horizontal_angle_hip" to Triple(-180f, 1.7f, 2.89f),
+                "front_horizontal_distance_sub_hip" to Triple(0f,1.3f, 2.3f),
                 "front_vertical_angle_hip_knee_left" to Triple(90f,2.1f, 3.8f),),
             3 to mapOf("side_left_horizontal_distance_hip" to Triple(2.5f, 3.55f, 5.25f)),
-            5 to mapOf("back_horizontal_angle_hip" to Triple(-0.1f, 2.1f, 3.5f)),
+            5 to mapOf("back_horizontal_angle_hip" to Triple(-0.1f, 1.9f, 3.3f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f, 8f, 14f)
             )
         ),
         mapOf(
-            0 to mapOf( "front_horizontal_angle_hip" to Triple(180f, 2.2f, 3.59f),
-                "front_horizontal_distance_sub_hip" to Triple(0f,1.9f, 2.8f),
+            0 to mapOf( "front_horizontal_angle_hip" to Triple(180f, 1.7f, 2.89f),
+                "front_horizontal_distance_sub_hip" to Triple(0f,1.3f, 2.3f),
                 "front_vertical_angle_hip_knee_right" to Triple(90f,2.1f, 3.8f),
             ),
             4 to mapOf("side_right_horizontal_distance_hip" to Triple(2.5f, 3.55f, 5.75f)),
-            5 to mapOf("back_horizontal_angle_hip" to Triple(0.1f, 2.1f, 3.5f)),
+            5 to mapOf("back_horizontal_angle_hip" to Triple(0.1f, 1.9f, 3.3f)),
             6 to mapOf("back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f, 8f, 14f)
             )
         ),
@@ -616,14 +616,14 @@ object MeasurementManager {
                     }
 
                     val state  = when {
-                        abs(boundCenter - rawData) <= 0.1f -> 1 // 오차가 거의 없으면 걍 1
-                        abs(rawData) > (abs(boundPair.first) - 1) &&  normalizedRaw < (abs(boundPair.first) + 1) -> 1 // 정상범위에서 1의 오차내에 있으면 그냥 1
+                        abs(boundCenter - abs(rawData)) <= 0.1f -> 1 // 오차가 거의 없으면 걍 1
                         normalizedRaw < (boundCenter - boundPair.third) || normalizedRaw > (boundCenter + boundPair.third) -> 3
                         normalizedRaw < (boundCenter - boundPair.second) ||  normalizedRaw > (boundCenter + boundPair.second) -> 2
+                        abs(rawData) > (abs(boundPair.first) - 0.75) &&  normalizedRaw < (abs(boundPair.first) + 0.75) -> 1 // 정상범위에서 1의 오차내에 있으면 그냥 1
                         else -> 1
                     }
-//                    Log.v("값들", "${rawDataName}, rawData: $rawData, 범위: ${(abs(boundPair.first) - 1)} ${(abs(boundPair.first) + 1)}")
-//                    Log.v("값들", "${rawDataName}, state: $state 처리된 값: ${normalizedRaw} boundCenter: ${boundCenter}, 위험: ${(boundCenter - boundPair.third)}, ${(boundCenter + boundPair.third)}, 주의: ${(boundCenter - boundPair.second)}, ${(boundCenter + boundPair.second)}")
+//                    Log.v("값들", "${rawDataName}, rawData: $rawData, 범위: ${(abs(boundPair.first) - 0.5)} ${(abs(boundPair.first) + 0.5)}")
+                    Log.v("값들", "${rawDataName}, state: $state 값:  $rawData -> $normalizedRaw boundCenter: ${boundCenter}, 위험: ${(boundCenter - boundPair.third)}, ${(boundCenter + boundPair.third)}, 주의: ${(boundCenter - boundPair.second)}, ${(boundCenter + boundPair.second)}")
                     result.add(
                         AnalysisUnitVO(
                             columnName = columnName,

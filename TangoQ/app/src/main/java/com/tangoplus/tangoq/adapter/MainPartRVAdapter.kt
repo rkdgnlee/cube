@@ -82,6 +82,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val dangerParts:
 
             holder.clPI.setOnSingleClickListener {
                 avm.currentPart.value = currentItem?.first
+                avm.selectPart.value = currentItem?.first
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flMain, MainAnalysisFragment.newInstance(currentItem?.first ?: ""))
                     addToBackStack(null)

@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.viewpager2.widget.ViewPager2
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -20,8 +19,6 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
@@ -37,11 +34,9 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.WifiManager
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.vo.DateDisplay
@@ -305,11 +300,11 @@ class MeasureFragment : Fragment() {
             val lcLineDataSet = LineDataSet(lcEntries, "")
             lcLineDataSet.apply {
                 color = resources.getColor(R.color.thirdColor, null)
-                circleRadius = 4F
-                lineWidth = 4F
+                circleRadius = if (isTablet(requireContext())) 6f else 4F
+                lineWidth = if (isTablet(requireContext())) 6f else  4F
                 valueTextSize = 0F
                 setCircleColors(resources.getColor(R.color.thirdColor, null))
-                circleRadius = 5f
+                circleRadius = if (isTablet(requireContext())) 8f else  5F
                 setDrawCircleHole(false)
                 setDrawFilled(false)
                 mode = LineDataSet.Mode.CUBIC_BEZIER
@@ -442,7 +437,6 @@ class MeasureFragment : Fragment() {
             // ------! 꺾은선 그래프 코드 끝 !------
 
             // ------! balloon 시작 !------
-
 
             var percentage = 0.5f
             mvm.selectedMeasureIndex.observe(viewLifecycleOwner) {

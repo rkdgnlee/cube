@@ -152,7 +152,7 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_marginStart="12dp"
-                        android:background="@drawable/bckgnd_rectangle_12"
+                        android:background="@drawable/effect_ibtn_12dp"
                         android:backgroundTint="@color/subColor100"
                         android:orientation="vertical"
                         android:paddingTop="5dp"

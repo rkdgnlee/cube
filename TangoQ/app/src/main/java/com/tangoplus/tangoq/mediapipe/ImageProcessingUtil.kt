@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.mediapipe
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -9,13 +8,10 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RadialGradient
 import android.graphics.Shader
-import android.util.Log
 import android.util.TypedValue
-import android.view.View
-import androidx.core.graphics.scale
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.mediapipe.MathHelpers.determineDirection
+import androidx.core.graphics.toColorInt
 
 object ImageProcessingUtil {
     private val strokeWidths = 2.5f
@@ -27,19 +23,39 @@ object ImageProcessingUtil {
 
     ) : Bitmap {
 
+        // 후면 카메라, 정면 카메라(키오스크 포함) 대응
+        val originPlr = poseLandmarkResult.landmarks
+        val isFrontLens = if (sequence == 3) {
+            determineDirection(originPlr[25].x, originPlr[25].y, originPlr[27].x, originPlr[27].y, originPlr[31].x, originPlr[31].y)
+        } else {
+            !determineDirection(originPlr[25].x, originPlr[25].y, originPlr[27].x, originPlr[27].y, originPlr[31].x, originPlr[31].y)
+        }
         val matrix = if (sequence in listOf(0, 2, 5, 6)) {
             Matrix().apply {
                 preScale(1f, 1f)
             }
         } else {
-            Matrix().apply {
-                preScale(-1f, 1f)
+            // 이 곳에서 후면 카메라로 촬영한 3,4 seq를 감지해야 함.
+            if (isFrontLens) {
+                Matrix().apply {
+                    preScale(-1f, 1f)
+                }
+            } else {
+                Matrix().apply {
+                    preScale(1f, 1f)
+                }
+
             }
         }
+
         val plr = if (sequence in listOf(0, 2, 5, 6)) {
             reverseLeftRight(poseLandmarkResult.landmarks, originalBitmap.width.toFloat())
         } else {
-            poseLandmarkResult.landmarks
+            if (isFrontLens) {
+                poseLandmarkResult.landmarks
+            } else {
+                reverseLeftRight(poseLandmarkResult.landmarks, originalBitmap.width.toFloat())
+            }
         }
         val flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
         val resultBitmap = flippedBitmap .copy(Bitmap.Config.ARGB_8888, true)
@@ -297,29 +313,28 @@ object ImageProcessingUtil {
                 }
             }
         }
-//        resultBitmap.scale(-1, 1)
 
         return drawDirectionUIOnBitmap(resultBitmap, sequence)
     }
     fun drawDirectionUIOnBitmap(
         bitmap: Bitmap,
-        sequence: Int
+        sequence: Int,
     ): Bitmap {
         val resultBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(resultBitmap)
 
         val textPaint = Paint().apply {
-            color = Color.parseColor("#000000")
+            color = "#000000".toColorInt()
             textSize = 48f
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
         }
         val outerCirclePaint = Paint().apply {
-            color = Color.parseColor("#41000000")
+        color = "#41000000".toColorInt()
             style = Paint.Style.FILL
         }
         val innerCirclePaint = Paint().apply {
-            color = Color.parseColor("#FFFFFF")
+            color = "#FFFFFF".toColorInt()
             style = Paint.Style.FILL
         }
 

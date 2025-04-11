@@ -35,6 +35,27 @@ object MathHelpers {
         return toDegrees(angleRadians.toDouble()).toFloat()
     }
 
+    // 전면-후면 카메라 판단을 위한 3점의 각도 판단
+    fun determineDirection(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Boolean {
+        // 벡터1: 첫 번째 점에서 두 번째 점으로의 벡터(어깨에서 팔꿈치)
+        val v1x = x2 - x1
+        val v1y = y2 - y1
+
+        // 벡터2: 두 번째 점에서 세 번째 점으로의 벡터(팔꿈치에서 손목)
+        val v2x = x3 - x2
+        val v2y = y3 - y2
+
+        // 2D 외적 계산 (z 성분만 계산)
+        // 외적은 v1 × v2 = v1x * v2y - v1y * v2x
+        val crossProduct = v1x * v2y - v1y * v2x
+
+        // 외적 결과 해석
+        // 양수: 두 번째 벡터는 첫 번째 벡터의 왼쪽에 위치 (왼쪽으로 펼쳐짐)
+        // 음수: 두 번째 벡터는 첫 번째 벡터의 오른쪽에 위치 (오른쪽으로 펼쳐짐)
+        return if (crossProduct > 0) true else false
+    }
+
+
     // ------! 선과 점의 X 각도 !------
     fun calculateAngleBySlope(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Float {
         val x4 = (x1 + x2) / 2

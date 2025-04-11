@@ -66,6 +66,7 @@ import org.json.JSONArray
 import java.io.File
 import kotlin.math.max
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.doOnLayout
 import androidx.media3.common.util.UnstableApi
 
 class MeasureTrendDialogFragment : DialogFragment() {
@@ -483,31 +484,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
         Log.v("모든분석유닛", "${result.size}, ${result.map { it.size }}, ${result.map { it.map { it.columnName } }}")
         return result
-//        val analyzes1 = mutableListOf<MutableList<MutableList<AnalysisUnitVO>>>()
-//
-//        matchedUris.forEach { (part, seqList) -> // 13가지 관절 전부다
-//            val analyzes2 = mutableListOf<MutableList<AnalysisUnitVO>>()
-//            seqList.forEachIndexed { index, i -> // 각 시퀀스별로
-//                val analyzes3 = getAnalysisUnits(requireContext(), part, i, ja) // 지금 여기서 1이 들어가서 문제가 생긴듯?
-//                analyzes2.add(analyzes3)
-//            }
-//            analyzes1.add(analyzes2)
-//        }
-//        Log.v("analyse1", "${analyzes1.size}, ${analyzes1.map { it.size }} ${analyzes1.map { it.map { it.size } }}")
-//
-//        val analysis1 = mutableListOf<MutableList<AnalysisUnitVO>>()
-//        // 지금 모든 값들이 다 들어가있는데 matchedTripleIndexes를 통해서 13개의 각각의
-//
-//
-//        matchedTripleIndexes.mapIndexed { indexx, item3 ->
-//
-//            val analysis2 = item3.map { (seq, matchedIndex, index1) ->
-//                analyzes1[indexx][matchedIndex][index1] // 해당 index에서 가져오기
-//            }.toMutableList()
-//            analysis1.add(analysis2)
-//        }
-//        Log.v("유닛3개로", "${analysis1.size}, ${analysis1.map { it.map { it.columnName } }}")
-//        return analysis1
     }
 
     private suspend fun setMeasureFiles(inputRegDate: String?, isRight: Boolean) {
@@ -722,7 +698,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 }
             }
             false -> {
-                Log.e("왼쪽플레이어init", "initPlayer false")
+                Log.e("왼쪽플레이어init", "initPlayer isRight: false")
 
                 setClickListener(false)
                 simpleExoPlayer1 = SimpleExoPlayer.Builder(requireContext()).build()
@@ -1140,7 +1116,18 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     params.width = (screenWidth  * resizingValue).toInt()
                     params.height = (adjustedHeight * resizingValue).toInt()
                     binding.clMTDRight.layoutParams = params
+                    Log.v("오른쪽Params", "${params.width}, ${params.height}")
 
+                    binding.clMTDRight.doOnLayout {
+                        val clMTDParams = binding.clMTD.layoutParams
+                        clMTDParams.height = binding.clMTDRight.height
+                        binding.clMTD.layoutParams = clMTDParams
+
+                        val constraintSet = ConstraintSet()
+                        constraintSet.clone(binding.clMTD)
+                        constraintSet.connect(binding.tvMTDGuide.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
+                        constraintSet.applyTo(binding.clMTD)
+                    }
                 }
             }
             false -> {
@@ -1164,17 +1151,20 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     params.width = (screenWidth * resizingValue).toInt()
                     params.height = (adjustedHeight * resizingValue).toInt()
                     binding.clMTDLeft.layoutParams = params
+                    binding.clMTDLeft.doOnLayout {
+                        val clMTDParams = binding.clMTD.layoutParams
+                        clMTDParams.height = binding.clMTDRight.height
+                        binding.clMTD.layoutParams = clMTDParams
 
+                        val constraintSet = ConstraintSet()
+                        constraintSet.clone(binding.clMTD)
+                        constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
+                        constraintSet.applyTo(binding.clMTD)
+
+                    }
                 }
-                val constraintSet = ConstraintSet()
-                constraintSet.clone(binding.clMTD)
-                constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
-                constraintSet.applyTo(binding.clMTD)
             }
         }
-        val clMTDParams = binding.clMTD.layoutParams
-        clMTDParams.height = binding.clMTDRight.height
-        binding.clMTD.layoutParams = clMTDParams
     }
     
     private fun setPlayerByCroppedVideo(isRight: Boolean, videoWidth: Float, videoHeight: Float) {

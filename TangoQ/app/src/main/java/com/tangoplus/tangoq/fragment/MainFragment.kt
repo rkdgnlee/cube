@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MainProgressRVAdapter
@@ -41,16 +40,13 @@ import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.scrollToView
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
-import com.tangoplus.tangoq.function.SaveSingletonManager
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import io.github.douglasjunior.androidSimpleTooltip.OverlayView
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.core.graphics.toColorInt
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -62,11 +58,10 @@ class MainFragment : Fragment() {
     private var measures : MutableList<MeasureVO>? = null
     private var singletonMeasure : MutableList<MeasureVO>? = null
     private var latestRecSn = -1
-    private lateinit var ssm : SaveSingletonManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMainBinding.inflate(inflater)
         startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result -> }
@@ -373,17 +368,17 @@ class MainFragment : Fragment() {
         }
     }
 
-    fun createGuide(
+    private fun createGuide(
         context: Context,
         text: String,
         anchor: View,
         gravity: Int,
-        dismiss: () -> Unit
+        dismiss: () -> Unit,
     ) {
         SimpleTooltip.Builder(context).apply {
             anchorView(anchor)
             backgroundColor(ContextCompat.getColor(context, R.color.mainColor))
-            arrowColor(Color.parseColor("#00FFFFFF"))
+            arrowColor("#00FFFFFF".toColorInt())
             gravity(gravity)
             animated(true)
             transparentOverlay(false)
