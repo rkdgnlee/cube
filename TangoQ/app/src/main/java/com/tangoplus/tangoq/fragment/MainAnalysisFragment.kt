@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -35,10 +36,9 @@ import com.tangoplus.tangoq.function.MeasurementManager.createSummary
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
+import com.tangoplus.tangoq.function.MeasurementManager.judgeFrontCameraByDynamic
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
-import com.tangoplus.tangoq.function.SecurePreferencesManager.deleteDirectory
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 import com.tangoplus.tangoq.mediapipe.OverlayView
 import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
@@ -51,7 +51,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
-import java.io.File
 
 class MainAnalysisFragment : Fragment() {
     lateinit var binding : FragmentMainAnalysisBinding
@@ -511,7 +510,7 @@ class MainAnalysisFragment : Fragment() {
         binding.clMA.layoutParams = params
 
         val connections = listOf(
-            15, 16, 23, 25, 26 // 좌측 골반의 pose번호를 가져옴
+            15, 16, 23, 24, 25, 26 // 좌측 골반의 pose번호를 가져옴
         )
 
         val coordinates = extractVideoCoordinates(dynamicJa)
@@ -519,24 +518,19 @@ class MainAnalysisFragment : Fragment() {
         for (connection in connections) {
             val filteredCoordinate = mutableListOf<Pair<Float, Float>>() // 부위 하나당 몇 십 프레임의 x,y 좌표임
             for (element in coordinates) {
-                if (connection == 23) {
-                    val a = element[connection]
-                    val b = element[connection]
-                    val midHip = Pair((a.first + b.first) / 2, (a.second + b.second) / 2)
-                    filteredCoordinate.add(midHip)
-                } else {
-                    filteredCoordinate.add(element[connection]) // element의 23, 24가 각각 담김
-                }
+                filteredCoordinate.add(element[connection])
             }
             filteredCoordinates.add(filteredCoordinate)
         }
-        // 이제 data 는 size가 6개가 아니라 5개임.
+        // 비디오 사이즈 6개넣어서 그대로 씀.
         setVideoAdapter(filteredCoordinates)
     }
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
+        val isFrontCamera = judgeFrontCameraByDynamic(data)
+        Log.v("전면카메라인가요", "$isFrontCamera")
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles)
+        val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles, isFrontCamera)
         binding.rvMA.layoutManager = linearLayoutManager1
         binding.rvMA.adapter = dynamicAdapter
     }

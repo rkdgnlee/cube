@@ -42,7 +42,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     // 소분류 에서 선택된 관절에 대한 리스트
     private var currentCateExercises : MutableList<ExerciseVO>? = null
     private var currentCateHistorys : MutableList<ExerciseHistoryVO>? = null
-    private var categoryId : ArrayList<Int>? = null
+
     private val evm : ExerciseViewModel by activityViewModels()
 
     private lateinit var categoryList : List<String>
@@ -77,8 +77,8 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         super.onViewCreated(view, savedInstanceState)
 
         // ------# 선택 카테고리 & 타입 가져오기 시작 #------
-        categoryId = arguments?.getIntegerArrayList(ARG_CATEGORY_ID)
-        val sn = arguments?.getInt(ARG_SN)
+        evm.categoryId = arguments?.getIntegerArrayList(ARG_CATEGORY_ID)
+        evm.sn = arguments?.getInt(ARG_SN)
         prefs = PreferencesManager(requireContext())
         binding.ibtnEDAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
@@ -90,7 +90,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         }
 
         binding.sflED.startShimmer()
-        binding.tvEDMainCategoryName.text = when (categoryId?.get(0)) {
+        binding.tvEDMainCategoryName.text = when (evm.categoryId?.get(0)) {
             1 -> "기본 밸런스 및 스트레칭"
             3 -> "의자 활용 및 기초 강화 운동"
             6 -> "상지·하지 전신 근육 운동"
@@ -101,11 +101,11 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         // 운동 기록 EVP 가져오기
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                val categorys = categoryId.toString().replace(" ", "").replace("[", "").replace("]", "")
+                val categorys = evm.categoryId.toString().replace(" ", "").replace("[", "").replace("]", "")
                 evm.allExerciseHistorys = getExerciseHistory(requireContext(), getString(R.string.API_exercise), categorys)?.toMutableList()
             }
 
-            filteredDataList = categoryId?.map { id ->
+            filteredDataList = evm.categoryId?.map { id ->
                 evm.allExercises?.filter { it.exerciseCategoryId == id.toString() } ?: listOf()
             }?.flatten()?.toMutableList()
 
@@ -139,13 +139,14 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 removeAll(zeroItems)
                 addAll(zeroItems)
             }
-
-            val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryCountList, this@ExerciseDetailFragment,  sn!! ,"subCategory" )
-            adapter2.onCategoryClickListener = this@ExerciseDetailFragment
-            binding.rvEDCategory.adapter = adapter2
-            val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            binding.rvEDCategory.layoutManager = linearLayoutManager2
-            // -----! 카테고리 끝 !-----
+            if (evm.sn != null) {
+                val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryCountList, this@ExerciseDetailFragment,  evm.sn ,"subCategory" )
+                adapter2.onCategoryClickListener = this@ExerciseDetailFragment
+                binding.rvEDCategory.adapter = adapter2
+                val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                binding.rvEDCategory.layoutManager = linearLayoutManager2
+                // -----! 카테고리 끝 !-----
+            }
 
             // ------! 자동완성 시작 !------
             binding.linearLayout3.setOnSingleClickListener{

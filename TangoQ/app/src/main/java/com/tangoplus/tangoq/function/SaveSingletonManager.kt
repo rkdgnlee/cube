@@ -574,7 +574,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             measure.recommendations = groupedRecs[measureSn] ?: emptyList()
                         } else {
                             val (types, stages) = convertToJsonArrays(measure.dangerParts)
-                            Log.v("types와stages", "types: $types, stages: $stages")
+                            Log.v("types와stages", "types: $types, stages: $stages, $measureSn")
                             val recommendJson = JSONObject().apply {
                                 put("exercise_type_id", types) // [0, 6, 7, 8, 13 ]
                                 put("exercise_stage", stages) // [ 2, 1, 1, 1, 2 ]

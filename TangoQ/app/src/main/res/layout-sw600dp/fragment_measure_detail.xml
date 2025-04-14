@@ -6,16 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".fragment.MeasureDetailFragment">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvMD"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:background="@color/white">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
                 android:id="@+id/ibtnMDBack"
@@ -23,11 +25,13 @@
                 android:layout_height="38dp"
                 android:layout_marginStart="36dp"
                 android:layout_marginTop="12dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/white"
                 android:padding="4dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon_arrow_left"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -57,134 +61,133 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/textView40" />
 
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/materialDivider15"
-                android:layout_width="wrap_content"
-                android:layout_height="1.5dp"
-                android:layout_marginTop="20dp"
-                app:dividerColor="@color/subColor150"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView40" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/materialDivider16"
-                android:layout_width="wrap_content"
-                android:layout_height="1.5dp"
-                android:layout_marginTop="15dp"
-                app:dividerColor="@color/subColor150"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout29" />
-
-            <View
-                android:id="@+id/view8"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="@color/secondContainerColor"
-                app:layout_constraintBottom_toTopOf="@+id/materialDivider16"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider15" />
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsvMD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+            app:layout_constraintVertical_bias="0.0">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout29"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/bckgnd_1_sub150_20"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider15">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/secondContainerColor"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvMDDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="15dp"
+                        android:text="2024.08.07"
+                        android:textColor="@color/subColor800"
+                        android:textSize="22dp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
+                        app:layout_constraintTop_toTopOf="@+id/constraintLayout29" />
+
+                    <TextView
+                        android:id="@+id/tvMDParts"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:text="보고 싶은 부위의 데이터를 선택해주세요"
+                        android:textColor="@color/subColor400"
+                        android:textSize="20dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
+                        app:layout_constraintStart_toEndOf="@+id/constraintLayout29" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constraintLayout29"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/bckgnd_1_sub150_20"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/tvMDScore"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="100"
+                            android:textColor="@color/thirdWhiteColor"
+                            android:textSize="28dp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMDHorizon"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
+
+                <com.github.mikephil.charting.charts.RadarChart
+                    android:id="@+id/rcMD"
+                    android:layout_width="0dp"
+                    android:layout_height="450dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvMDHorizon" >
+
+                </com.github.mikephil.charting.charts.RadarChart>
 
                 <TextView
-                    android:id="@+id/tvMDScore"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/textView31"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="100"
-                    android:textColor="@color/thirdWhiteColor"
-                    android:textSize="28dp"
-                    android:textStyle="bold"
+                    android:background="@color/secondContainerColor"
+                    android:paddingStart="40dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
+                    android:text="부위별 분석"
+                    android:textColor="@color/subColor800"
+                    android:textSize="22dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rcMD" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMD"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="120dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView31" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
 
-            <com.github.mikephil.charting.charts.RadarChart
-                android:id="@+id/rcMD"
-                android:layout_width="0dp"
-                android:layout_height="450dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rvMDHorizon" />
-
-            <TextView
-                android:id="@+id/tvMDDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:text="2024.08.07"
-                android:textColor="@color/subColor800"
-                android:textSize="24dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
-                app:layout_constraintTop_toTopOf="@+id/constraintLayout29" />
-
-            <TextView
-                android:id="@+id/tvMDParts"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:maxLines="2"
-                android:singleLine="false"
-                android:text="보고 싶은 부위의 데이터를 선택해주세요"
-                android:textColor="@color/subColor400"
-                android:textSize="18dp"
-                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
-                app:layout_constraintTop_toBottomOf="@+id/tvMDDate" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMD"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView12" />
-
-            <TextView
-                android:id="@+id/textView12"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:background="@color/secondContainerColor"
-                android:paddingStart="40dp"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp"
-                android:text="부위별 분석"
-                android:textColor="@color/subColor800"
-                android:textSize="22dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rcMD" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMDHorizon"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialDivider16" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </FrameLayout>

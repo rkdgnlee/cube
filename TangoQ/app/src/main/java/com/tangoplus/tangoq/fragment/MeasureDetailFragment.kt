@@ -79,7 +79,7 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
                 .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
                 .setLifecycleOwner(viewLifecycleOwner)
                 .build()
-            balloonlc1.showAlignBottom(binding.view8)
+            balloonlc1.showAlignBottom(binding.tvMDParts)
             arguments?.putBoolean("showMeasure", false)
         }
 

@@ -43,9 +43,11 @@ import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
 import com.tangoplus.tangoq.dialog.WithDrawalDialogFragment
+import com.tangoplus.tangoq.fragment.MainAnalysisFragment
 import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.AppViewModel
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,6 +60,7 @@ class MainActivity : AppCompatActivity() {
     private val pvm : PlayViewModel by viewModels()
     private val mvm : MeasureViewModel by viewModels()
     private val avm : AnalysisViewModel by viewModels()
+    private val evm: ExerciseViewModel by viewModels()
     private lateinit var appViewModel: AppViewModel
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
@@ -124,6 +127,8 @@ class MainActivity : AppCompatActivity() {
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         setCurrentFragment(selectedTabId)
+//        if (appViewModel.getCF() == null) appViewModel.setCF("MainFragment")
+
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         // bottomnavigation도 같이 backstack 반응하기
@@ -185,9 +190,17 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
 
-        if (!singletonMeasure.measures.isNullOrEmpty()) { // 값이 하나라도 있을 때만 가져오기.
-            mvm.selectedMeasure = singletonMeasure.measures?.get(0)
-            mvm.selectedMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
+        // 값이 하나라도 있을 때만 가져오기.
+        if (!singletonMeasure.measures.isNullOrEmpty()) {
+            if (mvm.selectedMeasureDate.value == null) {
+                mvm.selectedMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
+            }
+            if (mvm.selectMeasureDate.value == null) {
+                mvm.selectMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
+            }
+            if (mvm.selectedMeasure == null) {
+                mvm.selectedMeasure = singletonMeasure.measures?.get(0)
+            }
         }
         handleIntent(intent)
 
@@ -240,12 +253,33 @@ class MainActivity : AppCompatActivity() {
             else -> MainFragment()
         }
         selectedTabId = itemId
-        // 프래그먼트 변경
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flMain, fragment)
-            commit()
-        }
+//        val savedFragmentTag = appViewModel.getCF()
+//        if (savedFragmentTag != null) {
+//            supportFragmentManager.beginTransaction().apply {
+//                replace(R.id.flMain, when (savedFragmentTag) {
+//                    "MainAnalysisFragment" -> MainAnalysisFragment.newInstance(avm.currentPart.value.toString())
+//                    "MeasureHistoryFragment" -> MeasureHistoryFragment()
+//                    "MeasureDetailFragment" -> MeasureDetailFragment()
+//                    "ExerciseDetailFragment" -> {
+//                        if (evm.categoryId != null && evm.sn != null) {
+//                            ExerciseDetailFragment.newInstance(evm.categoryId!!, evm.sn!!)
+//                        } else {
+//                            ExerciseFragment()
+//                        }
+//                    }
+//                    else -> fragment
+//                })
+//                commit()
+//            }
+//        } else {
+            // 프래그먼트 변경
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flMain, fragment)
+                commit()
+            }
+//        }
     }
+
 
     override fun onResume() {
         super.onResume()

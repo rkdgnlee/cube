@@ -117,45 +117,11 @@ object MathHelpers {
             else -> 30f
         }
     }
-//        return when {
-//            isBackHorizontalAngle -> {
-//                if (range.second < 0 || range.third < 0) {
-//                    // 음수 방향만 검사
-//                    if (value >= midpoint) 100f // 양수 값은 무조건 100점
-//                    else calculateNegativeScore(value, midpoint, warningBoundary, criticalBoundary, boundaryMultiplier)
-//                } else {
-//                    // 양수 방향만 검사
-//                    if (value <= midpoint) 100f // 음수 값은 무조건 100점
-//                    else calculatePositiveScore(value, midpoint, warningBoundary, criticalBoundary, boundaryMultiplier)
-//                }
-//            }
-//            else -> {
-//                // 절대값으로 양쪽 검사
-//                when {
-//                    value in warningMin..warningMax -> {
-//                        val diff = abs(value - midpoint)
-//                        66f + ((warningBoundary - diff) / warningBoundary) * 34f
-//                    }
-//                    value in criticalMin .. warningMin || value in warningMax..criticalMax -> {
-//                        val diff = if (value < warningMin) warningMin - value else value - warningMax
-//                        val maxDiff = criticalBoundary - warningBoundary
-//                        33f + ((maxDiff - diff) / maxDiff) * 33f
-//                    }
-//                    value < criticalMin -> {
-//                        val diff = criticalMin - value
-//                        val maxDiff = criticalBoundary * boundaryMultiplier
-//                        maxOf(0f, 33f - (diff / maxDiff) * 33f)
-//                    }
-//                    value > criticalMax -> {
-//                        val diff = value - criticalMax
-//                        val maxDiff = criticalBoundary * boundaryMultiplier
-//                        maxOf(0f, 33f - (diff / maxDiff) * 33f)
-//                    }
-//                    else -> 0f
-//                }
-//            }
-//        }
 
+    fun normalizeAngle90(angle: Float): Float {
+        val absAngle = abs(angle % 180)
+        return if (absAngle > 90) 180 - absAngle else absAngle
+    }
 
     fun calculateNegativeScore(value: Float, midpoint: Float, warningBoundary: Float, criticalBoundary: Float, boundaryMultiplier: Float): Float {
         val warningMin = midpoint - warningBoundary

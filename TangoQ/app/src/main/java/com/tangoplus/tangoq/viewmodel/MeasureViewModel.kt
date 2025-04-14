@@ -74,11 +74,6 @@ class MeasureViewModel : ViewModel() {
     var heelData = listOf<Pair<Float, Float>>()
     var toeData = listOf<Pair<Float, Float>>()
 
-    init {
-//        selectedMeasureDate.value = DateDisplay("", "")
-        selectedMeasure = MeasureVO(-1,-1, "","", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
-    }
-
     // ------# JSONObject로 변경 전 앞에 접두사 안생기게끔 하기 #------
     private val excludedKeys = setOf(
         "sn", "device_sn", "local_sn", "measure_sn", "user_uuid", "user_sn", "user_name",

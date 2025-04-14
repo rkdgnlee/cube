@@ -8,10 +8,12 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RadialGradient
 import android.graphics.Shader
+import android.util.Log
 import android.util.TypedValue
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
 import com.tangoplus.tangoq.mediapipe.MathHelpers.determineDirection
 import androidx.core.graphics.toColorInt
+import com.tangoplus.tangoq.function.MeasurementManager.judgeFrontCamera
 
 object ImageProcessingUtil {
     private val strokeWidths = 2.5f
@@ -25,36 +27,45 @@ object ImageProcessingUtil {
 
         // 후면 카메라, 정면 카메라(키오스크 포함) 대응
         val originPlr = poseLandmarkResult.landmarks
-        val isFrontLens = if (sequence == 3) {
-            determineDirection(originPlr[25].x, originPlr[25].y, originPlr[27].x, originPlr[27].y, originPlr[31].x, originPlr[31].y)
-        } else {
-            !determineDirection(originPlr[25].x, originPlr[25].y, originPlr[27].x, originPlr[27].y, originPlr[31].x, originPlr[31].y)
-        }
-        val matrix = if (sequence in listOf(0, 2, 5, 6)) {
-            Matrix().apply {
-                preScale(1f, 1f)
-            }
-        } else {
-            // 이 곳에서 후면 카메라로 촬영한 3,4 seq를 감지해야 함.
-            if (isFrontLens) {
-                Matrix().apply {
-                    preScale(-1f, 1f)
-                }
-            } else {
+
+        // 좌측면 측정 기준으로 knee-ankle-toe의 각도가 좌/우측 별러져있는 값에 따라 정면, 후면 카메라 판단
+        val isFrontLens = judgeFrontCamera(sequence, originPlr)
+        Log.v("isFrontLens", "$isFrontLens, seq: $sequence")
+        val matrix = if (isFrontLens) {
+            if (sequence in listOf(0, 2, 5, 6)) {
                 Matrix().apply {
                     preScale(1f, 1f)
                 }
-
+            } else {
+                Matrix().apply {
+                    preScale(-1f, 1f)
+                }
+            }
+        } else {
+            // 후면 카메라
+            if (sequence in listOf(0, 2, 5, 6)) {
+                Matrix().apply {
+                    preScale(1f, 1f)
+                }
+            } else {
+                Matrix().apply {
+                    preScale(-1f, 1f)
+                }
             }
         }
-
-        val plr = if (sequence in listOf(0, 2, 5, 6)) {
-            reverseLeftRight(poseLandmarkResult.landmarks, originalBitmap.width.toFloat())
+        val plr = if (isFrontLens) {
+            if (sequence in listOf(0, 2, 5, 6)) {
+                reverseLeftRight(poseLandmarkResult.landmarks, originalBitmap.width.toFloat())
+            } else {
+                poseLandmarkResult.landmarks
+            }
         } else {
-            if (isFrontLens) {
+            // 후면 카메라
+            if (sequence in listOf(0, 2, 5, 6)) {
                 poseLandmarkResult.landmarks
             } else {
                 reverseLeftRight(poseLandmarkResult.landmarks, originalBitmap.width.toFloat())
+
             }
         }
         val flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true)
@@ -316,6 +327,8 @@ object ImageProcessingUtil {
 
         return drawDirectionUIOnBitmap(resultBitmap, sequence)
     }
+
+    // 방향을 그리는 함수 (자르고 넣는 것 아님)
     fun drawDirectionUIOnBitmap(
         bitmap: Bitmap,
         sequence: Int,

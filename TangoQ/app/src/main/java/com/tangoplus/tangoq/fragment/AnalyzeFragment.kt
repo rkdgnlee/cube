@@ -45,6 +45,7 @@ import com.tangoplus.tangoq.api.NetworkProgress.getLatestProgresses
 import com.tangoplus.tangoq.api.NetworkProgress.getMonthProgress
 import com.tangoplus.tangoq.api.NetworkProgress.getWeekProgress
 import com.tangoplus.tangoq.databinding.FragmentAnalyzeBinding
+import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
@@ -55,6 +56,8 @@ import com.tangoplus.tangoq.view.DayViewContainer
 import com.tangoplus.tangoq.view.MonthHeaderViewContainer
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
+import com.tangoplus.tangoq.vo.DateDisplay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -73,6 +76,7 @@ class AnalyzeFragment : Fragment() {
     private val avm : AnalysisViewModel by activityViewModels()
     private val pvm : ProgressViewModel by activityViewModels()
     private val evm : ExerciseViewModel by activityViewModels()
+    private val mvm : MeasureViewModel by activityViewModels()
     private lateinit var  todayInWeek : List<Int>
     private var isResume = false
 
@@ -261,6 +265,15 @@ class AnalyzeFragment : Fragment() {
             if (!evm.latestUVP.isNullOrEmpty()) {
                 val programSn = evm.latestProgram?.programSn ?: -1
                 val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
+                val serverSn = evm.latestUVP?.get(0)?.serverSn
+                val selectMeasure = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == serverSn }
+
+                mvm.selectedMeasure = selectMeasure
+                mvm.selectedMeasureDate.value = DateDisplay(selectMeasure?.regDate.toString(), selectMeasure?.regDate?.substring(0, 11).toString())
+                mvm.selectMeasureDate.value =  DateDisplay(selectMeasure?.regDate.toString(), selectMeasure?.regDate?.substring(0, 11).toString())
+
+                Log.v("mvmSSelectedMeasure", "$serverSn ${selectMeasure?.sn}, ${selectMeasure?.recommendations?.map { it.recommendationSn }}, date: ${mvm.selectedMeasureDate.value}, ${mvm.selectMeasureDate.value}")
+
                 ProgramCustomDialogFragment.newInstance(programSn, recSn)
                     .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
             } else {
@@ -595,7 +608,7 @@ class AnalyzeFragment : Fragment() {
             if (progressResult != null) {
                 binding.clAProgress2.visibility =View.VISIBLE
                 binding.tvANoProgram.visibility = View.GONE
-                evm.latestUVP = progressResult.first // .sortedBy { it.uvpSn }.toMutableList()
+                evm.latestUVP = progressResult.first.sortedBy { it.uvpSn }.toMutableList() // .sortedBy { it.uvpSn }.toMutableList()
                 evm.latestProgram = progressResult.second
                 Log.v("progressResult", "${evm.latestUVP}")
                 if (!evm.latestUVP.isNullOrEmpty()) {
@@ -636,6 +649,14 @@ class AnalyzeFragment : Fragment() {
                     binding.cvAProgress.setOnSingleClickListener {
                         val programSn = evm.latestProgram?.programSn ?: -1
                         val recSn = evm.latestUVP?.get(0)?.recommendationSn ?: -1
+                        val serverSn = evm.latestUVP?.get(0)?.serverSn
+                        // selectedMeasure변경해줘야 이상하게 uvp생성되지 않음
+                        val selectMeasure = Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == serverSn }
+
+                        mvm.selectedMeasure = selectMeasure
+                        mvm.selectedMeasureDate.value = DateDisplay(selectMeasure?.regDate.toString(), selectMeasure?.regDate?.substring(0, 11).toString())
+                        mvm.selectMeasureDate.value =  DateDisplay(selectMeasure?.regDate.toString(), selectMeasure?.regDate?.substring(0, 11).toString())
+
                         ProgramCustomDialogFragment.newInstance(programSn, recSn)
                             .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
                     }

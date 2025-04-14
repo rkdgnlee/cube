@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import com.tangoplus.tangoq.R
+import com.tangoplus.tangoq.function.MeasurementManager.judgeFrontCamera
 import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
@@ -180,7 +181,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         }
 
         else { // video 일 때
-            canvas.scale(1f, 1f, width / 2f, 0f)
+            val isFrontLens = judgeFrontCamera(1, landmarks)
+            Log.v("영상", "$isFrontLens")
+            canvas.scale(if (isFrontLens) 1f else -1f, 1f, width / 2f, 0f)
             val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
 

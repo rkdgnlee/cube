@@ -22,7 +22,7 @@ import com.tangoplus.tangoq.listener.OnCategoryClickListener
 class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                                 private val subCategorys: List<Pair<String, Int?>>, // subCategory는 Pair<관절이름, 운동 갯수>
                                 private val fragment: Fragment,
-                                private val sn : Int,
+                                private val sn : Int?,
                                 private var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var onCategoryClickListener: OnCategoryClickListener? = null
@@ -114,8 +114,10 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
     private fun goExerciseDetail(category : ArrayList<Int>) {
 //        Log.v("ClickIndex", "category: $category")
 //        Log.v("EDsn", "$sn")
+
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
+            sn?.let { ExerciseDetailFragment.newInstance(category, it) }
+                ?.let { replace(R.id.flMain, it) }
             commit()
         }
     }

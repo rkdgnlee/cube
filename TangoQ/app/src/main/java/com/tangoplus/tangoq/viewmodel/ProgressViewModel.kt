@@ -49,7 +49,7 @@ class ProgressViewModel : ViewModel() {
     // 달력
     var currentProgressItem : ProgressUnitVO? = null
     init {
-        currentProgressItem = ProgressUnitVO(0,0,0,0,0,"","",0,0,0,0,0,0,0, "")
+        currentProgressItem = ProgressUnitVO(0, 0,0,0,0,0,"","",0,0,0,0,0,0,0, "")
         selectedDailyCount.value = 0
         selectedDailyTime.value = 0
     }

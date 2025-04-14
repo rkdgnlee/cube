@@ -126,6 +126,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
         }
         // -------# 기본 셋팅 #-------
         initVMValue()
+
+        // 어떤 화면을 이리저리 하다가 현재 server_sn 안맞아서 server_sn은 맘ㅈ는데 recommendation이 옛날꺼라
         binding.clPCD.visibility = View.GONE
         binding.ibtnPCDBack.setOnClickListener { dismiss() }
         // main으로 돌아갈시 업데이트
@@ -540,10 +542,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                                     if (!isMaxSeq && isAllFinish && isMinSeq > 0  && rightNow != recentUpdateDate) {
                                         pvm.currentSequence = adjustedSeq + 1
                                         pvm.selectedSequence.value= adjustedSeq + 1
-                                        // 시청 중간
-//                                    } else if (isMinSeq > 0) {
-//                                        pvm.currentSequence = adjustedSeq
-//                                        pvm.selectedSequence.value= adjustedSeq
+
                                     } else {
                                         pvm.currentSequence = adjustedSeq
                                         pvm.selectedSequence.value= adjustedSeq
@@ -570,6 +569,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 put("exercise_program_sn", programSn)
                 put("server_sn", mvm.selectedMeasure?.sn)
             }
+
             Log.w("json>Progress", "$jo")
 
             getProgress(getString(R.string.API_progress), jo, requireContext()) { (historySn, week, seq), result ->
@@ -599,21 +599,25 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             result[adjustedWeek]
                         }
                         val recentUpdatedAt = editedProgresses.sortedByDescending { it.updatedAt }[0].updatedAt
-
                         val recentUpdateDate = if (!recentUpdatedAt.isNullOrBlank() && recentUpdatedAt != "null") {
                             LocalDate.parse(recentUpdatedAt, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                         } else {
                             LocalDate.now().plusDays(1)
                         }
 
+                        // 마감 주차가 지났는지
+                        val currentWeekEndDate = editedProgresses.sortedByDescending { it.updatedAt }[0].weekEndAt
+                        val weekDDay = LocalDate.parse(currentWeekEndDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        val isCurrentWeekEnd = LocalDate.now() > weekDDay
+                        Log.v("isCurrenWeek", "$isCurrentWeekEnd, ${LocalDate.now()} > $weekDDay")
                         if (isAllFinish && rightNow == recentUpdateDate) {
                             pvm.dailySeqFinished = true
                             if (dailyFinishDialog?.isVisible == false || dailyFinishDialog?.isAdded == false) {
                                 dailyFinishDialog?.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
                             }
                         }
-
-                        if (isMaxSeq && isSeqFinish) {
+                        // TODO 이번주가 끝났는지? 를 판단해야함.
+                        if (isMaxSeq && isSeqFinish && isCurrentWeekEnd) {
                             // 모든 회차가 끝남 ( 주차가 넘어가야하는 상황 )
                             pvm.currentWeek = adjustedWeek + 1
                             pvm.selectWeek.value = adjustedWeek + 1

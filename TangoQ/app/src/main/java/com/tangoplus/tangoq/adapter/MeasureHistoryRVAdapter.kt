@@ -69,7 +69,6 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                             ssm.downloadFiles(uriTuples)
                             val editedMeasure = ssm.insertUrlToMeasureVO(uriTuples, currentMeasure)
 
-
                             // 파일 다운로드 후 url과 data (JSONARRAY) 넣기
                             val singletonMeasure = Singleton_t_measure.getInstance(fragment.requireContext()).measures
                             val singletonIndex = singletonMeasure?.indexOfLast { it.regDate == currentMeasure.regDate }
@@ -79,6 +78,7 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                                     singletonMeasure.set(singletonIndex, editedMeasure)
                                     viewModel.selectedMeasure = editedMeasure
                                     viewModel.selectedMeasureDate.value = DateDisplay(editedMeasure.regDate, editedMeasure.regDate.substring(0, 11))
+                                    viewModel.selectMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
                                     // 뱃지 제거
                                     hideBadgeFunction?.invoke()
                                     // 다운로드 후 이동

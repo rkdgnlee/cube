@@ -111,13 +111,13 @@ class MainFragment : Fragment() {
 
                 // ------# 초기 measure 설정 #------
                 if (!measures.isNullOrEmpty()) {
-                    if (mvm.selectedMeasureDate.value == null) {
-                        mvm.selectedMeasureDate.value =
-                            measures?.let { avm.createDateDisplayList(it).get(0) }
-                    }
-                    if (mvm.selectMeasureDate.value == null) {
-                        mvm.selectMeasureDate.value = measures?.let { avm.createDateDisplayList(it).get(0) }
-                    }
+//                    if (mvm.selectedMeasureDate.value == null) {
+//                        mvm.selectedMeasureDate.value =
+//                            measures?.let { avm.createDateDisplayList(it).get(0) }
+//                    }
+//                    if (mvm.selectMeasureDate.value == null) {
+//                        mvm.selectMeasureDate.value = measures?.let { avm.createDateDisplayList(it).get(0) }
+//                    }
                     val setNavToMD = listOf(binding.clM1, binding.tvMOverall)
                     setNavToMD.forEach {
                         it.setOnSingleClickListener {

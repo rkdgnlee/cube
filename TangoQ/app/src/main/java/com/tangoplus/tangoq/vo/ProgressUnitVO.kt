@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.vo
 
 data class ProgressUnitVO(
+    val serverSn: Int,
     val uvpSn: Int,
     val userSn : Int,
     val exerciseId : Int,

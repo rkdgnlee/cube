@@ -64,6 +64,7 @@ object NetworkProgress {
                         for (i in 0 until ja.length()) {
                             val jo = ja.optJSONObject(i)
                             val progressUnitVO = ProgressUnitVO(
+                                serverSn = jo.optInt("server_sn"),
                                 uvpSn = jo.optInt("uvp_sn"),
                                 userSn = jo.optInt("user_sn"),
                                 exerciseId = jo.optInt("content_sn"),
@@ -130,6 +131,7 @@ object NetworkProgress {
                     val jo = JSONObject(responseBody.toString()).optJSONObject("update_video_progress")
                     if (jo != null) {
                         val progressUnitVO = ProgressUnitVO(
+                            serverSn = jo.optInt("server_sn"),
                             uvpSn = jo.optInt("uvp_sn"),
                             userSn = jo.optInt("user_sn"),
                             exerciseId = jo.optInt("content_sn"),
@@ -197,6 +199,7 @@ object NetworkProgress {
                             val jo = data.optJSONObject(i)
                             if (jo != null) {
                                 val progressUnitVO = ProgressUnitVO(
+                                    serverSn = jo.optInt("server_sn"),
                                     uvpSn = jo.optInt("uvp_sn"),
                                     userSn = jo.optInt("user_sn"),
                                     exerciseId = jo.optInt("content_sn"),
@@ -271,6 +274,7 @@ object NetworkProgress {
                         for (i in 0 until progressJa.length()) {
                             val jo = progressJa.optJSONObject(i)
                             val progressUnitVO = ProgressUnitVO(
+                                serverSn = jo.optInt("server_sn"),
                                 uvpSn = jo.optInt("uvp_sn"),
                                 userSn = jo.optInt("user_sn"),
                                 exerciseId = jo.optInt("content_sn"),

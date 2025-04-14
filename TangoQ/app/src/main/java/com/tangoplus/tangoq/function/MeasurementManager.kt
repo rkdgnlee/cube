@@ -30,6 +30,8 @@ import kotlin.math.abs
 import androidx.core.graphics.scale
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.drawDirectionUIOnBitmap
 import com.tangoplus.tangoq.mediapipe.ImageProcessingUtil.rePaintDirection
+import com.tangoplus.tangoq.mediapipe.MathHelpers.determineDirection
+import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult
 
 object MeasurementManager {
     val partIndexes = mapOf(
@@ -250,16 +252,16 @@ object MeasurementManager {
             0 to mapOf("front_horizontal_angle_elbow" to Triple(-180f, 1.9f, 3.5f),
                 "front_horizontal_distance_sub_elbow" to Triple(0f, 1.31f, 2.72f),
                 "front_vertical_angle_shoulder_elbow_left" to Triple(79f, 5.2f, 9.8f)),
-            2 to mapOf("front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(4f,6f, 9f)),
+            2 to mapOf("front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(4f,8f, 12f)),
             3 to mapOf("side_left_vertical_angle_shoulder_elbow" to Triple(90f, 3.3f, 8.6f),
-                "side_left_vertical_angle_elbow_wrist" to Triple(95f,5.67f, 11.27f),
+                "side_left_vertical_angle_elbow_wrist" to Triple(85f,5.67f, 11.27f),
                 "side_left_vertical_angle_shoulder_elbow_wrist" to Triple(170f, 5f, 9f))
         ),
         mapOf(
             0 to mapOf("front_horizontal_angle_elbow" to Triple(180f, 1.9f, 3.5f),
                 "front_horizontal_distance_sub_elbow" to Triple(0f, 1.31f, 2.72f),
-                "front_vertical_angle_shoulder_elbow_right" to Triple(103f, 5.2f, 9.8f)),
-            2 to mapOf("front_elbow_align_angle_right_shoulder_elbow_wrist" to Triple(4f,6f, 9f)),
+                "front_vertical_angle_shoulder_elbow_right" to Triple(79f, 5.2f, 9.8f)),
+            2 to mapOf("front_elbow_align_angle_right_shoulder_elbow_wrist" to Triple(4f,8f, 12f)),
             4 to mapOf("side_right_vertical_angle_shoulder_elbow" to Triple(90f,3.3f, 8.6f),
                 "side_right_vertical_angle_elbow_wrist" to Triple(85f,5.67f, 11.27f),
                 "side_right_vertical_angle_shoulder_elbow_wrist" to Triple(170f, 5f, 9f))
@@ -268,7 +270,7 @@ object MeasurementManager {
         mapOf(
             0 to mapOf("front_vertical_angle_elbow_wrist_left" to Triple(85f, 6f, 8f),
                 "front_horizontal_angle_wrist" to Triple(-180f, 2.8f, 4.2f),
-                "front_horizontal_distance_wrist_left" to Triple(22f, 3f, 5f)),
+                "front_horizontal_distance_wrist_left" to Triple(22f, 8f, 12f)),
             2 to mapOf("front_elbow_align_distance_left_wrist_shoulder" to Triple(3f, 3.1f, 4.9f),
                 "front_elbow_align_distance_center_wrist_left" to Triple(22f, 8f, 12f)),
             3 to mapOf("side_left_horizontal_distance_wrist" to Triple(13f, 5.5f, 6.7f))
@@ -276,7 +278,7 @@ object MeasurementManager {
         mapOf(
             0 to mapOf("front_vertical_angle_elbow_wrist_right" to Triple(85f, 6f, 8f),
                 "front_horizontal_angle_wrist" to Triple(180f, 2.8f, 4.2f),
-                "front_horizontal_distance_wrist_right" to Triple(22f, 3f, 5f)),
+                "front_horizontal_distance_wrist_right" to Triple(22f, 8f, 12f)),
             2 to mapOf("front_elbow_align_distance_right_wrist_shoulder" to Triple(3f, 3.1f, 4.9f),
                 "front_elbow_align_distance_center_wrist_right" to Triple(22f, 8f, 12f)),
             4 to mapOf("side_right_horizontal_distance_wrist" to Triple(13f, 5.5f, 6.7f))
@@ -593,7 +595,9 @@ object MeasurementManager {
                     // 값이 180이 기준일 때만 0으로 정규화
                     val normalizedRaw = when (columnName.contains("angle") && currentKey in listOf(0)) {
                         true -> {
-                            if (rawData < 0) -(normalizeAngle(rawData) % 180) else normalizeAngle(rawData) % 180
+//                            if (rawData < 0) -(normalizeAngle(rawData) % 180) else normalizeAngle(rawData) % 180
+//                            if (rawData < 0) (rawData + 360) % 360 else rawData % 360
+                            (normalizeAngle(rawData) + 360) % 360
                         }
                         false -> {
                             rawData
@@ -603,7 +607,7 @@ object MeasurementManager {
                         true -> {
                             when {
                                 (boundPair.first < -90f) -> { // -180일 때
-                                    -(normalizeAngle(boundPair.first) % 180)
+                                    -(normalizeAngle(boundPair.first) % 360)
                                 }
                                 else -> {
                                     boundPair.first
@@ -616,10 +620,10 @@ object MeasurementManager {
                     }
 
                     val state  = when {
-                        abs(boundCenter - abs(rawData)) <= 0.1f -> 1 // 오차가 거의 없으면 걍 1
+                        abs(abs(boundCenter) - abs(rawData)) <= 1f -> 1 // 오차가 거의 없으면 걍 1
                         normalizedRaw < (boundCenter - boundPair.third) || normalizedRaw > (boundCenter + boundPair.third) -> 3
                         normalizedRaw < (boundCenter - boundPair.second) ||  normalizedRaw > (boundCenter + boundPair.second) -> 2
-                        abs(rawData) > (abs(boundPair.first) - 0.75) &&  normalizedRaw < (abs(boundPair.first) + 0.75) -> 1 // 정상범위에서 1의 오차내에 있으면 그냥 1
+//                        abs(rawData) > (abs(boundPair.first) - 1) &&  normalizedRaw < (abs(boundPair.first) + 1) -> 1 // 정상범위에서 1의 오차내에 있으면 그냥 1
                         else -> 1
                     }
 //                    Log.v("값들", "${rawDataName}, rawData: $rawData, 범위: ${(abs(boundPair.first) - 0.5)} ${(abs(boundPair.first) + 0.5)}")
@@ -641,6 +645,31 @@ object MeasurementManager {
         return result
     }
 
+    // poselandmark에서 3번 seq의 값을 가져와서 정면카메라인지, 후면카메라인지 판단
+    fun judgeFrontCamera(seq: Int, plr: List<PoseLandmarkResult.PoseLandmark>) :Boolean {
+        // 좌측면 측정 knee-ankle-toe의 각도가 좌/우측 별러져있는 값에 따라 정면, 후면 카메라 판단
+        // 우측면 측정 반대
+        // 그 이외 nose-leftShoulder-rightShoulder 의 각도 보기 정면, 후면에서
+        val isFrontLens = when (seq) {
+            3 -> determineDirection(plr[25].x, plr[25].y, plr[27].x, plr[27].y, plr[31].x, plr[31].y) // 좌측
+            4 -> !determineDirection(plr[25].x, plr[25].y, plr[27].x, plr[27].y, plr[31].x, plr[31].y) // 우측
+            0, 2 -> determineDirection(plr[0].x, plr[0].y, plr[11].x, plr[11].y, plr[13].x, plr[13].y) // 정면
+//            1 -> determineDirection(plr[0].x, plr[0].y, plr[11].x, plr[11].y, plr[13].x, plr[13].y) // 정면
+            else -> !determineDirection(plr[0].x, plr[0].y, plr[11].x, plr[11].y, plr[13].x, plr[13].y) // 후면
+        }
+        return isFrontLens
+    }
+
+    // dynamic에서
+    fun judgeFrontCameraByDynamic(jaFrame1: List<List<Pair<Float, Float>>>) : Boolean {
+        Log.v("값", "${jaFrame1[0][0].first}, ${jaFrame1[1][0].first}")
+        // 첫번쨰 index는 부위임 0 : 왼쪽 어깨 1: 오른쪽 어깨  / 2번째 인덱스가 frame
+        return if (jaFrame1[0][0].first > jaFrame1[1][0].first) {
+            true
+        } else {
+            false
+        }
+    }
 
     fun getDangerParts(measureInfo: MeasureInfo) : MutableList<Pair<String, Float>> {
         val dangerParts = mutableListOf<Pair<String, Float>>()
@@ -795,7 +824,6 @@ object MeasurementManager {
                         override fun onReady() {
                             if (!isSet) {
 
-
                                 val imageViewHeight = ssiv.height
                                 // iv에 들어간 image의 크기 같음 screenWidth
 
@@ -822,12 +850,20 @@ object MeasurementManager {
                                         (combinedBitmap.width * scaleFactor).toInt(),
                                         (combinedBitmap.height * scaleFactor).toInt()
                                     )
-                                    val croppedBitmap = ImageSource.bitmap(
-                                        cropToPortraitRatio(scaledBitmap)
-                                    )
-                                    drawDirectionUIOnBitmap(cropToPortraitRatio(scaledBitmap), seq)
-                                    ssiv.setImage(croppedBitmap)
-//                                    ssiv.minScale = 2f
+                                    // 가로 비율일 경우
+                                    if (targetRatio < 1) {
+                                        val rePaintedBitmap = rePaintDirection(cropToPortraitRatio(scaledBitmap), seq)
+                                        ssiv.setImage(ImageSource.bitmap(
+                                            rePaintedBitmap
+                                        ))
+                                    } else {
+                                        val croppedBitmap = ImageSource.bitmap(
+                                            cropToPortraitRatio(scaledBitmap)
+                                        )
+                                        drawDirectionUIOnBitmap(cropToPortraitRatio(scaledBitmap), seq)
+                                        ssiv.setImage(croppedBitmap)
+                                    }
+
                                     // 이미지 크기 맞추기
                                     // ------# trend 비교 일 때 #------
                                 } else if (case in listOf("trend", "mainPart") ) {
