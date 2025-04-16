@@ -37,7 +37,7 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.WifiManager
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.vo.DateDisplay
 import com.tangoplus.tangoq.vo.MeasureVO
@@ -616,8 +616,6 @@ class MeasureFragment : Fragment() {
                 val bodyText =  "-"
                 tvMScores[i].text =bodyText
             }
-
-//            tvMDates[i].textSize = if (isTablet(requireContext())) 18f else 15f
         }
     }
 }

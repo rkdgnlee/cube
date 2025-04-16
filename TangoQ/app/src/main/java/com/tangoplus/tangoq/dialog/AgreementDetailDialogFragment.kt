@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.dialog
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
@@ -13,7 +12,7 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentAgreementDetailDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

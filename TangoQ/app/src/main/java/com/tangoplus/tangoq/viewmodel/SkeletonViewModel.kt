@@ -1,7 +1,7 @@
 package com.tangoplus.tangoq.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkerHelper
+import com.tangoplus.tangoq.vision.PoseLandmarkerHelper
 
 class SkeletonViewModel : ViewModel() {
 

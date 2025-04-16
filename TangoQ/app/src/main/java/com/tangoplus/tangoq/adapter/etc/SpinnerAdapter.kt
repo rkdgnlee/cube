@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.ItemSpinnerBinding
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 
 
 @Suppress("UNREACHABLE_CODE")

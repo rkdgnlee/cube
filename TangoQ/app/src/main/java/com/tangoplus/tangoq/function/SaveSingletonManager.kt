@@ -97,6 +97,15 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             val userWantToResend = showResendDialog(context)
                             if (userWantToResend) {
 
+                                // 예를 눌렀을 때 전송을 위한 로딩 창
+                                val dialog = withContext(Dispatchers.Main) {
+                                    val currentActivity = activity
+                                    if (!currentActivity.isFinishing && !currentActivity.isDestroyed && !activity.supportFragmentManager.isStateSaved) {
+                                        LoadingDialogFragment.newInstance("회원가입전송").apply {
+                                            show(currentActivity.supportFragmentManager, "LoadingDialogFragment")
+                                        }
+                                    } else null
+                                }
                                 // 수정할 Room의 static, dynamic sn 들
                                 val staticSns = notUploadedStatics.map { it.mobile_sn }.toMutableList()
                                 val dynamicSn = notUploadedDynamic.mobile_sn
@@ -148,6 +157,13 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                                 if (allStaticsUploaded && allDynamicUploaded) {
                                                     Log.d("Upload", "모든 파일이 성공적으로 업로드되었습니다.")
                                                     CoroutineScope(Dispatchers.Main).launch {
+                                                        withContext(Dispatchers.Main) {
+                                                            if (dialog != null) {
+                                                                if (dialog.isAdded && dialog.isVisible) {
+                                                                    dialog.dismissAllowingStateLoss()
+                                                                }
+                                                            }
+                                                        }
                                                         Toast.makeText(context, "전송 실패한 데이터가 모두 업로드 됐습니다.", Toast.LENGTH_LONG).show()
                                                         deleteDirectory(File(context.filesDir, "failed_upload"))
                                                         continuation.resume(true)
@@ -159,7 +175,11 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                                 // IOException 등으로 exception catch 상황
                                                 Log.e("전송 실패", "before transmitFailed changed: $error")
                                                 CoroutineScope(Dispatchers.Main).launch {
-
+                                                    if (dialog != null) {
+                                                        if (dialog.isAdded && dialog.isVisible) {
+                                                            dialog.dismissAllowingStateLoss()
+                                                        }
+                                                    }
                                                     MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                                                         setTitle("알림")
                                                         setMessage("전송에 실패했습니다. 네트워크 혹은 서버 연결 상태를 확인하세요")
@@ -309,7 +329,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                 )
                                 measures.add(measureVO)
                             }
-
                         }
                         measures.sortByDescending { it.regDate }
                         singletonMeasure.measures = measures.toMutableList()

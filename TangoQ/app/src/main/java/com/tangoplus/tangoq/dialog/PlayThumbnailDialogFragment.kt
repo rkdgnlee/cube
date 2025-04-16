@@ -44,6 +44,7 @@ import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import androidx.core.net.toUri
+import androidx.core.graphics.drawable.toDrawable
 
 class PlayThumbnailDialogFragment : DialogFragment() {
     lateinit var binding : FragmentPlayThumbnailDialogBinding
@@ -55,13 +56,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     private var playbackPosition = 0L
     private lateinit var prefs : PreferencesManager
     private lateinit var wm : WifiManager
-    private var exoPlay: ImageButton? = null
-    private var exoPause: ImageButton? = null
-    private var llSpeed: LinearLayout? = null
-    private var btnSpeed: ImageButton? = null
-    private var exo05: ImageButton? = null
-    private var exo075: ImageButton? = null
-    private var exo10: ImageButton? = null
     interface DialogCloseListener {
         fun onDialogClose()
     }
@@ -106,36 +100,6 @@ class PlayThumbnailDialogFragment : DialogFragment() {
 //            isLike = true
 //            binding.ibtnPTDLike.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_like_enabled))
 //        }
-
-        // playerview 넣기
-        exoPlay = view.findViewById(R.id.btnPlay)
-        exoPause = view.findViewById(R.id.btnPause)
-        llSpeed = view.findViewById(R.id.llSpeed)
-        btnSpeed = view.findViewById(R.id.btnSpeed)
-
-        exo05 = view.findViewById(R.id.btn05)
-        exo075 = view.findViewById(R.id.btn075)
-        exo10 = view.findViewById(R.id.btn10)
-
-        exoPlay?.visibility = View.GONE
-
-        exoPause?.setOnSingleClickListener {
-            if (simpleExoPlayer?.isPlaying == true) {
-                simpleExoPlayer?.pause()
-                exoPause?.visibility = View.GONE
-                exoPlay?.visibility = View.VISIBLE
-            }
-        }
-
-        exoPlay?.setOnSingleClickListener {
-            if (simpleExoPlayer?.isPlaying == false) {
-                simpleExoPlayer?.play()
-                exoPause?.visibility = View.VISIBLE
-                exoPlay?.visibility = View.GONE
-            }
-        }
-
-
         // -----! 각 설명들 textView에 넣기 !-----
         videoUrl = pvm.exerciseData?.videoFilepath.toString()
 
@@ -236,7 +200,7 @@ class PlayThumbnailDialogFragment : DialogFragment() {
     override fun onResume() {
         super.onResume()
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         simpleExoPlayer?.playWhenReady = true
     }

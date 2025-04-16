@@ -64,7 +64,6 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
                 Log.e("PHIGlideError", "Exception: ${e.message}")
             }
 
-
             holder.clPHI.setOnSingleClickListener{
                 CoroutineScope(Dispatchers.IO).launch {
                     // 운동 1개값 가져오기

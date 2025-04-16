@@ -75,6 +75,8 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.sflED.startShimmer()
+        Log.v("쉬머스타트", "쉬머스타트")
 
         // ------# 선택 카테고리 & 타입 가져오기 시작 #------
         evm.categoryId = arguments?.getIntegerArrayList(ARG_CATEGORY_ID)
@@ -89,7 +91,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
 
-        binding.sflED.startShimmer()
         binding.tvEDMainCategoryName.text = when (evm.categoryId?.get(0)) {
             1 -> "기본 밸런스 및 스트레칭"
             3 -> "의자 활용 및 기초 강화 운동"
@@ -174,10 +175,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 Log.e("EDetailNull", "${e.message}")
             } catch (e: java.lang.Exception) {
                 Log.e("EDetailException", "${e.message}")
-            } finally {
-                binding.sflED.stopShimmer()
-                binding.sflED.visibility= View.GONE
-            }// ------! rv all rv 끝 !------
+            } // ------! rv all rv 끝 !------
         }
     }
 
@@ -188,6 +186,8 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         binding.rvEDAll.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.rvEDAll.layoutManager = linearLayoutManager
+        binding.sflED.stopShimmer()
+        binding.sflED.visibility= View.GONE
 
         if (exercises?.isEmpty() == true) {
             binding.tvGuideNull.visibility = View.VISIBLE

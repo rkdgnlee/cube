@@ -253,31 +253,10 @@ class MainActivity : AppCompatActivity() {
             else -> MainFragment()
         }
         selectedTabId = itemId
-//        val savedFragmentTag = appViewModel.getCF()
-//        if (savedFragmentTag != null) {
-//            supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flMain, when (savedFragmentTag) {
-//                    "MainAnalysisFragment" -> MainAnalysisFragment.newInstance(avm.currentPart.value.toString())
-//                    "MeasureHistoryFragment" -> MeasureHistoryFragment()
-//                    "MeasureDetailFragment" -> MeasureDetailFragment()
-//                    "ExerciseDetailFragment" -> {
-//                        if (evm.categoryId != null && evm.sn != null) {
-//                            ExerciseDetailFragment.newInstance(evm.categoryId!!, evm.sn!!)
-//                        } else {
-//                            ExerciseFragment()
-//                        }
-//                    }
-//                    else -> fragment
-//                })
-//                commit()
-//            }
-//        } else {
-            // 프래그먼트 변경
-            supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flMain, fragment)
-                commit()
-            }
-//        }
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flMain, fragment)
+            commit()
+        }
     }
 
 

@@ -160,7 +160,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                 }
                                 "로그아웃" -> {
                                     MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                                        setTitle("로그아웃")
+                                        setTitle("알림")
                                         setMessage("로그아웃 하시겠습니까?")
                                         setPositiveButton("예") { _, _ ->
                                             logout(fragment.requireActivity(), 0)

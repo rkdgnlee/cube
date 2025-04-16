@@ -1,7 +1,8 @@
-package com.tangoplus.tangoq.mediapipe
+package com.tangoplus.tangoq.vision
 
 import android.content.Context
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import java.lang.Math.toDegrees
 import kotlin.math.abs
@@ -79,7 +80,7 @@ object MathHelpers {
     }
 
     // 0~100점의 백분위로 점수 계산하기 (하나의 raw Data를)
-    fun calculateBoundedScore(value: Float, range: Triple<Float, Float, Float>): Float {
+    fun calculateBoundedScore(value: Float, range: Triple<Float, Float, Float>, columnName: String): Float {
         val midpoint = range.first
         val warningBoundary = abs(range.second)
         val criticalBoundary = abs(range.third)
@@ -89,8 +90,7 @@ object MathHelpers {
         val warningMax = midpoint + warningBoundary
         val criticalMin = midpoint - criticalBoundary
         val criticalMax = midpoint + criticalBoundary
-
-        return when {
+        val result = when {
             value in warningMin..warningMax -> {
                 val diff = abs(value - midpoint)
                 // 73 ~ 100점
@@ -106,15 +106,20 @@ object MathHelpers {
                 val diff = criticalMin - value
                 val maxDiff = criticalBoundary * boundaryMultiplier
                 // 30 ~ 51점
-                maxOf(30f, 51f - (diff / maxDiff) * 21f)
+                maxOf(20f, 51f - (diff / maxDiff) * 21f)
             }
             value > criticalMax -> {
                 val diff = value - criticalMax
                 val maxDiff = criticalBoundary * boundaryMultiplier
                 // 30 ~ 51점
-                maxOf(30f, 51f - (diff / maxDiff) * 21f)
+                maxOf(20f, 51f - (diff / maxDiff) * 21f)
             }
-            else -> 30f
+            else -> 20f
+        }
+        return if ("horizontal_distance" in columnName) {
+            result * 0.90f // 비중을 85%로 줄임
+        } else {
+            result
         }
     }
 
@@ -122,47 +127,6 @@ object MathHelpers {
         val absAngle = abs(angle % 180)
         return if (absAngle > 90) 180 - absAngle else absAngle
     }
-
-    fun calculateNegativeScore(value: Float, midpoint: Float, warningBoundary: Float, criticalBoundary: Float, boundaryMultiplier: Float): Float {
-        val warningMin = midpoint - warningBoundary
-        val criticalMin = midpoint - criticalBoundary
-
-        return when {
-            value in criticalMin..warningMin -> {
-                val diff = warningMin - value
-                val maxDiff = criticalBoundary - warningBoundary
-                33f + ((maxDiff - diff) / maxDiff) * 33f
-            }
-            value < criticalMin -> {
-                val diff = criticalMin - value
-                val maxDiff = criticalBoundary * boundaryMultiplier
-                maxOf(0f, 33f - (diff / maxDiff) * 33f)
-            }
-            else -> 66f // warningMin 이상이면 66점
-        }
-    }
-
-    fun calculatePositiveScore(value: Float, midpoint: Float, warningBoundary: Float, criticalBoundary: Float, boundaryMultiplier: Float): Float {
-        val warningMax = midpoint + warningBoundary
-        val criticalMax = midpoint + criticalBoundary
-
-        return when {
-            value in warningMax..criticalMax -> {
-                val diff = value - warningMax
-                val maxDiff = criticalBoundary - warningBoundary
-                33f + ((maxDiff - diff) / maxDiff) * 33f
-            }
-            value > criticalMax -> {
-                val diff = value - criticalMax
-                val maxDiff = criticalBoundary * boundaryMultiplier
-                maxOf(0f, 33f - (diff / maxDiff) * 33f)
-            }
-            else -> 66f // warningMax 이하이면 66점
-        }
-    }
-    // ------# 점과 점사이의 거리 #------
-
-
     private fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
         return abs(point2.first - point1.first)
     }
@@ -200,20 +164,5 @@ object MathHelpers {
 
         val widthDp = metrics.widthPixels / metrics.density
         return widthDp >= 600
-    }
-
-    fun phoneNumber82(msg: String) : String {
-        val firstNumber: String = msg.substring(0,3)
-
-        var phoneEdit = msg.substring(3)
-        when (firstNumber) {
-            "010" -> phoneEdit = "+82 10$phoneEdit"
-            "011" -> phoneEdit = "+82 11$phoneEdit"
-            "016" -> phoneEdit = "+82 16$phoneEdit"
-            "017" -> phoneEdit = "+82 17$phoneEdit"
-            "018" -> phoneEdit = "+82 18$phoneEdit"
-            "019" -> phoneEdit = "+82 19$phoneEdit"
-        }
-        return phoneEdit
     }
 }

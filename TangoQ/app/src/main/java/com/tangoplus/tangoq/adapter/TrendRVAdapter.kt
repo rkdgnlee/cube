@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
 import com.tangoplus.tangoq.function.MeasurementManager.transSeqToColumnName
-import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
+import com.tangoplus.tangoq.vision.MathHelpers.calculateBoundedScore
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import kotlin.math.abs
 
@@ -215,7 +215,7 @@ class TrendRVAdapter(
     }
 
     private fun calculatePercent(processedData: MutableList<AnalysisUnitVO>) : Float {
-        val calculatePercent = processedData.map { calculateBoundedScore(abs(it.rawData), it.rawDataBound)}.map { if (it <= 50f) 50f else it }
+        val calculatePercent = processedData.map { calculateBoundedScore(abs(it.rawData), it.rawDataBound, it.columnName)}.map { if (it <= 30f) 30f else it }
         return calculatePercent.average().toFloat()
     }
 

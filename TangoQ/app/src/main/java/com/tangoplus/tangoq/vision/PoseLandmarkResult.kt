@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.mediapipe
+package com.tangoplus.tangoq.vision
 
 
 data class PoseLandmarkResult(val landmarks : List<PoseLandmark>) {

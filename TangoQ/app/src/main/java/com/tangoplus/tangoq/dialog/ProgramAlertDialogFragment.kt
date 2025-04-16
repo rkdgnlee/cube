@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.dialog
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -16,7 +15,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 
 
@@ -63,6 +62,17 @@ class ProgramAlertDialogFragment : DialogFragment() {
         case = arguments?.getInt(ALERT_KEY_CASE) ?: 0
 
         when (case) {
+            3 -> {
+                binding.btnPAD2.text = "확인"
+                binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_finish_sequence))
+                alertMessage = "이번 주 필요한 운동을 모두 완료했습니다. 휴식과 다른 부위 운동을 진행해주세요"
+                binding.tvPAD.text = alertMessage
+                binding.btnPAD1.visibility = View.GONE
+                binding.btnPAD2.visibility = View.VISIBLE
+                binding.btnPAD2.setOnClickListener {
+                    dismiss()
+                }
+            }
             2 -> {
                 binding.btnPAD1.visibility = View.VISIBLE
                 binding.btnPAD2.visibility = View.VISIBLE

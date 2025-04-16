@@ -244,8 +244,8 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cv_exo_left"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="20dp"
                         android:visibility="visible"
@@ -265,13 +265,13 @@
                             android:gravity="center"
                             android:text="L"
                             android:textColor="#000000"
-                            android:textSize="20dp" />
+                            android:textSize="18dp" />
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cv_exo_right"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:layout_gravity="end"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="20dp"
@@ -292,12 +292,12 @@
                             android:gravity="center"
                             android:text="R"
                             android:textColor="#000000"
-                            android:textSize="20dp" />
+                            android:textSize="18dp" />
                     </androidx.cardview.widget.CardView>
 
                 </FrameLayout>
 
-                <com.tangoplus.tangoq.mediapipe.OverlayView
+                <com.tangoplus.tangoq.vision.OverlayView
                     android:id="@+id/ovMA"
                     android:layout_width="0dp"
                     android:layout_height="0dp"

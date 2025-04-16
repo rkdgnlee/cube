@@ -13,13 +13,6 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 class BarChartRender(chart: BarDataProvider?, animator: ChartAnimator?, viewPortHandler: ViewPortHandler?) : BarChartRenderer(chart, animator, viewPortHandler) {
     private var mRightRadius = 16f
     private var mLeftRadius = 16f
-//    fun setRightRadius(mRightRadius: Float) {
-//        this.mRightRadius = mRightRadius
-//    }
-//
-//    fun setLeftRadius(mLeftRadius: Float) {
-//        this.mLeftRadius = mLeftRadius
-//    }
 
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
         val trans = mChart.getTransformer(dataSet.axisDependency)

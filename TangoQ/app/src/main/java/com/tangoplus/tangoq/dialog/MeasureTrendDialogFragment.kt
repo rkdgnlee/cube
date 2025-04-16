@@ -2,7 +2,6 @@ package com.tangoplus.tangoq.dialog
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -50,10 +49,10 @@ import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.SaveSingletonManager
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
-import com.tangoplus.tangoq.mediapipe.OverlayView
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.OverlayView
+import com.tangoplus.tangoq.vision.PoseLandmarkResult
+import com.tangoplus.tangoq.vision.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.DateDisplay

@@ -32,17 +32,7 @@ abstract class MeasureDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE t_measure_dynamic ADD COLUMN mobile_info_sn INTEGER")
             }
         }
-//        val MIGRATION_13_14 = object : Migration(13, 14) {
-//            override fun migrate(db: SupportSQLiteDatabase) {
-//                db.execSQL("ALTER TABLE t_measure_info ADD COLUMN kakao_send_count_temp INTEGER DEFAULT 0")
-//                db.execSQL("UPDATE t_measure_info SET kakao_send_count_temp = CASE WHEN kakao_send_count IS NULL OR kakao_send_count = '' THEN 0 ELSE CAST(kakao_send_count AS INTEGER) END")
-//                db.execSQL("ALTER TABLE t_measure_info DROP COLUMN kakao_send_count")
-//                db.execSQL("ALTER TABLE t_measure_info RENAME COLUMN kakao_send_count_temp TO kakao_send_count")
-//
-//                // kakao_send_date의 기본값 변경
-//                db.execSQL("UPDATE t_measure_info SET kakao_send_date = '0000-00-00 00:00:00' WHERE kakao_send_date IS NULL OR kakao_send_date = ''")
-//            }
-//        }
+
         @Volatile
         private var INSTANCE: MeasureDatabase? = null
         fun getDatabase(context: Context): MeasureDatabase {

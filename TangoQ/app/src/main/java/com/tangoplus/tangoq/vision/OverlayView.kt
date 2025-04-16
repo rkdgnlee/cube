@@ -1,16 +1,14 @@
-package com.tangoplus.tangoq.mediapipe
+package com.tangoplus.tangoq.vision
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.function.MeasurementManager.judgeFrontCamera
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
+import androidx.core.graphics.toColorInt
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
@@ -42,40 +40,40 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private fun initPaints() {
         // -----! 연결선 색 !-----
         linePaint.apply {
-            color = Color.parseColor("#2EE88B")
+            color = "#2EE88B".toColorInt()
             strokeWidth = VIDEO_STROKE_WIDTH
             style = Paint.Style.STROKE
         }
         axisPaint.apply {
-            color = Color.parseColor("#FF5449")
+            color = "#FF5449".toColorInt()
             strokeWidth = 3f
             style = Paint.Style.STROKE
         }
         axisSubPaint.apply {
-            color = Color.parseColor("#FF981D")
+            color = "#FF981D".toColorInt()
             strokeWidth = 3f
             style = Paint.Style.STROKE
         }
         // ------! 꼭짓점 색 !------
         borderPaint = Paint().apply {
-            color = Color.parseColor("#2EE88B") // 테두리 색
+            color = "#2EE88B".toColorInt() // 테두리 색
             strokeWidth = 3f
             style = Paint.Style.STROKE // 테두리만 그리기
             isAntiAlias = true
-            setShadowLayer(10f, 0f, 0f, Color.parseColor("#1A2EE88B")) // 반지름, x-offset, y-offset, 그림자 색상
+            setShadowLayer(10f, 0f, 0f, "#1A2EE88B".toColorInt()) // 반지름, x-offset, y-offset, 그림자 색상
         }
         fillPaint = Paint().apply {
-            color = Color.parseColor("#FFFFFF") // 내부 색
+            color = "#FFFFFF".toColorInt() // 내부 색
             style = Paint.Style.FILL // 내부만 채우기
         }
         textPaint = Paint().apply {
-            color = Color.parseColor("#FFFFFF")
+            color = "#FFFFFF".toColorInt()
             textSize = 48f
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
         }
         circlePaint = Paint().apply {
-            color = Color.parseColor("#41000000")
+            color = "#41000000".toColorInt()
             style = Paint.Style.FILL
         }
     }
@@ -84,7 +82,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         poseLandmarkResult: PoseLandmarkResult,
         imageWidth: Int,
         imageHeight: Int,
-        runningMode: RunningMode = RunningMode.IMAGE
+        runningMode: RunningMode = RunningMode.IMAGE,
     ) {
         results = poseLandmarkResult
         this.imageHeight = imageHeight
@@ -182,7 +180,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
         else { // video 일 때
             val isFrontLens = judgeFrontCamera(1, landmarks)
-            Log.v("영상", "$isFrontLens")
+//            Log.v("영상", "$isFrontLens")
             canvas.scale(if (isFrontLens) 1f else -1f, 1f, width / 2f, 0f)
             val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
@@ -235,7 +233,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
                 // 가로축
                 val extraLineWidth = 150
-                val isFrontLens = leftIndexX > rightIndexX
+//                val isFrontLens = leftIndexX > rightIndexX
                 when (isFrontLens) {
                     true -> {
                         canvas.drawLine(leftIndexX + extraLineWidth  , leftIndexY, rightIndexX - extraLineWidth, rightIndexY, axisPaint)

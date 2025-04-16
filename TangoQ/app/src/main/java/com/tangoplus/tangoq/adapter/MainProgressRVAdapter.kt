@@ -24,7 +24,6 @@ import com.tangoplus.tangoq.vo.RecommendationVO
 class MainProgressRVAdapter(private val fragment: Fragment, private val recommends : List<RecommendationVO>, private val pvm : ProgressViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val MAX_COLLAPSED_ITEMS = 3
 
-
     inner class MPViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPIName: TextView = view.findViewById(R.id.tvMPIName)
         val ivMPIThumbnail: ImageView = view.findViewById(R.id.ivMPIThumbnail)

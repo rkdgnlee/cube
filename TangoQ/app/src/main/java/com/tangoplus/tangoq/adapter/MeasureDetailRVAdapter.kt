@@ -54,22 +54,29 @@ class MeasureDetailRVAdapter(private val fragment: Fragment, private val data : 
             holder.tvMDAITitle.text = seqs[currentItem.indexx]
             holder.tvMDAIExplain.text = createSeqGuideComment(currentItem.indexx)
 
+            val isFrontCamera = setAdapter(currentItem.indexx, holder, currentItem.labels)
             Glide.with(fragment.requireContext())
                 .load(currentItem.url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .apply(
-                    RequestOptions.bitmapTransform(
-                        MultiTransformation(
-                            CenterCrop(),
-//                            RoundedCorners(20),
-//                            FlipHorizontalTransformation()
+                    // 후방카메라일 때만 flip되게끔
+                    if (!isFrontCamera) {
+                        RequestOptions.bitmapTransform(
+                            MultiTransformation(
+                                CenterCrop(),
+                                FlipHorizontalTransformation()
+                            )
                         )
-                    ))
+                    } else {
+                        RequestOptions.bitmapTransform(
+                            MultiTransformation(
+                                CenterCrop(),
+                            )
+                        )
+                    }
+                )
                 .into(holder.ivMDAI)
 
-
-
-            setAdapter(currentItem.indexx, holder, currentItem.labels)
             holder.ivMDAI.setOnSingleClickListener {
                 val dialog = PoseDialogFragment.newInstance(currentItem.indexx)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartPoseDialogFragment")
@@ -82,7 +89,7 @@ class MeasureDetailRVAdapter(private val fragment: Fragment, private val data : 
         return data.size
     }
 
-    private fun setAdapter(partIndex: Int, holder: MDAIViewHolder, analysisVO: List<AnalysisUnitVO>) {
+    private fun setAdapter(partIndex: Int, holder: MDAIViewHolder, analysisVO: List<AnalysisUnitVO>) : Boolean {
         if (partIndex == 1) {
             val connections = listOf(
                 15, 16, 23, 24, 25, 26 // 좌측 골반의 pose번호를 가져옴
@@ -103,18 +110,20 @@ class MeasureDetailRVAdapter(private val fragment: Fragment, private val data : 
                 }
                 filteredCoordinates.add(filteredCoordinate)
             }
-            // 이제 data 는 size가 6개가 아니라 5개임.
-            val isFrontCamera = judgeFrontCameraByDynamic(coordinates)
-            Log.v("전면카메라인가요?", "$isFrontCamera")
+            // data 는 6개
+            val isFrontCamera = judgeFrontCameraByDynamic(filteredCoordinates)
             val linearLayoutManager1 = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
             val dynamicAdapter = DataDynamicRVAdapter(filteredCoordinates, avm.dynamicTitles, isFrontCamera)
             holder.rvMDAI.layoutManager = linearLayoutManager1
             holder.rvMDAI.adapter = dynamicAdapter
+            return isFrontCamera
         } else {
             val layoutManager = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
             val adapter = MainPartAnalysisRVAdapter(fragment, analysisVO)
             holder.rvMDAI.layoutManager = layoutManager
             holder.rvMDAI.adapter = adapter
+            // true 로 보내야 정적측정에서는 그냥 flip
+            return false
         }
     }
 

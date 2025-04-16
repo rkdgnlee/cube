@@ -39,9 +39,9 @@ import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.judgeFrontCameraByDynamic
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
-import com.tangoplus.tangoq.mediapipe.OverlayView
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.OverlayView
+import com.tangoplus.tangoq.vision.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
@@ -58,7 +58,6 @@ class MainAnalysisFragment : Fragment() {
     private val avm : AnalysisViewModel by activityViewModels()
     private val pvm : PlayViewModel by activityViewModels()
     private lateinit var mr : JSONArray
-
 
     private var updateUI = false
     // 영상재생
@@ -77,6 +76,7 @@ class MainAnalysisFragment : Fragment() {
     private var cvRight : CardView? = null
     private lateinit var dynamicJa: JSONArray
     private lateinit var adapterAnalysises : List<AnalysisVO>
+    private var updatedRv  = false
     companion object {
         private const val ARG_PART = "painParts"
         fun newInstance(painPart: String): MainAnalysisFragment {
@@ -509,21 +509,23 @@ class MainAnalysisFragment : Fragment() {
         params.height = (adjustedHeight * resizingValue).toInt()
         binding.clMA.layoutParams = params
 
-        val connections = listOf(
-            15, 16, 23, 24, 25, 26 // 좌측 골반의 pose번호를 가져옴
-        )
-
-        val coordinates = extractVideoCoordinates(dynamicJa)
-        val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
-        for (connection in connections) {
-            val filteredCoordinate = mutableListOf<Pair<Float, Float>>() // 부위 하나당 몇 십 프레임의 x,y 좌표임
-            for (element in coordinates) {
-                filteredCoordinate.add(element[connection])
-            }
-            filteredCoordinates.add(filteredCoordinate)
-        }
         // 비디오 사이즈 6개넣어서 그대로 씀.
-        setVideoAdapter(filteredCoordinates)
+        if (!updatedRv) {
+            val connections = listOf(
+                15, 16, 23, 24, 25, 26 // 좌측 골반의 pose번호를 가져옴
+            )
+
+            val coordinates = extractVideoCoordinates(dynamicJa)
+            val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
+            for (connection in connections) {
+                val filteredCoordinate = mutableListOf<Pair<Float, Float>>() // 부위 하나당 몇 십 프레임의 x,y 좌표임
+                for (element in coordinates) {
+                    filteredCoordinate.add(element[connection])
+                }
+                filteredCoordinates.add(filteredCoordinate)
+            }
+            setVideoAdapter(filteredCoordinates)
+        }
     }
 
     private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
@@ -533,6 +535,9 @@ class MainAnalysisFragment : Fragment() {
         val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles, isFrontCamera)
         binding.rvMA.layoutManager = linearLayoutManager1
         binding.rvMA.adapter = dynamicAdapter
+
+        // 어댑터가 한번만 선언되게끔 하기
+        updatedRv = true
     }
 
     override fun onPause() {

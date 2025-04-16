@@ -1,9 +1,8 @@
-package com.tangoplus.tangoq.mediapipe
+package com.tangoplus.tangoq.vision
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.os.Build
 import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.VisibleForTesting

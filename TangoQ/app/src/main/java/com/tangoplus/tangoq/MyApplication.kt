@@ -122,6 +122,12 @@ class MyApplication : Application() {
         if (dir != null && dir.isDirectory) {
             val children = dir.list()
             children?.forEach { child ->
+                // failed_upload는 삭제하지 않음
+                if (child == "failed_upload") {
+                    Log.d("FileDelete", "Skipped: ${File(dir, child).absolutePath}")
+                    return@forEach
+                }
+
                 val success = deleteDir(File(dir, child))
                 if (!success) {
                     Log.e("FileDelete", "Failed to delete file: ${File(dir, child).absolutePath}")
@@ -129,12 +135,6 @@ class MyApplication : Application() {
                 }
             }
         }
-        val deleted = dir?.delete() ?: false
-        if (deleted) {
-            Log.d("FileDelete", "Deleted: ${dir?.absolutePath}")
-        } else {
-            Log.e("FileDelete", "Failed to delete: ${dir?.absolutePath}")
-        }
-        return deleted
+        return true
     }
 }

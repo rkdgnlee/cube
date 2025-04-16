@@ -1,15 +1,10 @@
 package com.tangoplus.tangoq
 
-import android.util.Log
-import com.tangoplus.tangoq.function.MeasurementManager
-import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateAngle
-import com.tangoplus.tangoq.mediapipe.MathHelpers.determineDirection
-import org.junit.Assert.assertEquals
+import com.tangoplus.tangoq.vision.MathHelpers.determineDirection
 import org.junit.Test
 import java.lang.Math.toDegrees
 import java.time.LocalDate
 import kotlin.math.abs
-import kotlin.math.atan
 import kotlin.math.atan2
 
 class MathTest {

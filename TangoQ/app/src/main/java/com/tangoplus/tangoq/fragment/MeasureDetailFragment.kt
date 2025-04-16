@@ -33,7 +33,7 @@ import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.AnalysisVO

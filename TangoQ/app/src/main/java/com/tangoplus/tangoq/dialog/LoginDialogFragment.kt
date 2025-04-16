@@ -271,7 +271,7 @@ class LoginDialogFragment : DialogFragment() {
         }
 
         MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-            setTitle("⚠️ 알림")
+            setTitle("알림")
             setMessage(
                 // 메시지 정하기
                 if (case == 0) {

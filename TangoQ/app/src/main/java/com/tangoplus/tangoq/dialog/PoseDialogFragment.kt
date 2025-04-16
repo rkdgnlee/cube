@@ -33,9 +33,9 @@ import com.tangoplus.tangoq.databinding.FragmentPoseDialogBinding
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
-import com.tangoplus.tangoq.mediapipe.OverlayView
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.OverlayView
+import com.tangoplus.tangoq.vision.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.Dispatchers

@@ -10,9 +10,6 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.collection.intListOf
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -22,11 +19,8 @@ import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.databinding.RvMuscleItemBinding
 import com.tangoplus.tangoq.databinding.RvPartBSItemBinding
-import com.tangoplus.tangoq.databinding.RvPartItemBinding
 import com.tangoplus.tangoq.databinding.RvWeeklyItemBinding
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.listener.OnCategoryClickListener
-import com.tangoplus.tangoq.listener.OnDisconnectListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vo.DateDisplay
 

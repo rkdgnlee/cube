@@ -1,10 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.content.res.ColorStateList
-import android.text.Spannable
 import android.text.SpannableString
-import android.text.style.RelativeSizeSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +16,6 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvProgramSeqItemBinding
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 
 class ProgramCustomRVAdapter(private val fragment: Fragment,
                              private val seq: Triple<Int, Int, Int>,

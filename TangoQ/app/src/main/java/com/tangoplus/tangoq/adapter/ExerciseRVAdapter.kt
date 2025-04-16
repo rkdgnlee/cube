@@ -207,6 +207,9 @@ class ExerciseRVAdapter (
                     }
                     itemState.observe(fragment.viewLifecycleOwner) { state ->
                         holder.vEI.setOnSingleClickListener {
+                            // 0 일 때 uvp 같이 넣어서 볼 수 있는 상태
+                            // 1 일 때 uvp는 안들어가지만 재생은 가능한 상태
+                            // 2 클릭만 감지되고 playthumbnail은 안나오는 상태
                             when (state) {
                                 0, 1 -> {
                                     exerciseClickListener?.exerciseClick(currentExerciseItem?.exerciseName.toString())

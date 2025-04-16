@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.mediapipe
+package com.tangoplus.tangoq.vision
 
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -8,10 +8,8 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RadialGradient
 import android.graphics.Shader
-import android.util.Log
 import android.util.TypedValue
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
-import com.tangoplus.tangoq.mediapipe.MathHelpers.determineDirection
 import androidx.core.graphics.toColorInt
 import com.tangoplus.tangoq.function.MeasurementManager.judgeFrontCamera
 
@@ -30,7 +28,7 @@ object ImageProcessingUtil {
 
         // 좌측면 측정 기준으로 knee-ankle-toe의 각도가 좌/우측 별러져있는 값에 따라 정면, 후면 카메라 판단
         val isFrontLens = judgeFrontCamera(sequence, originPlr)
-        Log.v("isFrontLens", "$isFrontLens, seq: $sequence")
+//        Log.v("isFrontLens", "$isFrontLens, seq: $sequence")
         val matrix = if (isFrontLens) {
             if (sequence in listOf(0, 2, 5, 6)) {
                 Matrix().apply {
@@ -72,31 +70,31 @@ object ImageProcessingUtil {
         val resultBitmap = flippedBitmap .copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(resultBitmap)
         val axisPaint = Paint().apply {
-            color = Color.parseColor("#FF5449")
+            color = "#FF5449".toColorInt()
             strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
         val axisSubPaint = Paint().apply {
-            color = Color.parseColor("#FF981D")
+            color = "#FF981D".toColorInt()
             strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
 
         val paint = Paint().apply {
-            color = Color.parseColor("#2EE88B")
+            color = "#2EE88B".toColorInt()
             strokeWidth = strokeWidths
             style = Paint.Style.STROKE
         }
 
         val borderPaint = Paint().apply {
-            color = Color.parseColor("#2EE88B") // 테두리 색
+            color = "#2EE88B".toColorInt() // 테두리 색
             strokeWidth = strokeWidths
             style = Paint.Style.STROKE // 테두리만 그리기
             isAntiAlias = true
-            setShadowLayer(10f, 0f, 0f, Color.parseColor("#1A2EE88B")) // 반지름, x-offset, y-offset, 그림자 색상
+            setShadowLayer(10f, 0f, 0f, "#1A2EE88B".toColorInt()) // 반지름, x-offset, y-offset, 그림자 색상
         }
         val fillPaint = Paint().apply {
-            color = Color.parseColor("#FFFFFF") // 내부 색
+            color = "#FFFFFF".toColorInt() // 내부 색
             style = Paint.Style.FILL // 내부만 채우기
         }
 
@@ -396,17 +394,17 @@ object ImageProcessingUtil {
         val circleRadius = 28f
         val innerRadius = 6f
         val textPaint = Paint().apply {
-            color = Color.parseColor("#000000")
+            color = "#000000".toColorInt()
             textSize = 26f
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
         }
         val outerCirclePaint = Paint().apply {
-            color = Color.parseColor("#41000000")
+            color = "#41000000".toColorInt()
             style = Paint.Style.FILL
         }
         val innerCirclePaint = Paint().apply {
-            color = Color.parseColor("#FFFFFF")
+            color = "#FFFFFF".toColorInt()
             style = Paint.Style.FILL
         }
 

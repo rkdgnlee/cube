@@ -118,7 +118,7 @@ class SplashActivity : AppCompatActivity() {
 
                 // ------! 인 앱 알림 시작 !------
 
-                cacheDir.deleteRecursively()
+
                 // ------# 다크모드 및 설정 불러오기  #------
                 val sharedPref = this@SplashActivity.getSharedPreferences("deviceSettings", Context.MODE_PRIVATE)
                 val darkMode = sharedPref.getBoolean("darkMode", false)
@@ -205,6 +205,7 @@ class SplashActivity : AppCompatActivity() {
         } else {
             mainInit()
         }
+        cacheDir.deleteRecursively()
     }
 
 //    private fun verifyIntegrityResult(jo: JSONObject) : Boolean {

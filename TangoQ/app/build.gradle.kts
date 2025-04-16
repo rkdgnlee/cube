@@ -58,6 +58,7 @@ dependencies {
 
     // 스켈레톤
     implementation("com.google.mediapipe:tasks-vision:0.10.21")
+    implementation("com.google.mlkit:face-detection:16.1.7")
     implementation("androidx.window:window:1.3.0")
 
     // 외부 라이브러리

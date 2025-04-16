@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvMainPartAnalysisItemBinding
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 
 class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var analyzeUnits : List<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {

@@ -26,7 +26,7 @@ import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 
 object NetworkUser {
-    const val TAG = "NetworkUser"
+    const private val TAG = "NetworkUser"
 
     // 아이디 비밀번호 자체 로그인
     suspend fun trySelfLogin(myUrl: String, context: Context, refreshToken: String?, callback: (JSONObject?) -> Unit) {
@@ -479,7 +479,7 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("mobileOTP실패", "ResponseCode: ${response.code}")
+                        Log.e("mobileOTP실패", "ResponseCode: ${response.code} ${response.body?.string()}")
                         return@withContext response.code
                     }
 
@@ -687,9 +687,9 @@ object NetworkUser {
                     }
 
                     response.body?.string()?.let { responseString ->
-                        val bodyJo = JSONObject(responseString)
-                        Log.v("mobileOTP보내기", "$bodyJo")
-                        return@withContext bodyJo.optInt("result_code")
+                        val responseJo = JSONObject(responseString)
+                        Log.v("mobileOTP보내기", "$responseJo")
+                        return@withContext responseJo.optInt("result_code")
                     }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -783,7 +783,7 @@ object NetworkUser {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
                         val responseBody = response.body?.string()
-                        Log.e("emailOTP실패", "ResponseCode: ${response.code}, ${responseBody}")
+                        Log.e("emailOTP실패", "ResponseCode: ${response.code}, $responseBody")
                         val provider = responseBody?.let { JSONObject(it).optString("provider") }
                         return@withContext Pair(response.code, provider)
                     }
@@ -837,9 +837,9 @@ object NetworkUser {
 //                    }
 
                     response.body?.string()?.let { responseString ->
-                        val bodyJo = JSONObject(responseString)
-                        Log.v("emailVerify", "$bodyJo")
-                        return@withContext bodyJo.optInt("status")
+                        val responseJo = JSONObject(responseString)
+                        Log.v("emailVerify", "$responseJo")
+                        return@withContext responseJo.optInt("status")
                     }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -914,7 +914,7 @@ object NetworkUser {
                try {
                    val responseBody = response.body?.string()
                    val jo = responseBody?.let{ JSONObject(it) }
-                   Log.v("이메일보내기", "${jo}")
+                   Log.v("이메일보내기", "$jo")
                    val code = jo?.optInt("status")
                    if (code != null) {
                        CoroutineScope(Dispatchers.Main).launch {

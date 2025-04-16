@@ -1,4 +1,4 @@
-package com.tangoplus.tangoq.mediapipe
+package com.tangoplus.tangoq.vision
 
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 

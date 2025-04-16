@@ -21,7 +21,7 @@
 
     </androidx.camera.view.PreviewView>
 
-    <com.tangoplus.tangoq.mediapipe.OverlayView
+    <com.tangoplus.tangoq.vision.OverlayView
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -58,14 +58,15 @@
             android:id="@+id/ibtnMeasureSkeletonChange"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginEnd="10dp"
             android:backgroundTint="#00FFFFFF"
             android:contentDescription="showCautionDialog"
             android:padding="6dp"
             android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ibtnMeasureSkeletonSetup"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/icon_change" />
+
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonSetup"
             android:layout_width="48dp"
@@ -75,9 +76,9 @@
             android:contentDescription="showEditDialog"
             android:padding="6dp"
             android:scaleType="centerCrop"
-            app:layout_constraintEnd_toStartOf="@+id/ibtnMeasureSkeletonChange"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/icon_profile" />
+            app:srcCompat="@drawable/icon_setting_gear" />
         <ImageButton
             android:id="@+id/ibtnMeasureSkeletonBack"
             android:layout_width="48dp"
@@ -94,9 +95,9 @@
         <com.shuhart.stepview.StepView
             android:id="@+id/svMeasureSkeleton"
             android:layout_width="0dp"
-            android:layout_height="86dp"
+            android:layout_height="82dp"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="-8dp"
+            android:layout_marginTop="-7dp"
             android:layout_marginEnd="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -105,6 +106,7 @@
             app:sv_animationType="Circle"
             app:sv_background="#00FFFFFF"
             app:sv_doneCircleColor="@color/thirdColor"
+            app:sv_doneCircleRadius="20dp"
             app:sv_doneStepLineColor="@color/subColor100"
             app:sv_doneStepMarkColor="@color/subColor100"
             app:sv_doneTextColor="@color/secondaryColor"
@@ -113,8 +115,10 @@
             app:sv_nextStepLineColor="@color/white"
             app:sv_nextTextColor="@color/subColor100"
             app:sv_selectedCircleColor="@color/thirdColor"
+            app:sv_selectedCircleRadius="20dp"
             app:sv_selectedStepNumberColor="@color/subColor100"
             app:sv_selectedTextColor="@color/thirdColor"
+            app:sv_stepNumberTextSize="24dp"
             app:sv_stepsNumber="7"
             app:sv_textPadding="4dp"
             app:sv_textSize="16dp" />
@@ -125,6 +129,7 @@
             android:layout_width="0dp"
             android:layout_height="8dp"
             android:layout_marginStart="30dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="30dp"
             android:background="#00FFFFFF"
             android:orientation="horizontal"
@@ -321,7 +326,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/cvMeasureSkeletonLine"
         app:progressView_colorBackground="@color/whiteText"
-        app:progressView_colorProgress="@color/thirdColor"
+        app:progressView_colorProgress="@color/mainColor"
         app:progressView_radius="16dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -341,6 +346,7 @@
             android:id="@+id/tvMeasureSkeletonGuide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="자세를 따라해주세요"
             android:textColor="@color/subColor700"
             android:textSize="30dp"

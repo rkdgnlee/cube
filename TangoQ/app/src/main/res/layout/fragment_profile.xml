@@ -290,7 +290,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="40dp"
+                    android:layout_marginBottom="60dp"
                     android:lineSpacingExtra="5dp"
                     android:padding="20dp"
                     android:text="㈜옵토닉스\n사업자번호:409-81-84171\n대표자명: 이용범, 이영우\n사업장소재지: 광주광역시 북구 첨단벤처소로15번길 63(월출동)\nContact:062-973-1260"
