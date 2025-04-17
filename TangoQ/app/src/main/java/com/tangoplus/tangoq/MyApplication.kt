@@ -7,14 +7,20 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.tangoplus.tangoq.function.PreferencesManager
+import com.tangoplus.tangoq.viewmodel.AppViewModel
 import java.io.File
 
 class MyApplication : Application() {
     lateinit var preferencesManager: PreferencesManager
     private var isAppInBackground = false
     private var isBiometricSuccess = false
+    private var activityCount = 0
     private var isLastActivity = false
+    val appViewModel: AppViewModel by lazy { AppViewModel() }
+
     override fun onCreate() {
         super.onCreate()
         // 전역 Context 초기화
@@ -23,7 +29,10 @@ class MyApplication : Application() {
 
         // activity들의 시작, 종료 갯수를 카운트해서 앱이 종료되는 시점 가져오기
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                activityCount++
+//                Log.v("activityCount", "더한 후 $activityCount")
+            }
             override fun onActivityStarted(activity: Activity) {
 
                 if (isAppInBackground) {
@@ -35,16 +44,20 @@ class MyApplication : Application() {
             override fun onActivityResumed(activity: Activity) {}
             override fun onActivityPaused(activity: Activity) {}
             override fun onActivityStopped(activity: Activity) {
+
                 isAppInBackground = true
                 clearBiometricSuccess()
+
             }
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
             override fun onActivityDestroyed(activity: Activity) {
                 if (activity.isChangingConfigurations) {
                     return // configuration change로 인한 destroy일 경우 무시 ( 다크 모드 변경 등 )
                 }
-                if (isLastActivity && isAppInBackground) {
-                    // 앱이 완전히 종료되는 시점
+                activityCount--
+//                Log.v("activityCount", "뺀 후 $activityCount")
+                if (activityCount == 0) {
+                    Log.v("Application", "앱 완전 종료됨")
                     clearDir()
                     clearBiometricSuccess()
                 }
@@ -109,6 +122,12 @@ class MyApplication : Application() {
         if (dir != null && dir.isDirectory) {
             val children = dir.list()
             children?.forEach { child ->
+                // failed_upload는 삭제하지 않음
+                if (child == "failed_upload") {
+                    Log.d("FileDelete", "Skipped: ${File(dir, child).absolutePath}")
+                    return@forEach
+                }
+
                 val success = deleteDir(File(dir, child))
                 if (!success) {
                     Log.e("FileDelete", "Failed to delete file: ${File(dir, child).absolutePath}")
@@ -116,12 +135,6 @@ class MyApplication : Application() {
                 }
             }
         }
-        val deleted = dir?.delete() ?: false
-        if (deleted) {
-            Log.d("FileDelete", "Deleted: ${dir?.absolutePath}")
-        } else {
-            Log.e("FileDelete", "Failed to delete: ${dir?.absolutePath}")
-        }
-        return deleted
+        return true
     }
 }

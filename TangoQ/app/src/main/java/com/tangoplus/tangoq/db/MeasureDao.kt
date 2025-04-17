@@ -49,9 +49,11 @@ interface MeasureDao {
     @Query("SELECT * FROM t_measure_info WHERE mobile_info_sn = :mobileInfoSn")
     fun getInfoByMobileSn(mobileInfoSn: Int): MeasureInfo
 
-    @Query("SELECT * FROM t_measure_info WHERE user_uuid = :userUUID AND uploaded = '0'")
-    fun getNotUploadedInfo(userUUID: String) : List<MeasureInfo>
+    @Query("SELECT * FROM t_measure_info WHERE user_uuid = :userUUID AND sn IS NULL ORDER BY mobile_info_sn DESC LIMIT 1")
+    fun getNotUploadedInfo(userUUID: String) : MeasureInfo?
 
+    @Query("DELETE FROM t_measure_info WHERE sn IS NULL")
+    fun deleteNotUploadedInfo()
     // -------------------------------# MeasureStatic #-------------------------------
     @Insert
     suspend fun insertByStatic(entity: MeasureStatic) : Long
@@ -82,8 +84,11 @@ interface MeasureDao {
     @Query("UPDATE t_measure_static SET measure_server_file_name = :serverFileName WHERE mobile_sn = :mobileSn")
     suspend fun updateStaticServerFIleName(mobileSn: Int, serverFileName: String)
 
-    @Query("SELECT * FROM t_measure_static WHERE uploaded_json = '0' OR uploaded_file = '0'")
-    suspend fun getFailedUploadedStatics() : List<MeasureStatic>
+    @Query("SELECT * FROM t_measure_static WHERE mobile_info_sn = :mobileInfoSn AND server_sn IS NULL")
+    suspend fun getFailedUploadedStatics(mobileInfoSn: Int) : List<MeasureStatic>
+
+    @Query("DELETE FROM t_measure_static WHERE server_sn IS NULL")
+    suspend fun deleteNotUploadedStatics()
 
     @Transaction
     suspend fun updateAndGetStatic(
@@ -106,8 +111,6 @@ interface MeasureDao {
         return getStaticByMobileSn(mobileSn)
     }
 
-    @Query("SELECT * FROM t_measure_static WHERE user_uuid = :userUUID AND uploaded = '0'")
-    fun getNotUploadedStatic(userUUID: String) : List<MeasureStatic>
 
     @Query("SELECT * FROM t_measure_static WHERE mobile_sn = :mobileSn")
     fun getStaticByMobileSn(mobileSn: Int): MeasureStatic
@@ -146,8 +149,11 @@ interface MeasureDao {
     @Query("UPDATE t_measure_dynamic SET measure_server_file_name = :serverFileName WHERE mobile_sn = :mobileSn")
     suspend fun updateDynamicServerFileName(mobileSn: Int, serverFileName: String)
 
-    @Query("SELECT * FROM t_measure_dynamic WHERE uploaded_json = '0' OR uploaded_file = '0'")
-    suspend fun getFailedUploadedDynamic() : List<MeasureDynamic>
+    @Query("SELECT * FROM t_measure_dynamic WHERE mobile_info_sn = :mobileInfoSn AND server_sn IS NULL ORDER BY mobile_info_sn DESC LIMIT 1")
+    suspend fun getFailedUploadedDynamic(mobileInfoSn: Int) : MeasureDynamic
+
+    @Query("DELETE FROM t_measure_dynamic WHERE server_sn IS NULL")
+    suspend fun deleteNotUploadedDynamic()
 
     @Transaction
     suspend fun updateAndGetDynamic(
@@ -170,9 +176,6 @@ interface MeasureDao {
 
         return getDynamicByMobileSn(mobileSn)
     }
-
-    @Query("SELECT * FROM t_measure_dynamic WHERE user_uuid = :userUUID AND uploaded = '0'")
-    fun getNotUploadedDynamic(userUUID: String) : List<MeasureDynamic>
 
     @Query("SELECT * FROM t_measure_dynamic WHERE mobile_sn = :mobileSn")
     fun getDynamicByMobileSn(mobileSn: Int): MeasureDynamic
@@ -212,7 +215,4 @@ interface MeasureDao {
     fun JSONObject.toMeasureInfo(): MeasureInfo {
         return Gson().fromJson(this.toString(), MeasureInfo::class.java)
     }
-
-
-
 }

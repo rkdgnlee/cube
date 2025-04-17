@@ -1,12 +1,16 @@
 package com.tangoplus.tangoq.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
+import com.google.mlkit.vision.face.Face
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.db.MeasureDynamic
+import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.DateDisplay
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -14,12 +18,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class MeasureViewModel : ViewModel() {
-    val parts = MutableLiveData(mutableListOf<MeasureVO>())
-    val feedbackParts = MutableLiveData(mutableListOf<MeasureVO>())
 
     // 메인 측정 날짜 선택 담을 공간 index임
-    var selectMeasureDate = MutableLiveData<String>()
-    var selectedMeasureDate = MutableLiveData<String>()
+    var selectMeasureDate = MutableLiveData<DateDisplay>()
+    var selectedMeasureDate = MutableLiveData<DateDisplay>()
     var currentMeasureDate = 0
     var selectedMeasureIndex = MutableLiveData<Int>()
     var previousMeasureIndex = 4
@@ -29,7 +31,7 @@ class MeasureViewModel : ViewModel() {
     // MeasureDetail 담을 공간
     var selectedMeasure : MeasureVO? = null
 
-    // MeasureSkeleton 담을 공간
+
 
     // room에 저장할 static들이 담기는 곳
     val infoResultJa = JSONArray()
@@ -44,8 +46,20 @@ class MeasureViewModel : ViewModel() {
     val staticFiles = mutableListOf<File>()
     var dynamicFile : File? = null
 
+    var previousFaces = listOf<Face>()
+    var notMosaicVideoInputPath : String? = null
+
     val staticJsonFiles = mutableListOf<File>()
     var dynamicJsonFile : File? = null
+
+    // measureSkeleton 전송
+    lateinit var measureinfo : MeasureInfo
+    val motherJo = JSONObject()
+    var mobileInfoSn = 0
+    var mobileDynamicSn = 0
+    var mobileStaticSns = mutableListOf<Int>()
+    // 전송 실패를 판단하는 flag
+    var transmitFailed = false
 
     // 핸드폰번호, 이름 세팅 vm
     var setupName = ""
@@ -53,29 +67,17 @@ class MeasureViewModel : ViewModel() {
     var setupAgreement1 = MutableLiveData(true)
     var setupAgreement2 = MutableLiveData(true)
 
-    // measureDetail
-    val recentAnalysisUnits = mutableListOf<MutableList<AnalysisUnitVO>>()
-
-
     // ------# 각 부위 데이터들 #------
     var noseData : Pair<Float, Float> = Pair(0f, 0f)
     var earData = listOf<Pair<Float, Float>>()
     var shoulderData = listOf<Pair<Float, Float>>()
     var elbowData = listOf<Pair<Float, Float>>()
     var wristData = listOf<Pair<Float, Float>>()
-    var indexData = listOf<Pair<Float, Float>>()
-    var pinkyData = listOf<Pair<Float, Float>>()
-    var thumbData = listOf<Pair<Float, Float>>()
     var hipData = listOf<Pair<Float, Float>>()
     var kneeData = listOf<Pair<Float, Float>>()
     var ankleData = listOf<Pair<Float, Float>>()
     var heelData = listOf<Pair<Float, Float>>()
     var toeData = listOf<Pair<Float, Float>>()
-
-    init {
-        selectedMeasureDate.value = ""
-        selectedMeasure = MeasureVO(-1,-1, "","", null, mutableListOf(Pair("", -1f), Pair("", -1f)), JSONArray(), mutableListOf(), true, null)
-    }
 
     // ------# JSONObject로 변경 전 앞에 접두사 안생기게끔 하기 #------
     private val excludedKeys = setOf(

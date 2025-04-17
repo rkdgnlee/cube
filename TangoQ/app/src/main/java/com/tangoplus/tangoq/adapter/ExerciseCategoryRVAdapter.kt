@@ -16,12 +16,13 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvExerciseMainCateogoryItemBinding
 import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 
 class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                                 private val subCategorys: List<Pair<String, Int?>>, // subCategory는 Pair<관절이름, 운동 갯수>
                                 private val fragment: Fragment,
-                                private val sn : Int,
+                                private val sn : Int?,
                                 private var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var onCategoryClickListener: OnCategoryClickListener? = null
@@ -81,7 +82,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .into(holder.ivMCThumbnail)
-                holder.ivMCThumbnail.setOnClickListener{
+                holder.ivMCThumbnail.setOnSingleClickListener{
                     goExerciseDetail(currentItemMain)
                 }
             }
@@ -89,7 +90,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                 val currentItem = subCategorys[position]
                 val categoryName=  currentItem.first + " (${currentItem.second})"
                 holder.tvSCName.text = categoryName
-                val adapterPosition = holder.adapterPosition
+                val adapterPosition = holder.bindingAdapterPosition
                 holder.tvSCName.setBackgroundResource(R.drawable.bckgnd_rectangle_20)
                 if (adapterPosition == selectedPosition) {
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondaryColor)
@@ -99,7 +100,7 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                     holder.tvSCName.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor100)
                 }
 
-                holder.tvSCName.setOnClickListener {
+                holder.tvSCName.setOnSingleClickListener {
                     onCategoryClickListener?.onCategoryClick(currentItem.first)
                     val previousPosition = selectedPosition
                     selectedPosition = adapterPosition
@@ -113,8 +114,10 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
     private fun goExerciseDetail(category : ArrayList<Int>) {
 //        Log.v("ClickIndex", "category: $category")
 //        Log.v("EDsn", "$sn")
+
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flMain, ExerciseDetailFragment.newInstance(category, sn))
+            sn?.let { ExerciseDetailFragment.newInstance(category, it) }
+                ?.let { replace(R.id.flMain, it) }
             commit()
         }
     }

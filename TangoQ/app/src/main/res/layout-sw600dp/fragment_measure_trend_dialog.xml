@@ -15,9 +15,10 @@
             android:id="@+id/textView30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:text="측정 기록 비교"
             android:textColor="@color/subColor800"
-            android:textSize="24dp"
+            android:textSize="32dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/ibtnMTDBack"
             app:layout_constraintStart_toEndOf="@+id/ibtnMTDBack"
@@ -28,6 +29,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:gravity="end"
             app:boxBackgroundMode="outline"
             app:boxStrokeWidth="0dp"
@@ -198,10 +200,10 @@
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cv_exo_left1"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginStart="12dp"
-                                android:layout_marginTop="12dp"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                android:layout_marginStart="26dp"
+                                android:layout_marginTop="26dp"
                                 android:visibility="visible"
                                 app:cardBackgroundColor="#41000000"
                                 app:cardCornerRadius="48dp"
@@ -209,24 +211,34 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView35"
+                                <androidx.cardview.widget.CardView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:background="#00FFFFFF"
-                                    android:gravity="center"
-                                    android:text="L"
-                                    android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:layout_margin="6dp"
+                                    app:cardBackgroundColor="@color/whiteText"
+                                    app:cardCornerRadius="48dp">
+
+                                    <TextView
+                                        android:id="@+id/textView35"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#00FFFFFF"
+                                        android:gravity="center"
+                                        android:text="L"
+                                        android:textColor="#000000"
+                                        android:textSize="24dp"
+                                        android:textStyle="bold" />
+                                </androidx.cardview.widget.CardView>
+
                             </androidx.cardview.widget.CardView>
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cv_exo_right1"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
                                 android:layout_gravity="end"
-                                android:layout_marginTop="12dp"
-                                android:layout_marginEnd="12dp"
+                                android:layout_marginTop="26dp"
+                                android:layout_marginEnd="26dp"
                                 android:visibility="visible"
                                 app:cardBackgroundColor="#41000000"
                                 app:cardCornerRadius="48dp"
@@ -234,19 +246,29 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView122"
+                                <androidx.cardview.widget.CardView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:background="#00FFFFFF"
-                                    android:gravity="center"
-                                    android:text="R"
-                                    android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:layout_margin="6dp"
+                                    app:cardBackgroundColor="@color/whiteText"
+                                    app:cardCornerRadius="48dp">
+
+                                    <TextView
+                                        android:id="@+id/textView122"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#00FFFFFF"
+                                        android:gravity="center"
+                                        android:text="R"
+                                        android:textColor="#000000"
+                                        android:textSize="24dp"
+                                        android:textStyle="bold" />
+                                </androidx.cardview.widget.CardView>
+
                             </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
-                        <com.tangoplus.tangoq.mediapipe.OverlayView
+                        <com.tangoplus.tangoq.vision.OverlayView
                             android:id="@+id/ovMTDLeft"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
@@ -261,7 +283,6 @@
                         android:id="@+id/clMTDRight"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:background="#FF7979"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -294,10 +315,10 @@
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cv_exo_left2"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_marginStart="12dp"
-                                android:layout_marginTop="12dp"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                android:layout_marginStart="26dp"
+                                android:layout_marginTop="26dp"
                                 android:visibility="visible"
                                 app:cardBackgroundColor="#41000000"
                                 app:cardCornerRadius="48dp"
@@ -305,24 +326,34 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView134"
+                                <androidx.cardview.widget.CardView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:background="#00FFFFFF"
-                                    android:gravity="center"
-                                    android:text="L"
-                                    android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:layout_margin="6dp"
+                                    app:cardBackgroundColor="@color/whiteText"
+                                    app:cardCornerRadius="48dp">
+
+                                    <TextView
+                                        android:id="@+id/textView134"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#00FFFFFF"
+                                        android:gravity="center"
+                                        android:text="L"
+                                        android:textColor="#000000"
+                                        android:textSize="24dp"
+                                        android:textStyle="bold" />
+                                </androidx.cardview.widget.CardView>
+
                             </androidx.cardview.widget.CardView>
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cv_exo_right2"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
                                 android:layout_gravity="end"
-                                android:layout_marginTop="12dp"
-                                android:layout_marginEnd="12dp"
+                                android:layout_marginTop="26dp"
+                                android:layout_marginEnd="26dp"
                                 android:visibility="visible"
                                 app:cardBackgroundColor="#41000000"
                                 app:cardCornerRadius="48dp"
@@ -330,19 +361,29 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
-                                <TextView
-                                    android:id="@+id/textView136"
+                                <androidx.cardview.widget.CardView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:background="#00FFFFFF"
-                                    android:gravity="center"
-                                    android:text="R"
-                                    android:textColor="@color/whiteText"
-                                    android:textSize="14dp" />
+                                    android:layout_margin="6dp"
+                                    app:cardBackgroundColor="@color/whiteText"
+                                    app:cardCornerRadius="48dp">
+
+                                    <TextView
+                                        android:id="@+id/textView16"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#00FFFFFF"
+                                        android:gravity="center"
+                                        android:text="R"
+                                        android:textColor="#000000"
+                                        android:textSize="24dp"
+                                        android:textStyle="bold" />
+                                </androidx.cardview.widget.CardView>
+
                             </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
-                        <com.tangoplus.tangoq.mediapipe.OverlayView
+                        <com.tangoplus.tangoq.vision.OverlayView
                             android:id="@+id/ovMTDRight"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
@@ -387,7 +428,7 @@
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView57">
+                    app:layout_constraintTop_toBottomOf="@+id/tvMTDGuide">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -515,7 +556,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/textView57"
+                    android:id="@+id/tvMTDGuide"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
@@ -531,9 +572,9 @@
         <ImageButton
             android:id="@+id/ibtnMTDBack"
             android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_height="38dp"
             android:layout_marginStart="36dp"
-            android:layout_marginTop="26dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/effect_ibtn_12dp"
             android:backgroundTint="@color/white"
             android:padding="4dp"

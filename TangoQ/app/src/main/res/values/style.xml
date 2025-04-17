@@ -44,6 +44,24 @@
         <item name="android:padding">0dp</item>
         <item name="android:radius">16dp</item>
     </style>
+    <style name="AppTheme.DialogFragment" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+    </style>
+
+    <style name="AppTheme.FlexableDialogFragment" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+    </style>
+
 
     <style name="Theme.App.Checkbox" parent="Widget.Material3.CompoundButton.CheckBox">
         <item name="colorOnPrimary">@color/white</item>
@@ -76,14 +94,7 @@
         <item name="android:popupBackground">@drawable/bckgnd_2_main_20</item>
     </style>
 
-    <style name="AppTheme.DialogFragment" parent="Theme.MaterialComponents.Dialog">
-        <item name="android:statusBarColor">@android:color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">false</item>
-    </style>
+
 
 <!--    tab Layout style -->
     <style name="TabLayoutTextStyle" parent="Base.TextAppearance.AppCompat.Large">

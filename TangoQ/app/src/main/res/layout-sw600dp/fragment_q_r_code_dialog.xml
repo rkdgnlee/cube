@@ -22,8 +22,6 @@
         app:tabIndicatorAnimationDuration="400"
         app:tabIndicatorColor="@color/secondWhiteColor"
         app:tabIndicatorFullWidth="true"
-        app:tabPaddingEnd="60dp"
-        app:tabPaddingStart="60dp"
         app:tabRippleColor="#20FFFFFF"
         app:tabSelectedTextColor="@color/secondWhiteColor"
         app:tabTextAppearance="@style/TabLayoutTextStyle"

@@ -6,6 +6,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -38,6 +40,7 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.sendProfileImage
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +49,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -74,12 +79,18 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         svm.snsCount = 0
         // ------! 싱글턴에서 가져오기 !------
         svm.User.value = userJson
+
         svm.setHeight.value = svm.User.value?.optInt("height")
         svm.setWeight.value = svm.User.value?.optInt("weight")
         svm.setEmail.value = svm.User.value?.optString("email")
-        svm.setBirthday.value = svm.User.value?.optInt("birthday").toString()
+
+
+        svm.setBirthday.value = svm.User.value?.optString("birthday")
         svm.setMobile.value = svm.User.value?.optString("mobile").toString()
-        svm.setGender.value = svm.User.value?.optInt("gender")
+
+        val getGender = svm.User.value?.optString("gender")
+        svm.setGender.value = if (getGender in listOf("", "null", null)) null else getGender
+        Log.v("userJson보기", "${svm.setBirthday.value}")
 
 //        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
@@ -106,34 +117,41 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "내정보",
             "다크 모드",
             "QR코드 핀번호 로그인",
+            "키오스크 핀번호 재설정",
 
 //            "연동 관리",
-            "푸쉬 알림 설정",
+
             "자주 묻는 질문",
             "문의하기",
-
             "공지사항",
+
+            "알림 설정",
             "앱 버전",
             "개인정보 처리방침",
             "서비스 이용약관",
             "로그아웃",
-            "회원탈퇴"
         )
-        setAdapter(profilemenulist.subList(0,3), binding.rvPNormal,0)
-        setAdapter(profilemenulist.subList(3,6), binding.rvPHelp, 1)
-        setAdapter(profilemenulist.subList(6, profilemenulist.size), binding.rvPDetail, 2)
+        setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
+        setAdapter(profilemenulist.subList(4,7), binding.rvPHelp, 1)
+        setAdapter(profilemenulist.subList(7, profilemenulist.size), binding.rvPDetail, 2)
         // ------! 정보 목록 recyclerView 연결 끝 !------
 
 
         svm.setWeight.observe(viewLifecycleOwner) { weight ->
-            binding.tvPWeight.text = weight.toString() + "kg"
+            binding.tvPWeight.text = if (weight in 20..200) {
+                weight.toString() + "kg"
+            } else
+                "미설정"
         }
         svm.setHeight.observe(viewLifecycleOwner) { height ->
-            binding.tvPHeight.text = height.toString() + "cm"
+            binding.tvPHeight.text = if (height in 80..250) {
+                height.toString() + "cm"
+            } else
+                "미설정"
         }
         svm.setBirthday.observe(viewLifecycleOwner) { birthday ->
-            if (birthday.length >= 8) {
-                Log.v("버스데이", "$birthday")
+            if (birthday != null && birthday.length >= 8 && birthday != "0000-00-00") {
+                Log.v("버스데이", birthday)
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = (c.get(Calendar.YEAR) - birthday.substring(0, 4).toInt()).toString() + "세"
             }
@@ -194,12 +212,12 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
     private fun setAdapter(list: MutableList<String>, rv: RecyclerView, index: Int) {
         if (index != 0 ) {
             val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, false, "profile", svm)
-            adapter.profileMenuList = list
+            adapter.profileMenus = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         } else {
             val adapter = ProfileRVAdapter(this@ProfileFragment, this@ProfileFragment, true, "profile", svm)
-            adapter.profileMenuList = list
+            adapter.profileMenus = list
             rv.adapter = adapter
             rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
@@ -233,20 +251,26 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 //                    val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
                     val mimeType = "image/jpeg"
                     val imageFile = requireContext().uriToFile(uri, fileName)
-                    imageFile?.let {
-                        val requestBody = MultipartBody.Builder()
-                            .setType(MultipartBody.FORM)
-                            .addFormDataPart(
-                                "profile_image",
-                                fileName,
-                                it.asRequestBody(mimeType.toMediaTypeOrNull())
-                            )
-                            .build()
+                    if (imageFile != null) {
+                        val shrinkFile = compressImageFile(requireContext(), imageFile)
+                        val requestBody = shrinkFile?.asRequestBody(mimeType.toMediaTypeOrNull())?.let {
+                            MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart(
+                                    "profile_image",
+                                    fileName,
+                                    it
+                                )
+                                .build()
+
+                        }
                         CoroutineScope(Dispatchers.IO).launch {
-                            sendProfileImage(requireContext(), getString(R.string.API_user),
-                                userJson?.optString("sn").toString(), requestBody) { imageUrl ->
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    Singleton_t_user.getInstance(requireContext()).jsonObject?.put("profile_file_path", imageUrl.replace("\\", ""))
+                            if (requestBody != null) {
+                                sendProfileImage(requireContext(), getString(R.string.API_user),
+                                    userJson?.optString("sn").toString(), requestBody) { imageUrl ->
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        Singleton_t_user.getInstance(requireContext()).jsonObject?.put("profile_file_path", imageUrl.replace("\\", ""))
+                                    }
                                 }
                             }
                         }
@@ -308,9 +332,9 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                 }
 
                 // ----- 이미지 로드 시작 -----
-                val imageUri = userJson.optString("profile_file_path")
-                Log.v("imageUri", imageUri)
-                if (imageUri != "") {
+                val imageUri = userJson.optString("profile_file_path") ?: null
+                if (imageUri != "" && !imageUri.isNullOrEmpty() && imageUri != "null") {
+                    Log.v("inside ImageUri", imageUri)
                     Glide.with(this)
                         .load(imageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
@@ -387,9 +411,26 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             }
         }
     }
+    fun compressImageFile(context: Context, file: File, maxSizeInBytes: Long = 2 * 1024 * 1024): File? {
+        val bitmap = BitmapFactory.decodeFile(file.path)
+        var quality = 100
+        var stream: ByteArrayOutputStream
+        var compressedBytes: ByteArray
 
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
+        do {
+            stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+            compressedBytes = stream.toByteArray()
+            quality -= 5
+        } while (compressedBytes.size > maxSizeInBytes && quality > 10)
+
+        return try {
+            val compressedFile = File(context.cacheDir, "compressed_${file.name}")
+            compressedFile.writeBytes(compressedBytes)
+            compressedFile
+        } catch (e: IOException) {
+            e.message
+            null
+        }
     }
 }

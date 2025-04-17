@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.dialog
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -9,13 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProgramAlertDialogBinding
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 
 
@@ -37,6 +37,11 @@ class ProgramAlertDialogFragment : DialogFragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,10 +52,27 @@ class ProgramAlertDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         case = arguments?.getInt(ALERT_KEY_CASE) ?: 0
 
         when (case) {
+            3 -> {
+                binding.btnPAD2.text = "확인"
+                binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_finish_sequence))
+                alertMessage = "이번 주 필요한 운동을 모두 완료했습니다. 휴식과 다른 부위 운동을 진행해주세요"
+                binding.tvPAD.text = alertMessage
+                binding.btnPAD1.visibility = View.GONE
+                binding.btnPAD2.visibility = View.VISIBLE
+                binding.btnPAD2.setOnClickListener {
+                    dismiss()
+                }
+            }
             2 -> {
                 binding.btnPAD1.visibility = View.VISIBLE
                 binding.btnPAD2.visibility = View.VISIBLE
@@ -89,18 +111,8 @@ class ProgramAlertDialogFragment : DialogFragment() {
         binding.tvPAD.textSize = if (isTablet(requireContext())) 22f else 16f
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setDimAmount(0.7f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
-        dialog?.setCancelable(false)
-//        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, width =  0.6f , height = 0.35f)
-        } else {
-            dialogFragmentResize(requireContext(), this@ProgramAlertDialogFragment, height = 0.45f)
-        }
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle_20,))
     }
 }

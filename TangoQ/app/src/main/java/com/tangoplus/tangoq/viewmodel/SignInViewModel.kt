@@ -1,32 +1,49 @@
 package com.tangoplus.tangoq.viewmodel
 
 import android.net.Uri
+import android.os.CountDownTimer
+import android.text.TextWatcher
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.json.JSONObject
-import kotlin.math.truncate
 
 class SignInViewModel: ViewModel() {
     // 회원가입에 담는 user
     val User = MutableLiveData(JSONObject())
+
     // ------# 로그인 #------
-    var currentIdCon = MutableLiveData(false)
+    var currentEmailCon = MutableLiveData(false)
     var currentPwCon = MutableLiveData(false)
-    var idPwCondition = MutableLiveData(false)
-    var id = MutableLiveData("")
-    var pw = MutableLiveData("")
+    var emailPwCondition = MutableLiveData(false)
     var emailId = MutableLiveData("")
-    var setGender = MutableLiveData(0)    // 아이디 비밀번호 찾기
-    var isFindId = true
+    var fullEmail = MutableLiveData("")
+    var pw = MutableLiveData("")
+    var setGender = MutableLiveData("")    // 아이디 비밀번호 찾기
+    var selectGender = MutableLiveData("")
+    // FindAccount
+    val mobileAuthCondition = MutableLiveData(false)
+    var countDownTimer : CountDownTimer? = null
 
-
-    val idCondition = MutableLiveData(false)
+    // 회원가입 condition
+    // PASS나 문자인증에서 받아온 값들
+    val passName = MutableLiveData("")
+    val passMobile = MutableLiveData("")
+    var nameCondition = MutableLiveData(false)
     val mobileCondition = MutableLiveData(false)
+    val emailIdCondition = MutableLiveData(false)
+    val domainCondition = MutableLiveData(false)
+    val emailVerify = MutableLiveData(false)
+
+    // 소셜 회원가입 연동에 필요한 temp_id 등
+    var tempId = ""
+    var provider = ""
+    var insertToken = "" // token은 insertToken
+    var sdkToken = ""
+
     val pwCondition = MutableLiveData(false)
     val pwCompare = MutableLiveData(false)
     val pwBothTrue = MediatorLiveData<Boolean>().apply {
-
         value = false
         addSource(pwCondition) { condition ->
             value = condition && (pwCompare.value ?: false)
@@ -35,31 +52,45 @@ class SignInViewModel: ViewModel() {
             value = (pwCondition.value ?: false) && compare
         }
     }
+    val isNextPage = MutableLiveData(false)
 
-    val mobileAuthCondition = MutableLiveData(false)
+    val passAuthCondition = MediatorLiveData<Boolean>().apply {
+        value = false
+        addSource(passName) { condition ->
+            value = condition != "" && (passMobile.value != "")
+        }
+        addSource(passMobile) { condition ->
+            value = condition != "" && (passName.value != "")
+        }
+    }
 
+    val emailCondition = MediatorLiveData<Boolean>().apply {
+        value = false
+        addSource(emailIdCondition) { condition ->
+            value = condition && (domainCondition.value ?: false)
+        }
+        addSource(domainCondition) { condition ->
+            value = condition && (emailIdCondition.value ?: false)
+        }
+    }
 
-    // 회원가입 condition
-    var invalidIdCondition = MutableLiveData(false)
-    var nameCondition = MutableLiveData(false)
-    var emailCondition = MutableLiveData(false)
-    var phoneCondition = MutableLiveData(false)
     val allTrueLiveData = MediatorLiveData<Boolean>().apply {
         val checkAllTrue = {
-            val v1 = invalidIdCondition.value ?: false
-            val v2 = nameCondition.value ?: false
-            val v3 = emailCondition.value ?: false
-            val v4 = phoneCondition.value ?: false
-            val v5 = pwBothTrue.value ?: false
+            val v1 = emailCondition.value ?: false // 이메일 형식
+            val v2 = emailVerify.value ?: false // 이메일 인증
+            val v3 = passAuthCondition.value ?: false // 핸드폰 번호 인증
+            val v4 = pwBothTrue.value ?: false // 비밀번호 형식
+            val v5 = nameCondition.value ?: false // 비밀번호 형식
             value = v1 && v2 && v3 && v4 && v5
         }
-
-        addSource(invalidIdCondition) { checkAllTrue() }
-        addSource(nameCondition) { checkAllTrue() }
         addSource(emailCondition) { checkAllTrue() }
-        addSource(phoneCondition) { checkAllTrue() }
+        addSource(emailVerify) { checkAllTrue() }
+        addSource(passAuthCondition) { checkAllTrue() }
         addSource(pwBothTrue) { checkAllTrue() }
+        addSource(nameCondition) { checkAllTrue() }
     }
+
+
 
     // ------# 약관 동의 #------
     val agreementMk1 = MutableLiveData(false)
@@ -90,13 +121,12 @@ class SignInViewModel: ViewModel() {
     val heightCondition = MutableLiveData(false)
     val weightCondition = MutableLiveData(false)
 
-
     var verificationId = ""
     init {
         User.value = JSONObject()
-        currentIdCon.observeForever{ updateIdPwCondition() }
+        currentEmailCon.observeForever{ updateIdPwCondition() }
         currentPwCon.observeForever{ updateIdPwCondition() }
-        id.value = ""
+        fullEmail.value = ""
         pw.value = ""
         emailId.value = ""
         setWeight.value = 0
@@ -104,14 +134,21 @@ class SignInViewModel: ViewModel() {
         setEmail.value = ""
     }
     private fun updateIdPwCondition() {
-        idPwCondition.value = currentIdCon.value == true && currentPwCon.value == true
+        emailPwCondition.value = currentEmailCon.value == true && currentPwCon.value == true
     }
 
+    // findAccount
+    var resetJwt : String = ""
+    var saveEmail = ""
+    var isFindEmail = MutableLiveData(true)
+    var textWatcher : TextWatcher? = null
 
+    // PIN 번호 로그인
+    var setPin = ""
+    var pinCondition = MutableLiveData(false)
     override fun onCleared() {
         super.onCleared()
-        currentIdCon.removeObserver { updateIdPwCondition() }
+        currentEmailCon.removeObserver { updateIdPwCondition() }
         currentPwCon.removeObserver { updateIdPwCondition() }
     }
-
 }

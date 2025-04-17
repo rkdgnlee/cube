@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
 import com.tangoplus.tangoq.vo.MessageVO
+import androidx.core.content.edit
 
 class PreferencesManager(private val context: Context) {
     private val LAST_SN_KEY = "last_sn"
@@ -19,7 +20,8 @@ class PreferencesManager(private val context: Context) {
     fun getUserSn(): Int = globalPrefs.getInt(USER_SN_KEY, -1)
 
     fun setUserSn(userSn: Int) {
-        globalPrefs.edit().putInt(USER_SN_KEY, userSn).apply()
+        Log.v("setUserSn", "$userSn")
+        globalPrefs.edit { putInt(USER_SN_KEY, userSn) }
     }
 
     // ------# Latest Recommendation #------
@@ -27,7 +29,7 @@ class PreferencesManager(private val context: Context) {
         get() = getPrefs("latest_recommendation")
 
     fun saveLatestRecommendation(sn: Int) {
-        latestRecommendationPrefs.edit().putInt("latest_sn", sn).apply()
+        latestRecommendationPrefs.edit { putInt("latest_sn", sn) }
     }
 
     fun getLatestRecommendation(): Int = latestRecommendationPrefs.getInt("latest_sn", -1)
@@ -41,22 +43,22 @@ class PreferencesManager(private val context: Context) {
     fun incrementAndGetSn(): Int {
         val lastSn = getLastSn()
         val newSn = lastSn + 1
-        searchHistoryPrefs.edit().putInt(LAST_SN_KEY, newSn).apply()
+        searchHistoryPrefs.edit { putInt(LAST_SN_KEY, newSn) }
         return newSn
     }
 
     fun setStoredHistory(search: String) {
-        searchHistoryPrefs.edit().putString("${incrementAndGetSn()}_stored_history", search).apply()
+        searchHistoryPrefs.edit { putString("${incrementAndGetSn()}_stored_history", search) }
     }
 
     fun getStoredHistory(sn: Int): String = searchHistoryPrefs.getString("${sn}_stored_history", "").orEmpty()
 
     fun deleteAllHistory() {
-        searchHistoryPrefs.edit().clear().apply()
+        searchHistoryPrefs.edit { clear() }
     }
 
     fun deleteStoredHistory(sn: Int) {
-        searchHistoryPrefs.edit().remove("${sn}_stored_history").apply()
+        searchHistoryPrefs.edit { remove("${sn}_stored_history") }
     }
 
     // Alarms
@@ -65,7 +67,13 @@ class PreferencesManager(private val context: Context) {
 
     fun storeAlarm(messageVO: MessageVO) {
         val alarm = Gson().toJson(messageVO)
-        alarmPrefs.edit().putString("alarmMessage_${messageVO.sn}_${messageVO.timeStamp}", alarm).apply()
+
+        alarmPrefs.edit {
+            putString(
+                "alarmMessage_${messageVO.userSn}_${messageVO.timeStamp}",
+                alarm
+            )
+        }
     }
 
     fun getAlarms(sn: Int): MutableList<MessageVO> {
@@ -84,79 +92,19 @@ class PreferencesManager(private val context: Context) {
     }
 
     fun deleteAlarm(sn: Int, timeStamp: Long) {
-        alarmPrefs.edit().remove("alarmMessage_${sn}_$timeStamp").apply()
+        alarmPrefs.edit { remove("alarmMessage_${sn}_$timeStamp") }
     }
 
     fun deleteAllAlarms(sn: Int) {
-        val editor = alarmPrefs.edit()
-        val allEntries = alarmPrefs.all
+        alarmPrefs.edit {
+            val allEntries = alarmPrefs.all
 
-        for ((key, _) in allEntries) {
-            if (key.startsWith("alarmMessage_$sn")) {
-                editor.remove(key)
+            for ((key, _) in allEntries) {
+                if (key.startsWith("alarmMessage_$sn")) {
+                    remove(key)
+                }
             }
+
         }
-
-        editor.apply()
     }
-
-    // likes
-    private val likePrefs : SharedPreferences
-        get() = getPrefs("like")
-
-    fun storeLike(exerciseId : String) {
-        Log.d("PrefsManager", "Storing like for: $exerciseId")
-        likePrefs.edit().putString("likes_$exerciseId", exerciseId).apply()
-
-    }
-
-    fun existLike(exerciseId: String) : Boolean  {
-        val exist = likePrefs.getString("likes_$exerciseId", "")
-        return if (exist != "") true else false
-    }
-
-    fun getLikes(): MutableList<String> {
-        val allEntries = likePrefs.all
-        val likeList = mutableListOf<String>()
-        for ((key, value) in allEntries) {
-            if (key.startsWith("likes_")) {
-                likeList.add(value.toString())
-            }
-        }
-        return likeList
-    }
-
-    fun deleteLike(exerciseId: String) {
-        Log.d("PrefsManager", "Deleting like for: $exerciseId")
-        likePrefs.edit().remove("likes_$exerciseId").apply()
-    }
-
-//    private val loginFailedPrefs : SharedPreferences
-//        get() = getPrefs("loginId")
-//
-//
-//    fun storeLoginId(loginId: String, tryCount: Int) {
-//        Log.d("PrefsManager", "Storing loginId for: $loginId")
-//        loginFailedPrefs.edit()
-//            .putInt("loginId_${loginId}", tryCount)
-//            .putLong("loginId_${loginId}_timestamp", System.currentTimeMillis())
-//            .apply()
-//    }
-//    fun getLoginCount(loginId: String) : Int {
-//        val storedTimestamp = loginFailedPrefs.getLong("loginId_${loginId}_timestamp", 0)
-//        val currentTime = System.currentTimeMillis()
-//
-//        // 일주일(7일) 후 만료 체크
-//        if (currentTime - storedTimestamp > 1 * 24 * 60 * 60 * 1000L) {
-//            // 만료된 경우 데이터 삭제
-//            loginFailedPrefs.edit()
-//                .remove("loginId_${loginId}")
-//                .remove("loginId_${loginId}_timestamp")
-//                .apply()
-//            return 0
-//        }
-//
-//        // 만료되지 않은 경우 저장된 로그인 시도 횟수 반환
-//        return loginFailedPrefs.getInt("loginId_${loginId}", 0)
-//    }
 }

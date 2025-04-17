@@ -1,6 +1,7 @@
 package com.tangoplus.tangoq.view
 
 import android.graphics.Canvas
+import android.graphics.Path
 import android.graphics.RectF
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
@@ -12,13 +13,6 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 class BarChartRender(chart: BarDataProvider?, animator: ChartAnimator?, viewPortHandler: ViewPortHandler?) : BarChartRenderer(chart, animator, viewPortHandler) {
     private var mRightRadius = 16f
     private var mLeftRadius = 16f
-//    fun setRightRadius(mRightRadius: Float) {
-//        this.mRightRadius = mRightRadius
-//    }
-//
-//    fun setLeftRadius(mLeftRadius: Float) {
-//        this.mLeftRadius = mLeftRadius
-//    }
 
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
         val trans = mChart.getTransformer(dataSet.axisDependency)
@@ -34,66 +28,48 @@ class BarChartRender(chart: BarDataProvider?, animator: ChartAnimator?, viewPort
         buffer.setInverted(mChart.isInverted(dataSet.axisDependency))
         buffer.feed(dataSet)
         trans.pointValuesToPixel(buffer.buffer)
+        mRenderPaint.color = dataSet.color
 
-        // if multiple colors
-        if (dataSet.colors.size > 1) {
-            var j = 0
-            while (j < buffer.size()) {
-                if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) {
-                    j += 4
-                    continue
-                }
-                if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break
-                if (mChart.isDrawBarShadowEnabled) {
-                    if (mRightRadius > 0) {
-                        c.drawRoundRect(
-                            RectF(buffer.buffer[j], mViewPortHandler.contentTop(),
-                            buffer.buffer[j + 2],
-                            mViewPortHandler.contentBottom()), mRightRadius, mRightRadius, mShadowPaint)
-                    } else {
-                        c.drawRect(buffer.buffer[j], mViewPortHandler.contentTop(),
-                            buffer.buffer[j + 2],
-                            mViewPortHandler.contentBottom(), mShadowPaint)
-                    }
-                }
+        var j = 0
+        while (j < buffer.size()) {
+            if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) {
+                j += 4
+                continue
+            }
+            if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break
 
-                // Set the color for the currently drawn value. If the index
-                // is
-                // out of bounds, reuse colors.
-                mRenderPaint.color = dataSet.getColor(j / 4)
-                if (mRightRadius > 0) {
-                    c.drawRoundRect(RectF(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
-                        buffer.buffer[j + 3]), mRightRadius, mRightRadius, mRenderPaint)
-                } else {
-                    c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
-                        buffer.buffer[j + 3], mRenderPaint)
-                }
-                j += 4
+            val barRect = RectF(
+                buffer.buffer[j],     // left
+                buffer.buffer[j + 1], // top
+                buffer.buffer[j + 2], // right
+                buffer.buffer[j + 3]  // bottom
+            )
+
+            // 그림자 바 그리기
+            if (mChart.isDrawBarShadowEnabled) {
+                val shadowPath = Path()
+                val shadowRadii = floatArrayOf(
+                    mLeftRadius, mLeftRadius,     // top-left
+                    mRightRadius, mRightRadius,   // top-right
+                    0f, 0f,                       // bottom-right
+                    0f, 0f                        // bottom-left
+                )
+                shadowPath.addRoundRect(barRect, shadowRadii, Path.Direction.CW)
+                c.drawPath(shadowPath, mShadowPaint)
             }
-        } else {
-            mRenderPaint.color = dataSet.color
-            var j = 0
-            while (j < buffer.size()) {
-                if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) {
-                    j += 4
-                    continue
-                }
-                if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break
-                if (mChart.isDrawBarShadowEnabled) {
-                    if (mRightRadius > 0) c.drawRoundRect(RectF(buffer.buffer[j], mViewPortHandler.contentTop(),
-                        buffer.buffer[j + 2],
-                        mViewPortHandler.contentBottom()), mRightRadius, mRightRadius, mShadowPaint) else c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
-                        buffer.buffer[j + 3], mRenderPaint)
-                }
-                if (mRightRadius > 0) {
-                    c.drawRoundRect(RectF(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
-                        buffer.buffer[j + 3]), mRightRadius, mRightRadius, mRenderPaint)
-                } else {
-                    c.drawRect(buffer.buffer[j], buffer.buffer[j + 1], buffer.buffer[j + 2],
-                        buffer.buffer[j + 3], mRenderPaint)
-                }
-                j += 4
-            }
+
+            // 실제 바 그리기
+            val path = Path()
+            val radii = floatArrayOf(
+                mLeftRadius, mLeftRadius,     // top-left
+                mRightRadius, mRightRadius,   // top-right
+                0f, 0f,                       // bottom-right
+                0f, 0f                        // bottom-left
+            )
+            path.addRoundRect(barRect, radii, Path.Direction.CW)
+            c.drawPath(path, mRenderPaint)
+
+            j += 4
         }
     }
 }

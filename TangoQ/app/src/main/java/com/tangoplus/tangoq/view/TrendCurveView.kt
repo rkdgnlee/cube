@@ -30,10 +30,10 @@ class TrendCurveView @JvmOverloads constructor(
 
     private var points = listOf<Pair<Float, Float>>()
     private var resampledPoints = listOf<Pair<Float, Float>>()
-    private var margin = 20f // 기본 마진 값
+    private var margin = 10f // 기본 마진 값
     private var boundingBox = RectF()
     private val resampleSize = 35
-    private var isMirrored = false // 좌우 반전 여부
+    private var isFrontCamera = false // 좌우 반전 여부
 
     fun setPoints(newPoints: List<Pair<Float, Float>>, newMargin: Float = 15f) {
         points = newPoints
@@ -43,7 +43,7 @@ class TrendCurveView @JvmOverloads constructor(
         invalidate()
     }
     fun setMirrored(mirrored: Boolean) {
-        isMirrored = mirrored
+        isFrontCamera = mirrored
         invalidate()
     }
     private fun calculateBoundingBox() {
@@ -69,7 +69,11 @@ class TrendCurveView @JvmOverloads constructor(
 
         if (points.isEmpty()) return
 
-        if (isMirrored) {
+        // 전면 카메라일경우 그대로, 후면카메라일 경우 반대로
+        if (isFrontCamera) {
+            canvas.scale(1f, 1f, width / 2f, height / 2f)
+
+        } else {
             canvas.scale(-1f, 1f, width / 2f, height / 2f)
         }
         val scaledPoints = scalePoints(points, flipHorizontal = true, flipVertical = true)

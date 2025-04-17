@@ -1,16 +1,22 @@
 package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,18 +34,19 @@ import com.tangoplus.tangoq.dialog.GuideDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.bottomsheet.MeasureBSDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.isFirstRun
-import com.tangoplus.tangoq.function.TooltipManager
 import com.tangoplus.tangoq.api.DeviceService.isNetworkAvailable
 import com.tangoplus.tangoq.api.NetworkRecommendation.getRecommendationProgress
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.scrollToView
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
-import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
-import kotlinx.coroutines.CoroutineScope
+import io.github.douglasjunior.androidSimpleTooltip.OverlayView
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.core.graphics.toColorInt
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -51,11 +58,10 @@ class MainFragment : Fragment() {
     private var measures : MutableList<MeasureVO>? = null
     private var singletonMeasure : MutableList<MeasureVO>? = null
     private var latestRecSn = -1
-    private lateinit var ssm : SaveSingletonManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMainBinding.inflate(inflater)
         startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result -> }
@@ -65,19 +71,8 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (pvm.fromProgramCustom) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
-                mvm.selectedMeasure?.recommendations = progressRec
-                withContext(Dispatchers.Main){
-                    if (isAdded) {
-                        Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-                        Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
-                        setAdapter()
-                    }
-
-                    pvm.fromProgramCustom = false
-                }
-            }
+            renderProgramRV()
+            pvm.fromProgramCustom = false
         }
     }
     @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
@@ -90,16 +85,17 @@ class MainFragment : Fragment() {
         if (sn != null) {
             prefsManager.setUserSn(sn)
         }
+        Log.v("유저제이슨", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
 
         latestRecSn = prefsManager.getLatestRecommendation()
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
         // ------# 알람 intent #------
-        binding.ibtnMAlarm.setOnClickListener {
+        binding.ibtnMAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
-        binding.ibtnMQRCode.setOnClickListener{
+        binding.ibtnMQRCode.setOnSingleClickListener{
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
@@ -109,49 +105,43 @@ class MainFragment : Fragment() {
             dialog.show(requireActivity().supportFragmentManager, "GuideDialogFragment")
         }
 
-        binding.clM1.setOnClickListener{
-
-            ssm = SaveSingletonManager(requireContext(), requireActivity())
-            lifecycleScope.launch(Dispatchers.IO) {
-                ssm.setRecent5MeasureResult(0)
-                withContext(Dispatchers.Main) {
-                    (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
-                    // 다운로드 후 이동
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flMain, MeasureDetailFragment())
-                        commit()
-                    }
-                }
-            }
-        }
-
         when (isNetworkAvailable(requireContext())) {
             true -> {
                 measures = Singleton_t_measure.getInstance(requireContext()).measures
 
-
                 // ------# 초기 measure 설정 #------
                 if (!measures.isNullOrEmpty()) {
-                    if (mvm.selectedMeasureDate.value == null) {
-                        mvm.selectedMeasureDate.value = measures?.get(0)?.regDate
+//                    if (mvm.selectedMeasureDate.value == null) {
+//                        mvm.selectedMeasureDate.value =
+//                            measures?.let { avm.createDateDisplayList(it).get(0) }
+//                    }
+//                    if (mvm.selectMeasureDate.value == null) {
+//                        mvm.selectMeasureDate.value = measures?.let { avm.createDateDisplayList(it).get(0) }
+//                    }
+                    val setNavToMD = listOf(binding.clM1, binding.tvMOverall)
+                    setNavToMD.forEach {
+                        it.setOnSingleClickListener {
+                            (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
+                            // 다운로드 후 이동
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flMain, MeasureDetailFragment())
+                                commit()
+                            }
+                        }
                     }
-                    if (mvm.selectMeasureDate.value == null) {
-                        mvm.selectMeasureDate.value = measures?.get(0)?.regDate
-                    }
-
                     // ------# 측정결과 있을 때 도움말 툴팁 #------
-                    if (isFirstRun("Tooltip_isFirstRun_existed")) {
+                    if (isFirstRun("Tooltip_isFirstRun_existed_${Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")}")) {
                         existedMeasurementGuide()
                     }
                 } else {
-                    if (isFirstRun("Tooltip_isFirstRun_not_existed")) {
+                    if (isFirstRun("Tooltip_isFirstRun_not_existed_${Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")}")) {
                         notExistedMeasurementGuide()
                     }
                 }
                 Log.v("선택된measureDate", "${mvm.selectedMeasureDate.value}")
                 updateUI()
 
-                binding.tvMMeasureDate.setOnClickListener {
+                binding.tvMMeasureDate.setOnSingleClickListener {
                     val dialog = MeasureBSDialogFragment()
                     dialog.show(requireActivity().supportFragmentManager, "MeasureBSDialogFragment")
                 }
@@ -176,7 +166,7 @@ class MainFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
         Log.v("measure있는지", "${measures?.size}")
-
+        startShimmer()
         if (measures.isNullOrEmpty()) {
             // ------# measure에 뭐라도 들어있으면 위 코드 #-------
             binding.tvMTitle.text = "${Singleton_t_user.getInstance(requireContext()).jsonObject?.getString("user_name") ?: ""}님"
@@ -188,11 +178,10 @@ class MainFragment : Fragment() {
             binding.rvM1.visibility = View.GONE
             binding.tvM2.visibility = View.GONE
 //            binding.tvMProgram.visibility = View.GONE
-
-
+            stopShimmer()
             binding.btnMProgram.apply {
                 text = "측정 시작하기"
-                setOnClickListener{
+                setOnSingleClickListener{
                     (activity as? MainActivity)?.launchMeasureSkeletonActivity()
                 }
             }
@@ -205,20 +194,16 @@ class MainFragment : Fragment() {
                     binding.rvM1.visibility = View.VISIBLE
                     binding.tvMTitle.text = "최근 측정 정보"
 //                    binding.tvMProgram.visibility = View.VISIBLE
-                    binding.btnMProgram.setOnClickListener {
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            replace(R.id.flMain, ProgramSelectFragment())
-                            commit()
-                        }
-                    }
+
                     // ------# 바텀시트에서 변한 selectedMeasureDate 에 맞게 변함 #------
 
 
                     mvm.selectedMeasureDate.observe(viewLifecycleOwner) { selectedDate ->
                         try {
                             lifecycleScope.launch(Dispatchers.Main) {
+
                                 Log.v("날짜 비교", "$selectedDate, ${measures!!.map { it.regDate }} ")
-                                val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate })
+                                val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate.fullDateTime })
                                 if (dateIndex != null) {
 
                                     measures?.get(dateIndex)?.recommendations
@@ -249,12 +234,7 @@ class MainFragment : Fragment() {
                                     }
                                 }
 
-                                // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
-                                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
-                                mvm.selectedMeasure?.recommendations = progressRec
-                                Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-//                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
-                                setAdapter()
+                                renderProgramRV()
                             }
                         }  catch (e: IndexOutOfBoundsException) {
                             Log.e("MainIndex", "${e.message}")
@@ -273,64 +253,148 @@ class MainFragment : Fragment() {
             }
         }
     }
-    private fun setAdapter() {
-        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf())
-        binding.rvM2.layoutManager = layoutManager
-        binding.rvM2.adapter = adapter
-        adapter.notifyDataSetChanged()
+
+    private fun renderProgramRV() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
+            val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
+            mvm.selectedMeasure?.recommendations = progressRec
+            Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
+            setAdapter()
+            stopShimmer()
+        }
     }
 
+
+    private fun setAdapter() {
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        Log.w("rec갯수", "${mvm.selectedMeasure?.recommendations?.size}, ${mvm.selectedMeasure?.recommendations?.map { it.title }}")
+        val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf(), pvm)
+        binding.rvM2.layoutManager = layoutManager
+        binding.rvM2.adapter = adapter
+        binding.btnMProgram.text = when {
+            pvm.isExpanded -> "접기"
+            else -> "더보기"
+        }
+        binding.btnMProgram.setOnSingleClickListener {
+            if (binding.btnMProgram.text == "더보기") {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    scrollToView(binding.btnMProgram, binding.nsvM)
+                }, 250)
+                binding.btnMProgram.text = "접기"
+            } else {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    scrollToView(binding.rvM1, binding.nsvM)
+                }, 250)
+                binding.btnMProgram.text = "더보기"
+            }
+            adapter.toggleExpand(binding.rvM2)
+
+        }
+    }
+
+    private fun startShimmer() {
+        binding.sflM.startShimmer()
+        binding.sflM.visibility = View.VISIBLE
+    }
+    private fun stopShimmer() {
+        binding.sflM.stopShimmer()
+        binding.sflM.visibility = View.GONE
+    }
 
     private fun existedMeasurementGuide() {
         binding.clM2.isEnabled = false
         binding.clM2.isClickable = false
-        TooltipManager.createGuide(
-            context = requireContext(),
-            text = "최근 측정에서 나온\n위험 부위를 탭해서 확인해보세요",
-            anchor = binding.rvM1,
-            gravity = Gravity.BOTTOM,
-            dismiss = {
-
-                TooltipManager.createGuide(
-                    context = requireContext(),
-                    text = "탭하여 지난 측정 결과 선택하세요\n측정 결과와 지난 프로그램을 볼 수 있습니다",
-                    anchor = binding.tvMMeasureDate,
+        context.let { safeContext ->
+            if (safeContext != null) {
+                createGuide(
+                    context = safeContext,
+                    text = "최근 측정에서 나온\n위험 부위를 탭해서 확인해보세요",
+                    anchor = binding.rvM1,
                     gravity = Gravity.BOTTOM,
                     dismiss = {
-                        TooltipManager.createGuide(
-                            context = requireContext(),
-                            text = "탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
-                            anchor = binding.rvM2,
-                            gravity = Gravity.TOP,
-                            dismiss = {
-                                binding.clM2.isEnabled = false
-                                binding.clM2.isClickable = false
-                            })
+                        if (safeContext != null) {
+                            createGuide(
+                                context = safeContext,
+                                text = "탭하여 지난 측정 결과 선택하세요\n측정 결과와 지난 프로그램을 볼 수 있습니다",
+                                anchor = binding.tvMMeasureDate,
+                                gravity = Gravity.BOTTOM,
+                                dismiss = {
+                                    if (safeContext != null) {
+                                        createGuide(
+                                            context = safeContext,
+                                            text = "탭해서 현재 위험 부위와 관련된\n운동 프로그램을 시작할 수 있습니다",
+                                            anchor = binding.rvM2,
+                                            gravity = Gravity.TOP,
+                                            dismiss = {
+                                                binding.clM2.isEnabled = false
+                                                binding.clM2.isClickable = false
+                                            }
+                                        )
+                                    }
+                                }
+                            )
+                        }
+
                     }
                 )
             }
-        )
+
+        }
     }
 
     private fun notExistedMeasurementGuide() {
-        TooltipManager.createGuide(
-
-            context = requireContext(),
-            text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
-            anchor = binding.tvMOverall,
-            gravity = Gravity.BOTTOM,
-            dismiss = {
-
-                TooltipManager.createGuide(
+        context.let { safeContext ->
+            if (safeContext != null) {
+                createGuide(
                     context = requireContext(),
-                    text = "측정을 완료하고 운동 프로그램을 추천받으세요",
-                    anchor = binding.btnMProgram,
+                    text = "가장 최근 측정 결과의 종합 점수입니다\n7가지 자세와 설문을 통해 종합적으로 산출됩니다",
+                    anchor = binding.tvMOverall,
                     gravity = Gravity.BOTTOM,
                     dismiss = {
+                        if (safeContext != null) {
+                            createGuide(
+                                context = requireContext(),
+                                text = "측정을 시작해서 몸의 균형상태를 확인해 보세요",
+                                anchor = binding.btnMProgram,
+                                gravity = Gravity.BOTTOM,
+                                dismiss = {
+                                }
+                            )
+                        }
                     }
                 )
             }
-        )
+        }
+    }
+
+    private fun createGuide(
+        context: Context,
+        text: String,
+        anchor: View,
+        gravity: Int,
+        dismiss: () -> Unit,
+    ) {
+        SimpleTooltip.Builder(context).apply {
+            anchorView(anchor)
+            backgroundColor(ContextCompat.getColor(context, R.color.mainColor))
+            arrowColor("#00FFFFFF".toColorInt())
+            gravity(gravity)
+            animated(true)
+            transparentOverlay(false)
+            contentView(R.layout.tooltip)
+            highlightShape( OverlayView.HIGHLIGHT_SHAPE_RECTANGULAR_ROUNDED)
+
+            onShowListener {
+                val tooltipTextView: TextView = it.findViewById(R.id.tooltip_instruction)
+                tooltipTextView.text = text
+            }
+            onDismissListener {
+                dismiss()
+            }
+            build()
+                .show()
+        }
+
     }
 }

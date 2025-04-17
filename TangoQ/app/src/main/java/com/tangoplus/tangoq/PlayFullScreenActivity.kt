@@ -15,6 +15,7 @@ import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Chronometer
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -53,7 +54,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
     var currentExerciseId = ""
     private var isExitDialogVisible = false
     private lateinit var mediaSourceList: List<MediaSource>
-
+//    private var pvm.simpleExoPlayer : pvm.simpleExoPlayer? = null
     private var exoPlay: ImageButton? = null
     private var exoPause: ImageButton? = null
     private var llSpeed: LinearLayout? = null
@@ -139,7 +140,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
             playbackPosition = intent.getLongExtra("current_position", 0L)
             Log.v("재생시점원시", "$playbackPosition")
             pvm.isResume = false
-            setPlayer()
+//            setPlayer()
+
         }
 
         exoPlay = findViewById(R.id.btnPlay)
@@ -187,10 +189,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
         forward5.setOnClickListener {
             val forwardPosition = pvm.simpleExoPlayer?.currentPosition?.plus(5000)
             if (forwardPosition != null) {
-                if (forwardPosition < (pvm.simpleExoPlayer?.duration?.minus(5000) ?: 0L)) {
+                if (forwardPosition < (pvm.simpleExoPlayer?.duration?.minus(6000) ?: 0L)) {
                     pvm.simpleExoPlayer?.seekTo(forwardPosition)
-                } else {
-                    pvm.simpleExoPlayer?.pause()
                 }
             }
         } // ------! 앞으로 감기 뒤로 감기 끝 !------
@@ -230,6 +230,15 @@ class PlayFullScreenActivity : AppCompatActivity() {
         Log.v("setPlayer", "position: ${pvm.getPlaybackPosition()}, windowIndex: ${pvm.getWindowIndex()}")
         initPlayer(pvm.baseUrls, pvm.getWindowIndex(), pvm.getPlaybackPosition())
         pvm.simpleExoPlayer?.addListener(object : Player.Listener {
+            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                super.onPlayWhenReadyChanged(playWhenReady, reason)
+                // 재생중일 때는 화면 꺼지기 잠금
+                if (playWhenReady) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                } else {  // 재생이 종료되면 flag 삭제
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                }
+            }
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
                 Log.v("PlaybackState", "State: $playbackState")
@@ -239,8 +248,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     Player.STATE_READY -> {
                         Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: ${pvm.currentMediaSourceIndex}")
                         pvm.currentVideoDuration = pvm.simpleExoPlayer?.duration ?: 0
-                        Log.e("currentVideoDuration임", "$pvm.currentVideoDuration")
-
+                        Log.e("currentVideoDuration임", "${pvm.currentVideoDuration}")
                     }
                     Player.STATE_ENDED -> {
                         Log.v("PlaybackState", "Player.STATE_ENDED")
@@ -281,7 +289,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                     if (pvm.baseUrls.size > 1) {
                         sendUVP(true) {}
-//                        val currentPlaybackPosition = simpleExoPlayer?.currentPosition
+//                        val currentPlaybackPosition = pvm.simpleExoPlayer?.currentPosition
 //                        pvm.currentWindowIndex.value = currentWindowIndex
 //                        pvm.currentPlaybackPosition.value = currentPlaybackPosition
                         if (currentWindowIndex != null) {
@@ -304,7 +312,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             }
                         }
                     }
-
                 }
             }
         })
@@ -334,11 +341,12 @@ class PlayFullScreenActivity : AppCompatActivity() {
         pvm.simpleExoPlayer?.setMediaSources(mediaSourceList)
         pvm.simpleExoPlayer?.prepare()
         pvm.simpleExoPlayer?.seekTo(pvm.getWindowIndex(), pvm.getPlaybackPosition())
-        Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${pvm.simpleExoPlayer?.duration}")
+
 //        val positionMs = playbackPosition * 1000
 //        val savedPosition = playbackPositions[windowIndex] ?: positionMs
-//        simpleExoPlayer?.seekTo(windowIndex, savedPosition)
+//        pvm.simpleExoPlayer?.seekTo(windowIndex, savedPosition)
         pvm.simpleExoPlayer?.playWhenReady = true  // 준비되면 자동 재생
+        Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${pvm.simpleExoPlayer?.duration}")
     }
 
     // ------# isFinish는 영상 길이 전부 시청했는지 여부 #------
@@ -360,7 +368,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         jo.put("week_number", pvm.weekNumber)
         jo.put("cycle", pvm.cycle)
 
-        Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()}, jo: $jo, totalDuration: $totalDurationMs")
+        Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()},currentPositionSeconds: $currentPositionSeconds,  jo: $jo, totalDuration: $totalDurationMs")
         val currentUvpSns = pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()
         if (pvm.uvpSns?.isNotEmpty() == true && currentUvpSns != null) {
             patchProgress1Item(getString(R.string.API_progress), currentUvpSns, jo, this@PlayFullScreenActivity) { }
@@ -499,6 +507,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         pvm.simpleExoPlayer?.let { player ->
             pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
             player.stop()
+            player.release()
             player.playWhenReady = false
             playbackPosition = player.currentPosition
         }
@@ -514,6 +523,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 }
             }
         }
+        Log.v("exoOnStop", "pvm.simpleExoPlayer released and null")
+
     }
 
     override fun onPause() {
@@ -527,17 +538,31 @@ class PlayFullScreenActivity : AppCompatActivity() {
             pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
             player.stop()
             player.playWhenReady = false
+            player.release()
+            player.playWhenReady = false
             playbackPosition = player.currentPosition
+
         }
         pvm.isResume = true
+        Log.v("exoOnPause", "pvm.simpleExoPlayer released and null")
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (pvm.simpleExoPlayer != null) {
+            pvm.simpleExoPlayer?.let { player ->
+                pvm.savePlayerState(player, pvm.baseUrls[pvm.getWindowIndex()])
+                player.stop()
+                player.release()
+                player.playWhenReady = false
+                playbackPosition = player.currentPosition
+                Log.v("exoOnDestroy", "Player released in onDestroy()")
+            }
             pvm.simpleExoPlayer?.release()
             pvm.simpleExoPlayer = null
-            Log.v("exoplayerExit", "SimpleExoPlayer released and null")
+
+            Log.v("exoOnDestroy", "pvm.simpleExoPlayer released and null")
         }
     }
 
@@ -546,7 +571,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         if (pvm.simpleExoPlayer != null) {
             pvm.simpleExoPlayer?.release()
             pvm.simpleExoPlayer = null
-            Log.v("exoplayerExit", "SimpleExoPlayer released and null, finish")
+            Log.v("exoplayerExit", "pvm.simpleExoPlayer released and null, finish")
         }
     }
     override fun onSaveInstanceState(outState: Bundle) {

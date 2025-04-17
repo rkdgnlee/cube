@@ -17,23 +17,25 @@ import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.net.SocketTimeoutException
 
 object  NetworkExercise {
 
     // ------! exercise1개 가져오기 !------
-    suspend fun fetchExerciseById(myUrl: String, exerciseId : String) : ExerciseVO {
+    suspend fun fetchExerciseById(myUrl: String, exerciseId : String) : ExerciseVO? {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}/$exerciseId")
             .get()
             .build()
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
 
-                val jo = JSONObject(responseBody.toString())
+                    val jo = JSONObject(responseBody.toString())
 
-                val exerciseInstance = ExerciseVO(
+                    val exerciseInstance = ExerciseVO(
                         exerciseId = jo.optString("exercise_id"),
                         exerciseName = jo.optString("exercise_name"),
                         exerciseTypeId = jo.getString("exercise_type_id"),
@@ -53,12 +55,31 @@ object  NetworkExercise {
                         duration = (jo.optString("duration").toIntOrNull() ?: 0).toString(),
                         imageFilePath = jo.getString("image_filepath")
                     )
-                exerciseInstance
+                    exerciseInstance
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("fetchExercise1", "IndexOutOfBoundsException: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("fetchExercise1", "IllegalArgumentException: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("fetchExercise1", "IllegalStateException: ${e.message}")
+                null
+            }  catch (e: IOException) {
+                Log.e("fetchExercise1", "IOException: ${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e("fetchExercise1", "NullPointerException: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("fetchExercise1", "Exception: ${e.message}")
+                null
             }
         }
     }
 
-    suspend fun fetchExerciseJson(myUrl: String): List<ExerciseVO> {
+    suspend fun fetchExerciseJson(myUrl: String): List<ExerciseVO>? {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(myUrl)
@@ -66,41 +87,61 @@ object  NetworkExercise {
             .build()
 
         return withContext(Dispatchers.IO) {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string()
+            try {
+                client.newCall(request).execute().use { response ->
+                    val responseBody = response.body?.string()
 
-                val exerciseDataList = mutableListOf<ExerciseVO>()
-                val jsonArr = responseBody?.let { JSONArray(it) }
+                    val exerciseDataList = mutableListOf<ExerciseVO>()
+                    val jsonArr = responseBody?.let { JSONArray(it) }
 
-                if (jsonArr != null) { // 174 ~ 195 번의 exercise_id  250116 기준 현재 0 ~ 203
-                    for (i in 0 until jsonArr.length()) {
-                        if (i !in 173 .. 194) {
-                            val jsonObject = jsonArr.getJSONObject(i)
-                            val exerciseData = ExerciseVO(
-                                exerciseId = jsonObject.optString("exercise_id"),
-                                exerciseName = jsonObject.optString("exercise_name"),
-                                exerciseTypeId = jsonObject.getString("exercise_type_id"),
-                                exerciseTypeName = jsonObject.getString("exercise_type_name"),
-                                exerciseCategoryId = jsonObject.getString("exercise_category_id"),
-                                exerciseCategoryName = jsonObject.getString("exercise_category_name"),
-                                relatedJoint = jsonObject.getString("related_joint"),
-                                relatedMuscle = jsonObject.getString("related_muscle"),
-                                relatedSymptom = jsonObject.getString("related_symptom"),
-                                exerciseStage = jsonObject.getString("exercise_stage"),
-                                exerciseFrequency = jsonObject.getString("exercise_frequency"),
-                                exerciseIntensity = jsonObject.getString("exercise_intensity"),
-                                exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
-                                exerciseMethod = jsonObject.getString("exercise_method"),
-                                exerciseCaution = jsonObject.getString("exercise_caution"),
-                                videoFilepath = jsonObject.getString("video_filepath"),
-                                duration = (jsonObject.optString("duration").toIntOrNull() ?: 0).toString(),
-                                imageFilePath = jsonObject.getString("image_filepath"),
-                            )
-                            exerciseDataList.add(exerciseData)
+                    if (jsonArr != null) { // 174 ~ 195 번의 exercise_id  250116 기준 현재 0 ~ 203
+                        for (i in 0 until jsonArr.length()) {
+                            if (i !in 173 .. 194) {
+                                val jsonObject = jsonArr.getJSONObject(i)
+                                val exerciseData = ExerciseVO(
+                                    exerciseId = jsonObject.optString("exercise_id"),
+                                    exerciseName = jsonObject.optString("exercise_name"),
+                                    exerciseTypeId = jsonObject.getString("exercise_type_id"),
+                                    exerciseTypeName = jsonObject.getString("exercise_type_name"),
+                                    exerciseCategoryId = jsonObject.getString("exercise_category_id"),
+                                    exerciseCategoryName = jsonObject.getString("exercise_category_name"),
+                                    relatedJoint = jsonObject.getString("related_joint"),
+                                    relatedMuscle = jsonObject.getString("related_muscle"),
+                                    relatedSymptom = jsonObject.getString("related_symptom"),
+                                    exerciseStage = jsonObject.getString("exercise_stage"),
+                                    exerciseFrequency = jsonObject.getString("exercise_frequency"),
+                                    exerciseIntensity = jsonObject.getString("exercise_intensity"),
+                                    exerciseInitialPosture = jsonObject.getString("exercise_initial_posture"),
+                                    exerciseMethod = jsonObject.getString("exercise_method"),
+                                    exerciseCaution = jsonObject.getString("exercise_caution"),
+                                    videoFilepath = jsonObject.getString("video_filepath"),
+                                    duration = (jsonObject.optString("duration").toIntOrNull() ?: 0).toString(),
+                                    imageFilePath = jsonObject.getString("image_filepath"),
+                                )
+                                exerciseDataList.add(exerciseData)
+                            }
                         }
                     }
+                    exerciseDataList
                 }
-                exerciseDataList
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("fetchExercise", "IndexOutOfBoundsException: ${e.message}")
+                null
+            } catch (e: IllegalArgumentException) {
+                Log.e("fetchExercise", "IllegalArgumentException: ${e.message}")
+                null
+            } catch (e: IllegalStateException) {
+                Log.e("fetchExercise", "IllegalStateException: ${e.message}")
+                null
+            }  catch (e: IOException) {
+                Log.e("fetchExercise", "IOException: ${e.message}")
+                null
+            } catch (e: NullPointerException) {
+                Log.e("fetchExercise", "NullPointerException: ${e.message}")
+                null
+            } catch (e: java.lang.Exception) {
+                Log.e("fetchExercise", "Exception: ${e.message}")
+                null
             }
         }
     }
@@ -145,7 +186,7 @@ object  NetworkExercise {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-//                    Log.v("ExerciseHistory", "$responseBody")
+                    Log.v("ExerciseHistory", "$responseBody")
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ExerciseHistoryError", "IndexOutOfBounds: ${e.message}")
@@ -153,7 +194,9 @@ object  NetworkExercise {
                 Log.e("ExerciseHistoryError", "IllegalArgument: ${e.message}")
             } catch (e: IllegalStateException) {
                 Log.e("ExerciseHistoryError", "IllegalState: ${e.message}")
-            }catch (e: NullPointerException) {
+            }  catch (e: IOException) {
+                Log.e("ExerciseHistoryError", "IO: ${e.message}")
+            } catch (e: NullPointerException) {
                 Log.e("ExerciseHistoryError", "NullPointer: ${e.message}")
             } catch (e: java.lang.Exception) {
                 Log.e("ExerciseHistoryError", "Exception: ${e.message}")
@@ -209,11 +252,14 @@ object  NetworkExercise {
                             )
                             results.add(exerciseHistoryVO)
                         }
-                        // Log.v("getExerciseHistory", "results: $results")
+                         Log.v("getExerciseHistory", "results: $results")
                         return@use results.toList()
                     }
                     return@use results.toList()
                 }
+            } catch (e: SocketTimeoutException) {
+                Log.e("ExerciseHistoryError", "GETSocketTimeout: ${e.message}")
+                null
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ExerciseHistoryError", "GETIndexOutOfBounds: ${e.message}")
                 null
@@ -223,11 +269,14 @@ object  NetworkExercise {
             } catch (e: IllegalStateException) {
                 Log.e("ExerciseHistoryError", "GETIllegalState: ${e.message}")
                 null
-            }catch (e: NullPointerException) {
+            } catch (e: IOException) {
+                Log.e("ExerciseHistoryError", "GETIO: ${e.message}")
+                null
+            }  catch (e: NullPointerException) {
                 Log.e("ExerciseHistoryError", "GETNullPointer: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
-                Log.e("ExerciseHistoryError", "GETException: ${e.printStackTrace()}")
+                Log.e("ExerciseHistoryError", "GETException: ${e.message}")
                 null
             }
         }

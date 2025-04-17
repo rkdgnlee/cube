@@ -1,52 +1,43 @@
 package com.tangoplus.tangoq.fragment
 
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
-import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.adapter.MainPartRVAdapter
 import com.tangoplus.tangoq.adapter.MeasureDetailRVAdapter
-import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.databinding.FragmentMeasureDetailBinding
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.getAnalysisUnits
 import com.tangoplus.tangoq.function.MeasurementManager.matchedIndexs
 import com.tangoplus.tangoq.function.MeasurementManager.matchedUris
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.AnalysisVO
-import org.apache.commons.math3.geometry.euclidean.twod.Line
 import org.json.JSONArray
-import java.io.File
-import java.io.FileOutputStream
 
 
 class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
@@ -56,7 +47,7 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
     private val mvm : MeasureViewModel by activityViewModels()
     private val avm : AnalysisViewModel by activityViewModels()
     private lateinit var adapterAnalysises : List<AnalysisVO>
-
+    private lateinit var partStates : MutableList<Pair<String, Float>>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,15 +79,15 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
                 .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
                 .setLifecycleOwner(viewLifecycleOwner)
                 .build()
-            balloonlc1.showAlignBottom(binding.view8)
+            balloonlc1.showAlignBottom(binding.tvMDParts)
             arguments?.putBoolean("showMeasure", false)
         }
 
-        binding.ibtnMDAlarm.setOnClickListener {
+        binding.ibtnMDAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
-        binding.ibtnMDBack.setOnClickListener {
+        binding.ibtnMDBack.setOnSingleClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MeasureHistoryFragment())
                 commit()
@@ -104,8 +95,7 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
         }
         // ------# measure 에 맞게 UI 수정 #------
         measure = mvm.selectedMeasure
-        avm.currentPart.value = "목관절"
-        avm.mdMeasureResult = measure?.measureResult?.getJSONArray(1) ?: JSONArray()
+        avm.mdMeasureResult = measure?.measureResult?.optJSONArray(1) ?: JSONArray()
         updateUI()
         setHorizonAdapter()
         // ------# 10각형 레이더 차트 #------
@@ -158,13 +148,18 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
             webColor = resources.getColor(R.color.white, null)
             webAlpha = 100
             webLineWidthInner = 1f
+            setOnChartValueSelectedListener(object  : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    Log.v("값 선택", "값 선택")
+                }
+                override fun onNothingSelected() {}
+            })
             xAxis.apply {
                 setDrawGridLines(true)
                 valueFormatter = IndexAxisValueFormatter(raderXParts)
                 textColor = resources.getColor(R.color.subColor400, null)
                 textSize = if (isTablet(requireContext())) 20f else 13f   // 텍스트 크기 증가
                 yOffset = 40f
-
 
             }
             yAxis.apply {
@@ -187,13 +182,15 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
         }
 //        val currentMeasureIndex = singletonMeasure?.indexOf(mvm.selectedMeasure)
 //        setAdapter(currentMeasureIndex ?: 0)
+        Log.v("파트observe", "${avm.currentPart.value}, ${measure?.measureResult}")
         avm.currentPart.observe(viewLifecycleOwner) { part ->
-            setAdapter(part)
-            // 초기 상태
-            avm.currentIndex = matchedIndexs.indexOf(part)
-            Log.v("파트observe", "$part, ${avm.currentPart.value}")
+            if (!part.isNullOrEmpty() && measure?.measureResult != JSONArray() ) { //
+                setAdapter(part)
+                // 초기 상태
+                avm.currentIndex = matchedIndexs.indexOf(part)
+                Log.v("파트observe", "$part, ${avm.currentPart.value}")
+            }
         }
-
     }
     private fun setAdapter(part: String) {
 //        val painPart = avm.currentParts?.find { it == part }
@@ -225,12 +222,16 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
     }
 
     private fun setHorizonAdapter() {
-        val partStates = matchedIndexs.map { part ->
+        partStates = matchedIndexs.map { part ->
             measure?.dangerParts?.find { it.first == part }  ?: (part to 0f)
         }. toMutableList().apply {
             val zeroItem = filter { it.second == 0f }
             removeAll(zeroItem)
             addAll(zeroItem)
+        }
+        if (avm.mdMeasureResult != JSONArray()) {
+
+            avm.currentPart.value = partStates.get(0).first
         }
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         val adapter = MainPartRVAdapter(this@MeasureDetailFragment, partStates, avm, "measureDetail")
@@ -242,7 +243,7 @@ class MeasureDetailFragment : Fragment(), OnCategoryClickListener {
 
     private fun updateUI() {
         binding.tvMDScore.text = measure?.overall.toString()
-        binding.tvMDDate.text = "${measure?.regDate?.substring(0, 10)} ${measure?.userName}"
+        binding.tvMDDate.text = "${measure?.regDate?.substring(0, 10)}" // ${measure?.userName}
 //        binding.tvMDParts.text = "우려부위: ${measure?.dangerParts?.map { it.first }?.joinToString(", ")}"
     }
 

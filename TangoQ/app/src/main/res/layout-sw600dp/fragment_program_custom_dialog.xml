@@ -132,6 +132,7 @@
                 </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clPCD"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -205,14 +206,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
-                        android:background="@drawable/bckgnd_rectangle_20"
+                        android:background="@drawable/effect_ibtn_20dp"
                         android:backgroundTint="@color/secondaryColor"
                         android:drawableEnd="@drawable/icon_arrow_right_small"
                         android:gravity="center|center_vertical"
-                        android:paddingStart="20dp"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="15dp"
-                        android:paddingBottom="6dp"
+                        android:paddingStart="25dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="20dp"
+                        android:paddingBottom="10dp"
                         android:text="1/4 주차"
                         android:textColor="#FFFFFF"
                         android:textSize="18dp"
@@ -386,7 +387,7 @@
             android:padding="20dp"
             android:stateListAnimator="@null"
             android:text="운동 시작하기"
-            android:textColor="@color/white"
+            android:textColor="@color/whiteText"
             android:textSize="22dp" />
     </LinearLayout>
 

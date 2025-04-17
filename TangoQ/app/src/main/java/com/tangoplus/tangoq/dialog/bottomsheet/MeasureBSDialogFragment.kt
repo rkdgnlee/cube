@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
@@ -16,6 +17,8 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureBSDialogBinding
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +41,12 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 바텀시트 태블릿 가로모드
+        val bottomSheet = view.parent as View
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        // 초기 데이터 설정
         singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         ssm = SaveSingletonManager(requireContext(), requireActivity())
         val measures = singletonMeasure.measures
@@ -47,22 +56,23 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
                 measure.get(i).regDate
             }.distinct()
         } ?: emptyList()
-        val names = measures?.let { measure ->
-            List(measure.size) { i ->
-                measure.get(i).userName
-            }
-        } ?: emptyList()
+//        val names = measures?.let { measure ->
+//            List(measure.size) { i ->
+//                measure.get(i).userName
+//            }
+//        } ?: emptyList()
+        val names = listOf<String>()
 //        Log.v("MeasureBS", "$dates")
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMBSD.layoutManager = layoutManager
         val adapter = StringRVAdapter(this@MeasureBSDialogFragment, dates.toMutableList(), names.toMutableList(),"measure",  mvm)
         binding.rvMBSD.adapter = adapter
-
+        binding.rvMBSD.scrollToPosition(dates.indexOf(mvm.selectedMeasureDate.value?.fullDateTime) - 1)
         setupButtons()
-        binding.btnMBSD.setOnClickListener {
+        binding.btnMBSD.setOnSingleClickListener {
 
             val dialog = LoadingDialogFragment.newInstance("측정파일")
-            dialog.show(activity?.supportFragmentManager ?: return@setOnClickListener, "LoadingDialogFragment")
+            dialog.show(activity?.supportFragmentManager ?: return@setOnSingleClickListener, "LoadingDialogFragment")
 
             // ------# 로딩을 통해 파일 가져오기 #------
             /* 1. 선택 날짜(mvm.selectMeasureDate)를 통해 일단 measureVO를 받아옴
@@ -70,13 +80,13 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
             * */
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val currentMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectMeasureDate.value}
+                    val currentMeasure = singletonMeasure.measures?.find { it.regDate == mvm.selectMeasureDate.value?.fullDateTime}
                     val uriTuples = currentMeasure?.sn?.let { it -> ssm.get1MeasureUrls(it) }
                     if (uriTuples != null) {
                         ssm.downloadFiles(uriTuples)
                         val editedMeasure = ssm.insertUrlToMeasureVO(uriTuples, currentMeasure)
                         // singleton의 인덱스 찾아서 ja와 값 넣기
-                        val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == mvm.selectMeasureDate.value }
+                        val singletonIndex = singletonMeasure.measures?.indexOfLast { it.regDate == mvm.selectMeasureDate.value?.fullDateTime }
                         if (singletonIndex != null && singletonIndex >= 0) {
                             withContext(Dispatchers.Main) {
                                 singletonMeasure.measures?.set(singletonIndex, editedMeasure)
@@ -92,8 +102,8 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
                                 } else {
                                     mvm.selectedMeasureIndex.value = singletonIndex
                                 }
-//                                Log.v("날짜변경해도 잘들어가는지", "${mvm.selectedMeasureDate.value}, ${mvm.selectedMeasure?.regDate} ${mvm.selectedMeasure?.recommendations}")
-                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
+
+//                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
                                 dialog.dismiss()
                             }
                         }
@@ -129,4 +139,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
         binding.ibtnMBSDExit.setOnClickListener { dismiss() }
 
     }
+
+
+
 }

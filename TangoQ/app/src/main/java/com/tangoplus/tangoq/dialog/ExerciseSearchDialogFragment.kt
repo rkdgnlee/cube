@@ -6,33 +6,46 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ExerciseSearchHistoryRVAdapter
 import com.tangoplus.tangoq.adapter.ExerciseRVAdapter
 import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.databinding.FragmentExerciseSearchDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.PreferencesManager
+import com.tangoplus.tangoq.listener.OnExerciseClickListener
 import com.tangoplus.tangoq.listener.OnHistoryClickListener
 import com.tangoplus.tangoq.listener.OnHistoryDeleteListener
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, OnHistoryClickListener {
+class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, OnHistoryClickListener, OnExerciseClickListener {
     lateinit var binding : FragmentExerciseSearchDialogBinding
     private val evm : ExerciseViewModel by activityViewModels()
     private lateinit var prefsManager : PreferencesManager
     private var isKeyboardVisible = false
+    private lateinit var adapter2 : ExerciseSearchHistoryRVAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,6 +56,13 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         prefsManager = PreferencesManager(requireContext())
         binding.clESDEmpty.visibility = View.GONE
@@ -58,27 +78,15 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         imm?.hideSoftInputFromWindow(view.windowToken, 0)
         isKeyboardVisible = true
 
-        binding.ibtnESDBack.setOnClickListener { dismiss() }
+        binding.ibtnESDBack.setOnSingleClickListener { dismiss() }
 
-        binding.ibtnESDClear.setOnClickListener{
+        binding.ibtnESDClear.setOnSingleClickListener{
             binding.etESDSearch.setText("")
-            binding.rv1.adapter = null
+            setSearchData("")
         }
 
-        for (i in prefsManager.getLastSn() downTo 1) {
-            if (prefsManager.getStoredHistory(i) != "") {
-                evm.searchHistory.value?.add(Pair(i ,prefsManager.getStoredHistory(i)))
-//                Log.v("storedHistory", prefsManager.getStoredHistory(i))
-            }
 
-        }
-//        Log.v("searchHistory", "${evm.searchHistory.value}")
-        var adapter2 : ExerciseSearchHistoryRVAdapter
-        val searchHistory = evm.searchHistory.value
-        if (searchHistory != null) {
-            adapter2 = ExerciseSearchHistoryRVAdapter(searchHistory, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
-            setAdapter(adapter2, binding.rv2)
-        }
+        setSearchAdapter()
 
 
         binding.etESDSearch.addTextChangedListener(object : TextWatcher{
@@ -87,21 +95,7 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
             override fun afterTextChanged(s: Editable?) {
 
                 // ------# 첫번쨰 rv 필터링 하기 #------
-                val query = s.toString()
-                val filteredList = mutableListOf<ExerciseVO>()
-                if (query.isNotEmpty()) {
-                    val filteredPattern = query.lowercase(Locale.getDefault()).trim()
-                    for (indices in evm.allExercises) {
-                        if (indices.exerciseName?.lowercase(Locale.getDefault())?.contains(filteredPattern) == true) {
-                            filteredList.add(indices)
-                        }
-                    }
-
-                    val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, null,null,"E")
-                    setAdapter(adapter1, binding.rv1)
-                    if (filteredList.isEmpty()) binding.clESDEmpty.visibility = View.VISIBLE else binding.clESDEmpty.visibility = View.GONE
-//                    binding.clESDHistory.visibility = View.GONE
-                }
+                setSearchData(s.toString())
             }
         })
 
@@ -119,19 +113,26 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
             val keypadHeight = screenHeight - rect.bottom
             val isKeyboardNowVisible = keypadHeight > screenHeight * 0.15
 
-            if (isKeyboardVisible && !isKeyboardNowVisible && binding.etESDSearch.text.isNotEmpty()) {
-                prefsManager.setStoredHistory(binding.etESDSearch.text.toString())
-//                Log.v("saveHistory", "sn: ${prefsManager.getLastSn()}, history: ${prefsManager.getStoredHistory(prefsManager.getLastSn())}")
-
-            }
 
             isKeyboardVisible = isKeyboardNowVisible
         }
 
-        binding.btnESDCategory.setOnClickListener{ dismiss() }
-        binding.tvESDClear.setOnClickListener {
-            prefsManager.deleteAllHistory()
-            binding.rv2.adapter = null
+        binding.btnESDCategory.setOnSingleClickListener{ dismiss() }
+        binding.tvESDClear.setOnSingleClickListener {
+            if (!evm.searchHistory.value.isNullOrEmpty()) {
+                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                    setTitle("기록을 삭제하시겠습니까?")
+                    setPositiveButton("예", {_, _ ->
+                        prefsManager.deleteAllHistory()
+                        binding.rv2.adapter = null
+                    })
+                    setNegativeButton("아니오", {_, _ ->
+                        dismiss()
+                    })
+                }.show()
+            } else {
+                Toast.makeText(requireContext(), "기록이 없습니다. 다시 시도해 주세요", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -147,6 +148,19 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
         rv.layoutManager = layoutManager
         rv.adapter = adapter
     }
+    private fun setSearchAdapter() {
+        evm.searchHistory.value?.clear()
+        for (i in prefsManager.getLastSn() downTo 1) {
+            if (prefsManager.getStoredHistory(i) != "") {
+                evm.searchHistory.value?.add(Pair(i ,prefsManager.getStoredHistory(i)))
+            }
+        }
+        val searchHistory = evm.searchHistory.value
+        if (searchHistory != null) {
+            adapter2 = ExerciseSearchHistoryRVAdapter(searchHistory, this@ExerciseSearchDialogFragment, this@ExerciseSearchDialogFragment)
+            setAdapter(adapter2, binding.rv2)
+        }
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onHistoryDelete(history: Pair<Int,String>) {
@@ -156,8 +170,47 @@ class ExerciseSearchDialogFragment : DialogFragment(), OnHistoryDeleteListener, 
     }
 
     override fun onHistoryClick(history: String) {
-        binding.etESDSearch.setText(history)
+        val historyContent = history.substring(0, history.lastIndexOf("날짜"))
+        binding.etESDSearch.setText(historyContent)
         binding.etESDSearch.requestFocus()
+        binding.etESDSearch.setSelection(binding.etESDSearch.length())
     }
 
+    override fun exerciseClick(name: String) {
+        prefsManager.setStoredHistory(binding.etESDSearch.text.toString() + "날짜" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
+        setSearchAdapter()
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.etESDSearch.setText("")
+            setSearchData("")
+        }, 500)
+    }
+
+    private fun setSearchData(queryString: String) {
+        // ------# 첫번쨰 rv 필터링 하기 #------
+        val filteredList = mutableListOf<ExerciseVO>()
+        // 검색결과에 대한 필터링 넣기
+        if (queryString.isNotEmpty()) {
+            val filteredPattern = queryString.lowercase(Locale.getDefault()).trim()
+            evm.allExercises.let { allExercises ->
+                if (allExercises != null) {
+                    for (indices in allExercises) {
+                        if (indices.exerciseName?.lowercase(Locale.getDefault())?.contains(filteredPattern) == true) {
+                            filteredList.add(indices)
+                        }
+                    }
+                }
+            }
+        }
+
+        val adapter1 = ExerciseRVAdapter(this@ExerciseSearchDialogFragment, filteredList, null, evm.allExerciseHistorys,null,"ESD")
+        adapter1.exerciseClickListener = this@ExerciseSearchDialogFragment
+        setAdapter(adapter1, binding.rv1)
+        if (filteredList.isEmpty()) {
+            binding.clESDEmpty.visibility = View.VISIBLE
+            binding.clESDHistory.visibility = View.VISIBLE
+        } else {
+            binding.clESDEmpty.visibility = View.GONE
+            binding.clESDHistory.visibility = View.GONE
+        }
+    }
 }

@@ -1,51 +1,46 @@
 package com.tangoplus.tangoq.dialog
 
-import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.ContentValues
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.AlphaAnimation
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentProfileChangeDialogBinding
-import com.tangoplus.tangoq.listener.OnSingleClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.phoneNumber82
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.api.NetworkUser.sendMobileOTP
+import com.tangoplus.tangoq.api.NetworkUser.verifyMobileOTP
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.function.AuthManager.setRetryAuthMessage
+import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class ProfileEditChangeDialogFragment : DialogFragment() {
@@ -53,7 +48,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
     lateinit var arg : String
     val svm : SignInViewModel by activityViewModels()
     private lateinit var userJson : JSONObject
-    private lateinit var auth : FirebaseAuth
+
 
     override fun onResume() {
         super.onResume()
@@ -77,7 +72,6 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         }
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -89,26 +83,31 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         // ------# init #-----
         arg = arguments?.getString(ARG_EDIT_BS_TITLE).toString()
         val value = arguments?.getString(ARG_EDIT_BS_VALUE).toString()
         Log.v("arg", "$arg, $value")
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
-        auth = FirebaseAuth.getInstance()
-        auth.setLanguageCode("kr")
+
         disabledButton()
+
         // ------# 키보드 #------
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        Handler(Looper.getMainLooper()).postDelayed({
+
+        binding.etPCD1.postDelayed({
             binding.etPCD1.requestFocus()
-            binding.etPCD1.postDelayed({
-                imm.showSoftInput(binding.etPCD1, InputMethodManager.SHOW_IMPLICIT)
-            }, 0)
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
+            binding.etPCD1.setSelection(binding.etPCD1.length())
+            imm.showSoftInput(binding.etPCD1, InputMethodManager.SHOW_IMPLICIT)
         }, 250)
 
-
+        binding.ibtnPCDBack2.setOnSingleClickListener{ dismiss() }
         when (arg) {
             "비밀번호" -> {
                 setUIVisibility(0)
@@ -121,7 +120,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     override fun afterTextChanged(s: Editable?) {
                         svm.pwCondition.value = pwPatternCheck.matcher(binding.etPCD2.text.toString()).find()
                         if (svm.pwCondition.value == true) {
-                            binding.tvPCDPWCondition.setTextColor(binding.tvPCDPWCondition.resources.getColor(R.color.subColor400, null))
+                            binding.tvPCDPWCondition.setTextColor(binding.tvPCDPWCondition.resources.getColor(R.color.mainColor, null))
                             binding.tvPCDPWCondition.text = "사용 가능합니다"
                         } else {
                             binding.tvPCDPWCondition.setTextColor(binding.tvPCDPWCondition.resources.getColor(R.color.deleteColor, null))
@@ -136,7 +135,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     override fun afterTextChanged(s: Editable?) {
                         svm.pwCompare.value = (binding.etPCD2.text.toString() == binding.etPCD3.text.toString())
                         if (svm.pwCompare.value == true) {
-                            binding.tvPCDPWVerifyCondition.setTextColor(binding.tvPCDPWVerifyCondition.resources.getColor(R.color.subColor400, null))
+                            binding.tvPCDPWVerifyCondition.setTextColor(binding.tvPCDPWVerifyCondition.resources.getColor(R.color.mainColor, null))
                             binding.tvPCDPWVerifyCondition.text = "일치합니다"
                         } else {
                             binding.tvPCDPWVerifyCondition.setTextColor(binding.tvPCDPWVerifyCondition.resources.getColor(R.color.deleteColor, null))
@@ -181,6 +180,18 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     setText(value)
                     filters = arrayOf(InputFilter.LengthFilter(3))
                 }
+                binding.etPCD1.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.etPCD1.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                        if (binding.btnPCDFinish.isEnabled) {
+                            updateUserData()
+                        }
+                        true  // 이벤트 처리가 완료되었음을 반환
+                    } else {
+                        false // 다른 동작들은 그대로 유지
+                    }
+                }
             }
             "신장" -> {
                 val heightPattern = "^(8\\d|[9]\\d|[1-2]\\d{2}|250)\$"
@@ -205,45 +216,57 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     setText(value)
                     filters = arrayOf(InputFilter.LengthFilter(3))
                 }
-            }
-            "이메일" -> {
-                setUIVisibility(1)
-                binding.tvPCD.text = "이메일 재설정"
-                binding.tvPCDGuide.text = "이메일을 다시 설정해주세요"
-                binding.etPCD1.apply {
-                    inputType = InputType.TYPE_CLASS_TEXT
-                    filters = arrayOf(InputFilter.LengthFilter(25))
-                }
-
-                val emailPattern = "^[a-z0-9]{4,16}@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-                val emailPatternCheck = Pattern.compile(emailPattern)
-                binding.etPCD1.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int, ) {}
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int, ) {}
-                    override fun afterTextChanged(s: Editable?) {
-                        svm.editChangeCondition.value = emailPatternCheck.matcher(s.toString()).find()
-                        if (svm.editChangeCondition.value == true) {
-                            binding.tvPCD1Condition.text = "올바른 이메일 형식입니다"
-                            binding.btnPCDFinish.isEnabled = true
-                            enabledButton()
-                        } else {
-                            binding.tvPCD1Condition.text = "올바르지 않은 이메일 형식입니다. 다시 확인해 주세요"
-                            binding.btnPCDFinish.isEnabled = false
-                            disabledButton()
+                binding.etPCD1.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.etPCD1.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                        if (binding.btnPCDFinish.isEnabled) {
+                            updateUserData()
                         }
+                        true  // 이벤트 처리가 완료되었음을 반환
+                    } else {
+                        false // 다른 동작들은 그대로 유지
                     }
-                })
+                }
             }
             "생년월일" -> {
                 binding.etPCD1.hint = "19950812"
                 binding.etPCD1.setHintTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400)))
-                val birthdayPattern = "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])\$"
+                val birthdayPattern = "^(19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])\$"
                 val birthdayPatternCheck = Pattern.compile(birthdayPattern)
                 binding.etPCD1.addTextChangedListener(object: TextWatcher {
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                     override fun afterTextChanged(s: Editable?) {
-                        svm.birthdayCondition.value = birthdayPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        val patternMatches = birthdayPatternCheck.matcher(binding.etPCD1.text.toString()).find()
+                        var isBeforeToday = false
+                        if (patternMatches && s?.length == 8) {
+                            try {
+                                val inputYear = s.substring(0, 4).toInt()
+                                val inputMonth = s.substring(4, 6).toInt()
+                                val inputDay = s.substring(6, 8).toInt()
+
+                                // 현재 날짜 정보 (어제까지만 허용하므로 2025-04-03까지)
+                                val currentYear = 2025
+                                val currentMonth = 4
+                                val currentDay = 3  // 어제 날짜 (4월 3일)
+
+                                // 날짜 비교
+                                isBeforeToday = when {
+                                    inputYear < currentYear -> true
+                                    inputYear > currentYear -> false
+                                    else -> when {  // 같은 연도
+                                        inputMonth < currentMonth -> true
+                                        inputMonth > currentMonth -> false
+                                        else -> inputDay <= currentDay  // 같은 월
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                isBeforeToday = false
+                            }
+                        }
+                        svm.birthdayCondition.value = patternMatches && isBeforeToday
+
                         if (svm.birthdayCondition.value == true) {
                             enabledButton()
                         } else {
@@ -258,209 +281,227 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                     inputType = InputType.TYPE_CLASS_NUMBER
                     filters = arrayOf(InputFilter.LengthFilter(8))
                 }
+                binding.etPCD1.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.etPCD1.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)) {
+                        if (binding.btnPCDFinish.isEnabled) {
+                            updateUserData()
+                        }
+                        true  // 이벤트 처리가 완료되었음을 반환
+                    } else {
+                        false // 다른 동작들은 그대로 유지
+                    }
+                }
             }
             "전화번호" -> {
                 // ------# 초기 세팅 #------
-                auth = FirebaseAuth.getInstance()
-                auth.setLanguageCode("kr")
                 setUIVisibility(2)
                 binding.tvPCD.text = "전화번호 재설정"
                 binding.tvPCDGuide.text = "전화번호 재설정을 위해 인증을 진행합니다"
-                binding.etPCD1.apply {
-                    inputType = InputType.TYPE_CLASS_NUMBER
-                    filters = arrayOf(InputFilter.LengthFilter(12))
-                }
                 val mobilePattern = "^010-\\d{4}-\\d{4}\$"
                 val mobilePatternCheck = Pattern.compile(mobilePattern)
-                // ------# 전화번호 firebase 설정 #------
                 binding.etPCDMobile.addTextChangedListener(object: TextWatcher {
                     private var isFormatting = false
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                     override fun afterTextChanged(s: Editable?) {
+
                         if (isFormatting) return
                         isFormatting = true
-                        val cleaned =s.toString().replace("-", "")
-                        when {
-                            cleaned.length <= 3 -> s?.replace(0, s.length, cleaned)
-                            cleaned.length <= 7 -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3)}")
-                            else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
+                        val cleaned = s.toString().replace("-", "")
+                        val maxDigits = 11
+                        val limited = if (cleaned.length > maxDigits) cleaned.substring(0, maxDigits) else cleaned
+
+
+                        val formatted = when {
+                            limited.length <= 3 -> limited
+                            limited.length <= 7 -> "${limited.substring(0, 3)}-${limited.substring(3)}"
+                            else -> "${limited.substring(0, 3)}-${limited.substring(3, 7)}-${limited.substring(7)}"
                         }
+
+                        // 기존 입력과 다를 때만 업데이트
+                        if (s.toString() != formatted) {
+                            binding.etPCDMobile.setText(formatted) // setText를 사용하여 확실하게 변경
+                            binding.etPCDMobile.setSelection(formatted.length) // 커서를 마지막 위치로 이동
+                        }
+
                         isFormatting = false
-//                        Log.w("전화번호형식", "${mobilePatternCheck.matcher(binding.etPCDMobile.text.toString()).find()}")
                         svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etPCDMobile.text.toString()).find()
-                        if (svm.mobileCondition.value == true) {
-                            binding.btnPCDAuthSend.isEnabled = true
-                            binding.btnPCDAuthSend.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.mainColor))
+                        if (svm.mobileCondition.value == true)  {
+                            svm.passMobile.value = s.toString()
+                            binding.btnPCDAuthSend.apply {
+                                isEnabled = true
+                                backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.mainColor, null))
+                            }
                         } else {
-                            binding.btnPCDAuthSend.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
+                            svm.passMobile.value = ""
+                            binding.btnPCDAuthSend.apply {
+                                isEnabled = false
+                                backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor400, null))
+                            }
                         }
                     }
                 })
 
+                binding.etPCDMobile.postDelayed({
+                    binding.etPCDMobile.requestFocus()
+                    binding.etPCDMobile.setSelection(binding.etPCDMobile.length())
+                    imm.showSoftInput(binding.etPCDMobile, InputMethodManager.SHOW_IMPLICIT)
+                }, 250)
 
-                val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                    override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-//                        Log.v("verifyComplete", "PhoneAuthCredential: $p0")
-
-                    }
-                    override fun onVerificationFailed(p0: FirebaseException) {
-                        Log.e("failedAuth", "verify failed")
-                    }
-                    @RequiresApi(Build.VERSION_CODES.P)
-                    override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                        super.onCodeSent(verificationId, token)
-                        svm.verificationId = verificationId
-//                        Log.v("onCodeSent", "메시지 발송 성공, verificationId: ${verificationId} ,token: ${token}")
-                        // -----! 메시지 발송에 성공하면 스낵바 호출 !------
-                        Toast.makeText(requireContext(), "메시지 발송에 성공했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
-                        binding.btnPCDAuthConfirm.isEnabled = true
-                    }
-                }
-
-                binding.btnPCDAuthSend.setOnSingleClickListener {
-                    var transformMobile = phoneNumber82(binding.etPCDMobile.text.toString())
-                    val dialog = AlertDialog.Builder(requireContext())
-                        .setTitle("📩 문자 인증 ")
-                        .setMessage("${transformMobile}로 인증 하시겠습니까?")
-                        .setPositiveButton("예") { _, _ ->
-                            transformMobile = transformMobile.replace("-", "").replace(" ", "")
-//                            Log.w("전화번호", transformMobile)
-
-                            val optionsCompat = PhoneAuthOptions.newBuilder(auth)
-                                .setPhoneNumber(transformMobile)
-                                .setTimeout(60L, TimeUnit.SECONDS)
-                                .setActivity(requireActivity())
-                                .setCallbacks(callbacks)
-                                .build()
-
-                            PhoneAuthProvider.verifyPhoneNumber(optionsCompat)
-                            Log.d("PhoneAuth", "verifyPhoneNumber called")
-
-                            val alphaAnimation = AlphaAnimation(0.0f, 1.0f)
-                            alphaAnimation.duration = 600
-                            binding.etPCDAuth.isEnabled = true
-                            val objectAnimator = ObjectAnimator.ofFloat(binding.clPCDMobile, "translationY", 1f)
-                            objectAnimator.duration = 1000
-                            objectAnimator.start()
-                            binding.etPCDAuth.requestFocus()
+                binding.etPCDMobile.setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
+                        if (svm.mobileCondition.value == true) {
+                            sendMobileCode()
                         }
-                        .setNegativeButton("아니오", null)
-                        .show()
-
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
-                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
+                        return@setOnEditorActionListener true
+                    }
+                    false
                 }
-                binding.btnPCDAuthConfirm.setOnSingleClickListener {
-                    val credential = PhoneAuthProvider.getCredential(svm.verificationId, binding.etPCDAuth.text.toString())
-                    signInWithPhoneAuthCredential(credential)
-                    enabledButton()
+                binding.btnPCDAuthSend.setOnSingleClickListener {
+                    sendMobileCode()
                 }
+                binding.etPCDAuthNumber.addTextChangedListener(object : TextWatcher{
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int, ) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int, ) { }
+                    override fun afterTextChanged(s: Editable?) {
+                        if (s?.length == 6) {
+                            verifyMobileCode()
+                        }
+                    }
+                })
             }
             "성별" -> {
                 setUIVisibility(3)
                 binding.tvPCD.text = "성별 선택"
                 binding.tvPCDGuide.text = "성별을 선택해주세요."
-                setGenderButton( if (svm.setGender.value == 0) false else true)
+//                setGenderButton( if (svm.setGender.value == "남자") false else true)
                 binding.ivPCDMale.setOnSingleClickListener { setGenderButton(true) }
                 binding.mrbPCDMale.setOnSingleClickListener { setGenderButton(true) }
                 binding.ivPCDFemale.setOnSingleClickListener { setGenderButton(false) }
                 binding.mrbPCDFemale.setOnSingleClickListener { setGenderButton(false) }
                 enabledButton()
             }
-
         }
 
-        // ------# 키보드 올라오기 #------
-//        binding.etPEBSD.requestFocus()
-//        binding.etPEBSD.postDelayed({
-//            context?.let { context ->
-//                val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//                imm.showSoftInput(binding.etPEBSD, InputMethodManager.SHOW_IMPLICIT)
-//            }
-//        }, 250)
-
-
-//        binding.btnPEBSDFinish.setOnClickListener {
-//            when (arg) {
-//                "몸무게" -> svm.setWeight.value = binding.etPEBSD.text.toString().toInt()
-//                "신장" -> svm.setHeight.value = binding.etPEBSD.text.toString().toInt()
-//                "이메일" -> svm.setEmail.value = binding.etPEBSD.text.toString()
-//            }
-//            Log.v("뷰모델에 잘담겼는지", "${svm.User.value}")
-//            dismiss()
-//        }
         // ------# 변경 #------
         binding.btnPCDFinish.setOnClickListener {
-            val updatedItem = binding.etPCD1.text.toString()
-            val jo = JSONObject().apply {
-                when (arg) {
-                    "비밀번호" -> put("password", svm.pw.value)
-                    "전화번호" -> put("mobile", binding.etPCDMobile.text.toString())
-                    "몸무게" -> put("weight", updatedItem)
-                    "신장" -> put("height", updatedItem)
-                    "이메일" -> put("email", updatedItem)
-                    "생년월일" -> put("birthday", updatedItem)
-                    "성별" -> put("gender", svm.setGender.value)
-                }
-            }
-            lifecycleScope.launch(Dispatchers.IO) {
-                val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
-                if (isUpdateFinished == true) {
-                    when (arg) {
-                        "몸무게" -> {
-                            userJson.put("weight", updatedItem)
-                            withContext(Dispatchers.Main) {
-                                svm.setWeight.value = updatedItem.toInt()
-                            }
-                        }
-                        "전화번호" -> {
-                            userJson.put("mobile", binding.etPCDMobile.text.toString())
-                            withContext(Dispatchers.Main) {
-                                svm.setMobile.value = binding.etPCDMobile.text.toString()
-                                Log.v("svm.setMobile", "${svm.setMobile.value}")
-                            }
-                        }
-                        "신장" -> {
-                            userJson.put("height", updatedItem)
-                            withContext(Dispatchers.Main) {
-                                svm.setHeight.value = updatedItem.toInt()
-                            }
-                        }
-                        "이메일" -> {
-                            userJson.put("email", updatedItem)
-                            withContext(Dispatchers.Main) {
-                                svm.setEmail.value = updatedItem
-                            }
-                        }
-                        "생년월일" -> {
-                            userJson.put("birthday", updatedItem)
-                            withContext(Dispatchers.Main) {
-                                svm.setBirthday.value = updatedItem
-                            }
-                        }
-                        "성별" -> {
-                            userJson.put("gender", svm.setGender)
-                            withContext(Dispatchers.Main) {
-                                svm.setBirthday.value = updatedItem
-                            }
-                        }
-                    }
-                    withContext(Dispatchers.Main) {
-                        if (isAdded) {
-                            dismiss()
-                        }
-                    }
-                }
-            }
+            updateUserData()
         }
 
         // ------# clear listener #------
         binding.ibtnPCD1Clear.setOnClickListener{ binding.etPCD1.setText("") }
         binding.ibtnPCD2Clear.setOnClickListener{ binding.etPCD2.setText("") }
         binding.ibtnPCD3Clear.setOnClickListener{ binding.etPCD3.setText("") }
-
     }
+
+    private fun setReSendMessage() {
+        binding.tvPCDReAuth.visibility = View.VISIBLE
+        val madb = MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+            setTitle("인증번호 재전송")
+            setMessage("${svm.passMobile.value}로 인증번호를 다시 전송하시겠습니까?")
+            setPositiveButton("예", { _, _ ->
+                val configureMobile = svm.passMobile.value?.replace("-", "")
+                val bodyJo = JSONObject().apply {
+                    put("mobile", configureMobile)
+                }
+                // 인증번호 다시 보내기
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val statusCode = sendMobileOTP(getString(R.string.API_user), bodyJo.toString())
+                    withContext(Dispatchers.Main) {
+                        when (statusCode) {
+                            1, 200, 201 -> {
+                                Toast.makeText(requireContext(), "인증번호를 전송했습니다. 휴대폰을 확인해주세요", Toast.LENGTH_SHORT).show()
+                                setReSendMessage()
+                            }
+                            else -> {
+                                Toast.makeText(requireContext(), "인증번호 전송에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            })
+            setNegativeButton("아니오", {_, _ -> })
+        }
+        setRetryAuthMessage(requireContext(), svm, binding.tvPCDReAuth, binding.tvPCDCountDown, madb)
+    }
+
+    private fun updateUserData() {
+        val updatedItem = binding.etPCD1.text.toString()
+
+        val jo = JSONObject().apply {
+            when (arg) {
+                "비밀번호" -> {
+                    val encryptedPW = encrypt(svm.pw.value.toString(), getString(R.string.secret_key), getString(R.string.secret_iv))
+                    put("password_app", encryptedPW)
+                }
+                "전화번호" -> put("mobile", svm.passMobile.value?.replace("-", ""))
+                "몸무게" -> put("weight", updatedItem)
+                "신장" -> put("height", updatedItem)
+                "이메일" -> put("email", updatedItem)
+                "생년월일" -> put("birthday", updatedItem)
+                "성별" -> put("gender", svm.selectGender.value)
+            }
+        }
+        Log.v("현재젠더", "jo: $jo")
+        lifecycleScope.launch(Dispatchers.IO) {
+            val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
+            if (isUpdateFinished == true) {
+                when (arg) {
+                    "몸무게" -> {
+                        userJson.put("weight", updatedItem)
+                        withContext(Dispatchers.Main) {
+                            svm.setWeight.value = updatedItem.toInt()
+                        }
+                    }
+                    "전화번호" -> {
+                        userJson.put("mobile", svm.passMobile.value)
+                        withContext(Dispatchers.Main) {
+                            svm.setMobile.value = svm.passMobile.value
+                            Log.v("svm.setMobile", "${svm.setMobile.value}")
+                        }
+                    }
+                    "신장" -> {
+                        userJson.put("height", updatedItem)
+                        withContext(Dispatchers.Main) {
+                            svm.setHeight.value = updatedItem.toInt()
+                        }
+                    }
+                    "이메일" -> {
+                        userJson.put("email", updatedItem)
+                        withContext(Dispatchers.Main) {
+                            svm.setEmail.value = updatedItem
+                        }
+                    }
+                    "생년월일" -> {
+                        val addHyphenString = updatedItem.substring(0,4) + "-" + updatedItem.substring(4,6) + "-" + updatedItem.substring(6)
+                        userJson.put("birthday", addHyphenString)
+                        withContext(Dispatchers.Main) {
+                            svm.setBirthday.value = addHyphenString
+                        }
+                    }
+                    "성별" -> {
+                        userJson.put("gender", svm.selectGender.value)
+                        withContext(Dispatchers.Main) {
+                            svm.setGender.value = svm.selectGender.value
+                        }
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    if (isAdded) {
+                        dismiss()
+                    }
+                }
+            } else if (isUpdateFinished == null) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                }
+            }
+        }
+    }
+
     private fun setGenderButton(isMale: Boolean) {
         when {
             isMale -> {
@@ -469,7 +510,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.mrbPCDFemale.isSelected = false
                 binding.ivPCDMale.isSelected = true
                 binding.ivPCDFemale.isSelected = false
-                svm.setGender.value = 1
+                svm.selectGender.value = "남자"
             }
             !isMale -> {
                 binding.mrgPCD.check(binding.mrbPCDFemale.id)
@@ -477,7 +518,117 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.mrbPCDFemale.isSelected = true
                 binding.ivPCDMale.isSelected = false
                 binding.ivPCDFemale.isSelected = true
-                svm.setGender.value = 0
+                svm.selectGender.value = "여자"
+            }
+        }
+        Log.v("현재젠더", "select: ${svm.selectGender.value}, set: ${svm.setGender.value}")
+    }
+
+    private fun sendMobileCode() {
+        val configureMobile = svm.passMobile.value?.replace("-", "")
+        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+            setTitle("휴대폰 인증")
+            setMessage("${svm.passMobile.value}로 인증하시겠습니까?")
+            setPositiveButton("예", {_, _ ->
+                val bodyJo = JSONObject().apply {
+                    put("mobile", configureMobile)
+                }
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val statusCode = sendMobileOTP(getString(R.string.API_user), bodyJo.toString())
+                    withContext(Dispatchers.Main) {
+                        when (statusCode) {
+                            1, 200, 201 -> {
+
+                                Toast.makeText(requireContext(), "인증번호를 전송했습니다. 휴대폰을 확인해주세요", Toast.LENGTH_SHORT).show()
+                                binding.etPCDAuthNumber.visibility = View.VISIBLE
+                                setReSendMessage()
+                                binding.etPCDMobile.apply {
+                                    isEnabled = false
+                                    backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor100, null))
+                                }
+                                binding.btnPCDAuthSend.apply {
+                                    isEnabled = false
+                                    backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor400, null))
+                                }
+
+                                val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
+                                binding.etPCDAuthNumber.postDelayed({
+                                    binding.etPCDAuthNumber.requestFocus()
+                                    binding.etPCDAuthNumber.setSelection(binding.etPCDAuthNumber.length())
+                                    imm?.showSoftInput(binding.etPCDAuthNumber, InputMethodManager.SHOW_IMPLICIT)
+                                }, 250)
+                            }
+                            409 -> {
+                                MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                                    setMessage("이미 존재하는 핸드폰 번호입니다. 재확인 후 다시 시도해주세요")
+                                    setPositiveButton("예", { _, _ ->
+                                        binding.etPCDMobile.setText("")
+                                    })
+
+                                }.show()
+                            }
+                            400 -> {
+                                Toast.makeText(requireContext(), "휴대폰 번호가 올바르지 않습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                            422 -> {
+                                Toast.makeText(requireContext(), "휴대폰번호가 존재하지 않습니다", Toast.LENGTH_SHORT).show()
+                            }
+                            429 -> {
+                                Toast.makeText(requireContext(), "요청 가능 횟수를 초과헀습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                            500 -> {
+                                Toast.makeText(requireContext(), "서버 오류 입니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                            else -> {
+                                Toast.makeText(requireContext(), "인증번호 전송에 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            })
+            setNegativeButton("아니오", {_, _ ->
+
+            })
+        }.show()
+    }
+
+    private fun verifyMobileCode() {
+        val configureMobile = svm.passMobile.value?.replace("-", "")
+        val bodyJo = JSONObject().apply {
+            put("mobile", configureMobile)
+            put("otp", binding.etPCDAuthNumber.text)
+        }
+        Log.v("verifyMobileCode","$bodyJo")
+        lifecycleScope.launch(Dispatchers.IO) {
+            val statusCode = verifyMobileOTP(getString(R.string.API_user), bodyJo.toString())?.second
+            when (statusCode) {
+                200, 201 -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "인증에 성공했습니다. 하단 수정 완료 버튼을 눌러주세요", Toast.LENGTH_SHORT).show()
+                        // 휴대폰 인증 성공 시
+                        enabledButton()
+                        binding.tvPCDReAuth.visibility = View.GONE
+                        binding.tvPCDCountDown.visibility = View.GONE
+                        svm.countDownTimer?.cancel()
+                        binding.etPCDAuthNumber.apply {
+                            isEnabled = false
+                            backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.subColor100, null))
+                        }
+                    }
+                }
+                else -> {
+                    withContext(Dispatchers.Main) {
+                        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                            setTitle("알림")
+                            setMessage("만료 혹은 올바르지 않은 인증번호입니다. 다시 시도해주세요")
+                            setPositiveButton("예", {_, _ ->
+                                binding.etPCDAuthNumber.setText("")
+                            })
+                        }.show()
+                        svm.mobileCondition.value = true
+
+                    }
+                }
             }
         }
     }
@@ -489,13 +640,8 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         binding.btnPCDFinish.isEnabled = true
     }
     private fun disabledButton() {
-        binding.btnPCDFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
-        binding.btnPCDFinish.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400)))
+        binding.btnPCDFinish.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor400))
         binding.btnPCDFinish.isEnabled = false
-    }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 
     private fun setUIVisibility(case: Int) {
@@ -543,11 +689,15 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.tvPCDPWVerifyCondition.visibility = View.GONE
                 binding.tvPCDSkip.visibility = View.GONE
                 binding.clPCDMobile.visibility = View.VISIBLE
+                binding.ibtnPCD1Clear.visibility = View.GONE
                 binding.ibtnPCD2Clear.visibility = View.GONE
                 binding.ibtnPCD3Clear.visibility = View.GONE
+
+                binding.tvPCDReAuth.visibility = View.GONE
+                binding.tvPCDCountDown.visibility = View.GONE
+                binding.etPCDAuthNumber.visibility = View.GONE
+
                 binding.etPCDMobile.isEnabled = true
-                binding.btnPCDAuthSend.isEnabled = false
-                binding.btnPCDAuthConfirm.isEnabled = false
                 binding.btnPCDFinish.isEnabled = false
                 binding.clPCDGender.visibility = View.GONE
 
@@ -567,51 +717,11 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 binding.ibtnPCD3Clear.visibility = View.GONE
                 binding.etPCDMobile.isEnabled = false
                 binding.btnPCDAuthSend.isEnabled = false
-                binding.btnPCDAuthConfirm.isEnabled = false
+
                 binding.clPCDGender.visibility = View.VISIBLE
 
             }
         }
         binding.tvPCD1Condition.text = ""
-    }
-    @SuppressLint("SetTextI18n")
-    @RequiresApi(Build.VERSION_CODES.P)
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "인증에 성공했습니다. 전화번호 변경을 진행해주세요", Toast.LENGTH_LONG).show()
-                    binding.btnPCDFinish.isEnabled = true
-                } else {
-                    Toast.makeText(requireContext(), "인증에 실패했습니다.", Toast.LENGTH_SHORT).show()
-                    Log.w(ContentValues.TAG, "mobile auth failed.")
-                }
-            }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                FirebaseAuth.getInstance().signOut()
-                val user = FirebaseAuth.getInstance().currentUser
-                Log.v("user", "$user")
-                user?.delete()
-            }
-        }
-        auth.signOut()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                FirebaseAuth.getInstance().signOut()
-                val user = FirebaseAuth.getInstance().currentUser
-                Log.v("user", "$user")
-                user?.delete()
-            }
-        }
-        auth.signOut()
     }
 }

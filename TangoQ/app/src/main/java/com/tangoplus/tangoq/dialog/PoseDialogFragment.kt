@@ -1,14 +1,12 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,13 +14,13 @@ import android.view.ViewTreeObserver
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
@@ -31,17 +29,13 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.video.VideoSize
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.adapter.MainPartAnalysisRVAdapter
 import com.tangoplus.tangoq.databinding.FragmentPoseDialogBinding
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
-import com.tangoplus.tangoq.function.MeasurementManager.createSummary
 import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.function.MeasurementManager.getVideoDimensions
 import com.tangoplus.tangoq.function.MeasurementManager.setImage
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
-import com.tangoplus.tangoq.mediapipe.OverlayView
-import com.tangoplus.tangoq.mediapipe.PoseLandmarkResult.Companion.fromCoordinates
-import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
+import com.tangoplus.tangoq.vision.OverlayView
+import com.tangoplus.tangoq.vision.PoseLandmarkResult.Companion.fromCoordinates
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +50,7 @@ class PoseDialogFragment : DialogFragment() {
     private val pvm : PlayViewModel by activityViewModels()
     private var seq = 0
     private var updateUI = false
-
+    private var videoUrl = ""
 
     private var exoPlay: ImageButton? = null
     private var exoPause: ImageButton? = null
@@ -76,7 +70,10 @@ class PoseDialogFragment : DialogFragment() {
         binding = FragmentPoseDialogBinding.inflate(inflater)
         return binding.root
     }
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
+    }
     companion object {
         const val ARG_SEQ_INDEX = "pose_seq_index"
         fun newInstance(seq: Int) : PoseDialogFragment {
@@ -92,7 +89,13 @@ class PoseDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         seq = arguments?.getInt(ARG_SEQ_INDEX) ?: 0
-
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         when (seq) {
             1 -> {
 // 영상
@@ -110,7 +113,7 @@ class PoseDialogFragment : DialogFragment() {
 
                 pvm.setPlaybackPosition(0L)
                 pvm.setWindowIndex(0)
-                pvm.videoUrl = mvm.selectedMeasure?.fileUris?.get(1)
+                videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
                 exoPlay = view.findViewById(R.id.btnPlay)
                 exoPause = view.findViewById(R.id.btnPause)
                 llSpeed = view.findViewById(R.id.llSpeed)
@@ -209,9 +212,9 @@ class PoseDialogFragment : DialogFragment() {
         binding.pvPD.controllerShowTimeoutMs = 1100
         lifecycleScope.launch {
             // 저장된 URL이 있다면 사용, 없다면 새로운 URL 가져오기
-            pvm.videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
+            videoUrl = mvm.selectedMeasure?.fileUris?.get(1).toString()
 
-            val mediaItem = MediaItem.fromUri(Uri.parse(pvm.videoUrl))
+            val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
             val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
                 .createMediaSource(mediaItem)
 
@@ -320,7 +323,7 @@ class PoseDialogFragment : DialogFragment() {
         val frameIndex = ((currentPosition.toFloat() / videoDuration) * totalFrames).toInt()
         val coordinates = extractVideoCoordinates(pvm.dynamicJa)
 
-        val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), pvm.videoUrl?.toUri())
+        val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl?.toUri())
         if (frameIndex in 0 until totalFrames) {
 
             val poseLandmarkResult = fromCoordinates(coordinates[frameIndex])
@@ -340,7 +343,7 @@ class PoseDialogFragment : DialogFragment() {
     private fun updateVideoUI() {
         binding.ssivPD.visibility = View.GONE
 
-        val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), pvm.videoUrl?.toUri())
+        val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), videoUrl.toUri())
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenWidth = displayMetrics.widthPixels

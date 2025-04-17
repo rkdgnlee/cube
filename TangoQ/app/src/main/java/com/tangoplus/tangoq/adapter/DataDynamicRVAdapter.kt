@@ -15,7 +15,7 @@ import com.tangoplus.tangoq.databinding.RvDataDynamicItemBinding
 import com.tangoplus.tangoq.view.TrendCurveView
 
 
-class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, private val titles: List<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, private val titles: List<String>, private val judgeFrontCamera: Boolean = false) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val distinctTitles = titles.map { it.replace("좌측 ", "").replace("우측 ", "") }.distinct()
 
     inner class MPAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -44,9 +44,9 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
         if (holder is MPAViewHolder){
             holder.tvDDAITitle.text = "${distinctTitles[position]} 이동 안정성"
 
-            // leftIndex가 +1인 이유: 좌우 값이 반대로 가야함.
-            val pairStartIndex = (position * 2)
-            val leftIndex = pairStartIndex + 1
+            // leftIndex가 + 1인 이유: 좌우 값이 반대로 가야함.
+            val pairStartIndex = (position * 2) // 0, 2, 4
+            val leftIndex = pairStartIndex + 1 // 1, 3, 5
 
             when (position) {
                 0 -> {
@@ -64,7 +64,15 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
                     holder.clDDAI2.visibility = View.GONE
                     holder.tvDDAI2.visibility = View.GONE
                     holder.llDDAILegend.visibility = View.GONE
-                    holder.cvDDAI1.setPoints(data[2])
+
+                    // data의 중간값을 계산해서 다시 만들기
+                    // data는 한 좌표의 연속적인 list값임
+                    val aa = data[2]
+                    val bb = data[3]
+                    val centerPoints = aa.zip(bb) {a, b ->
+                        Pair((a.first + b.first) / 2f, (a.second + b.second) / 2f)
+                    }
+                    holder.cvDDAI1.setPoints(centerPoints)
                     holder.tvDDAI1.text = titles[2]
 
                     val layoutParams = holder.clDDAI1.layoutParams as ConstraintLayout.LayoutParams
@@ -73,16 +81,20 @@ class DataDynamicRVAdapter(private val data: List<List<Pair<Float, Float>>>, pri
                 }
                 2 -> {
                     if (leftIndex <= data.size) {
-                        holder.cvDDAI1.setPoints(data[pairStartIndex - 1 ]) // data의 size가 5가 됐음. 3
-                         holder.tvDDAI1.text = titles[pairStartIndex] // 4
+                        holder.cvDDAI1.setPoints(data[pairStartIndex]) // data의 size가 5가 됐음. 3
+                        holder.tvDDAI1.text = titles[pairStartIndex] // 4
                     }
+
+                    // 우측 추가
                     if (pairStartIndex < data.size) {
-                        holder.cvDDAI2.setPoints(data[leftIndex - 1])
+                        holder.cvDDAI2.setPoints(data[leftIndex])
                         holder.tvDDAI2.text = titles[leftIndex]
                     }
                     holder.llDDAILegend.visibility = View.GONE
-                    holder.cvDDAI1.setMirrored(true)
-                    holder.cvDDAI2.setMirrored(true)
+
+                    // 좌우 측면 카메라 판단해야함
+                    holder.cvDDAI1.setMirrored(judgeFrontCamera)
+                    holder.cvDDAI2.setMirrored(judgeFrontCamera)
                 }
             }
         }

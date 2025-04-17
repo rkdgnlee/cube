@@ -13,37 +13,41 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.tangoplus.tangoq.api.HttpClientProvider.scheduleTokenCheck
+import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.broadcastReceiver.AlarmReceiver
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.fragment.ExerciseFragment
 import com.tangoplus.tangoq.fragment.MainFragment
 import com.tangoplus.tangoq.fragment.ProfileFragment
 import com.tangoplus.tangoq.databinding.ActivityMainBinding
-import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.db.MeasureDatabase
-import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.fragment.MeasureFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import com.tangoplus.tangoq.function.WifiManager
-import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlertDialogFragment
+import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.fragment.AnalyzeFragment
 import com.tangoplus.tangoq.fragment.MeasureHistoryFragment
-import com.tangoplus.tangoq.fragment.ProgramSelectFragment
-import com.tangoplus.tangoq.fragment.WithdrawalFragment
-import com.tangoplus.tangoq.viewmodel.MainViewModel
+import com.tangoplus.tangoq.dialog.WithDrawalDialogFragment
+import com.tangoplus.tangoq.fragment.MainAnalysisFragment
+import com.tangoplus.tangoq.function.DeepLinkManager
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.viewmodel.AppViewModel
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,7 +59,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val pvm : PlayViewModel by viewModels()
     private val mvm : MeasureViewModel by viewModels()
-    private val viewModel: MainViewModel by viewModels()
+    private val avm : AnalysisViewModel by viewModels()
+    private val evm: ExerciseViewModel by viewModels()
+    private lateinit var appViewModel: AppViewModel
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
@@ -66,40 +72,38 @@ class MainActivity : AppCompatActivity() {
         // 새로운 인텐트가 들어왔을 때 딥링크 처리
         handleIntent(intent)
     }
+    private fun showLogoutDialog() {
+        val dialog = AlertDialogFragment.newInstance("logout")
+        dialog.show(supportFragmentManager, "AlertDialogFragment")
+    }
 
     @SuppressLint("ScheduleExactAlarm")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(binding.root)
-        if (Singleton_t_user.getInstance(this).jsonObject?.optString("user_name").isNullOrEmpty()) {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.clMain)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            insets
+        }
+
+        if (Singleton_t_user.getInstance(this).jsonObject == null || Singleton_t_user.getInstance(this).jsonObject?.optString("user_name") == "") {
             Toast.makeText(this, "올바르지 않은 접근입니다.\n다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
             logout(this@MainActivity, 0)
         }
         // ------! activity 사전 설정 시작 !------
         // 로그인 완료 시 2분마다 토큰 갱신
         myApplication = application as MyApplication
-
-        val workManager = WorkManager.getInstance(this)
-        scheduleTokenCheck(this)
-        workManager.getWorkInfosForUniqueWorkLiveData("TokenCheckWork").observe(this) { workInfos ->
-            if (workInfos.isNullOrEmpty()) {
-                Log.e("WorkManagerDebug", "작업이 등록되지 않음!")
-                return@observe
-            }
-            val workInfo = workInfos[0]
-            Log.d("WorkManagerDebug", "WorkInfo 상태: ${workInfo.state}")
-//            Log.v("TokenCheckWorker", "$workInfos")
-        }
-        viewModel.showLogoutDialog.observe(this) { shouldShow ->
-            if (shouldShow == true) {  // null 체크
-                Log.v("로그아웃갑시다2", "중복 로그인 - 현재 기기 로그아웃 처리")
-                val dialog = AlertDialogFragment.newInstance("logout")
-                dialog.show(supportFragmentManager, "AlertDialogFragment")
-                viewModel.resetLogoutDialog()
+        appViewModel = myApplication.appViewModel
+        appViewModel.logoutTrigger.observe(this) { shouldLogout ->
+            if (shouldLogout) {
+                Log.e("RefreshTokenFail", "get the code to Logout : ${shouldLogout}")
+                showLogoutDialog()
+                appViewModel.resetTrigger()
             }
         }
-
 
         wifiManager = WifiManager(this)
         // ------! activity 사전 설정 끝 !------
@@ -113,23 +117,29 @@ class MainActivity : AppCompatActivity() {
                     logout(this@MainActivity, 0)
                 },   3 * 60000) //
             }
+            else -> {
+                Log.v("현재 네트워크 타입", securityType)
+            }
         }
-
+        val networkType = wifiManager.checkNetworkType()
+        Log.v("현재 네트워크 타입", networkType)
         // ------# 접근 방지 #------
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         setCurrentFragment(selectedTabId)
+//        if (appViewModel.getCF() == null) appViewModel.setCF("MainFragment")
+
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         // bottomnavigation도 같이 backstack 반응하기
         supportFragmentManager.addOnBackStackChangedListener {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.flMain)
             when (currentFragment) {
-                is MainFragment, is ProgramSelectFragment -> binding.bnbMain.selectedItemId = R.id.main
+                is MainFragment-> binding.bnbMain.selectedItemId = R.id.main
                 is AnalyzeFragment -> binding.bnbMain.selectedItemId = R.id.analyze
                 is MeasureFragment, is MeasureHistoryFragment, is MeasureDetailFragment -> binding.bnbMain.selectedItemId = R.id.measure
                 is ExerciseFragment, is ExerciseDetailFragment -> binding.bnbMain.selectedItemId = R.id.exercise
-                is ProfileFragment, is WithdrawalFragment -> binding.bnbMain.selectedItemId = R.id.profile
+                is ProfileFragment -> binding.bnbMain.selectedItemId = R.id.profile
             }
         }
 
@@ -180,9 +190,17 @@ class MainActivity : AppCompatActivity() {
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
 
-        if (!singletonMeasure.measures.isNullOrEmpty()) { // 값이 하나라도 있을 때만 가져오기.
-            mvm.selectedMeasure = singletonMeasure.measures?.get(0)
-            mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+        // 값이 하나라도 있을 때만 가져오기.
+        if (!singletonMeasure.measures.isNullOrEmpty()) {
+            if (mvm.selectedMeasureDate.value == null) {
+                mvm.selectedMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
+            }
+            if (mvm.selectMeasureDate.value == null) {
+                mvm.selectMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
+            }
+            if (mvm.selectedMeasure == null) {
+                mvm.selectedMeasure = singletonMeasure.measures?.get(0)
+            }
         }
         handleIntent(intent)
 
@@ -198,7 +216,10 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val finishedMeasure = result.data?.getBooleanExtra("finishedMeasure", false) ?: false
                 if (finishedMeasure) {
-                    mvm.selectedMeasureDate.value = singletonMeasure.measures?.get(0)?.regDate
+
+                    // 측정이 완료됐을 때 방금 측정한 최신 measure을 선택.
+                    mvm.selectedMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
+                    mvm.selectMeasureDate.value = singletonMeasure.measures?.let { avm.createDateDisplayList(it).get(0) }
                     mvm.selectedMeasure = singletonMeasure.measures?.get(0)
                     val bnb : BottomNavigationView = findViewById(R.id.bnbMain)
                     bnb.selectedItemId = R.id.measure
@@ -211,7 +232,6 @@ class MainActivity : AppCompatActivity() {
                         replace(R.id.flMain, measureDetailFragment)
                         commit()
                     }
-
                 }
             }
         }
@@ -233,18 +253,23 @@ class MainActivity : AppCompatActivity() {
             else -> MainFragment()
         }
         selectedTabId = itemId
-        // 프래그먼트 변경
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flMain, fragment)
             commit()
         }
     }
 
+
     override fun onResume() {
         super.onResume()
 
         // ------! 0일 때만 피드백 켜지게 !------
-        val feedbackData = intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
+        val feedbackData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent?.getSerializableExtra("feedback_finish", Triple::class.java) as? Triple<Int, Int, Int>
+        } else {
+            @Suppress("DEPRECATION")
+            intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
+        }
 //        Log.v("intent>feedback", "$feedbackData")
         if (feedbackData != null) {
             if (pvm.isDialogShown.value == false) {
@@ -295,13 +320,17 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // 핸들러의 콜백을 제거하여 메모리 누수를 방지
         backPressHandler.removeCallbacks(backPressRunnable)
-        WorkManager.getInstance(this).cancelUniqueWork("TokenCheckWork")
+//        WorkManager.getInstance(this).cancelUniqueWork("TokenCheckWork")
     }
 
     private fun handleIntent(intent: Intent) {
+        // 딥링크에서 왔을 때
         val deepLinkPath = intent.getStringExtra(DeepLinkManager.DEEP_LINK_PATH_KEY)
         val exerciseId = intent.getStringExtra(DeepLinkManager.EXERCISE_ID_KEY)
         val finishEVP =  intent.getStringExtra("evp_finish")
+
+        // 알람에서 왔을 때
+        val alarmNav = intent.getStringExtra("fragmentId")
         Log.v("finishEVP", "$finishEVP")
         if (deepLinkPath != null) {
             if (exerciseId != null) {
@@ -310,6 +339,7 @@ class MainActivity : AppCompatActivity() {
         } else if (finishEVP != null) {
             navigateToFragment("PlayThumbnail", finishEVP)
         }
+        intent.replaceExtras(null)
     }
 
     private fun navigateToFragment(path: String, exerciseId : String?) {
@@ -365,8 +395,12 @@ class MainActivity : AppCompatActivity() {
 
 
     fun launchMeasureSkeletonActivity() {
-        val intent = Intent(this, MeasureSkeletonActivity::class.java)
-        measureSkeletonLauncher.launch(intent)
+        if (WifiManager(this).checkNetworkType() != "NONE") {
+            val intent = Intent(this, MeasureSkeletonActivity::class.java)
+            measureSkeletonLauncher.launch(intent)
+        } else {
+            Toast.makeText(this, "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun hasExactAlarmPermission(context: Context): Boolean {

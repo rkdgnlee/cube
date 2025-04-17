@@ -11,6 +11,7 @@ import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
 import com.tangoplus.tangoq.databinding.RvAlarmItemBinding
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import java.time.Duration
 import java.time.Instant
 
@@ -29,10 +30,10 @@ class AlarmRVAdapter(private val fragment : Fragment, var alarmList: MutableList
                 ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 
             binding.tvAlarmMessage.text = alarm.message
-            binding.tvAlarmRemove.setOnClickListener {
+            binding.tvAlarmRemove.setOnSingleClickListener {
                 deleteListener.onAlarmDelete(alarm.timeStamp)
             }
-            binding.tvAlarmMessage.setOnClickListener {
+            binding.tvAlarmMessage.setOnSingleClickListener {
                 clickListener.onAlarmClick(alarm.route)
                 hideBadgeFunction?.invoke()
             }

@@ -1,7 +1,6 @@
 package com.tangoplus.tangoq
 
-import android.util.Log
-import org.junit.Assert.assertEquals
+import com.tangoplus.tangoq.vision.MathHelpers.determineDirection
 import org.junit.Test
 import java.lang.Math.toDegrees
 import java.time.LocalDate
@@ -139,22 +138,31 @@ class MathTest {
     @Test
     fun distanceYTest() {
 //        val halfAxis = Pair((390f + 327f) / 2, (1035f + 1043f) / 2)
-        val leftShoulder = Pair(439f, 447f)
-        val rightShoulder = Pair(269f, 447f)
-        val leftWrist = Pair(489f, 676f)
-        val rightWrist = Pair(239f, 684f)
-        val leftKnee = Pair(395f, 885f)
-        val rightKnee = Pair(310f, 888f)
+        val leftShoulder1 = Pair(474f, 445f)
+        val rightShoulder1 = Pair(305f, 438f)
+        val leftShoulder2 = Pair(285f, 500f)
+        val rightShoulder2 = Pair(459f, 476f)
 
-        val shoulderLeftDis = getRealDistanceY(rightShoulder, leftShoulder)
+        val leftWrist1 = Pair(517f, 671f)
+        val rightWrist1 = Pair(276f, 664f)
+        val leftWrist2 = Pair(240f, 716f)
+        val rightWrist2 = Pair(500f, 713f)
 
-        val wristLeftDis = getRealDistanceY(rightWrist, leftWrist)
+        val leftKnee1 = Pair(395f, 885f)
+        val rightKnee1 = Pair(310f, 888f)
+        val leftKnee2 = Pair(395f, 885f)
+        val rightKnee2 = Pair(310f, 888f)
 
-        val kneeLeftDis = getRealDistanceY(rightKnee, leftKnee)
-
-        println("어깨: ${shoulderLeftDis}")
-        println("손목: ${wristLeftDis}")
-        println("무릎: ${kneeLeftDis}")
+        //
+        val frontShoulder = getRealDistanceY(leftShoulder1, rightShoulder1)
+        val backShoulder = getRealDistanceY(leftShoulder2, rightShoulder2)
+        val frontWrist = getRealDistanceY(leftWrist1, rightWrist1)
+        val backWrist = getRealDistanceY(leftWrist2, rightWrist2)
+        val frontKnee = getRealDistanceY(leftKnee1, rightKnee1)
+        val backKnee = getRealDistanceY(leftKnee2, rightKnee2)
+        println("정카 어깨: $frontShoulder, 후카 어깨 $backShoulder")
+        println("정카 팔꿉: $frontWrist, 후카 팔꿉 $backWrist")
+        println("정카 무릎: $frontKnee, 후카 무릎 $backKnee")
     }
 
     @Test
@@ -192,7 +200,7 @@ class MathTest {
 
 
     private val SCALE_X = 0.25f
-    private val SCALE_Y = 0.3f
+    private val SCALE_Y = 0.225f
     fun getDistanceX(point1: Pair<Float, Float>, point2: Pair<Float, Float>): Float {
         return abs(point2.first - point1.first)
     }
@@ -219,66 +227,6 @@ class MathTest {
             normalizedDistance * SCALE_Y
         }
     }
-
-//    @Test
-//    fun leftRightJudge() {
-//        val leftFrontShoulder = judgeState(0, 178f, Triple(-180f, 0.64f, 2.34f))
-//        val rightFrontShoulder = judgeState(0, 178f, Triple(180f, 0.64f, 2.34f))
-//        val leftBackShoulder = judgeState(5, -3.32f, Triple(0f, 0.9f,1.8f))
-//        val rightBackShoulder = judgeState(5, -3.32f, Triple(0f, -0.9f,-1.8f))
-//
-//
-//        println("[front]left: $leftFrontShoulder, right: $rightFrontShoulder")
-//        println("[back]left: $leftBackShoulder, right: $rightBackShoulder")
-//    }
-//
-//    fun judgeState(i : Int, data: Float, boundTriple: Triple<Float, Float, Float>) : String {
-//        val (center, warning, danger) = boundTriple
-//        // 어느 쪽이 안좋은지 판단한 후, 주의 위험은 절대값으로 판단
-//        return if (i == 5) {
-//            val warningBound = center + warning
-//            val dangerBound = center + danger
-//            when {
-//                warningBound > 0 -> {
-//                    when {
-//                        data > dangerBound -> {  "status.DANGER" }
-//                        data > warningBound -> { "status.WARNING" }
-//                        else -> { "status.NORMAL" }
-//                    }
-//                }
-//                warningBound < 0 -> {
-//                    when {
-//                        data < dangerBound  -> { "status.DANGER" }
-//                        data < warningBound -> { "status.WARNING" }
-//                        else -> { "status.NORMAL" }
-//                    }
-//                }
-//
-//                else -> { ""}
-//            }
-//        } else {
-//            val absCenter = abs(center)
-//            val lowerWarning = absCenter - warning
-//            val upperWarning = absCenter + warning
-//            val lowerDanger = absCenter - danger
-//            val upperDanger = absCenter + danger
-//
-//            when {
-//                data < lowerDanger || data > upperDanger -> {
-//                    // 위험
-//                    "status.DANGER"
-//                }
-//                data < lowerWarning || data > upperWarning -> {
-//                    // 주의
-//                    "status.WARNING"
-//                }
-//                else -> {
-//                    // 정상
-//                    "status.NORMAL"
-//                }
-//            }
-//        }
-//    }
 
     @Test
     fun getTrim() {
@@ -336,5 +284,209 @@ class MathTest {
             println("3")
         }
         print("week: $setWeek, seq: $setSeq")
+    }
+
+    @Test
+    fun seqText() {
+        val indexes = mutableListOf<Int>()
+        for (i in 0 .. 32) {
+            indexes.add(i + 10)
+        }
+        indexes.forEachIndexed { index, i ->
+            val swapIndex = if (index >= 7 && index % 2 == 0) index - 1 // 짝수인 경우 뒤의 홀수 인덱스로 교체
+            else if (index >= 7 && index % 2 == 1) index + 1 // 홀수인 경우 앞의 짝수 인덱스로 교체
+            else index // 7 미만인 경우 그대로 사용
+            println(swapIndex)
+        }
+
+    }
+
+//    // 4월 10일자 전면 카메라
+//    @Test
+//    fun calculateShoulderElbow1() {
+//        val leftShoulder = Pair(477f, 407f)
+//        val rightShoulder = Pair(287f, 401f)
+//        val leftElbow = Pair(498f, 556f)
+//        val rightElbow = Pair(260f, 546f)
+//        val result1 =  calculateSlope(leftShoulder.first, leftShoulder.second, leftElbow.first, leftElbow.second)
+//        val result2 =  calculateSlope(rightShoulder.first, rightShoulder.second, rightElbow.first, rightElbow.second)
+//        println("왼쪽: ${180 + result1 % 180}, 오른쪽: ${abs(result2) % 180}")
+//    }
+//    // 4월 11일자 후면 카메라
+//    @Test
+//    fun calculateShoulderElbow2() {
+//        val leftShoulder = Pair(477f, 407f)
+//        val rightShoulder = Pair(287f, 401f)
+//        val leftElbow = Pair(498f, 556f)
+//        val rightElbow = Pair(260f, 546f)
+//        val result1 =  calculateSlope(leftShoulder.first, leftShoulder.second, leftElbow.first, leftElbow.second)
+//        val result2 =  calculateSlope(rightShoulder.first, rightShoulder.second, rightElbow.first, rightElbow.second)
+//        println("왼쪽: ${180 + result1 % 180}, 오른쪽: ${abs(result2) % 180}")
+//    }
+//
+//    // 4월 1일자 키오스크
+//    @Test
+//    fun calculateShoulderElbow3() {
+//        val leftShoulder = Pair(690f, 245f)
+//        val rightShoulder = Pair(586f, 238f)
+//        val leftElbow = Pair(704f, 327f)
+//        val rightElbow = Pair(569f, 320f)
+//        val result1 =  calculateSlope(leftShoulder.first, leftShoulder.second, leftElbow.first, leftElbow.second)
+//        val result2 =  calculateSlope(rightShoulder.first, rightShoulder.second, rightElbow.first, rightElbow.second)
+//        println("왼쪽: ${180 + result1 % 180}, 오른쪽: ${abs(result2) % 180}")
+//    }
+    fun normalizeAngle90(angle: Float): Float {
+        val absAngle = abs(angle % 180)
+        return if (absAngle > 90) 180 - absAngle else absAngle
+    }
+    // 4월 10일자 후면 카메라
+    @Test
+    fun calculateTopSlope1() {
+        val nose = Pair(448f, 377f)
+        val leftEar = Pair(402f, 370f)
+        val rightEar = Pair(414f, 369f)
+
+        val leftShoulder = Pair(359f, 472f)
+        val rightShoulder = Pair(405f, 476f)
+        val result1 =  calculateSlope(nose.first, nose.second, leftShoulder.first, leftShoulder.second)
+        val result2 =  calculateSlope(nose.first, nose.second, rightShoulder.first, rightShoulder.second)
+        val result3 =  calculateSlope(leftEar.first, leftEar.second, leftShoulder.first, leftShoulder.second)
+        val result4 =  calculateSlope(rightEar.first, rightEar.second, rightShoulder.first, rightShoulder.second)
+
+        val rangeResult1 = normalizeAngle90(result1)
+        val rangeResult2 = normalizeAngle90(result2)
+        val rangeResult3 = normalizeAngle90(result3)
+        val rangeResult4 = normalizeAngle90(result4)
+        println("왼쪽 코-어깨: $result1 -> $rangeResult1, 오른쪽 코-어깨: $result2 -> $rangeResult2, 왼쪽귀-어깨: $result3 -> $rangeResult3, 오른쪽귀-어깨: $result4 -> $rangeResult4")
+    }
+    @Test
+    fun calculateTopSlope2() {
+        val nose = Pair(307f, 338f)
+        val leftEar = Pair(351f, 329f)
+        val rightEar = Pair(343f, 328f)
+
+        val leftShoulder = Pair(389f, 433f)
+        val rightShoulder = Pair(359f, 435f)
+        val result1 =  calculateSlope(nose.first, nose.second, leftShoulder.first, leftShoulder.second)
+        val result2 =  calculateSlope(nose.first, nose.second, rightShoulder.first, rightShoulder.second)
+        val result3 =  calculateSlope(leftEar.first, leftEar.second, leftShoulder.first, leftShoulder.second)
+        val result4 =  calculateSlope(rightEar.first, rightEar.second, rightShoulder.first, rightShoulder.second)
+
+        val rangeResult1 = normalizeAngle90(result1)
+        val rangeResult2 = normalizeAngle90(result2)
+        val rangeResult3 = normalizeAngle90(result3)
+        val rangeResult4 = normalizeAngle90(result4)
+        println("왼쪽 코-어깨: $result1 -> $rangeResult1, 오른쪽 코-어깨: $result2 -> $rangeResult2, 왼쪽귀-어깨: $result3 -> $rangeResult3, 오른쪽귀-어깨: $result4 -> $rangeResult4")
+    }
+
+    @Test
+    fun calculateTopSlope3() {
+
+        val leftKnee = Pair(339f, 928f)
+        val rightKnee = Pair(444f, 920f)
+
+        val leftAnkle = Pair(347f, 1080f)
+        val rightAnkle = Pair(451f, 1070f)
+        val result1 =  calculateSlope(leftKnee.first, leftKnee.second, leftAnkle.first, leftAnkle.second)
+        val result2 =  calculateSlope(rightKnee.first, rightKnee.second, rightAnkle.first, rightAnkle.second)
+
+        val rangeResult1 = normalizeAngle90(result1)
+        val rangeResult2 = normalizeAngle90(result2)
+
+        println("왼쪽 코-어깨: $result1 -> $rangeResult1, 오른쪽 코-어깨: $result2 -> $rangeResult2")
+
+        val leftKnee2 = Pair(441f, 884f)
+        val rightKnee2 = Pair(319f, 884f)
+
+        val leftAnkle2 = Pair(432f, 1020f)
+        val rightAnkle2 = Pair(306f, 1044f)
+        val result3 =  calculateSlope(leftKnee2.first, leftKnee2.second, leftAnkle2.first, leftAnkle2.second)
+        val result4 =  calculateSlope(rightKnee2.first, rightKnee2.second, rightAnkle2.first, rightAnkle2.second)
+
+        val rangeResult3 = normalizeAngle90(result3)
+        val rangeResult4 = normalizeAngle90(result4)
+
+        println("왼쪽 코-어깨: $result3 -> $rangeResult3, 오른쪽 코-어깨: $result4 -> $rangeResult4")
+
+    }
+
+
+//    @Test
+//    fun calculateShoulderElbow1() {
+//        val leftShoulder = Pair(285f, 500f)
+//        val rightShoulder = Pair(459f, 476f)
+//        val leftElbow = Pair(267f, 626f)
+//        val rightElbow = Pair(491f, 604f)
+//        val result1 =  calculateSlope(leftShoulder.first, leftShoulder.second, leftElbow.first, leftElbow.second)
+//        val result2 =  calculateSlope(rightShoulder.first, rightShoulder.second, rightElbow.first, rightElbow.second)
+//
+//        val rangeResult1 = normalizeAngle90(result1)
+//        val rangeResult2 = normalizeAngle90(result2)
+//        println("왼쪽: $result1 -> $rangeResult1, 오른쪽: $result2 -> $rangeResult2")
+//    }
+//    @Test
+//    fun calculateShoulderElbow2() {
+//        val leftShoulder = Pair(477f, 407f)
+//        val rightShoulder = Pair(287f, 401f)
+//        val leftElbow = Pair(498f, 556f)
+//        val rightElbow = Pair(260f, 546f)
+//        val result1 =  calculateSlope(leftShoulder.first, leftShoulder.second, leftElbow.first, leftElbow.second)
+//        val result2 =  calculateSlope(rightShoulder.first, rightShoulder.second, rightElbow.first, rightElbow.second)
+//        println("왼쪽: $result1 -> ${180 + result1 % 180}, 오른쪽: $result2 -> ${abs(result2) % 180}")
+//    }
+//
+//    // 4월 1일자 키오스크
+//    @Test
+//    fun calculateShoulderElbow3() {
+//        val leftShoulder = Pair(690f, 245f)
+//        val rightShoulder = Pair(586f, 238f)
+//        val leftElbow = Pair(704f, 327f)
+//        val rightElbow = Pair(569f, 320f)
+//        val result1 =  calculateSlope(leftShoulder.first, leftShoulder.second, leftElbow.first, leftElbow.second)
+//        val result2 =  calculateSlope(rightShoulder.first, rightShoulder.second, rightElbow.first, rightElbow.second)
+//        val rangeResult1 = normalizeAngle90(result1)
+//        val rangeResult2 = normalizeAngle90(result2)
+//        println("왼쪽: $result1 -> $rangeResult1, 오른쪽: $result2 -> $rangeResult2")
+//    }
+
+
+    @Test
+    fun angle() {
+
+        // 좌측
+        val leftShoulder1 = Pair(637f,233f)
+        val leftElbow1 = Pair(632f, 325f)
+        val leftWrist1 = Pair(604f, 397f)
+
+        val leftShoulder2 = Pair(418f, 402f)
+        val leftElbow2 = Pair(418f, 556f)
+        val leftWrist2 = Pair(355f, 673f)
+
+        val leftShoulder3 = Pair(333f, 548f)
+        val leftElbow3 = Pair(342f, 650f)
+        val leftWrist3 = Pair(373f, 738f)
+
+        val result1 = determineDirection(leftShoulder1.first, leftShoulder1.second, leftElbow1.first, leftElbow1.second, leftWrist1.first, leftWrist1.second)
+        val result2 = determineDirection(leftShoulder2.first, leftShoulder2.second, leftElbow2.first, leftElbow2.second, leftWrist2.first, leftWrist3.second)
+        val result3 = determineDirection(leftShoulder3.first, leftShoulder3.second, leftElbow3.first, leftElbow3.second, leftWrist2.first, leftWrist3.second)
+        println("좌측면 seq: 키오스크: $result1, 앱 정면: $result2 앱 후면: $result3")
+
+        // 우측
+        val leftShoulder4 = Pair(625f,228f)
+        val leftElbow4 = Pair(635f, 323f)
+        val leftWrist4 = Pair(646f, 390f)
+
+        val leftShoulder5 = Pair(361f, 390f)
+        val leftElbow5 = Pair(361f, 538f)
+        val leftWrist5 = Pair(404f, 635f)
+
+        val leftShoulder6 = Pair(360f, 565f)
+        val leftElbow6 = Pair(360f, 664f)
+        val leftWrist6 = Pair(337f, 740f)
+
+        val result4 = determineDirection(leftShoulder4.first, leftShoulder4.second, leftElbow4.first, leftElbow4.second, leftWrist4.first, leftWrist4.second)
+        val result5 = determineDirection(leftShoulder5.first, leftShoulder5.second, leftElbow5.first, leftElbow5.second, leftWrist5.first, leftWrist5.second)
+        val result6 = determineDirection(leftShoulder6.first, leftShoulder6.second, leftElbow6.first, leftElbow6.second, leftWrist6.first, leftWrist6.second)
+        println("우측면 seq: 키오스크: $result4, 앱 정면: $result5 앱 후면: $result6")
     }
 }

@@ -11,10 +11,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.etc.CautionVPAdapter
 import com.tangoplus.tangoq.databinding.FragmentMeasureSkeletonDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 
 class MeasureSkeletonDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureSkeletonDialogBinding
@@ -32,6 +36,11 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             return fragment
         }
     }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         return dialog
@@ -47,7 +56,13 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         isPose = arguments?.getBoolean(ARG_MS_TYPE) ?: false
         seq = arguments?.getInt(ARG_MS_SEQ) ?: 0
@@ -56,14 +71,17 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             false -> listOf(
                 R.layout.measure_skeleton_caution1,
                 R.layout.measure_skeleton_caution2,
-                R.layout.measure_skeleton_caution3,)
+                R.layout.measure_skeleton_caution3,
+                R.layout.measure_skeleton_caution4,
+                R.layout.measure_skeleton_caution5,)
         }
         binding.vpMSD.adapter = CautionVPAdapter(requireContext(), layouts, isPose, seq)
-        binding.btnMSDConfirm.setOnClickListener {
+        binding.vpMSD.currentItem = 0
+        binding.btnMSDConfirm.setOnSingleClickListener {
             Log.v("resumePoseLandmarker", "btnMSDConfirm")
             dismiss()
         }
-        binding.ibtnMSDExit.setOnClickListener {
+        binding.ibtnMSDExit.setOnSingleClickListener {
             Log.v("resumePoseLandmarker", "ibtnMSDExit")
             dismiss()
         }
@@ -77,17 +95,15 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
             }
             false -> {
                 binding.btnMSDConfirm.text = "모두 이해했습니다"
-                val dialog1 = MeasureSetupDialogFragment.newInstance(0)
-                dialog1.show(requireActivity().supportFragmentManager, "MeasureSetupDialogFragment")
+
             }
         }
     }
-    @Deprecated("Deprecated in Java")
-    @SuppressLint("UseCompatLoadingForDrawables")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+
+    override fun onResume() {
+        super.onResume()
         dialog?.window?.setDimAmount(0.9f)
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20))
+        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle_20))
         dialogFragmentResize()
     }
     private fun dialogFragmentResize() {

@@ -25,7 +25,7 @@
                 android:layout_marginStart="5dp"
                 android:text="내정보 변경"
                 android:textColor="@color/black"
-                android:textSize="32dp"
+                android:textSize="24dp"
                 android:textStyle="bold"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/ibtnPEDBack"
@@ -469,6 +469,24 @@
                 android:src="@drawable/icon_arrow_left"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvWithDrawal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:padding="4dp"
+                android:text="회원탈퇴"
+                android:textColor="@color/subColor400"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/clPEDAgreementMk2"
+                app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

@@ -8,10 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.viewpager2.widget.ViewPager2
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -19,8 +19,6 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
@@ -36,10 +34,12 @@ import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.dialog.MeasureTrendDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.function.WifiManager
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
+import com.tangoplus.tangoq.vo.DateDisplay
 import com.tangoplus.tangoq.vo.MeasureVO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,12 +65,12 @@ class MeasureFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.ibtnMsAlarm.setOnClickListener {
+        binding.ibtnMsAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "AlarmDialogFragment")
         }
 
-        binding.ibtnMsQRCode.setOnClickListener {
+        binding.ibtnMsQRCode.setOnSingleClickListener {
             val dialog = QRCodeDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "LoginScanDialogFragment")
         }
@@ -88,10 +88,29 @@ class MeasureFragment : Fragment() {
                 mvm.selectedMeasureIndex.value = index
             }
         }
-// ------# 싱글턴 패턴 객체 가져오기 #------
+
+        binding.tvMScoreGuide.setOnSingleClickListener {
+            val balloonGuide = Balloon.Builder(requireContext())
+                .setWidthRatio(0.6f)
+                .setHeight(BalloonSizeSpec.WRAP)
+                .setText("지난 5개의 측정 지표인 종합 점수의 흐름을 판단하는 그래프입니다.\n지난 측정과 자세를 비교해보세요")
+                .setTextColorResource(R.color.subColor800)
+                .setTextSize(15f)
+                .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                .setArrowSize(0)
+                .setMargin(10)
+                .setPadding(12)
+                .setCornerRadius(8f)
+                .setBackgroundColorResource(R.color.white)
+                .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+                .setLifecycleOwner(viewLifecycleOwner)
+                .build()
+            balloonGuide.showAlignEnd(binding.tvMScoreGuide)
+        }
+
+        // ------# 싱글턴 패턴 객체 가져오기 #------
         val singletonMeasure = Singleton_t_measure.getInstance(requireContext())
         measures = singletonMeasure.measures ?: mutableListOf()
-
 
         // ------!  이름 + 통증 부위 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
@@ -103,21 +122,22 @@ class MeasureFragment : Fragment() {
                         (activity as? MainActivity)?.launchMeasureSkeletonActivity()
                     }
                     if (measures?.isNotEmpty() == true) {
-                        val hideBadgeFunction = hideBadgeOnClick(
-                            binding.tvMBadge,
-                            binding.clMPredictDicease,
-                            "${binding.tvMBadge.text}",
-                            ContextCompat.getColor(requireContext(), R.color.thirdColor)
-                        )
-
-                        binding.tvMMeasureHistory.text =
-                            "최근 측정 기록 - ${measures?.get(0)?.regDate?.substring(0, 10)?.replace("-", ". ")}"
-                        binding.tvMName.text = "${userJson?.optString("user_name")}님의 기록"
-                        binding.clMPredictDicease.setOnClickListener {
+//                        val hideBadgeFunction = hideBadgeOnClick(
+//                            binding.tvMBadge,
+//                            binding.llMPredictDisease,
+//                            "${binding.tvMBadge.text}",
+//                            ContextCompat.getColor(requireContext(), R.color.thirdColor)
+//                        )
+                        binding.tvMEmptyGraph.visibility = View.GONE
+                        val historyInitString = "최근 측정 기록: ${measures?.get(0)?.regDate?.substring(0, 10)}" // ?.replace("-", ". ")
+                        binding.tvMMeasureHistory.text =historyInitString
+                        val userString = "${userJson?.optString("user_name")}님의 기록"
+                        binding.tvMName.text = userString
+                        binding.llMPredictDisease.setOnSingleClickListener {
                             val dialog = LoadingDialogFragment.newInstance("측정파일")
-                            dialog.show(activity?.supportFragmentManager ?: return@setOnClickListener, "LoadingDialogFragment")
+                            dialog.show(activity?.supportFragmentManager ?: return@setOnSingleClickListener, "LoadingDialogFragment")
 
-                            hideBadgeFunction?.invoke()
+//                            hideBadgeFunction?.invoke()
                             ssm = SaveSingletonManager(requireContext(), requireActivity())
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
@@ -133,24 +153,14 @@ class MeasureFragment : Fragment() {
                                             withContext(Dispatchers.Main) {
                                                 singletonMeasure.measures?.set(singletonIndex, editedMeasure)
                                                 mvm.selectedMeasure = editedMeasure
-                                                mvm.selectedMeasureDate.value = currentMeasure.regDate
-                                                mvm.selectMeasureDate.value = currentMeasure.regDate
+                                                mvm.selectedMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
+                                                mvm.selectMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
 
                                                 Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
                                                 requireActivity().supportFragmentManager.beginTransaction().apply {
                                                     replace(R.id.flMain, MeasureDetailFragment())
                                                     commit()
                                                 }
-
-//                                                ssm.setRecent5MeasureResult(mvm.selectedMeasureIndex.value ?: 0)
-//                                                withContext(Dispatchers.Main) {
-//                                                    // 다운로드 후 이동
-//                                                    requireActivity().supportFragmentManager.beginTransaction().apply {
-//                                                        replace(R.id.flMain, MeasureDetailFragment())
-//                                                        commit()
-//                                                    }
-//                                                }
-
                                                 dialog.dismiss()
                                             }
                                         }
@@ -178,6 +188,7 @@ class MeasureFragment : Fragment() {
                         }
                         binding.tvM1Trend.isEnabled = true
                     } else {
+                        binding.tvMEmptyGraph.visibility = View.VISIBLE
                         binding.tvMTotalScore.text = "-"
                         binding.tvMMeasureHistory.text = "측정기록없음"
                         binding.tvMName.text = "${userJson?.optString("user_name")}님의 기록"
@@ -201,22 +212,25 @@ class MeasureFragment : Fragment() {
                     Log.e("MError", "Exception: ${e.message}")
                 }
             }
-
             false -> {
 
             }
         }
 
-        binding.btnM2.setOnClickListener {
+        binding.btnM2.setOnSingleClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MeasureHistoryFragment())
                 commit()
             }
         }
         // ------# 자세히 보기 #------
-        binding.tvM1Trend.setOnClickListener {
-            val dialog = MeasureTrendDialogFragment()
-            dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
+        binding.tvM1Trend.setOnSingleClickListener {
+            if (WifiManager(requireContext()).checkNetworkType() != "NONE") {
+                val dialog = MeasureTrendDialogFragment()
+                dialog.show(requireActivity().supportFragmentManager, "MeasureTrendDialogFragment")
+            } else {
+                Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // ------! 꺾은선 그래프 시작 !------
@@ -286,11 +300,11 @@ class MeasureFragment : Fragment() {
             val lcLineDataSet = LineDataSet(lcEntries, "")
             lcLineDataSet.apply {
                 color = resources.getColor(R.color.thirdColor, null)
-                circleRadius = 4F
-                lineWidth = 4F
+                circleRadius = if (isTablet(requireContext())) 6f else 4F
+                lineWidth = if (isTablet(requireContext())) 6f else  4F
                 valueTextSize = 0F
                 setCircleColors(resources.getColor(R.color.thirdColor, null))
-                circleRadius = 5f
+                circleRadius = if (isTablet(requireContext())) 8f else  5F
                 setDrawCircleHole(false)
                 setDrawFilled(false)
                 mode = LineDataSet.Mode.CUBIC_BEZIER
@@ -308,7 +322,7 @@ class MeasureFragment : Fragment() {
                 axisLineWidth = 1.0f
             }
             lcYAxisLeft.apply {
-                axisMinimum = 50f
+                axisMinimum = 45f
                 axisMaximum = 100f
                 setDrawGridLines(false)
                 setDrawAxisLine(false)
@@ -325,6 +339,7 @@ class MeasureFragment : Fragment() {
                 lcLegend.formSize = 0f
             }
             lineChart.apply {
+                if (isTablet(requireContext())) setExtraOffsets(22f, 0f ,22f ,0f)
                 data = LineData(lcLineDataSet)
 //                animateX(1000, Easing.EaseInOutBack)
                 setTouchEnabled(true)
@@ -409,8 +424,10 @@ class MeasureFragment : Fragment() {
                         lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
                         balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
 //                        Log.v("originalIndex", "$originalIndex")
-                        mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
-                        mvm.selectedMeasureIndex.value = originalIndex
+                        if ( selectedData.second > 50) {
+                            mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
+                            mvm.selectedMeasureIndex.value = originalIndex
+                        }
                     }
 
                 }
@@ -421,15 +438,16 @@ class MeasureFragment : Fragment() {
 
             // ------! balloon 시작 !------
 
-
             var percentage = 0.5f
             mvm.selectedMeasureIndex.observe(viewLifecycleOwner) {
 
                 val measuresSize = measures?.size
                 if (measuresSize != null && measuresSize >= 1) {
                     val userPercentile = measures?.get(4 - it)?.overall?.toInt() ?: 0 // index가 4, 3, 2, 1, 0으로 들어감.
+
                     percentage = calculatePercentage(userPercentile)
 //                    Log.v("userPercentile", "$userPercentile, $percentage")
+                    // 상단 평균 분포 움직이기
                     when (percentage) {
                         in 0f..0.33f -> {
                             binding.vMMiddle.visibility = View.INVISIBLE
@@ -451,13 +469,23 @@ class MeasureFragment : Fragment() {
                     }
                     animateArrowToPercentage(percentage)
                     createBalloon(userJson, percentage)
+
+                    // 종합점수와 텍스트 변경
+                    val historyText = if (it == 4) {
+                        "최근 측정 기록: "
+                    } else {
+                        "선택된 날짜: "
+                    } + "${measures?.get(4 - it)?.regDate?.substring(0, 10)}" // ?.replace("-", ". ")
+                    binding.tvMMeasureHistory.text = historyText
                     binding.tvMTotalScore.text = userPercentile.toString()
+
+
                 }
                 animateCardViewToPercentage(it)
             }
 
             binding.clMPercent.setOnClickListener {
-                balloon?.dismissWithDelay(2500L)
+                balloon?.let { it1 -> binding.ivMPosition.showAlignTop(it1) }
             }
             binding.ivMPosition.setOnClickListener {
                 balloon?.let { it1 -> binding.ivMPosition.showAlignTop(it1) }
@@ -469,7 +497,7 @@ class MeasureFragment : Fragment() {
         balloon = Balloon.Builder(requireContext())
             .setWidthRatio(0.6f)
             .setHeight(BalloonSizeSpec.WRAP)
-            .setText("${userJson?.optString("user_name")}님 연령대에서\n${if (percent >= 0.5f) "상위 ${((1.0f - percent) * 100).toInt()}" else "하위 ${(percent * 100).toInt()}"}%에 위치합니다.")
+            .setText("${userJson?.optString("user_name")}님은 평균 백분위\n${if (percent >= 0.5f) "${((1.0f - percent) * 100).toInt()}" else "${(percent * 100).toInt()}"}%에 위치합니다.")
             .setTextColorResource(R.color.whiteText)
             .setTextSize(15f)
             .setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
@@ -481,13 +509,13 @@ class MeasureFragment : Fragment() {
                 in 0f..0.3f -> {R.color.deleteColor}
                 else -> {R.color.thirdColor}
             })
+            .setOnBalloonClickListener { balloon?.dismiss() }
             .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
             .setLifecycleOwner(viewLifecycleOwner)
             .build()
     }
 
     private fun calculatePercentage(value: Int?): Float {
-        // 70~100의 범위를 0~100%로 매핑
         val minInput = 40
         val maxInput = 100
         val percentage = ((value?.minus(minInput))?.toDouble() ?: 0.0) / (maxInput - minInput)
@@ -507,6 +535,20 @@ class MeasureFragment : Fragment() {
             else -> 0.5f
         } // 이동할 목표 위치
 
+        val tvCase = when (percent) {
+            in 0f .. 0.33f -> 0
+            in 0.33f .. 0.66f -> 1
+            in 0.66f .. 1f -> 2
+            else -> -1
+        } // 이동할 목표 위치
+
+        val percentList = listOf(binding.tvMLow, binding.tvMMiddle, binding.tvMHigh)
+        if (tvCase != -1) {
+            percentList.forEachIndexed { index, tv ->
+                if (index == tvCase) tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor800))
+                else tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.subColor400))
+            }
+        }
         // ValueAnimator 생성
         val animator = ValueAnimator.ofFloat(startBias, endBias).apply {
             duration = 1000L // 1초 동안 애니메이션
@@ -574,9 +616,6 @@ class MeasureFragment : Fragment() {
                 val bodyText =  "-"
                 tvMScores[i].text =bodyText
             }
-
-            tvMDates[i].textSize = if (isTablet(requireContext())) 18f else 15f
         }
     }
-
 }

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.StringRVAdapter
@@ -34,6 +35,10 @@ class SequenceBSDialogFragment : BottomSheetDialogFragment() {
             dismiss()
         }
 
+        // 태블릿 가로모드일 때 바텀시트가 안나오는 현상 고치기.
+        val bottomSheet = view.parent as View
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     private fun setAdapter() {
@@ -41,5 +46,6 @@ class SequenceBSDialogFragment : BottomSheetDialogFragment() {
         val adapter = StringRVAdapter(this@SequenceBSDialogFragment, avm.currentParts?.toMutableList(), null, "seq",avm)
         binding.rvSBSD.layoutManager = layoutManager
         binding.rvSBSD.adapter = adapter
+        avm.currentParts?.indexOf(avm.currentPart.value)?.let { binding.rvSBSD.scrollToPosition(it - 1) }
     }
 }

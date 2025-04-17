@@ -10,6 +10,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.io.IOException
 
 object NetworkRecommendation {
 
@@ -119,6 +120,9 @@ object NetworkRecommendation {
             } catch (e: IllegalStateException) {
                 Log.e("RecommendIllegal", "${e.message}")
                 mutableListOf()
+            }  catch (e: IOException) {
+                Log.e("RecommendIO", "${e.message}")
+                mutableListOf()
             } catch (e: NullPointerException) {
                 Log.e("RecommendNull", "${e.message}")
                 mutableListOf()
@@ -171,6 +175,9 @@ object NetworkRecommendation {
                 mutableListOf()
             } catch (e: IllegalStateException) {
                 Log.e("RecommendIllegal", "${e.message}")
+                mutableListOf()
+            }  catch (e: IOException) {
+                Log.e("RecommendIO", "${e.message}")
                 mutableListOf()
             } catch (e: NullPointerException) {
                 Log.e("RecommendNull", "${e.message}")
@@ -231,6 +238,9 @@ object NetworkRecommendation {
                 mutableListOf()
             } catch (e: IllegalStateException) {
                 Log.e("RecommendIllegal", "${e.message}")
+                mutableListOf()
+            }  catch (e: IOException) {
+                Log.e("RecommendIO", "${e.message}")
                 mutableListOf()
             } catch (e: NullPointerException) {
                 Log.e("RecommendNull", "${e.message}")

@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -23,12 +25,14 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.RvProfileItemBinding
 import com.tangoplus.tangoq.databinding.RvProfileSpecialItemBinding
+import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.InputDialogFragment
+import com.tangoplus.tangoq.dialog.PinChangeDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.isKorean
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.ProfileFragment
-import com.tangoplus.tangoq.fragment.WithdrawalFragment
+import com.tangoplus.tangoq.function.AuthManager.maskedProfileData
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import org.json.JSONObject
 import java.lang.IllegalArgumentException
@@ -39,7 +43,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                        val case: String,
                        private val vm: ViewModel
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder> ()  {
-    var profileMenuList = mutableListOf<String>()
+    var profileMenus = mutableListOf<String>()
 
     private val viewTypeNormal = 0
     private val viewTypeSpecial = 1
@@ -69,11 +73,10 @@ class ProfileRVAdapter(private val fragment: Fragment,
             }
             else -> throw IllegalArgumentException("Invaild view Type")
         }
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = profileMenuList[position]
+        val currentItem = profileMenus[position]
         when (holder.itemViewType) {
             viewTypeNormal -> {
                 val ViewHolder = holder as ViewHolder
@@ -81,16 +84,16 @@ class ProfileRVAdapter(private val fragment: Fragment,
                     "profile" -> {
                         when (currentItem) {
                             "내정보" -> holder.ivPf.setImageResource(R.drawable.icon_profile)
-//                            "연동 관리" -> holder.ivPf.setImageResource(R.drawable.icon_multi_device)
+
                             "QR코드 핀번호 로그인" -> holder.ivPf.setImageResource(R.drawable.icon_qr_code)
-                            "푸쉬 알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
+                            "키오스크 핀번호 재설정" -> holder.ivPf.setImageResource(R.drawable.icon_security)
+                            "알림 설정" -> holder.ivPf.setImageResource(R.drawable.icon_alarm_small)
                             "문의하기" -> holder.ivPf.setImageResource(R.drawable.icon_inquire)
                             "공지사항" -> holder.ivPf.setImageResource(R.drawable.icon_announcement)
                             "앱 버전" -> holder.ivPf.setImageResource(R.drawable.icon_copy)
                             "개인정보 처리방침" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
                             "서비스 이용약관" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
-                            "로그아웃", "회원탈퇴" -> holder.ivPf.setImageResource(R.drawable.icon_logout)
-
+                            "로그아웃"-> holder.ivPf.setImageResource(R.drawable.icon_logout)
                         }
                         // ------! 앱 버전 text 설정 시작 !------
                         ViewHolder.tvPfSettingsName.text = currentItem
@@ -103,7 +106,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                         // ------! 앱 버전 text 설정 끝 !------
 
                         // ------! 각 item 클릭 동작 시작 !------
-                        ViewHolder.cltvPfSettings.setOnClickListener {
+                        ViewHolder.cltvPfSettings.setOnSingleClickListener {
                             when (currentItem) {
                                 "내정보" -> {
                                     val dialogFragment = ProfileEditDialogFragment()
@@ -114,11 +117,15 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     val dialog = QRCodeDialogFragment()
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "QRCodeDialogFragment")
                                 }
+                                "키오스크 핀번호 재설정" -> {
+                                    val dialog = PinChangeDialogFragment()
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "PinChangeDialogFragment")
+                                }
 //                                "연동 관리" -> {
 //                                    val dialog = ConnectManageDialogFragment()
 //                                    dialog.show(fragment.requireActivity().supportFragmentManager, "LinkManageDialogFragment")
 //                                }
-                                "푸쉬 알림 설정" -> {
+                                "알림 설정" -> {
                                     val intent = Intent().apply {
                                         action = "android.settings.APP_NOTIFICATION_SETTINGS"
                                         putExtra("android.provider.extra.APP_PACKAGE", fragment.requireContext().packageName)
@@ -153,7 +160,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                 }
                                 "로그아웃" -> {
                                     MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
-                                        setTitle("로그아웃")
+                                        setTitle("알림")
                                         setMessage("로그아웃 하시겠습니까?")
                                         setPositiveButton("예") { _, _ ->
                                             logout(fragment.requireActivity(), 0)
@@ -161,14 +168,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                         setNegativeButton("아니오") { _, _ -> }
                                     }.show()
                                 }
-                                "회원탈퇴" -> {
-                                    fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-                                        setCustomAnimations(R.anim.slide_in_left, R.anim.slide_in_right)
-                                        replace(R.id.flMain, WithdrawalFragment())
 
-                                        commit()
-                                    }
-                                }
                             }
                         }
                     }
@@ -193,6 +193,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                     holder.tvPfInfo.text = maskingEmail
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_email)
+                                holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                             }
                             "비밀번호" -> {
                                 holder.tvPfInfo.text = "************"
@@ -200,7 +201,10 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "전화번호" -> {
                                 (vm as SignInViewModel).setMobile.observe(fragment.viewLifecycleOwner) { mobile ->
-                                    holder.tvPfInfo.text = "010${maskedProfileData(mobile.toString())}"
+                                    holder.tvPfInfo.text =
+                                        if (mobile.length > 9) {
+                                        "010${maskedProfileData(mobile.toString())}"
+                                    } else "미설정"
                                 }
                                 holder.ivPf.setImageResource(R.drawable.icon_phone)
                             }
@@ -225,19 +229,21 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                             "생년월일" -> {
                                 (vm as SignInViewModel).setBirthday.observe(fragment.viewLifecycleOwner) { birthday ->
-                                    holder.tvPfInfo.text = if (birthday == "0" || birthday == "") "미설정" else birthday
+
+                                    holder.tvPfInfo.text =
+                                        if (birthday in listOf("0", "", "null", "0000-00-00")) "미설정" else birthday
                                 }
                                 if (holder.tvPfInfo.text != "미설정") holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                                 holder.ivPf.setImageResource(R.drawable.icon_cake)
                             }
                             "성별" -> {
-                                (vm as SignInViewModel).setGender.observe(fragment.viewLifecycleOwner) { genderInt ->
-                                    if (genderInt == null) {
+                                (vm as SignInViewModel).setGender.observe(fragment.viewLifecycleOwner) { genderString ->
+                                    if (genderString == null || genderString == "" || genderString == "null") {
                                         holder.tvPfInfo.text = "미설정"
-                                    } else if (genderInt == 0) {
+                                    } else if (genderString == "여자") {
                                         holder.tvPfInfo.text = "여자"
                                         holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
-                                    } else if (genderInt == 1) {
+                                    } else if (genderString == "남자") {
                                         holder.tvPfInfo.text = "남자"
                                         holder.tvPfSettingsName.setBackgroundColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor100))
                                     }
@@ -246,16 +252,21 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             }
                         }
 
-
-                        holder.cltvPfSettings.setOnClickListener {
+                        holder.cltvPfSettings.setOnSingleClickListener {
                             when (holder.tvPfSettingsName.text) {
-                                "이메일" -> {
-                                    val dialog = ProfileEditChangeDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
-                                }
+//                                "이메일" -> {
+//                                    val dialog = ProfileEditChangeDialogFragment.newInstance("이메일", (vm as SignInViewModel).setEmail.value.toString())
+//                                    dialog.show(fragment.requireActivity().supportFragmentManager, "ProfileEditBSDialogFragment")
+//                                }
                                 "비밀번호" -> {
-                                    val dialog = InputDialogFragment()
-                                    dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
+                                    val provider = Singleton_t_user.getInstance(fragment.requireContext()).jsonObject?.optString("provider") ?: ""
+                                    Log.v("provider", provider)
+                                    if (provider == "null") {
+                                        val dialog = InputDialogFragment.newInstance(1)
+                                        dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")
+                                    } else {
+                                        Toast.makeText(fragment.requireContext(), "소셜로그인으로 로그인한 계정입니다.", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 "전화번호" -> {
                                     val dialog = ProfileEditChangeDialogFragment.newInstance("전화번호", "")
@@ -313,45 +324,10 @@ class ProfileRVAdapter(private val fragment: Fragment,
         }
     }
     override fun getItemCount(): Int {
-        return profileMenuList.size
+        return profileMenus.size
     }
 
-    private fun maskedProfileData(resultString: String) : String {
-        val atIndex = resultString.indexOf('@')
-        if (atIndex == -1) {
-            val except010String = resultString.substring(3, resultString.length).replace("-", "")
-            val maskedString = except010String.mapIndexed{ index, char ->
-                when {
-                    index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
-                    index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
-                    else -> char
-                }
-            }.joinToString("")
 
-            return maskedString
-        }  // @ 기호가 없으면 원본 그대로 반환
-
-        val username = resultString.substring(0, atIndex)
-        val domain = resultString.substring(atIndex)
-        val maskedUsername = username.mapIndexed { index, char ->
-
-            when {
-                index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
-                index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
-                else -> char
-            }
-        }.joinToString("")
-
-        val maskedDomain = domain.mapIndexed { index, char ->
-            when {
-                index % 6 == 0 || index % 6 == 2 || index % 6 == 3 -> char
-                index % 6 == 1 || index % 6 == 4 || index % 6 == 5 -> '*'
-                else -> char
-            }
-        }.joinToString("")
-
-        return maskedUsername + maskedDomain
-    }
 
 
 }

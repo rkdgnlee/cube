@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,17 +17,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.databinding.RvMeasureTrendItemBinding
-import com.tangoplus.tangoq.function.MeasurementManager.matchedTripleIndexes
-import com.tangoplus.tangoq.mediapipe.MathHelpers.calculateBoundedScore
+import com.tangoplus.tangoq.function.MeasurementManager.transSeqToColumnName
+import com.tangoplus.tangoq.vision.MathHelpers.calculateBoundedScore
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import kotlin.math.abs
 
-class TrendRVAdapter(private val fragment: Fragment,
-                     private val leftAnalysises: MutableList<MutableList<AnalysisUnitVO>>?,
-                     private val rightAnalysises: MutableList<MutableList<AnalysisUnitVO>>?,
-                    private val filteredParts: List<String>?
+class TrendRVAdapter(
+    private val fragment: Fragment,
+    private val leftAnalysises: MutableList<MutableList<AnalysisUnitVO>>?,
+    private val rightAnalysises: MutableList<MutableList<AnalysisUnitVO>>?,
+    private val filteredParts: List<String>?,
+    private val currentIndex: Int
 
 
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -57,23 +60,72 @@ class TrendRVAdapter(private val fragment: Fragment,
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is TrendViewHolder) {
             holder.tvMTIPart.text = filteredParts?.get(position) ?: ""
+
+            // 오른쪽만 있을 때
             if (leftAnalysises.isNullOrEmpty() && !rightAnalysises.isNullOrEmpty()) {
-                val analysisUnits = rightAnalysises[position]
+
+                // 현재 선택된 값을 가지고 analysises에서 추출
+                val columnName = transSeqToColumnName(currentIndex)
+                val analysisUnits = rightAnalysises[position].filter {
+                    if (currentIndex == 0) {
+                        it.columnName.contains("front_vertical") || it.columnName.contains("front_horizontal")
+                    } else if (currentIndex == 4) {
+                        it.columnName.contains("back_horizontal") || it.columnName.contains("back_vertical")
+                    } else {
+                        it.columnName.startsWith(columnName)
+                    }
+                }.toMutableList()
+                if (currentIndex == 4) {
+                    Log.v("후면 값들 보기", "$currentIndex, $analysisUnits")
+                }
                 // 점수 넣기
                 val score = calculatePercent(analysisUnits)
                 holder.tvMTIScore2.text = "${String.format("%.1f 점", score)}"
 
                 // 설명 넣기
-                val collectedComment = createSummary(analysisUnits) + createAdvise(filteredParts?.get(position), score.toInt(), 2)
-                holder.tvMTIComment.text = collectedComment
+                val summary = createSummary(analysisUnits)
+                val advice = createAdvise(filteredParts?.get(position), score.toInt(), 2)
 
+                val spannableString = SpannableStringBuilder()
+                spannableString.append(summary)
+                spannableString.append(advice)
+
+                // createSummary 부분만 작은 텍스트 크기로 설정
+                spannableString.setSpan(
+                    AbsoluteSizeSpan(13, true), // 14sp 크기로 설정, 두 번째 파라미터는 dip 단위 사용 여부
+                    0,
+                    summary.length, // 끝 위치
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                holder.tvMTIComment.text = spannableString
+                setStateFlavor(holder, 2)
             } else if (!leftAnalysises.isNullOrEmpty() && !rightAnalysises.isNullOrEmpty()) {
-                val leftAnalysisUnits = leftAnalysises[position]
-                val rightAnalysisUnits = rightAnalysises[position]
-//                Log.v("왼쪽", "$leftAnalysisUnits")
-                Log.v("오른쪽", "${rightAnalysisUnits.map { it.columnName }}")
-                Log.v("오른쪽", "${rightAnalysisUnits.map { it.rawData }}")
+                // 데이터 필터링
+                val columnName = transSeqToColumnName(currentIndex)
+                val leftAnalysisUnits = leftAnalysises[position].filter {
+                    if (currentIndex == 0) {
+                        it.columnName.contains("front_vertical") || it.columnName.contains("front_horizontal")
+                    } else if (currentIndex == 4) {
+                        it.columnName.contains("back_horizontal") || it.columnName.contains("back_vertical")
+                    } else {
+                        it.columnName.startsWith(columnName)
+                    }
+                }.toMutableList()
+                val rightAnalysisUnits = rightAnalysises[position].filter {
+                    if (currentIndex == 0) {
+                        it.columnName.contains("front_vertical") || it.columnName.contains("front_horizontal")
+                    } else if (currentIndex == 4) {
+                        it.columnName.contains("back_horizontal") || it.columnName.contains("back_vertical")
+                    } else {
+                        it.columnName.startsWith(columnName)
+                    }
+                }.toMutableList()
+
+                // 점수 넣기
                 val leftScore = calculatePercent(leftAnalysisUnits)
+
+
                 val rightScore = calculatePercent(rightAnalysisUnits)
                 val state = if (leftScore == rightScore) {
                     2
@@ -87,8 +139,22 @@ class TrendRVAdapter(private val fragment: Fragment,
                 holder.tvMTIScore1.text = "${String.format("%.1f 점", leftScore)}"
                 holder.tvMTIScore2.text = "${String.format("%.1f 점", rightScore)}"
 
-                val collectedComment = createSummary(rightAnalysisUnits) + createAdvise(filteredParts?.get(position), rightScore.toInt(), state)
-                holder.tvMTIComment.text = collectedComment
+                val summary = createSummary(rightAnalysisUnits)
+                val advice = createAdvise(filteredParts?.get(position), rightScore.toInt(), state)
+
+                val spannableString = SpannableStringBuilder()
+                spannableString.append(summary)
+                spannableString.append(advice)
+
+                // createSummary 부분만 작은 텍스트 크기로 설정
+                spannableString.setSpan(
+                    AbsoluteSizeSpan(13, true), // 14sp 크기로 설정, 두 번째 파라미터는 dip 단위 사용 여부
+                    0,
+                    summary.length, // 끝 위치
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                holder.tvMTIComment.text = spannableString
 
                 // 코멘트가 만들어진 후 코멘트와 같이 점수 state 설정
                 setStateFlavor(holder, state)
@@ -117,60 +183,39 @@ class TrendRVAdapter(private val fragment: Fragment,
         val spannableString = SpannableString.valueOf(holder.tvMTIComment.text.toString())
         when (state) {
             1 -> {
-                holder.tvMTI2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
-                holder.tvMTIScore2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                val downColor = ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)
+                holder.tvMTI2.setTextColor(downColor)
+                holder.tvMTIScore2.setTextColor(downColor)
                 holder.ivMTIArrow.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_arrow_board))
-                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(downColor)
                 holder.ivMTIArrow.scaleY = 1f
-                spannableString.setSpan(ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor)), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                spannableString.setSpan(ForegroundColorSpan(downColor), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
             }
             2 -> {
-                holder.tvMTI2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800))
-                holder.tvMTIScore2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800))
+                val equalColor = ContextCompat.getColor(fragment.requireContext(), R.color.subColor800)
+                holder.tvMTI2.setTextColor(equalColor)
+                holder.tvMTIScore2.setTextColor(equalColor)
                 holder.ivMTIArrow.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_no_change))
-                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800))
-                spannableString.setSpan(ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.subColor800)), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(equalColor)
+                spannableString.setSpan(ForegroundColorSpan(equalColor), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             3 -> {
-                holder.tvMTI2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
-                holder.tvMTIScore2.setTextColor(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
+                val upColor = ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor)
+                holder.tvMTI2.setTextColor(upColor)
+                holder.tvMTIScore2.setTextColor(upColor)
                 holder.ivMTIArrow.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_arrow_board))
-                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
+                holder.ivMTIArrow.imageTintList = ColorStateList.valueOf(upColor)
                 holder.ivMTIArrow.scaleY = -1f
-                spannableString.setSpan(ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor)), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                spannableString.setSpan(ForegroundColorSpan(upColor), startIndex + 1, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
             }
         }
         holder.tvMTIComment.text = spannableString
     }
-//    private fun createAnalysises(analysis: MutableList<MutableList<AnalysisVO>>, position: Int) : MutableList<List<AnalysisUnitVO>> {
-//        val processedData = mutableListOf<List<AnalysisUnitVO>>()
-//        matchedTripleIndexes.forEach { tripleList ->
-//            val analysisUnits = mutableListOf<AnalysisUnitVO>()
-//
-//            tripleList.forEach { (seq, index, unitIndex) ->
-//                // seq로 rightAnalysises에서 해당 리스트를 가져옴
-//                val analysisList = analysis.getOrNull(position)
-//                // index로 해당 AnalysisVO를 가져옴
-//                val analysisVO = analysisList?.getOrNull(index)
-//                // unitIndex로 AnalysisUnitVO를 가져옴
-//                val analysisUnitVO = analysisVO?.labels?.getOrNull(unitIndex)
-////                        Log.v("analysisUniVO", "${analysisUnitVO?.rawDataName}")
-//                // null이 아니면 리스트에 추가
-//                if (analysisUnitVO != null) {
-//                    analysisUnits.add(analysisUnitVO)
-//                }
-//            }
-//
-//            // 각 관절마다 추출한 AnalysisUnitVO 리스트를 최종 데이터에 추가
-//            processedData.add(analysisUnits)
-//        }
-//        return processedData
-//    }
 
     private fun calculatePercent(processedData: MutableList<AnalysisUnitVO>) : Float {
-        val calculatePercent = processedData.map { calculateBoundedScore(it.columnName, abs(it.rawData), it.rawDataBound)}.map { if (it <= 50f) 50f else it }
+        val calculatePercent = processedData.map { calculateBoundedScore(abs(it.rawData), it.rawDataBound, it.columnName)}.map { if (it <= 30f) 30f else it }
         return calculatePercent.average().toFloat()
     }
 
@@ -189,7 +234,10 @@ class TrendRVAdapter(private val fragment: Fragment,
 
         // 3가지의 데이터 값 합치기 Triple<칼럼명, 백분위값, 경계범위(Triple)>
         val zipDatas = rawDataNames.zip(rawData) { s, f -> Pair(s, f) }.zip(bounds) { (s, f), t -> Triple(s, f, t)}
-        val combineStrings = zipDatas.joinToString { "${it.first}(${String.format("%.1f${if (it.first.contains("거리")) "cm" else "°"}", it.second)})\n" }.replace(", ", "")
+        val combineStrings = zipDatas.joinToString {
+            "${it.first}(${String.format("%.1f${if (it.first.contains("거리") || it.first.contains("높이 차")) "cm" else "°"}", it.second)})\n"
+        }
+            .replace(", ", "")
         val resultString = "각 데이터를 백분위로 산출한 점수입니다.\n${combineStrings}"
         return resultString
     }

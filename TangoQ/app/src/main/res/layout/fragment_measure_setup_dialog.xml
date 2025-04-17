@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/bckgnd_rectangle_20"
     android:backgroundTint="@color/white"
     app:layout_gravity="center"
@@ -11,7 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/bckgnd_rectangle_12">
 
         <EditText
@@ -32,7 +32,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.3" />
+            app:layout_constraintVertical_bias="0.3"
+            app:layout_constraintWidth_percent="0.9" />
 
         <ImageButton
             android:id="@+id/ibtnMSDNameClear"
@@ -47,22 +48,50 @@
             app:layout_constraintEnd_toEndOf="@+id/etMSDName"
             app:layout_constraintTop_toTopOf="@+id/etMSDName" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnMSDFinish"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:backgroundTint="@color/mainColor"
-            android:padding="16dp"
-            android:stateListAnimator="@null"
-            android:text="동의 완료"
-            android:textColor="@color/whiteText"
-            android:textSize="18dp"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/clMSDAgreement2" />
+            app:layout_constraintTop_toBottomOf="@+id/clMSDAgreement2"
+            app:layout_constraintVertical_bias="1.0">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnMSDDeny"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_weight="1.5"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/subColor400"
+                android:padding="16dp"
+                android:stateListAnimator="@null"
+                android:text="거부"
+                android:textColor="@color/whiteText"
+                android:textSize="18dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnMSDFinish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:backgroundTint="@color/mainColor"
+                android:padding="16dp"
+                android:stateListAnimator="@null"
+                android:text="동의"
+                android:textColor="@color/whiteText"
+                android:textSize="18dp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textView33"
@@ -92,7 +121,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clMSDAgreement1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="@drawable/effect_ibtn"
@@ -142,7 +171,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clMSDAgreement2"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/effect_ibtn"

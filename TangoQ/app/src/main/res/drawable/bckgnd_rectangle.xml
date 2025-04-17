@@ -2,12 +2,12 @@
 <transition xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <solid android:color="@color/mainColor"/>
+            <solid android:color="@color/white"/>
         </shape>
     </item>
     <item>
         <shape>
-            <solid android:color="@color/successColor"/>
+            <solid android:color="@color/white"/>
         </shape>
     </item>
 

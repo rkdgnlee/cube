@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -23,8 +24,10 @@ import com.tangoplus.tangoq.vo.ExerciseVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.databinding.RvExerciseItemBinding
 import com.tangoplus.tangoq.databinding.RvRecommendPTnItemBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
+import com.tangoplus.tangoq.listener.OnExerciseClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.vo.ExerciseHistoryVO
@@ -41,8 +44,7 @@ class ExerciseRVAdapter (
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var dialogClosedListener: OnDialogClosedListener? = null
-
-
+    var exerciseClickListener : OnExerciseClickListener? = null
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val clEI : ConstraintLayout = view.findViewById(R.id.clEI)
         val ivEIThumbnail: ImageView = view.findViewById(R.id.ivEIThumbnail)
@@ -66,7 +68,7 @@ class ExerciseRVAdapter (
     }
     override fun getItemViewType(position: Int): Int {
         return when (xmlName) {
-            "E", "ED", "PCD" -> 0
+            "E", "ED", "ESD", "PCD" -> 0
             "PTD" -> 1
             else -> throw IllegalArgumentException("invalid view type")
         }
@@ -99,7 +101,9 @@ class ExerciseRVAdapter (
 
         when (holder) {
             is MainViewHolder -> {
-                if (xmlName in listOf("E", "ED", "PCD")) {
+                if (xmlName in listOf("E", "ESD",  "ED", "PCD")) {
+
+
                     // -----! recyclerview에서 운동군 보여주기 !------
                     holder.tvEIFinish.visibility = View.INVISIBLE
                     holder.tvEISymptom.text = currentExerciseItem?.relatedSymptom.toString()
@@ -127,7 +131,7 @@ class ExerciseRVAdapter (
                         .into(holder.ivEIThumbnail)
 
                     // ExerciseDetail탭 시청기록 (유튜브같은)
-                    if (xmlName == "ED" && !historys.isNullOrEmpty()) {
+                    if (xmlName in listOf("ED", "ESD") && !historys.isNullOrEmpty()) {
                         holder.tvEIFinish.visibility = View.INVISIBLE
                         val historyUnit = historys.find { it.exerciseId == currentExerciseItem?.exerciseId?.toInt() }
                         historyUnit?.let {
@@ -143,7 +147,7 @@ class ExerciseRVAdapter (
 
                     // ------# 하트 버튼 #------
 //                updateLikeButtonState(currentExerciseItem?.exerciseId.toString(), holder.ibtnEILike)
-//                holder.ibtnEILike.setOnClickListener {
+//                holder.ibtnEILike.setOnSingleClickListener {
 //                    val currentLikeState = prefs.existLike(currentExerciseItem?.exerciseId.toString())
 //                    if (currentLikeState) {
 //                        prefs.deleteLike(currentExerciseItem?.exerciseId.toString())
@@ -169,12 +173,9 @@ class ExerciseRVAdapter (
                         // ------# 시청 기록 및 완료 버튼 #------
                         val currentItem = progresses[position] // 프로그램 갯수만큼의 progresses의 1개에 접근
                         // currentItem의 currentWeek와 currentSequence로 현재 운동의 회차를 계산
-
-//                        val currentSeq = sequence.first // 안변함
-//                        val selectedSeq = sequence.second // 선택된 회차이기 때문에 변함.
-//                        val currentUnitsSeq = currentItem.countSet // 0,0 으로 나왔다고 쳤을 떄,
+                        Log.v("currentItem", "$currentItem")
                         val condition = when (currentItem.cycleProgress * 100 / currentItem.duration) {
-                            in 95 .. 100 -> 0
+                            in 95 .. 1000 -> 0
                             in 1 .. 94 -> 1
                             else -> 2
                         }
@@ -204,37 +205,35 @@ class ExerciseRVAdapter (
                             }
                         }
                     }
-                    if (!isTouchLocked) {
-                        holder.vEI.setOnClickListener {
-                            val currentItem = progresses?.get(position)
-                            val dialogFragment = PlayThumbnailDialogFragment().apply {
-                                arguments = Bundle().apply {
-                                    putParcelable("ExerciseUnit", currentExerciseItem)
-                                    if (progresses != null) {
-                                        putBoolean("isProgram", true)
-                                        putInt("uvpSn", currentItem?.uvpSn ?: 0)
+                    itemState.observe(fragment.viewLifecycleOwner) { state ->
+                        holder.vEI.setOnSingleClickListener {
+                            // 0 일 때 uvp 같이 넣어서 볼 수 있는 상태
+                            // 1 일 때 uvp는 안들어가지만 재생은 가능한 상태
+                            // 2 클릭만 감지되고 playthumbnail은 안나오는 상태
+                            when (state) {
+                                0, 1 -> {
+                                    exerciseClickListener?.exerciseClick(currentExerciseItem?.exerciseName.toString())
+                                    val currentItem = progresses?.get(position)
+                                    val dialogFragment = PlayThumbnailDialogFragment().apply {
+                                        arguments = Bundle().apply {
+                                            putParcelable("ExerciseUnit", currentExerciseItem)
+                                            if (progresses != null && state == 0) {
+                                                Log.v("state", "state확인: $state")
+                                                // 지난 값일 경우
+                                                putBoolean("isProgram", true)
+                                                putInt("uvpSn", currentItem?.uvpSn ?: 0)
+
+                                            }
+                                        }
                                     }
+                                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                                }
+                                2 -> {
+                                    // 터치 동작 없음
                                 }
                             }
-                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                         }
                     }
-//                    else {
-//                        // ------ # PlayThumbnail #------
-//                        holder.vEI.setOnClickListener {
-//                            val dialogFragment = PlayThumbnailDialogFragment().apply {
-//                                arguments = Bundle().apply {
-//                                    putParcelable("ExerciseUnit", currentExerciseItem)
-//                                }
-//                                setDialogCloseListener(object : PlayThumbnailDialogFragment.DialogCloseListener {
-//                                    override fun onDialogClose() {
-//                                        dialogClosedListener?.onDialogClosed()
-//                                    }
-//                                })
-//                            }
-//                            dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
-//                        }
-//                    }
                 }
             }
             // ------! play thumbnail 추천 운동 시작 !------
@@ -248,7 +247,7 @@ class ExerciseRVAdapter (
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(200)
                     .into(holder.ivRcPThumbnail)
-                holder.vRPTN.setOnClickListener {
+                holder.vRPTN.setOnSingleClickListener {
                     val dialogFragment = PlayThumbnailDialogFragment().apply {
                         arguments = Bundle().apply {
                             putParcelable("ExerciseUnit", currentExerciseItem)
@@ -257,85 +256,13 @@ class ExerciseRVAdapter (
                     dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                 }
             }
-
-//            is HistoryViewHolder -> {
-//                val currentItem = progresses?.get(position)
-//                holder.tvEHIName.text = currentExerciseItem?.exerciseName
-//                holder.tvEHITime.text = second
-//                when (currentExerciseItem?.exerciseStage) {
-//                    "초급" -> {
-//                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_1))
-//                        holder.tvEHIStage.text = "초급자"
-//                    }
-//                    "중급" -> {
-//                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_2))
-//                        holder.tvEHIStage.text = "중급자"
-//                    }
-//                    "고급" -> {
-//                        holder.ivEHIStage.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_stage_3))
-//                        holder.tvEHIStage.text = "상급자"
-//                    }
-//                }
-//                // 가장 최근 완료한 운동의 index 가져오기
-//                Glide.with(fragment.requireContext())
-//                    .load("${currentExerciseItem?.imageFilePath}")
-//                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                    .override(180)
-//                    .into(holder.ivEHIThumbnail)
-//                val duration = currentExerciseItem?.duration
-////                Log.v("startIndex", "position: $position, startIndex: $startIndex")
-//
-//
-//                if (currentItem != null && duration != null && startIndex != null) {
-//                    // 재생 중간
-//                    if (position < startIndex) {
-//                        holder.hpvEHI.progress = 100f
-//                    } else {
-//                        holder.hpvEHI.progress = (currentItem.lastProgress * 100 ) / duration.toFloat()
-//                    }
-//                }
-//
-//                holder.tvEHISeq.text = "${position+1}/${exerciseList?.size}"
-//
-//                // Main History 버튼 클릭 > 바로 재생
-//                holder.clEHI.setOnSingleClickListener {
-//                    val videoUrls = mutableListOf<String>()
-//                    val exerciseIds = mutableListOf<String>()
-//                    val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용
-//
-//                    if (progresses != null && startIndex != null) {
-//                        for (i in startIndex until progresses.size) {
-//                            val progress = progresses[i]
-//                            exerciseIds.add(progress.exerciseId.toString())
-//                            uvpIds.add(progress.uvpSn.toString())
-//                            videoUrls.add(exerciseList?.get(i)?.videoFilepath.toString())
-//                        }
-//                        val intent = Intent(fragment.requireContext(), PlayFullScreenActivity::class.java)
-//                        intent.putStringArrayListExtra("video_urls", ArrayList(videoUrls))
-//                        intent.putStringArrayListExtra("exercise_ids", ArrayList(exerciseIds))
-//                        intent.putStringArrayListExtra("uvp_sns", ArrayList(uvpIds))
-//                        intent.putExtra("current_position",progresses[startIndex].lastProgress.toLong())
-//                        fragment.requireContext().startActivity(intent)
-//
-//                    }
-//                }
-//            }
         }
     }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
+    // itemState : 0 -> 터치 자유로움  // 1 -> 터치는 되는데 UVP는 안담김 // 2 -> 터치가 전혀 안됨
+    private var itemState = MutableLiveData(0)
+    fun setTouchLocked(state: Int) {
+        itemState.value = state
     }
-    private var isTouchLocked = false
-
-    fun setTouchLocked(enabled: Boolean) {
-        isTouchLocked = when (enabled) {
-            true -> true
-            false -> false
-        }
-    }
-
-
 
 //    private fun updateLikeButtonState(exerciseId: String, ibtn : ImageButton) {
 //        val isLike = prefs.existLike(exerciseId)

@@ -19,6 +19,7 @@ import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseById
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.databinding.RvProgressHistoryItemBinding
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +64,6 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
                 Log.e("PHIGlideError", "Exception: ${e.message}")
             }
 
-
             holder.clPHI.setOnSingleClickListener{
                 CoroutineScope(Dispatchers.IO).launch {
                     // 운동 1개값 가져오기
@@ -82,9 +82,5 @@ class ProgressHistoryRVAdapter(private val fragment: Fragment, val data: List<Pr
 
     override fun getItemCount(): Int {
         return data.size
-    }
-    private fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
-        val listener = View.OnClickListener { action(it) }
-        setOnClickListener(OnSingleClickListener(listener))
     }
 }

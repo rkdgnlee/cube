@@ -67,7 +67,7 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:textColor="#FFFFFF"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:textStyle="bold" />
 
         <View
@@ -86,7 +86,7 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:textColor="#FFFFFF"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:textStyle="bold" />
 
     </LinearLayout>

@@ -20,6 +20,8 @@ import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.budiyev.android.codescanner.AutoFocusMode
@@ -66,42 +68,35 @@ class QRCodeDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // ------! 바코드 스캔 시작 !------
-        checkCameraPermission()
-
-        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
-        binding.ibtnLSDBack.setOnClickListener { dismiss() }
-
-        // ------! balloon 시작 !------
-        binding.ibtnLSDBack.setOnClickListener { dismiss() }
-        val balloon = Balloon.Builder(requireContext())
-            .setWidth(BalloonSizeSpec.WRAP)
-            .setHeight(BalloonSizeSpec.WRAP)
-            .setText("탱고바디 키오스크로 로그인을 위한 화면입니다\n탱고바디 화면의 6자리 PIN번호를 입력해주세요")
-            .setTextColorResource(R.color.subColor800)
-            .setTextSize(18f)
-            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
-            .setArrowSize(0)
-            .setMargin(6)
-            .setPadding(12)
-            .setCornerRadius(8f)
-            .setBackgroundColorResource(R.color.white)
-            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-            .setLifecycleOwner(viewLifecycleOwner)
-            .build()
-
-//        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//        binding.otvLSD.requestFocus()
-//        binding.otvLSD.postDelayed({
-//            imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
-//        }, 250)
-
-        binding.ibtnLSDInfo.setOnClickListener {
-            binding.textView20.showAlignBottom(balloon)
-            balloon.dismissWithDelay(5000L)
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
-        binding.textView20.showAlignBottom(balloon)
-        balloon.dismissWithDelay(3000L)
+
+        // ------! 바코드 스캔 시작 !------
+        userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
+
+        val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        // ------! balloon 시작 !------
+        binding.ibtnLSDBack.setOnClickListener {
+            dismiss()
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+        binding.ibtnLSDInfo.setOnClickListener {
+            balloonCallback {}
+        }
+        balloonCallback {
+
+            binding.otvLSD.requestFocus()
+            binding.otvLSD.postDelayed({
+                binding.otvLSD.requestFocus()
+                imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+            }, 250)
+        }
 
         binding.tlLSD.addOnTabSelectedListener(object: OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -112,6 +107,8 @@ class QRCodeDialogFragment : DialogFragment() {
                         binding.flLSD.visibility = View.GONE
                     }
                     1 -> {
+                        imm.hideSoftInputFromWindow(view.windowToken, 0)
+                        checkCameraPermission()
                         showBarcodeView()
                         binding.clLSD.visibility = View.GONE
                         binding.flLSD.visibility = View.VISIBLE
@@ -138,7 +135,9 @@ class QRCodeDialogFragment : DialogFragment() {
                     CoroutineScope(Dispatchers.IO).launch {
 
                         val status = loginWithPin(getString(R.string.API_kiosk), otp.toInt(), userJson.optString("user_uuid"))
+                        Log.v("스테이터스", "$status")
                         withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "코드: ${status}", Toast.LENGTH_LONG).show()
                             when (status) {
                                 200 -> {
                                     Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
@@ -156,6 +155,14 @@ class QRCodeDialogFragment : DialogFragment() {
                                         binding.otvLSD.setOTP("")
                                     }, 500)
                                 }
+                                1 -> {
+                                    Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show()
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        binding.otvLSD.setOTP("")
+                                        dismiss()
+                                    }, 500)
+
+                                }
                             }
                         }
                     }
@@ -166,17 +173,19 @@ class QRCodeDialogFragment : DialogFragment() {
 
     private fun initScanner() {
         try {
-            codeScanner = CodeScanner(requireContext(), binding.csvLSD)
+            if (!::codeScanner.isInitialized) {
+                codeScanner = CodeScanner(requireContext(), binding.csvLSD)
+            }
         } catch (e: IndexOutOfBoundsException) {
-            Log.e("ProgramIndex", "${e.message}")
+            Log.e("scannerError", "IndexOutofBounds: ${e.message}")
         } catch (e: IllegalArgumentException) {
-            Log.e("ProgramIllegal", "${e.message}")
+            Log.e("scannerError", "IllegalArgument: ${e.printStackTrace()}")
         } catch (e: IllegalStateException) {
-            Log.e("ProgramIllegal", "${e.message}")
+            Log.e("scannerError", "IllegalState: ${e.printStackTrace()}")
         } catch (e: NullPointerException) {
-            Log.e("ProgramNull", "${e.message}")
+            Log.e("scannerError", "NullPointer: ${e.message}")
         } catch (e: java.lang.Exception) {
-            Log.e("ProgramException", "${e.message}")
+            Log.e("scannerError", "Exception ${e.message}")
         }
         codeScanner.startPreview()
         codeScanner.formats = CodeScanner.ALL_FORMATS
@@ -189,6 +198,7 @@ class QRCodeDialogFragment : DialogFragment() {
                     Log.v("decodeResult", it.text)
                     val status = loginWithQRCode(getString(R.string.API_kiosk), userJson.optString("user_uuid"))
                     withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "코드: ${status}", Toast.LENGTH_LONG).show()
                         when (status) {
                             200 -> {
                                 Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
@@ -196,6 +206,7 @@ class QRCodeDialogFragment : DialogFragment() {
                             }
                             400 -> { Toast.makeText(requireContext(), "인증이 올바르지 않습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show() }
                             404 -> { Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show() }
+                            1 -> { Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show() }
                         }
                     }
                 }
@@ -203,7 +214,27 @@ class QRCodeDialogFragment : DialogFragment() {
         }
 
     }
-
+    private fun balloonCallback(callback: () -> Unit) {
+        val balloon = Balloon.Builder(requireContext())
+            .setWidth(BalloonSizeSpec.WRAP)
+            .setHeight(BalloonSizeSpec.WRAP)
+            .setText("탱고바디 키오스크 로그인을 위한 화면입니다\n탱고바디 화면의 6자리 PIN번호를 입력해주세요")
+            .setTextColorResource(R.color.subColor800)
+            .setTextSize(20f)
+            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+            .setArrowSize(0)
+            .setMargin(6)
+            .setPadding(12)
+            .setCornerRadius(8f)
+            .setBackgroundColorResource(R.color.white)
+            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+            .setLifecycleOwner(viewLifecycleOwner)
+            .setOnBalloonDismissListener { callback() }
+            .build()
+        binding.textView20.showAlignBottom(balloon)
+        balloon.dismissWithDelay(3000L)
+        balloon.setOnBalloonClickListener { balloon.dismiss() }
+    }
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -245,9 +276,6 @@ class QRCodeDialogFragment : DialogFragment() {
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.otvLSD, InputMethodManager.SHOW_IMPLICIT)
         }, 500)
-
-//        val imm = context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-//        imm!!.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun showBarcodeView() {
@@ -259,6 +287,13 @@ class QRCodeDialogFragment : DialogFragment() {
             codeScanner.startPreview()
         }
 
+    }
+
+    // 카메라 리소스 정리
+    override fun onDestroyView() {
+        super.onDestroyView()
+        codeScanner.stopPreview()
+        codeScanner.releaseResources()
     }
 
     override fun onResume() {

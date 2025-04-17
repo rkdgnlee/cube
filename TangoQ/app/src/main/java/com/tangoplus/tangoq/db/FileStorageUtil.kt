@@ -20,6 +20,7 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
+import javax.crypto.SecretKey
 
 object FileStorageUtil {
     private const val IMAGE_DIR = "images"
@@ -34,13 +35,13 @@ object FileStorageUtil {
     suspend fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
         return withContext(Dispatchers.IO) {
             val url = context.getString(R.string.file_url) + fileName  // url 형식 + 파일 이름
-//            Log.v("url에서파일저장", url)
+            Log.v("url에서파일저장", url)
             val dir = getDirectory(context, fileType)
             val file = File(dir, fileName)  // 파일 이름을 그대로 사용
 
             // 파일있으면 다운로드 생략
             if (file.exists()) {
-//                Log.v("SaveFileFromUrl", "File already exists: ${file.absolutePath}")
+
                 Log.v("SaveFileFromUrl", "File already exists !")
                 return@withContext true
             }
@@ -56,14 +57,11 @@ object FileStorageUtil {
                         }
                     }
 
-
                     encryptFile(tempFile, file, generateAESKey(context))
                     tempFile.delete()
 
-//                    Log.v("SaveFileFromUrl", "Success To Save File : ${file.absolutePath}")
                     true
                 } else {
-//                    Log.e("SaveFileFromUrl", "HTTP error code: ${connection.responseCode}")
                     false
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -179,14 +177,14 @@ object FileStorageUtil {
             val encryptedFile = File(dir, fileName)
             if (encryptedFile.exists()) {
                 encryptedFile.delete()
-                Log.v("DeleteFile", "Deleted encrypted file")
+                Log.v("DeleteFile", "Deleted file")
             }
 
             // 내부 저장소의 복호화된 파일 삭제
             val internalFile = File(context.filesDir, fileName)
             if (internalFile.exists()) {
                 internalFile.delete()
-                Log.v("DeleteFile", "Deleted internal storage file")
+                Log.v("DeleteFile", "Deleted file")
             }
         }
     }
@@ -274,18 +272,18 @@ object FileStorageUtil {
     enum class FileType {
         IMAGE, VIDEO, JSON
     }
-
-    private fun calculateFileHash(file: File): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        file.inputStream().use { input ->
-            val buffer = ByteArray(1024)
-            var bytesRead: Int
-            while (input.read(buffer).also { bytesRead = it } != -1) {
-                digest.update(buffer, 0, bytesRead)
-            }
-        }
-        return digest.digest().joinToString("") { "%02x".format(it) }
-    }
+//
+//    private fun calculateFileHash(file: File): String {
+//        val digest = MessageDigest.getInstance("SHA-256")
+//        file.inputStream().use { input ->
+//            val buffer = ByteArray(1024)
+//            var bytesRead: Int
+//            while (input.read(buffer).also { bytesRead = it } != -1) {
+//                digest.update(buffer, 0, bytesRead)
+//            }
+//        }
+//        return digest.digest().joinToString("") { "%02x".format(it) }
+//    }
 
 //    fun isFileIntegrityValid(file: File, expectedHash: String): Boolean {
 //        return calculateFileHash(file) == expectedHash

@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tangoplus.tangoq.adapter.StringRVAdapter
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.databinding.FragmentProgramWeekBSDialogBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 
 class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
     lateinit var binding : FragmentProgramWeekBSDialogBinding
@@ -38,8 +41,9 @@ class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
         val adapter = StringRVAdapter(this@ProgramWeekBSDialogFragment, weeks, null, "week",  pvm)
         binding.rvWBSD.adapter = adapter
 
+        binding.ibtnWBSDExit.setOnSingleClickListener { dismiss() }
 
-        binding.btnWBSD.setOnClickListener {
+        binding.btnWBSD.setOnSingleClickListener {
             pvm.selectedWeek.value = pvm.selectWeek.value
             if (pvm.currentWeek != pvm.selectedWeek.value) {
                 pvm.selectedSequence.value = 0
@@ -47,5 +51,9 @@ class ProgramWeekBSDialogFragment : BottomSheetDialogFragment() {
             }
             dismiss()
         }
+
+        val bottomSheet = view.parent as View
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 }

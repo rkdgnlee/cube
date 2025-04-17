@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout37"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/whitebar">
 
         <ImageButton
@@ -71,7 +71,7 @@
                     android:layout_height="100dp"
                     android:layout_marginTop="12dp"
                     android:contentDescription="profileEdit"
-                    android:src="@drawable/profile_default"
+                    android:src="@drawable/drawable_profile_default"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -205,7 +205,7 @@
                     android:paddingBottom="16dp"
                     android:text="일반설정"
                     android:textColor="@color/secondaryColor"
-                    android:textSize="18sp"
+                    android:textSize="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvPHeight" />
@@ -220,7 +220,7 @@
                     android:paddingBottom="16dp"
                     android:text="도움말"
                     android:textColor="@color/secondaryColor"
-                    android:textSize="18sp"
+                    android:textSize="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/rvPNormal" />
@@ -244,7 +244,7 @@
                     android:paddingBottom="16dp"
                     android:text="세부사항"
                     android:textColor="@color/secondaryColor"
-                    android:textSize="18sp"
+                    android:textSize="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/rvPHelp" />
@@ -253,9 +253,7 @@
                     android:id="@+id/rvPDetail"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="100dp"
                     android:nestedScrollingEnabled="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -287,6 +285,22 @@
                     app:layout_constraintBottom_toBottomOf="@+id/civP"
                     app:layout_constraintEnd_toEndOf="@+id/civP" />
 
+                <TextView
+                    android:id="@+id/textView75"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="100dp"
+                    android:lineSpacingExtra="5dp"
+                    android:padding="20dp"
+                    android:text="㈜옵토닉스\n사업자번호:409-81-84171\n대표자명: 이용범, 이영우\n사업장소재지: 광주광역시 북구 첨단벤처소로15번길 63(월출동)\nContact:062-973-1260"
+                    android:textColor="@color/subColor300"
+                    android:textSize="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvPDetail"
+                    app:layout_constraintVertical_bias="0.0" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>

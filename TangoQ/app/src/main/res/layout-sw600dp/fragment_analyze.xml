@@ -125,7 +125,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="110dp"
                         android:layout_marginStart="40dp"
-                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="40dp"
                         android:visibility="gone"
                         app:cardBackgroundColor="@color/white"
@@ -163,6 +162,7 @@
                                 android:layout_marginStart="20dp"
                                 android:layout_marginTop="10dp"
                                 android:singleLine="true"
+                                android:textColor="@color/subColor800"
                                 android:textSize="18dp"
                                 app:layout_constraintEnd_toStartOf="@+id/imageView50"
                                 app:layout_constraintStart_toEndOf="@+id/cardView31"
@@ -224,8 +224,8 @@
 
                             <ImageView
                                 android:id="@+id/imageView50"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
                                 android:layout_marginEnd="40dp"
                                 android:src="@drawable/media_play_button"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -234,14 +234,25 @@
 
                             <ImageView
                                 android:id="@+id/imageView51"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
                                 android:src="@drawable/media_play_button"
                                 app:layout_constraintBottom_toBottomOf="@+id/imageView50"
                                 app:layout_constraintEnd_toEndOf="@+id/imageView50"
                                 app:layout_constraintStart_toStartOf="@+id/imageView50"
                                 app:layout_constraintTop_toTopOf="@+id/imageView50" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <TextView
+                            android:id="@+id/tvANoProgram"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/white"
+                            android:gravity="center"
+                            android:text="진행중인 프로그램이 없습니다\n측정을 진행해주세요"
+                            android:textColor="@color/subColor800"
+                            android:textSize="18dp"
+                            android:visibility="gone" />
                     </androidx.cardview.widget.CardView>
 
                     <com.facebook.shimmer.ShimmerFrameLayout
@@ -269,7 +280,7 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cvAEffect"
-                        android:layout_width="64dp"
+                        android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_marginBottom="5dp"
                         app:cardCornerRadius="6dp"
@@ -278,7 +289,8 @@
                         app:layout_constraintEnd_toEndOf="@+id/linearLayout17"
                         app:layout_constraintHorizontal_bias="0.975"
                         app:layout_constraintStart_toStartOf="@+id/linearLayout17"
-                        app:layout_constraintTop_toTopOf="@+id/bcA">
+                        app:layout_constraintTop_toTopOf="@+id/bcA"
+                        app:layout_constraintWidth_percent="0.09">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -573,8 +585,7 @@
                     android:layout_marginStart="40dp"
                     android:layout_marginTop="60dp"
                     android:text="2024년 5월 9일"
-                    android:textSize="24dp"
-                    android:textStyle="bold"
+                    android:textSize="20dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/cardView10" />
 

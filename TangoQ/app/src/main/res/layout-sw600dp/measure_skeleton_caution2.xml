@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:text="측정 전 주의사항"
+        android:text="측정 복장 안내"
         android:textColor="@color/subColor800"
         android:textSize="30dp"
         android:textStyle="bold"
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginTop="40dp"
-        android:text="3."
+        android:text="2."
         android:textColor="@color/mainColor"
         android:textSize="30dp"
         android:textStyle="bold"
@@ -66,7 +66,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="* 옷 색이 배경색과 대비되지 않는다거나\n치마를 입은 경우 정확한 측정이 어려울 수 있습니다."
+        android:text="* 옷 색이 배경색과 유사하거나 사이즈가 큰 옷, 치마를 입은 경우 정확한 측정이 어려울 수 있습니다."
         android:textColor="@color/subColor500"
         android:textSize="20dp"
         android:textStyle="bold"
@@ -93,15 +93,27 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
         app:cardBackgroundColor="@color/mainColor"
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cardView3"
         app:layout_constraintTop_toBottomOf="@id/lavSC2" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView3"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:cardBackgroundColor="@color/subColor200"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cardView4" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView48"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="20dp"
@@ -109,7 +121,19 @@
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView4"
-        app:layout_constraintStart_toEndOf="@+id/cardView4"
+        app:layout_constraintStart_toEndOf="@+id/cardView3"
         app:layout_constraintTop_toTopOf="@+id/cardView4" />
-    " />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView49"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="20dp"
+        app:cardBackgroundColor="@color/subColor200"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView4"
+        app:layout_constraintStart_toEndOf="@+id/cardView48"
+        app:layout_constraintTop_toTopOf="@+id/cardView4" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

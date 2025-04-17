@@ -20,7 +20,7 @@
 
     <color name="deleteColor">#C85449</color>
     <color name="deleteContainerColor">#641E1A</color>
-    <color name="deleteTextColor">#AEAEAE</color>
+    <color name="deleteTextColor">#FFDAD6</color>
     <color name="cautionColor">#FF981D</color>
     <color name="cautionContainerColor">#503D24</color>
 

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bckgnd_rectangle_20"
+    tools:context=".dialog.MobileAuthDialogFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clMADMobile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvMADGuide"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageButton
+            android:id="@+id/ibtnMADExit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:padding="4dp"
+            android:src="@drawable/icon_arrow_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="전화번호 인증"
+            android:textColor="@color/subColor800"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/ibtnMADExit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ibtnMADExit"
+            app:layout_constraintTop_toTopOf="@+id/ibtnMADExit" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="소셜계정 연동을 위해 휴대폰 본인인증을 진행합니다."
+            android:textColor="@color/subColor800"
+            android:textSize="18dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+        <EditText
+            android:id="@+id/etMADMobile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="180dp"
+            android:background="@drawable/bckgnd_12_edit_text"
+            android:ems="10"
+            android:enabled="true"
+            android:hint="핸드폰 번호를 입력해주세요"
+            android:inputType="phone"
+            android:padding="16dp"
+            android:textColor="@color/subColor800"
+            android:textColorHint="@color/subColor400"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnMADAuthSend"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            app:layout_constraintVertical_bias="0.1" />
+
+        <EditText
+            android:id="@+id/etMADMobileCode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bckgnd_12_edit_text"
+            android:ems="10"
+            android:hint="인증번호를 입력해주세요"
+            android:inputType="number"
+            android:maxLength="6"
+            android:padding="16dp"
+            android:textColor="@color/subColor800"
+            android:textColorHint="@color/subColor400"
+            android:textSize="18dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etMADMobile" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnMADAuthSend"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/subColor400"
+            android:padding="16dp"
+            android:stateListAnimator="@null"
+            android:text="휴대폰 인증"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/etMADMobile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etMADMobile"
+            app:layout_constraintWidth_percent="0.325" />
+
+        <TextView
+            android:id="@+id/tvMADReAuth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:text="인증번호가 오지 않는다면, 재전송 을 눌러 다시 시도해주세요"
+            android:textColor="@color/subColor500"
+            android:textSize="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etMADMobileCode" />
+
+        <TextView
+            android:id="@+id/tvMADCountDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:text="남은시간: 1분 59초"
+            android:textColor="@color/subColor500"
+            android:textSize="14dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvMADReAuth" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnMADSignIn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/effect_ibtn_12dp"
+            android:backgroundTint="@color/mainColor"
+            android:stateListAnimator="@null"
+            android:text="회원가입"
+            android:textColor="@color/whiteText"
+            android:textSize="18dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

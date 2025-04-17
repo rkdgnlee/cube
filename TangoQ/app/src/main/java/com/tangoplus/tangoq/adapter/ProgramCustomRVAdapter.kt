@@ -1,10 +1,7 @@
 package com.tangoplus.tangoq.adapter
 
 import android.content.res.ColorStateList
-import android.text.Spannable
 import android.text.SpannableString
-import android.text.style.RelativeSizeSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.skydoves.progressview.ProgressView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvProgramSeqItemBinding
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCustomCategoryClickListener
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
 
 class ProgramCustomRVAdapter(private val fragment: Fragment,
                              private val seq: Triple<Int, Int, Int>,
@@ -72,7 +69,7 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
                     if (position == seq.third && seq.second == seq.third) {
                         setHpv(holder, true, currentHpvProgresses)
                         setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
-                        if (holder.hpvPSI.progress > 90f) {
+                        if (holder.hpvPSI.progress > 97f) {
 
                             setCompleted(holder, true)
                         }
@@ -81,7 +78,7 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
                         setHpv(holder, true, currentHpvProgresses)
                         setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
 
-                        if (holder.hpvPSI.progress > 90f) {
+                        if (holder.hpvPSI.progress > 97f) {
                             setCompleted(holder, true)
                         }
                         // 선택하지 않은 회차 + 이전 회차
@@ -90,7 +87,7 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
                         setTextView(holder.tvPSIName, R.color.subColor400, R.color.whiteText)
 
                         // 다 완료했을 경우
-                        if (holder.hpvPSI.progress > 90f) {
+                        if (holder.hpvPSI.progress > 97f) {
                             setCompleted(holder, false)
                         }
                         // 선택하지 않았을 때 현재 회차
@@ -115,7 +112,7 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
 
 
              // 회차별 상태 업데이트
-            holder.tvPSIName.setOnClickListener {
+            holder.tvPSIName.setOnSingleClickListener {
                 onCustomCategoryClickListener.customCategoryClick(position)
             }
         }

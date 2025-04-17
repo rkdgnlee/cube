@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import org.json.JSONObject
+import java.io.IOException
 
 object NetworkProgram {
     suspend fun fetchProgram(myUrl: String, context: Context, sn: String): ProgramVO? {
@@ -58,7 +59,10 @@ object NetworkProgram {
             } catch (e: IllegalStateException) {
                 Log.e("ProgramError", "IllegalState: ${e.message}")
                 null
-            }catch (e: NullPointerException) {
+            } catch (e: NullPointerException) {
+                Log.e("ProgramError", "NullPointer: ${e.message}")
+                null
+            }  catch (e: IOException) {
                 Log.e("ProgramError", "NullPointer: ${e.message}")
                 null
             } catch (e: java.lang.Exception) {
@@ -67,6 +71,4 @@ object NetworkProgram {
             }
         }
     }
-
-
 }

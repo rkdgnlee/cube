@@ -5,10 +5,13 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +24,7 @@ import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.listener.OnAlarmClickListener
 import com.tangoplus.tangoq.listener.OnAlarmDeleteListener
 import com.tangoplus.tangoq.db.Singleton_t_user
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,13 +52,21 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
     @SuppressLint("ClickableViewAccessibility", "NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         pm = PreferencesManager(requireContext())
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-        binding.ibtnAlarmBack.setOnClickListener { dismiss() }
+        binding.ibtnAlarmBack.setOnSingleClickListener { dismiss() }
         userSn = userJson?.optInt("sn") ?:0
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
+
                 alarmList = pm.getAlarms(userSn)
                 alarmList.sortByDescending { it.timeStamp }
                 // ------! alarm touchhelper 연동 시작 !------
@@ -83,7 +95,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
             }
         }
 
-        binding.tvAlarmClear.setOnClickListener {
+        binding.tvAlarmClear.setOnSingleClickListener {
             alarmList.clear()
             pm.deleteAllAlarms(userSn)
             alarmRVAdapter.notifyDataSetChanged()
@@ -95,6 +107,7 @@ class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDelet
         intent.putExtra("fragmentId", fragmentId)
         intent.putExtra("fromAlarmActivity", true)
         startActivity(intent)
+        intent.replaceExtras(null)
     }
 
     @SuppressLint("NotifyDataSetChanged")

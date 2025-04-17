@@ -18,6 +18,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageButton
+                android:id="@+id/ibtnFADBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:padding="4dp"
+                android:src="@drawable/icon_arrow_left"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tlFAD"
                 android:layout_width="0dp"
@@ -40,7 +52,7 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="아이디 찾기" />
+                    android:text="이메일 찾기" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
@@ -50,17 +62,17 @@
             </com.google.android.material.tabs.TabLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clFADMobile"
+                android:id="@+id/clFADAuth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clFADId">
+                app:layout_constraintTop_toBottomOf="@+id/tlFAD">
 
                 <TextView
-                    android:id="@+id/tvFADMobile"
+                    android:id="@+id/tvFADAuth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -81,10 +93,10 @@
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvFADMobile">
+                    app:layout_constraintTop_toBottomOf="@+id/tvFADAuth">
 
                     <EditText
-                        android:id="@+id/etFADMobile"
+                        android:id="@+id/etFADAuth"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
@@ -92,7 +104,7 @@
                         android:background="@drawable/bckgnd_12_edit_text"
                         android:ems="10"
                         android:hint="휴대폰 번호를 입력해주세요"
-                        android:inputType="phone"
+                        android:inputType="text|textEmailAddress"
                         android:paddingLeft="12dp"
                         android:paddingTop="16dp"
                         android:paddingRight="16dp"
@@ -133,6 +145,7 @@
                     android:ems="10"
                     android:hint="인증 번호를 입력해주세요"
                     android:inputType="number"
+                    android:maxLength="6"
                     android:paddingLeft="12dp"
                     android:paddingTop="16dp"
                     android:paddingRight="16dp"
@@ -144,6 +157,31 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout18" />
+
+                <TextView
+                    android:id="@+id/tvFADReAuth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="인증번호가 오지 않는다면, 재전송 을 눌러 다시 시도해주세요"
+                    android:textColor="@color/subColor500"
+                    android:textSize="13dp"
+                    android:visibility="invisible"
+                    app:layout_constraintStart_toStartOf="@+id/etFADAuthNumber"
+                    app:layout_constraintTop_toBottomOf="@+id/etFADAuthNumber" />
+
+                <TextView
+                    android:id="@+id/tvFADCountDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="3분 00초"
+                    android:textColor="@color/subColor500"
+                    android:textSize="13dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvFADReAuth"
+                    app:layout_constraintTop_toBottomOf="@+id/tvFADReAuth" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -158,7 +196,7 @@
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clFADMobile">
+                app:layout_constraintTop_toBottomOf="@+id/clFADAuth">
 
                 <TextView
                     android:id="@+id/textView128"
@@ -166,7 +204,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:gravity="center"
-                    android:text="회원님의 아이디는"
+                    android:text="회원님의 이메일은"
                     android:textColor="@color/subColor800"
                     android:textSize="16dp"
                     android:textStyle="bold"
@@ -188,7 +226,7 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                    android:id="@+id/tvFADIdFinded"
+                    android:id="@+id/tvFADFindedEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -200,84 +238,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView128" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clFADId"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tlFAD">
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:text="이름 입력"
-                    android:textColor="@color/black"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <EditText
-                    android:id="@+id/etFADName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_12_edit_text"
-                    android:ems="10"
-                    android:hint="이름을 입력해주세요"
-                    android:inputType="text"
-                    android:padding="16dp"
-                    android:textColor="@color/subColor800"
-                    android:textColorHint="@color/subColor200"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-                <TextView
-                    android:id="@+id/textView133"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:text="아이디 입력"
-                    android:textColor="@color/black"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/etFADName" />
-
-                <EditText
-                    android:id="@+id/etFADId"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/bckgnd_12_edit_text"
-                    android:ems="10"
-                    android:hint="아이디를 입력해주세요"
-                    android:inputType="text"
-                    android:padding="16dp"
-                    android:textColor="@color/subColor800"
-                    android:textColorHint="@color/subColor200"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView133"
-                    app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -321,6 +281,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="비밀번호 재설정"
+                    android:textColor="@color/subColor800"
                     android:textSize="20dp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -331,9 +292,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:layout_marginEnd="20dp"
                     android:textColor="@color/subColor800"
-                    android:textSize="13dp"
+                    android:textSize="12dp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView14"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/textView14"
@@ -390,6 +350,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="비밀번호 확인"
+                    android:textColor="@color/subColor800"
                     android:textSize="20dp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"

@@ -1,18 +1,22 @@
 package com.tangoplus.tangoq.fragment
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.DecelerateInterpolator
 import androidx.annotation.OptIn
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.tangoplus.tangoq.listener.OnSingleClickListener
 
 object ExtendedFunctions {
 
@@ -49,40 +53,40 @@ object ExtendedFunctions {
             return {
                 BadgeUtils.detachBadgeDrawable(badgeDrawable, badgeView)
                 sharedPref.edit().putBoolean(badgeKey, false).apply()
-//                Log.v("clickBadge", "badgekey : $badgeKey, clickBadge: ${sharedPref.getBoolean(badgeKey, false)}")
             }
         }
         return null
     }
 
-    fun dialogFragmentResize(context: Context, df: DialogFragment, width: Float = 0.8f, height: Float = 0.7f) {
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-        if (Build.VERSION.SDK_INT < 30) {
-            val display = windowManager.defaultDisplay
-            val size = Point()
-
-            display.getSize(size)
-
-            val window = df.dialog?.window
-
-            val x = (size.x * width).toInt()
-            val y = (size.y * height).toInt()
-            window?.setLayout(x, y)
-        } else {
-            val rect = windowManager.currentWindowMetrics.bounds
-
-            val window = df.dialog?.window
-
-            val x = (rect.width() * width).toInt()
-            val y = (rect.height() * height).toInt()
-
-            window?.setLayout(x, y)
-        }
-    }
-
     fun isKorean(str: String): Boolean {
         val koreanRegex = Regex("[ㄱ-ㅎㅏ-ㅣ가-힣]+")
         return koreanRegex.containsMatchIn(str)
+    }
+
+    fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
+        val listener = View.OnClickListener { action(it) }
+        setOnClickListener(OnSingleClickListener(listener))
+    }
+
+    fun fadeInView(view: View) {
+        view.visibility = View.VISIBLE
+        view.alpha = 0f
+        ObjectAnimator.ofFloat(view, "alpha", 0f, 1f).apply {
+            duration = 500 // 애니메이션 지속 시간 (ms)
+            interpolator = DecelerateInterpolator()
+            start()
+        }
+    }
+    fun scrollToView(view: View, nsv: NestedScrollView) {
+        val location = IntArray(2)
+        view.getLocationInWindow(location)
+        val viewTop = location[1]
+        val scrollViewLocation = IntArray(2)
+
+        nsv.getLocationInWindow(scrollViewLocation)
+        val scrollViewTop = scrollViewLocation[1]
+        val scrollY = nsv.scrollY
+        val scrollTo = scrollY + viewTop - scrollViewTop
+        nsv.smoothScrollTo(0, scrollTo)
     }
 }

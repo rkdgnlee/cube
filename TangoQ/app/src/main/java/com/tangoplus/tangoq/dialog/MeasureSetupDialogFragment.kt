@@ -12,17 +12,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MediatorLiveData
+import com.tangoplus.tangoq.MeasureSkeletonActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentMeasureSetupDialogBinding
-import com.tangoplus.tangoq.databinding.FragmentMeasureTrendDialogBinding
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.fragment.ExtendedFunctions.dialogFragmentResize
-import com.tangoplus.tangoq.mediapipe.MathHelpers.isTablet
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
-import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import java.util.regex.Pattern
 
 class MeasureSetupDialogFragment : DialogFragment() {
@@ -39,7 +39,10 @@ class MeasureSetupDialogFragment : DialogFragment() {
             return fragment
         }
     }
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -51,7 +54,14 @@ class MeasureSetupDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         val case = arguments?.getInt(ARG_SETUP_CASE) ?: 1
         binding.clMSDAgreement1.visibility = View.VISIBLE
         binding.clMSDAgreement2.visibility = View.VISIBLE
@@ -60,12 +70,10 @@ class MeasureSetupDialogFragment : DialogFragment() {
                 binding.ibtnMSDNameClear.setOnClickListener{ binding.etMSDName.setText("")}
                 binding.tvMSDSkip.setOnClickListener { dismiss() }
                 binding.ibtnMSDAgreement1.setOnClickListener {
-                    val dialog = AgreementDetailDialogFragment.newInstance("agreement4")
-                    dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+                    showAgreement4()
                 }
                 binding.ibtnMSDAgreement2.setOnClickListener {
-                    val dialog = AgreementDetailDialogFragment.newInstance("agreement5")
-                    dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+                    showAgreement5()
                 }
                 binding.clMSDAgreement1.setOnClickListener {
                     mvm.setupAgreement1.value = if (mvm.setupAgreement1.value == true) false else true
@@ -94,58 +102,46 @@ class MeasureSetupDialogFragment : DialogFragment() {
 
                 // 버튼 observer 세팅
                 val buttonEnabled = MediatorLiveData<Boolean>().apply {
-                    addSource(mvm.setupNameCondition) { nameValid ->
-                        value = nameValid == true && mvm.setupNameCondition.value == true
+                    val update = {
+                        value = (mvm.setupNameCondition.value == true &&
+                                mvm.setupAgreement1.value == true &&
+                                mvm.setupAgreement2.value == true)
                     }
-                    addSource(mvm.setupAgreement1) { agreement1Valid ->
-                        value = agreement1Valid == true && mvm.setupAgreement1.value == true
-                    }
-                    addSource(mvm.setupAgreement2) { agreement2Valid ->
-                        value = agreement2Valid == true && mvm.setupAgreement2.value == true
+                    addSource(mvm.setupNameCondition) { update() }
+                    addSource(mvm.setupAgreement1) { update() }
+                    addSource(mvm.setupAgreement2) { update() }
+                }
+
+                buttonEnabled.observe(viewLifecycleOwner) { enabled ->
+                    binding.btnMSDFinish.apply {
+                        isEnabled = enabled
+                        backgroundTintList = ColorStateList.valueOf(resources.getColor(
+                            if (isEnabled) R.color.mainColor else R.color.subColor400
+                            , null))
                     }
                 }
-//        val buttonEnabled = MediatorLiveData<Boolean>().apply {
-//            addSource(svm.idCondition) { idValid ->
-//                value = idValid == true && svm.mobileCondition.value == true
-//            }
-//            addSource(svm.mobileCondition) { mobileValid ->
-//                value = mobileValid == true && svm.idCondition.value == true
-//            }
-//        }
-                buttonEnabled.observe(viewLifecycleOwner) { isEnabled ->
+                binding.btnMSDDeny.setOnSingleClickListener {
+                    dismiss()
+                    (activity as MeasureSkeletonActivity).finish()
+                }
+                val userName = userJson?.optString("user_name")
+                mvm.setupName = userName ?: ""
+            }
+            1 -> {
+                binding.ivMSDAgreement1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_part_checkbox_enabled))
+                binding.ivMSDAgreement2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_part_checkbox_enabled))
+                binding.clMSDAgreement1.setOnSingleClickListener { showAgreement4() }
+                binding.clMSDAgreement2.setOnSingleClickListener { showAgreement5() }
+
+                binding.btnMSDDeny.visibility = View.GONE
+                binding.btnMSDFinish.text = "설정 완료"
+
+                mvm.setupNameCondition.observe(viewLifecycleOwner) { isEnabled ->
                     binding.btnMSDFinish.isEnabled = isEnabled
                     binding.btnMSDFinish.backgroundTintList = ColorStateList.valueOf(resources.getColor(
                         if (isEnabled) R.color.mainColor else R.color.subColor400
-                    ))
+                    , null))
                 }
-                binding.btnMSDFinish.text = "동의 완료"
-
-//        val mobilePattern = "^010-\\d{4}-\\d{4}\$"
-//        val mobilePatternCheck = Pattern.compile(mobilePattern)
-//        binding.etMSDPhone.addTextChangedListener(object: TextWatcher {
-//            private var isFormatting = false
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-//            override fun afterTextChanged(s: Editable?) {
-//                if (isFormatting) return
-//                isFormatting = true
-//                val cleaned =s.toString().replace("-", "")
-//                when {
-//                    cleaned.length <= 3 -> s?.replace(0, s.length, cleaned)
-//                    cleaned.length <= 7 -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3)}")
-//                    else -> s?.replace(0, s.length, "${cleaned.substring(0, 3)}-${cleaned.substring(3, 7)}-${cleaned.substring(7)}")
-//                }
-//                isFormatting = false
-//                svm.mobileCondition.value = mobilePatternCheck.matcher(binding.etMSDPhone.text.toString()).find()
-//            }
-//        })
-
-//        binding.etMSDPhone.setText(mobile)
-            }
-            1 -> {
-                binding.clMSDAgreement1.visibility = View.GONE
-                binding.clMSDAgreement2.visibility = View.GONE
-                binding.btnMSDFinish.text = "설정 완료"
             }
             else -> {
 
@@ -154,10 +150,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
 
         // 버튼 셋엄
         val namePatternCheck = Pattern.compile(
-            "^(?:" +
-                    "[가-힣]{2,5}|" +  // 한글 2-5글자
-                    "[a-zA-Z]{3,15}" + // 영어 3-15글자
-                    ")$"
+            "^(?:[가-힣]{2,5}|[a-zA-Z]{2,})(?: [가-힣]{2,5}| [a-zA-Z]{2,})?(?: [가-힣]{2,5}| [a-zA-Z]{2,})?\$"
         )
         binding.etMSDName.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
@@ -169,35 +162,30 @@ class MeasureSetupDialogFragment : DialogFragment() {
             }
         })
 
-        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-        val userName = userJson?.optString("user_name")
-        binding.etMSDName.setText(userName)
-        mvm.setupName = userName ?: ""
+        binding.etMSDName.setText(mvm.setupName)
+
         binding.ibtnMSDNameClear.setOnClickListener{ binding.etMSDName.setText("")}
         binding.tvMSDSkip.setOnClickListener { dismiss() }
 
 
         binding.btnMSDFinish.setOnClickListener {
             mvm.setupName = binding.etMSDName.text.toString()
-//            mvm.setupMobile = binding.etMSDPhone.text.toString()
             dismiss()
-//            Log.v("mvm넣기", "mvm.Name: ${mvm.setupName}, mvm.Mobile: ${mvm.setupMobile}")
         }
     }
 
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        dialog?.window?.setDimAmount(0.7f)
+    override fun onResume() {
+        super.onResume()
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
-        dialog?.setCancelable(false)
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        if (isTablet(requireContext())) {
-            dialogFragmentResize(requireContext(), this@MeasureSetupDialogFragment, width = 0.7f, height = 0.4f)
-        } else {
-            dialogFragmentResize(requireContext(), this@MeasureSetupDialogFragment, width =  0.9f, height = 0.45f)
-        }
+    }
+
+    private fun showAgreement4() {
+        val dialog = AgreementDetailDialogFragment.newInstance("agreement4")
+        dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+    }
+
+    private fun showAgreement5() {
+        val dialog = AgreementDetailDialogFragment.newInstance("agreement5")
+        dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
     }
 }

@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvMainPartAnalysisItemBinding
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 
 class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var analyzeUnits : List<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -84,7 +84,7 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var anal
                 holder.tvMPAIRight.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.subColor400))
                 holder.tvMPAIData.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
 
-                params.horizontalBias = 0.12f
+                params.horizontalBias = if (isTablet(fragment.requireContext())) 0.15f else 0.125f
             }
             2 -> {
                 holder.vMPAILeft.visibility = View.INVISIBLE
@@ -106,7 +106,7 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var anal
                 holder.tvMPAIRight.setTextColor(ContextCompat.getColorStateList(fragment.requireContext(), R.color.thirdColor))
                 holder.tvMPAIData.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 
-                params.horizontalBias = 0.88f
+                params.horizontalBias = if (isTablet(fragment.requireContext())) 0.85f else 0.875f
             }
         }
     }

@@ -111,7 +111,7 @@
                 android:layout_marginStart="20dp"
                 android:text="모든 약관의 동의"
                 android:textColor="@color/subColor800"
-                android:textSize="20sp"
+                android:textSize="20dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/ivAgreementAll"
                 app:layout_constraintStart_toEndOf="@+id/ivAgreementAll"
@@ -156,7 +156,7 @@
                 android:layout_marginStart="20dp"
                 android:text="[선택] 마케팅 정보 수신 동의"
                 android:textColor="@color/subColor800"
-                android:textSize="18sp"
+                android:textSize="18dp"
                 app:layout_constraintBottom_toBottomOf="@+id/ivAgreement3"
                 app:layout_constraintStart_toEndOf="@+id/ivAgreement3"
                 app:layout_constraintTop_toTopOf="@+id/ivAgreement3" />
@@ -178,7 +178,7 @@
                 android:layout_marginStart="20dp"
                 android:text="[필수] 서비스 약관 동의"
                 android:textColor="@color/subColor800"
-                android:textSize="18sp"
+                android:textSize="18dp"
                 app:layout_constraintBottom_toBottomOf="@+id/ivAgreement1"
                 app:layout_constraintStart_toEndOf="@+id/ivAgreement1"
                 app:layout_constraintTop_toTopOf="@+id/ivAgreement1" />
@@ -222,7 +222,7 @@
                 android:layout_marginStart="20dp"
                 android:text="[필수] 개인정보 수집 · 이용 동의"
                 android:textColor="@color/subColor800"
-                android:textSize="18sp"
+                android:textSize="18dp"
                 app:layout_constraintBottom_toBottomOf="@+id/ivAgreement2"
                 app:layout_constraintStart_toEndOf="@+id/ivAgreement2"
                 app:layout_constraintTop_toTopOf="@+id/ivAgreement2" />
@@ -269,7 +269,7 @@
                 android:layout_marginStart="20dp"
                 android:text="문자메시지(SMS, LMS 등)"
                 android:textColor="@color/subColor800"
-                android:textSize="16sp"
+                android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/ivAgreementMk1"
                 app:layout_constraintStart_toEndOf="@+id/ivAgreementMk1"
                 app:layout_constraintTop_toTopOf="@+id/ivAgreementMk1" />
@@ -302,7 +302,7 @@
                 android:layout_marginStart="20dp"
                 android:text="이메일"
                 android:textColor="@color/subColor800"
-                android:textSize="16sp"
+                android:textSize="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/ivAgreementMk2"
                 app:layout_constraintStart_toEndOf="@+id/ivAgreementMk2"
                 app:layout_constraintTop_toTopOf="@+id/ivAgreementMk2" />

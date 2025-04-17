@@ -8,19 +8,31 @@
     android:background="@drawable/bckgnd_top_16"
     tools:context=".dialog.ProfileEditChangeDialogFragment">
 
+    <ImageButton
+        android:id="@+id/ibtnPCDBack2"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/effect_ibtn_12dp"
+        android:padding="4dp"
+        android:src="@drawable/icon_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tvPCD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="5dp"
         android:text="비밀번호 변경"
         android:textColor="@color/black"
         android:textSize="32dp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/ibtnPCDBack2"
+        app:layout_constraintStart_toEndOf="@+id/ibtnPCDBack2"
+        app:layout_constraintTop_toTopOf="@+id/ibtnPCDBack2" />
     <TextView
         android:id="@+id/tvPCD1"
         android:layout_width="0dp"
@@ -44,7 +56,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="입력해주세요"
         android:inputType="text|textPassword"
@@ -79,7 +91,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="새로운 비밀번호"
         android:inputType="text|textPassword"
@@ -113,7 +125,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:background="@drawable/bckgnd_1_sub150_12"
+        android:background="@drawable/bckgnd_12_edit_text"
         android:ems="10"
         android:hint="새로운 비밀번호 확인"
         android:inputType="text|textPassword"
@@ -198,7 +210,7 @@
             android:layout_marginStart="40dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="15dp"
-            android:background="@drawable/bckgnd_1_sub150_12"
+            android:background="@drawable/bckgnd_12_edit_text"
             android:ems="10"
             android:hint="핸드폰 번호를 입력해주세요"
             android:inputType="phone"
@@ -229,41 +241,49 @@
             app:layout_constraintWidth_percent="0.325" />
 
         <EditText
-            android:id="@+id/etPCDAuth"
+            android:id="@+id/etPCDAuthNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="40dp"
-            android:background="@drawable/bckgnd_1_sub150_12"
+            android:background="@drawable/bckgnd_12_edit_text"
             android:ems="10"
             android:hint="인증번호를 입력해주세요"
             android:inputType="number"
+            android:maxLength="6"
             android:padding="20dp"
             android:textColor="@color/subColor800"
+            android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etPCDMobile" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPCDAuthConfirm"
+        <TextView
+            android:id="@+id/tvPCDReAuth"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="40dp"
-            android:background="@drawable/effect_ibtn_12dp"
-            android:backgroundTint="@color/mainColor"
-            android:padding="20dp"
-            android:stateListAnimator="@null"
-            android:text="인증 확인"
-            android:textColor="@color/white"
-            android:textSize="18dp"
+            android:text="인증번호가 오지 않는다면, 재전송 을 눌러 다시 시도해주세요"
+            android:textColor="@color/subColor500"
+            android:textSize="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etPCDAuth" />
+            app:layout_constraintTop_toBottomOf="@+id/etPCDAuthNumber" />
 
-
+        <TextView
+            android:id="@+id/tvPCDCountDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="5dp"
+            android:text="남은시간: 1분 59초"
+            android:textColor="@color/subColor500"
+            android:textSize="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPCDReAuth" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -297,7 +317,8 @@
                 android:text="남성"
                 android:textColor="@color/subColor800"
                 android:textSize="28dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:buttonTint="@color/tint_main_sub200" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/mrbPCDFemale"
@@ -308,7 +329,8 @@
                 android:text="여성"
                 android:textColor="@color/subColor800"
                 android:textSize="28dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:buttonTint="@color/tint_main_sub200" />
         </RadioGroup>
 
         <LinearLayout

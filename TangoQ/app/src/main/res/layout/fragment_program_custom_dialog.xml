@@ -132,6 +132,7 @@
                 </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clPCD"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -140,17 +141,16 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="60dp"
                         android:background="@color/white"
-                        android:text="_"
                         android:textColor="@color/subColor800"
                         android:textSize="18dp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/ibtnPCDBack"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toEndOf="@+id/ibtnPCDBack"
-                        app:layout_constraintTop_toTopOf="@+id/ibtnPCDBack" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageButton
                         android:id="@+id/ibtnPCDTop"
@@ -210,9 +210,9 @@
                         android:drawableEnd="@drawable/icon_arrow_right_small"
                         android:gravity="center|center_vertical"
                         android:paddingStart="15dp"
-                        android:paddingTop="4dp"
+                        android:paddingTop="6dp"
                         android:paddingEnd="10dp"
-                        android:paddingBottom="4dp"
+                        android:paddingBottom="6dp"
                         android:text="0/4 주차"
                         android:textColor="#FFFFFF"
                         android:textSize="16dp"
@@ -260,7 +260,7 @@
                         android:layout_marginStart="20dp"
                         android:text="총 5개"
                         android:textColor="@color/subColor800"
-                        android:textSize="16sp"
+                        android:textSize="16dp"
                         app:layout_constraintBottom_toBottomOf="@+id/linearLayout26"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/linearLayout26" />
