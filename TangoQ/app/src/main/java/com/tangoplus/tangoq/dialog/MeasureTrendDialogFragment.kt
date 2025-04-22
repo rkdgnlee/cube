@@ -316,7 +316,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                             if (avm.currentIndex != 6) {
                                 setVideoUI(false, true)
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, transIndex, binding.ssivMTDRight, "trend")
-
+                                pvm.rightUpdateUI = false
                             } else {
                                 simpleExoPlayer2?.stop()
                                 simpleExoPlayer2?.release()
@@ -338,10 +338,12 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 simpleExoPlayer2?.release()
                                 simpleExoPlayer2 = null
 
-                                setVideoUI(false, false)
-                                setVideoUI(false, true)
+                                setVideoUI(isVideo = false, isRight = false)
+                                setVideoUI(isVideo = false, isRight = true)
                                 setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, transIndex, binding.ssivMTDLeft, "trend")
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, transIndex, binding.ssivMTDRight, "trend")
+                                pvm.rightUpdateUI = false
+                                pvm.leftUpdateUI = false
                             } else  {
                                 setVideoUI(true, false)
                                 setClickListener(false)
@@ -545,7 +547,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
-    @UnstableApi
     private fun setPlayer(isRight: Boolean) {
         when (isRight) {
             true -> {
@@ -560,8 +561,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 val videoDuration = simpleExoPlayer2?.duration ?: 0L
                                 lifecycleScope.launch {
                                     while (simpleExoPlayer2?.isPlaying == true) {
-                                        if (!pvm.rightUpdateUI) updateVideoUI(isRight)
+                                        if (!pvm.rightUpdateUI) updateVideoUI(true)
 //                                        updateVideoUI(isRight)
+//                                        Log.e("비디오레이아웃", "right: ${pvm.leftUpdateUI}")
                                         updateFrameData(true, videoDuration, rightJa.length())
                                         delay(24)
                                         pvm.rightUpdateUI = true
@@ -593,7 +595,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 val videoDuration = simpleExoPlayer1?.duration ?: 0L
                                 lifecycleScope.launch {
                                     while (simpleExoPlayer1?.isPlaying == true) {
-                                        Log.e("비디오레이아웃", "${pvm.leftUpdateUI}")
+//                                        Log.e("비디오레이아웃", "left: ${pvm.leftUpdateUI}")
                                         if (!pvm.leftUpdateUI) updateVideoUI(false)
                                         updateFrameData(false, videoDuration, leftJa.length())
                                         delay(24)
@@ -613,12 +615,14 @@ class MeasureTrendDialogFragment : DialogFragment() {
         }
     }
 
-    @UnstableApi
+
     private fun initPlayer(isRight: Boolean) {
 // 동영상 처리 로딩
         val loadingDialog = LoadingDialogFragment.newInstance("동영상")
         when (isRight) {
             true -> {
+                Log.e("오른쪽플레이어init", "initPlayer isRight: true")
+
                 setClickListener(true)
                 simpleExoPlayer2 = SimpleExoPlayer.Builder(requireContext()).build()
                 binding.pvMTDRight.player = simpleExoPlayer2
@@ -628,7 +632,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendRightUri?.toUri() ?: "".toUri())
                 val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
                 if (aspectRatio < 1) {
-                    val inputPath = avm.trendRightUri.toString() // 기존 파일 경로
+                    val inputPath = avm.trendRightUri.toString() // 기존 파 일 경로
                     val tempOutputPath = "${context?.cacheDir}/right_temp_video.mp4" // 임시 파일
 
                     // 이미 처리한 영상 파일이 남아있을 때
@@ -691,8 +695,8 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
                                 simpleExoPlayer2?.pause()
                             }
-//
                         }
+                        Log.e("오른쪽notCrop", "${simpleExoPlayer2?.playWhenReady}")
                     }
                 }
             }
@@ -771,6 +775,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 simpleExoPlayer1?.pause()
                             }
                         }
+                        Log.e("왼쪽notCrop", "${simpleExoPlayer1?.playWhenReady}")
                     }
                 }
             }
@@ -1121,7 +1126,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         val clMTDParams = binding.clMTD.layoutParams
                         clMTDParams.height = binding.clMTDRight.height
                         binding.clMTD.layoutParams = clMTDParams
-
+                        Log.v("오른쪽뷰높이체크", "in right:: height: ${binding.clMTDRight.height}, visibility: ${binding.clMTDRight.visibility}")
                         val constraintSet = ConstraintSet()
                         constraintSet.clone(binding.clMTD)
                         constraintSet.connect(binding.tvMTDGuide.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
@@ -1154,12 +1159,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         val clMTDParams = binding.clMTD.layoutParams
                         clMTDParams.height = binding.clMTDRight.height
                         binding.clMTD.layoutParams = clMTDParams
-
+                        Log.v("오른쪽뷰높이체크", "in left:: height: ${binding.clMTDRight.height}, visibility: ${binding.clMTDRight.visibility}")
                         val constraintSet = ConstraintSet()
                         constraintSet.clone(binding.clMTD)
                         constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
                         constraintSet.applyTo(binding.clMTD)
-
                     }
                 }
             }

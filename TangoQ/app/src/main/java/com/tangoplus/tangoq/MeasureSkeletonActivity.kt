@@ -19,7 +19,6 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
-import android.graphics.drawable.Drawable
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -70,10 +69,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.util.UnstableApi
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.ReturnCode
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
@@ -1016,25 +1011,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     }
                     , 1000)
 
-                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${
-                    
-                    // 정면 카메라, 후면카메라일 때 좌우 측면 drawable 수정
-                    when (cameraFacing) {
-                        CameraSelector.LENS_FACING_FRONT -> {
-                            seqStep.value!!.toInt()
-                        }
-                        CameraSelector.LENS_FACING_BACK -> {
-                            if (seqStep.value == 3) {
-                                4
-                            } else if (seqStep.value == 4) {
-                                3
-                            } else {
-                                seqStep.value!!.toInt()
-                            }
-                         }
-                        else -> seqStep.value!!.toInt()
-                    }
-                }", "drawable", packageName))
+                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${seqStep.value!!.toInt()}", "drawable", packageName))
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
                 }, 1100)
@@ -1292,21 +1269,21 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.black))
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.black))
         }    }
-    private fun showSettingsDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("권한 설정 필요")
-            .setMessage("설정에서 권한을 허용해주세요.")
-            .setPositiveButton("설정으로 이동") { _, _ ->
-                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", packageName, null)
-                })
-            }
-            .setNegativeButton("취소") { dialog, _ ->
-                dialog.dismiss()
-                finish()
-            }
-            .show()
-    }
+//    private fun showSettingsDialog() {
+//        AlertDialog.Builder(this)
+//            .setTitle("권한 설정 필요")
+//            .setMessage("설정에서 권한을 허용해주세요.")
+//            .setPositiveButton("설정으로 이동") { _, _ ->
+//                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+//                    data = Uri.fromParts("package", packageName, null)
+//                })
+//            }
+//            .setNegativeButton("취소") { dialog, _ ->
+//                dialog.dismiss()
+//                finish()
+//            }
+//            .show()
+//    }
 
     override fun onError(error: String, errorCode: Int) {
         runOnUiThread {
@@ -1996,6 +1973,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                             isRecording = false
                             startRecording = false
                             val savedUri = recordEvent.outputResults.outputUri
+                            // 모자이크 안한 파일을 가져옴 그리고 저장
                             mvm.notMosaicVideoInputPath = getPathFromUri(this@MeasureSkeletonActivity, savedUri) // URI를 파일 경로로 변환
                             if (mvm.notMosaicVideoInputPath != null) {
                                 callback()
@@ -2293,6 +2271,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 cont.resume(success)
             }
         }
+
     private fun flipVideoHorizontally(inputPath: String, outputPath: String, callback: (Boolean) -> Unit) {
         lifecycleScope.launch(Dispatchers.Main) {
             val dialog = LoadingDialogFragment.newInstance("모자이크").apply {
@@ -2401,14 +2380,16 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
         val image = InputImage.fromBitmap(bitmap, 0)
 
-
         detector.process(image)
             .addOnSuccessListener { faces ->
-
-                if (seqStep.value == 1 && faces.isNotEmpty()) {
+                // 영상일때만 seq 판단하기
+                val editedFaces = if (faces.isNotEmpty()) {
                     mvm.previousFaces = faces
+                    faces
+                } else {
+                    mvm.previousFaces ?: emptyList()
                 }
-                onResult(applyMosaicToBitmap(bitmap, faces))
+                onResult(applyMosaicToBitmap(bitmap, editedFaces))
             }
             .addOnFailureListener { e ->
                 e.printStackTrace()

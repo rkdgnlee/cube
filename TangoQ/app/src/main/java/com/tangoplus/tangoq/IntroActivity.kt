@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.webkit.CookieManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -45,7 +44,6 @@ import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.databinding.ActivityIntroBinding
 import com.tangoplus.tangoq.function.SecurePreferencesManager
 import com.tangoplus.tangoq.function.SecurePreferencesManager.createKey
-import com.tangoplus.tangoq.dialog.bottomsheet.AgreementBSDialogFragment
 import com.tangoplus.tangoq.api.NetworkUser.oauthUser
 import com.tangoplus.tangoq.api.NetworkUser.storeUserInSingleton
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
@@ -57,10 +55,8 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.lang.Exception
-import kotlin.math.log
 
 
 class IntroActivity : AppCompatActivity() {
@@ -85,10 +81,6 @@ class IntroActivity : AppCompatActivity() {
             insets
         }
         // ------! activity 사전 설정 끝 !------
-
-
-
-        // ------# 접근 방지 #------
 
         // ------! token 저장할  securedPref init !------
         loadingDialog = LoadingDialogFragment.newInstance("회원가입전송")
@@ -118,7 +110,7 @@ class IntroActivity : AppCompatActivity() {
                                 firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
                                         if (firebaseAuth.currentUser != null) {
                                             // ---- Google 토큰에서 가져오기 시작 ----
-                                            val user: FirebaseUser = firebaseAuth.currentUser!!
+//                                            val user: FirebaseUser = firebaseAuth.currentUser!!
 
                                             // ----- GOOGLE API: 전화번호 담으러 가기(signin) 시작 -----
                                             val jsonObj = JSONObject()
@@ -126,8 +118,7 @@ class IntroActivity : AppCompatActivity() {
                                             jsonObj.put("user_sn", 0)
                                             jsonObj.put("access_token", tokenId)
                                             jsonObj.put("provider", "google")
-//                                            val encodedUserEmail = URLEncoder.encode(jsonObj.getString("user_email"), "UTF-8")
-                                            Log.v("jsonObj", "$jsonObj")
+//                                            Log.v("jsonObj", "$jsonObj")
                                             sViewModel.provider = "google"
                                             sViewModel.sdkToken = tokenId
 
@@ -300,8 +291,8 @@ class IntroActivity : AppCompatActivity() {
                                 jsonObj.put("user_sn", 0)
                                 jsonObj.put("access_token", token.accessToken)
                                 jsonObj.put("provider", "kakao")
-                                Log.v("jsonObj", "$jsonObj")
-                                Log.v("핸드폰 번호", "${user.kakaoAccount?.phoneNumber}")
+//                                Log.v("jsonObj", "$jsonObj")
+//                                Log.v("핸드폰 번호", "${user.kakaoAccount?.phoneNumber}")
                                 sViewModel.apply {
                                     provider = "kakao"
                                     sdkToken = token.accessToken
@@ -376,10 +367,9 @@ class IntroActivity : AppCompatActivity() {
             202 -> {
                 sViewModel.tempId = responseJo.optString("temp_id")
                 sViewModel.fullEmail.value = responseJo.optString("email")
-                Log.v("뷰모델 토큰", "${sViewModel.tempId}, ${sViewModel.fullEmail.value}")
+//                Log.v("뷰모델 토큰", "${sViewModel.tempId}, ${sViewModel.fullEmail.value}")
                 val authDialog = MobileAuthDialogFragment()
                 authDialog.show(supportFragmentManager, null)
-
             }
 
             409 -> {

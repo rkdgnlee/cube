@@ -252,6 +252,39 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvM2"
                         tools:layout_editor_absoluteX="40dp">
 
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/clMRefresh"
+                            android:layout_width="match_parent"
+                            android:layout_height="360dp"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/textView12"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="로드에 실패했습니다\n다시 시도해주세요"
+                                android:textColor="@color/subColor800"
+                                android:textSize="18dp"
+                                app:layout_constraintBottom_toTopOf="@+id/ivMRefresh"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent" />
+
+                            <ImageView
+                                android:id="@+id/ivMRefresh"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                android:background="@drawable/effect_ibtn_12dp"
+                                android:padding="8dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/icon_refresh"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/sflM"
                             android:layout_width="match_parent"

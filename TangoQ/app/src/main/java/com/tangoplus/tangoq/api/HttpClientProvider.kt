@@ -4,17 +4,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.dialog.AlertDialogFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken

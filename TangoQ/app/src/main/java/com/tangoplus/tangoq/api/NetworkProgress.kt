@@ -74,6 +74,7 @@ object NetworkProgress {
                                 weekEndAt = jo.optString("week_end_at"),
                                 countSet = jo.optInt("count_set"),
                                 requiredSet = jo.optInt("required_set"),
+                                completed = jo.optInt("completed"),
                                 duration = jo.optInt("duration"),
                                 progress = jo.optInt("progress"),
                                 updatedAt = jo.optString("updated_at") ?: "",
@@ -141,6 +142,7 @@ object NetworkProgress {
                             weekEndAt = jo.optString("week_end_at"),
                             countSet = jo.optInt("count_set"),
                             requiredSet = jo.optInt("required_set"),
+                            completed = jo.optInt("completed"),
                             duration = jo.optInt("duration"),
                             progress = jo.optInt("progress"),
                             updatedAt = jo.optString("updated_at"),
@@ -184,13 +186,13 @@ object NetworkProgress {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     val bodyJson = JSONObject(responseBody.toString())
-                    Log.v("bodyJson", "$bodyJson")
+                    Log.v("poseGetPrgBody", "$bodyJson")
 
                     val latest = bodyJson.optJSONObject("latest")
                     val progressHistorySn = latest?.optInt("progress_history_sn")
                     val currentWeek = latest?.optInt("week_number")
                     val currentCycle = latest?.optInt("cycle")
-//                    Log.v("포스트getProgress", "$latest, $progressHistorySn, $currentWeek, $currentCycle")
+                    Log.v("포스트getProgress", "$latest, $progressHistorySn, $currentWeek, $currentCycle")
                     val result = mutableListOf<ProgressUnitVO>()
                     val exerciseCount = bodyJson.optInt("row_count") / 4
                     val data = bodyJson.optJSONArray("data")
@@ -209,6 +211,7 @@ object NetworkProgress {
                                     weekEndAt = jo.optString("week_end_at"),
                                     countSet = jo.optInt("count_set"),
                                     requiredSet = jo.optInt("required_set"),
+                                    completed = jo.optInt("completed"),
                                     duration = jo.optInt("duration"),
                                     progress = jo.optInt("progress"),
                                     updatedAt = jo.optString("updated_at"),
@@ -284,6 +287,7 @@ object NetworkProgress {
                                 weekEndAt = jo.optString("week_end_at"),
                                 countSet = jo.optInt("count_set"),
                                 requiredSet = jo.optInt("required_set"),
+                                completed = jo.optInt("completed"),
                                 duration = jo.optInt("duration"),
                                 progress = jo.optInt("progress"),
                                 updatedAt = jo.optString("updated_at"),

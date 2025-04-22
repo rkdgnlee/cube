@@ -14,6 +14,7 @@ import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
+import androidx.core.graphics.createBitmap
 
 class PoseLandmarkerHelper(
     var minPoseDetectionConfidence: Float = DEFAULT_POSE_DETECTION_CONFIDENCE,
@@ -24,7 +25,7 @@ class PoseLandmarkerHelper(
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
     // this listener is only used when running in RunningMode.LIVE_STREAM
-    val poseLandmarkerHelperListener: LandmarkerListener? = null
+    val poseLandmarkerHelperListener: LandmarkerListener? = null,
 ) {
     // 이 예에서는 변경 시 재설정될 수 있도록 var여야 합니다.
     // 포즈 랜드마크가 변경되지 않으면 lazy 값이 더 좋습니다.
@@ -124,7 +125,7 @@ class PoseLandmarkerHelper(
     // ImageProxy를 MP 이미지로 변환하고 PoselandmakerHelper에 공급합니다.
     fun detectLiveStream(
         imageProxy: ImageProxy,
-        isFrontCamera: Boolean
+        isFrontCamera: Boolean,
     ) {
         if (runningMode != RunningMode.LIVE_STREAM) {
             throw IllegalArgumentException(
@@ -136,11 +137,7 @@ class PoseLandmarkerHelper(
 
         // Copy out RGB bits from the frame to a bitmap buffer
         val bitmapBuffer =
-            Bitmap.createBitmap(
-                imageProxy.width,
-                imageProxy.height,
-                Bitmap.Config.ARGB_8888
-            )
+            createBitmap(imageProxy.width, imageProxy.height)
 
         imageProxy.use { bitmapBuffer.copyPixelsFromBuffer(imageProxy.planes[0].buffer) }
         imageProxy.close()
@@ -182,7 +179,7 @@ class PoseLandmarkerHelper(
     // 이를 나타냅니다.
     private fun returnLivestreamResult(
         result: PoseLandmarkerResult,
-        input: MPImage
+        input: MPImage,
     ) {
         val finishTimeMs = SystemClock.uptimeMillis()
         val inferenceTime = finishTimeMs - result.timestampMs()

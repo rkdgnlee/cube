@@ -58,9 +58,12 @@ object ExtendedFunctions {
         return null
     }
 
-    fun isKorean(str: String): Boolean {
-        val koreanRegex = Regex("[ㄱ-ㅎㅏ-ㅣ가-힣]+")
-        return koreanRegex.containsMatchIn(str)
+    fun safeDateSubstring(input: String?): String? {
+        return if (!input.isNullOrBlank() && input.length >= 10) {
+            input.substring(0, 10)  // 예: "2025-04-22"
+        } else {
+            null
+        }
     }
 
     fun View.setOnSingleClickListener(action: (v: View) -> Unit) {

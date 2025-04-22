@@ -5,8 +5,6 @@ import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log

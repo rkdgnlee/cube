@@ -3,6 +3,8 @@ package com.tangoplus.tangoq.dialog
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -90,6 +92,7 @@ class AgreementDetailDialogFragment : DialogFragment() {
             "agreement3" -> readAgreementFromFile(R.raw.agreement3)
             "agreement4" -> readAgreementFromFile(R.raw.agreement4)
             "agreement5" -> readAgreementFromFile(R.raw.agreement5)
+            "license" -> readAgreementFromFile(R.raw.license_report)
             else -> ""
         }
 
@@ -102,12 +105,20 @@ class AgreementDetailDialogFragment : DialogFragment() {
 
             agreementText += "\n${currentDate}\n이용자 성명 $userName"
         }
+        if (agreementType == "license") {
+            binding.btnAgreement.visibility = View.INVISIBLE
+            binding.tvAgreement.autoLinkMask = Linkify.WEB_URLS
+            binding.tvAgreement.movementMethod = LinkMovementMethod.getInstance()
+            binding.tvAgreement.setTextIsSelectable(true)
+
+        }
         binding.tvAgreementTitle.text = when (agreementType) {
             "agreement1" -> titles[0]
             "agreement2" -> titles[1]
             "agreement3" -> titles[2]
             "agreement4" -> titles[3]
             "agreement5" -> titles[4]
+            "license" -> "Open Source License"
             else -> ""
         }
 

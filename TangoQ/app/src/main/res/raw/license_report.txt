@@ -1,0 +1,219 @@
+Notice for packages
+
+
+aabhasr1/OtpView (v1.1.2-ktx) - MIT License
+A custom view to enter otp/pin of different sizes used usually in cases of authentication.
+https://github.com/aabhasr1/OtpView
+
+balloon (1.6.4) - The Apache Software License, Version 2.0
+Modernized and sophisticated tooltips, fully customizable with an arrow and animations for Android.
+https://github.com/skydoves/balloon/
+
+Calendar (2.5.1) - MIT License
+Calendar data module for shared internal logic.
+https://github.com/kizitonwose/calendar
+
+Calendar (2.5.1) - MIT License
+A highly customizable calendar library for Android, backed by RecyclerView.
+https://github.com/kizitonwose/calendar
+
+Calendar (2.5.1) - MIT License
+Calendar core module for shared public classes and extensions.
+https://github.com/kizitonwose/calendar
+
+CircleImageView (3.1.0) - The Apache Software License, Version 2.0
+A fast circular ImageView for Android
+https://github.com/hdodenhof/CircleImageView
+
+collections (1.4.4) - The Apache Software License, Version 2.0
+Standalone efficient collections.
+https://developer.android.com/jetpack/androidx/releases/collection#1.4.4
+
+Collections Kotlin Extensions (1.4.4) - The Apache Software License, Version 2.0
+Kotlin extensions for 'collection' artifact
+https://developer.android.com/jetpack/androidx/releases/collection#1.4.4
+
+firebase-auth (23.2.0) - Android Software Development Kit License
+
+firebase-auth-interop (20.0.0) - Android Software Development Kit License
+
+firebase-auth-ktx (23.2.0) - Android Software Development Kit License
+
+
+com.navercorp.nid:oauth (5.10.0) - Apache License, Version 2.0
+Naver Id Login Sdk
+https://github.com/naver/naveridlogin-sdk-android
+
+v2-auth (2.20.6) - The Apache Software License, Version 2.0
+
+v2-common (2.20.6) - The Apache Software License, Version 2.0
+
+v2-network (2.20.6) - The Apache Software License, Version 2.0
+
+v2-user (2.20.6) - The Apache Software License, Version 2.0
+
+Converter: Gson (2.11.0) - The Apache Software License, Version 2.0
+A Retrofit Converter which uses Gson for serialization.
+https://github.com/square/retrofit
+
+douglasjunior/android-simple-tooltip (1.1.0) - MIT License
+A simple library based on PopupWindow to create Tooltips on Android. 💚
+https://github.com/douglasjunior/android-simple-tooltip
+
+face-detection (16.1.7) - ML Kit Terms of Service
+
+ultraytics YOLO face-detection (v11) - AGPL-3.0 license
+https://github.com/ultralytics/ultralytics?tab=AGPL-3.0-1-ov-file
+
+ffmpeg-kit-full-gpl (4.5.LTS) - GNU Lesser General Public License, Version 3
+Includes FFmpeg with dav1d, fontconfig, freetype, fribidi, gmp, gnutls, kvazaar, lame, libass, libiconv, libilbc, libtheora, libvid.stab, libvorbis, libvpx, libwebp, libxml2, opencore-amr, opus, shine, snappy, soxr, speex, twolame, vo-amrwbenc, x264, x265 and xvidcore libraries enabled.
+https://github.com/tanersener/ffmpeg-kit
+
+Glide (4.16.0) - Simplified BSD License,The Apache Software License, Version 2.0
+A fast and efficient image loading library for Android focused on smooth scrolling.
+https://github.com/bumptech/glide
+
+Glide Annotations (4.16.0) - Simplified BSD License,The Apache Software License, Version 2.0
+A set of annotations for configuring Glide.
+https://github.com/bumptech/glide
+
+Glide Disk LRU Cache Library (4.16.0) - Simplified BSD License,The Apache Software License, Version 2.0
+A cache that uses a bounded amount of space on a filesystem. Based on Jake Wharton's tailored for Glide.
+https://github.com/bumptech/glide
+
+Glide GIF Decoder Library (4.16.0) - Simplified BSD License,The Apache Software License, Version 2.0
+Implementation of GifDecoder that is more memory efficient to animate for Android devices.
+https://github.com/bumptech/glide
+
+google-services (4.4.2) - The Apache License, Version 2.0
+
+googleid (1.1.0) - Android Software Development Kit License
+
+Gson (2.10.1) - Apache-2.0
+
+      Guava InternalFutureFailureAccess and InternalFutures (1.0.2) - The Apache Software License, Version 2.0
+      Contains
+com.google.common.util.concurrent.internal.InternalFutureFailureAccess and
+InternalFutures. Most users will never need to use this artifact. Its
+classes are conceptually a part of Guava, but they're in this separate
+artifact so that Android libraries can use them without pulling in all of
+Guava (just as they can use ListenableFuture by depending on the
+listenablefuture artifact).
+
+      Guava ListenableFuture only (9999.0-empty-to-avoid-conflict-with-guava) - The Apache Software License, Version 2.0
+      An empty artifact that Guava depends on to signal that it is providing
+ListenableFuture -- but is also available in a second "version" that
+contains com.google.common.util.concurrent.ListenableFuture class, without
+any other Guava classes. The idea is:
+
+- If users want only ListenableFuture, they depend on listenablefuture-1.0.
+
+- If users want all of Guava, they depend on guava, which, as of Guava
+27.0, depends on
+listenablefuture-9999.0-empty-to-avoid-conflict-with-guava. The 9999.0-...
+version number is enough for some build systems (notably, Gradle) to select
+that empty artifact over the "real" listenablefuture-1.0 -- avoiding a
+conflict with the copy of ListenableFuture in guava itself. If users are
+using an older version of Guava or a build system other than Gradle, they
+may see class conflicts. If so, they can solve them by manually excluding
+the listenablefuture artifact or manually forcing their build systems to
+use 9999.0-....
+
+      Guava: Google Core Libraries for Java (33.3.1-android) - Apache License, Version 2.0
+      Guava is a suite of core and expanded libraries that include
+utility classes, Google's collections, I/O classes, and
+much more.
+      https://github.com/google/guava
+
+Hamcrest Core (1.3) - New BSD License
+This is the core API of hamcrest matcher framework to be used by third-party framework providers. This includes the a foundation set of matcher implementations for common operations.
+
+image (1.0.0-beta1) - Android Software Development Kit License
+
+integrity (1.4.0) - Play Integrity API Terms of Service
+
+      J2ObjC Annotations (3.0.0) - Apache License, Version 2.0
+      A set of annotations that provide additional information to the J2ObjC
+translator to modify the result of translation.
+      https://github.com/google/j2objc/
+
+Lottie (6.4.0) - Apache-2.0
+Lottie is an animation library that renders Adobe After Effects animations natively in realtime.
+https://github.com/airbnb/lottie-android
+
+MediaPipe Taksks Core (0.10.21) - The Apache Software License, Version 2.0
+The MediaPipe Tasks core components.
+https://mediapipe.dev/
+
+MediaPipe Tasks Vision (0.10.21) - The Apache Software License, Version 2.0
+The MediaPipe Tasks Vision APIs.
+https://mediapipe.dev/
+
+MPAndroidChart (v3.1.0)
+
+okhttp (4.12.0) - The Apache Software License, Version 2.0
+Square’s meticulous HTTP client for Java and Kotlin.
+https://square.github.io/okhttp/
+
+okhttp-logging-interceptor (4.12.0) - The Apache Software License, Version 2.0
+Square’s meticulous HTTP client for Java and Kotlin.
+https://square.github.io/okhttp/
+
+okio (3.6.0) - The Apache Software License, Version 2.0
+A modern I/O library for Android, Java, and Kotlin Multiplatform.
+https://github.com/square/okio/
+
+Parcelize Runtime (1.9.22) - The Apache License, Version 2.0
+Runtime library for the Parcelize compiler plugin
+https://kotlinlang.org/
+
+progressview (1.1.3) - The Apache Software License, Version 2.0
+A polished and flexible progress bar with fully customizable and animations.
+https://github.com/skydoves/progressview/
+
+      Protocol Buffers [Lite] (4.26.1) - BSD-3-Clause
+      Lite version of Protocol Buffers library. This version is optimized for code size, but does
+not guarantee API/ABI stability.
+
+reactive-streams (1.0.3) - CC0
+A Protocol for Asynchronous Non-Blocking Data Sequence
+http://www.reactive-streams.org/
+
+recaptcha (18.6.1) - Android Software Development Kit License
+
+Retrofit (2.11.0) - The Apache Software License, Version 2.0
+A type-safe HTTP client for Android and Java.
+https://github.com/square/retrofit
+
+Shimmer (0.5.0) - BSD 2-Clause License
+Shimmer effect for Android Views.
+http://facebook.github.io/shimmer-android
+
+smart-exception-common (0.1.0) - The 3-Clause BSD License
+smart-exception common package
+https://github.com/tanersener/smart-exception
+
+smart-exception-java (0.1.0) - The 3-Clause BSD License
+smart-exception java and android package
+https://github.com/tanersener/smart-exception
+
+stepview (v1.5.1) - The Apache Software License, Version 2.0
+A simple animated StepView for Android
+https://github.com/shuhart/StepView
+
+strict-version-matcher-plugin (1.2.4) - The Apache Software License, Version 2.0
+
+SubsamplingScaleImageView (3.10.0) - The Apache Software License, Version 2.0
+Highly configurable, easily extendable deep zoom view for displaying huge images without loss of detail. Perfect for photo galleries, maps, building plans etc.
+https://github.com/davemorrissey/subsampling-scale-image-view
+
+Tink Cryptography API for Android (1.8.0) - Apache License, Version 2.0
+Tink is a small cryptographic library that provides a safe, simple, agile and fast way to accomplish some common cryptographic tasks.
+http://github.com/tink-crypto/tink-java
+
+yuriy-budiyev/code-scanner (2.3.0) - MIT License
+Code scanner library for Android, based on ZXing
+https://github.com/yuriy-budiyev/code-scanner
+
+Google Material Icons - The Apache Software License, Version 2.0
+https://policies.google.com/terms?hl=en#toc-content

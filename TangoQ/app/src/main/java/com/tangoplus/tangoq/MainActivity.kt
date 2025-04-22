@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity() {
             val time2 = Triple(19, 30, 0)
             val intent2 = Intent(this@MainActivity, AlarmReceiver::class.java).apply {
                 putExtra("title", title)
-                putExtra("text", "더 나은 내일을 위해 운동을 시작할 때 입니다")
+                putExtra("text", "몸의 밸런스를 잡아, 힘찬 일상생활을 준비하세요")
             }
             val calendar2 = Calendar.getInstance()
             calendar.set(Calendar.HOUR_OF_DAY, time2.first)

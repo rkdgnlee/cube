@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.vision
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -12,6 +13,7 @@ import android.util.TypedValue
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
 import androidx.core.graphics.toColorInt
 import com.tangoplus.tangoq.function.MeasurementManager.judgeFrontCamera
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 
 object ImageProcessingUtil {
     private val strokeWidths = 2.5f
@@ -20,7 +22,7 @@ object ImageProcessingUtil {
         poseLandmarkResult: PoseLandmarkResult,
         sequence: Int,
         painParts: MutableList<Pair<String, Float>>,
-
+        context: Context
     ) : Bitmap {
 
         // 후면 카메라, 정면 카메라(키오스크 포함) 대응
@@ -312,10 +314,10 @@ object ImageProcessingUtil {
                 if (columnNames.contains(string)) {
                     val selectParts = painParts.find { it.first == string }
                     when (index) {
-                        0 -> setPartCircle(canvas, selectParts?.second?.toInt(), (noseX + midShoulderX) / 2, (noseY + midShoulderY) / 2)
+                        0 -> setPartCircle(context, canvas,  selectParts?.second?.toInt(), (noseX + midShoulderX) / 2, (noseY + midShoulderY) / 2)
                         else -> {
                             if (filterIndexAndSequence(index, sequence)) {
-                                setPartCircle(canvas, selectParts?.second?.toInt(), allPartsValue[index]?.x, allPartsValue[index]?.y)
+                                setPartCircle(context, canvas, selectParts?.second?.toInt(), allPartsValue[index]?.x, allPartsValue[index]?.y)
                             }
                         }
                     }
@@ -474,17 +476,18 @@ object ImageProcessingUtil {
         return result
     }
 
-    private fun setPartCircle(canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
+    fun setPartCircle(context: Context, canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
         val dangerPart = Paint().apply {
             isDither = true
             isAntiAlias = true
             style  = Paint.Style.FILL
         }
+        val circleRadius = if (isTablet(context)) 24f else 14f
         when (degree) {
             1 -> {
                 val radius = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
-                    14f,
+                    circleRadius,
                     Resources.getSystem().displayMetrics
                 )
                 val colors = intArrayOf(
@@ -508,7 +511,7 @@ object ImageProcessingUtil {
             2 -> {
                 val radius = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
-                    14f,
+                    circleRadius,
                     Resources.getSystem().displayMetrics
                 )
                 val colors = intArrayOf(

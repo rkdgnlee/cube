@@ -47,6 +47,8 @@ import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.core.graphics.toColorInt
+import androidx.datastore.core.IOException
+import java.net.SocketTimeoutException
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
@@ -85,7 +87,6 @@ class MainFragment : Fragment() {
         if (sn != null) {
             prefsManager.setUserSn(sn)
         }
-        Log.v("유저제이슨", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
 
         latestRecSn = prefsManager.getLatestRecommendation()
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
@@ -103,6 +104,10 @@ class MainFragment : Fragment() {
         if (isFirstRun("GuideDialogFragment_isFirstRun")) {
             val dialog = GuideDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "GuideDialogFragment")
+        }
+
+        binding.ivMRefresh.setOnSingleClickListener {
+            renderProgramRV()
         }
 
         when (isNetworkAvailable(requireContext())) {
@@ -138,7 +143,6 @@ class MainFragment : Fragment() {
                         notExistedMeasurementGuide()
                     }
                 }
-                Log.v("선택된measureDate", "${mvm.selectedMeasureDate.value}")
                 updateUI()
 
                 binding.tvMMeasureDate.setOnSingleClickListener {
@@ -256,12 +260,26 @@ class MainFragment : Fragment() {
 
     private fun renderProgramRV() {
         lifecycleScope.launch(Dispatchers.Main) {
-            // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
-            val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
-            mvm.selectedMeasure?.recommendations = progressRec
-            Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-            setAdapter()
-            stopShimmer()
+            try {
+                startShimmer()
+                binding.clMRefresh.visibility = View.GONE
+                // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
+                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
+                mvm.selectedMeasure?.recommendations = progressRec
+                Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
+                setAdapter()
+            } catch (e: IOException) {
+                binding.clMRefresh.visibility = View.VISIBLE
+                Log.e("renderProgram", "IOException: ${e.message}")
+            } catch (e: SocketTimeoutException) {
+                binding.clMRefresh.visibility = View.VISIBLE
+                Log.e("renderProgram", "IOException: ${e.message}")
+            } catch (e: Exception) {
+                binding.clMRefresh.visibility = View.VISIBLE
+                Log.e("renderProgram", "IOException: ${e.message}")
+            } finally {
+                stopShimmer()
+            }
         }
     }
 

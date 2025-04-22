@@ -4,8 +4,14 @@ plugins {
     id("com.google.gms.google-services")
     id ("kotlin-kapt")
     id("com.google.firebase.crashlytics")
+    id("com.jaredsburrows.license") version ("0.9.4")
 }
 
+licenseReport {
+    generateHtmlReport = true
+    generateJsonReport = true
+    // 필요에 따라 다른 옵션 설정
+}
 android {
     namespace = "com.tangoplus.tangoq"
     compileSdk = 35
@@ -59,7 +65,7 @@ dependencies {
     // 스켈레톤
     implementation("com.google.mediapipe:tasks-vision:0.10.21")
     implementation("com.google.mlkit:face-detection:16.1.7")
-    implementation("androidx.window:window:1.3.0")
+
 
     // 외부 라이브러리
     implementation("com.github.shuhart:StepView:v1.5.1")
@@ -68,8 +74,7 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.tbuonomo:dotsindicator:5.0")
     implementation("com.airbnb.android:lottie:6.4.0")
-    implementation("io.github.litao0621:nifty-slider:1.4.6")
-    implementation("com.mikhaellopez:circularprogressbar:3.1.0")
+//    implementation("io.github.litao0621:nifty-slider:1.4.6")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
     implementation(libs.firebase.appcheck.ktx)
@@ -97,15 +102,12 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
-    implementation("androidx.security:security-crypto:1.0.0")
-    implementation("androidx.datastore:datastore-preferences:1.1.2")
-    implementation("androidx.datastore:datastore-core:1.1.3")
+
 
     // 통신
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 //    implementation("com.android.volley:volley:1.2.1")
     implementation("com.github.yuriy-budiyev:code-scanner:2.3.0")
@@ -137,20 +139,22 @@ dependencies {
     implementation("androidx.camera:camera-extensions:$camera_version")
     implementation("androidx.camera:camera-view:$camera_version")
     implementation(libs.androidx.camera.core)
-
+    implementation("androidx.media3:media3-exoplayer:1.5.1")
+    implementation("androidx.media3:media3-effect:1.5.1")
+    implementation("androidx.media3:media3-common:1.2.0")
+    implementation("androidx.media3:media3-transformer:1.2.0")
     // 내부 라이브러리
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
+    implementation("androidx.datastore:datastore-core:1.1.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.fragment:fragment-ktx:1.8.6")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.google.protobuf:protobuf-javalite:4.26.1")
-
+    implementation("androidx.window:window:1.3.0")
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
-    implementation("androidx.media3:media3-exoplayer:1.5.1")
-    implementation("androidx.media3:media3-effect:1.5.1")
-    implementation("androidx.media3:media3-common:1.2.0")
-    implementation("androidx.media3:media3-transformer:1.2.0")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

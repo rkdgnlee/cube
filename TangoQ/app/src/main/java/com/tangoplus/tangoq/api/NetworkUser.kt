@@ -1047,7 +1047,7 @@ object NetworkUser {
     }
 
     // ------# 핀번호 로그인 #------
-    suspend fun loginWithPin(myUrl: String,  pinNum: Int, userUUID: String) : Int {
+    suspend fun loginWithPin(myUrl: String,  pinNum: Int, userUUID: String) : JSONObject? {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}?category=24&login_pin_number=$pinNum&device_serial_number=SERIALNUMBERTANGOPLUS&user_uuid=$userUUID")
@@ -1060,18 +1060,23 @@ object NetworkUser {
                     val code = response.code
                     val responseBody = response.body?.string()
                     Log.v("PIN>ResponseBody", "$responseBody, $code")
-                    code
+                    responseBody.let { JSONObject(it) }
                 }
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: IllegalArgumentException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: NullPointerException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: Exception) {
                 Log.e(TAG, "${e.message}")
+                null
             }
 
         }
@@ -1079,7 +1084,7 @@ object NetworkUser {
 
 
     // ------# QRCode 로그인 #------
-    suspend fun loginWithQRCode(myUrl: String, userUUID: String) : Int {
+    suspend fun loginWithQRCode(myUrl: String, userUUID: String) : JSONObject? {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}?category=26&device_serial_number=SERIALNUMBERTANGOPLUS&user_uuid:$userUUID")
@@ -1092,20 +1097,24 @@ object NetworkUser {
                     val statusCode = response.code
                     val responseBody = response.body?.string()
                      Log.v("QRcode>ResponseBody", "$responseBody, $statusCode")
-                    statusCode
+                    responseBody.let { JSONObject(it) }
                 }
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: IllegalArgumentException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: NullPointerException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: Exception) {
                 Log.e(TAG, "${e.message}")
+                null
             }
-
         }
     }
 

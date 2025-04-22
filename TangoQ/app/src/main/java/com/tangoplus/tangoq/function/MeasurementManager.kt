@@ -228,7 +228,7 @@ object MeasurementManager {
             5 to mapOf( "back_horizontal_angle_ear" to Triple(0f,1.2f, 3.5f),
             "back_vertical_angle_nose_center_shoulder" to Triple(90f,3f, 8f)), //*&*
             6 to mapOf( "back_sit_horizontal_angle_ear" to Triple(0f,1.09f, 3.09f), //*&*
-                "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to Triple(74.23f,16.07f, 34.19f)) //*&*
+                "back_sit_vertical_angle_right_shoulder_nose_left_shoulder" to Triple(74.23f,23.07f, 34.19f)) //*&*
         ),
         // 어깨
         mapOf(
@@ -296,7 +296,7 @@ object MeasurementManager {
             5 to mapOf("back_horizontal_angle_hip" to Triple(-0.1f, 1.9f, 3.3f)),
             6 to mapOf("back_sit_horizontal_angle_hip" to Triple(0f, 1f, 1.7f),
                 "back_sit_horizontal_distance_sub_hip" to Triple(0f, 1f, 1.7f),
-                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f, 9f, 16f)
+                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f, 12f, 20f)
             )
         ),
         mapOf(
@@ -308,7 +308,7 @@ object MeasurementManager {
             5 to mapOf("back_horizontal_angle_hip" to Triple(0.1f, 1.9f, 3.3f)),
             6 to mapOf("back_sit_horizontal_angle_hip" to Triple(0f, 1f, 1.7f),
                 "back_sit_horizontal_distance_sub_hip" to Triple(0f, 1f, 1.7f),
-                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f, 9f, 16f)
+                "back_sit_vertical_angle_left_shoulder_center_hip_right_shoulder" to Triple(35f, 12f, 20f)
             )
         ),
 
@@ -637,7 +637,7 @@ object MeasurementManager {
                         else -> 1
                     }
 //                    Log.v("값들", "${rawDataName}, rawData: $rawData, 범위: ${(abs(boundPair.first) - 0.5)} ${(abs(boundPair.first) + 0.5)}")
-                    Log.v("값들", "${rawDataName}, state: $state 값:  $rawData -> $normalizedRaw boundCenter: ${boundCenter}, 위험: ${(boundCenter - boundPair.third)}, ${(boundCenter + boundPair.third)}, 주의: ${(boundCenter - boundPair.second)}, ${(boundCenter + boundPair.second)}")
+//                    Log.v("값들", "${rawDataName}, state: $state 값:  $rawData -> $normalizedRaw boundCenter: ${boundCenter}, 위험: ${(boundCenter - boundPair.third)}, ${(boundCenter + boundPair.third)}, 주의: ${(boundCenter - boundPair.second)}, ${(boundCenter + boundPair.second)}")
                     result.add(
                         AnalysisUnitVO(
                             columnName = columnName,
@@ -847,6 +847,7 @@ object MeasurementManager {
                                     poseLandmarkResult,
                                     seq,
                                     measureVO.dangerParts,
+                                    fragment.requireContext()
                                 )
                                 isSet = true
                                 // ------# MeasureDetail의 Solo #------
@@ -1150,6 +1151,7 @@ object MeasurementManager {
         if (seq == 3) {
             resultString.append("스쿼트 정보를 확인하세요")
         }
+
         when (part) {
             "목관절" -> {
                 when (seq) {

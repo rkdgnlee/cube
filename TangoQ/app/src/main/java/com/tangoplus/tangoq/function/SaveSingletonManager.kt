@@ -8,7 +8,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.MeasureVO
-import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.vo.UrlTuple
 import com.tangoplus.tangoq.db.FileStorageUtil
 import com.tangoplus.tangoq.db.FileStorageUtil.getFile
@@ -22,7 +21,6 @@ import com.tangoplus.tangoq.function.MeasurementManager.getDangerParts
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getServerUUID
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveServerUUID
 import com.tangoplus.tangoq.dialog.LoadingDialogFragment
-import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.api.DeviceService.getDeviceUUID
 import com.tangoplus.tangoq.api.DeviceService.getSSAID
 import com.tangoplus.tangoq.api.NetworkMeasure.saveAllMeasureInfo
@@ -38,7 +36,6 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.decryptFileToTempF
 import com.tangoplus.tangoq.function.SecurePreferencesManager.deleteAllEncryptedFiles
 import com.tangoplus.tangoq.function.SecurePreferencesManager.deleteDirectory
 import com.tangoplus.tangoq.function.SecurePreferencesManager.generateAESKey
-import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedFileForRetry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -216,8 +213,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                             // 3. Room에 저장된 것들 꺼내서 MeasureVO로 변환.
                             fetchAndFilterMeasureInfo(userUUID)
-
-//                            Log.v("싱글턴measures", "${singletonMeasure.measures?.size}")
                             addRecommendations()
                             callbacks()
                         }
@@ -281,7 +276,6 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
                         val statics = groupedStatics[currentInfoSn]?.sortedBy { it.measure_seq } ?: emptyList()
                         val dynamic = groupedDynamics[currentInfoSn] ?: emptyList()
-//                        Log.v("groupedStatics", "${statics.size}")
 
                         if (statics.size < 6 || dynamic.isEmpty()) {
 //                            Log.v("건너뜀", "현재 measure: $currentInfoSn, statics size: ${statics.size}, dynamic size: ${dynamic.size}")

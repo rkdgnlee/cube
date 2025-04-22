@@ -129,6 +129,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "앱 버전",
             "개인정보 처리방침",
             "서비스 이용약관",
+            "오픈소스 라이선스",
             "로그아웃",
         )
         setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
@@ -411,7 +412,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             }
         }
     }
-    fun compressImageFile(context: Context, file: File, maxSizeInBytes: Long = 2 * 1024 * 1024): File? {
+    fun compressImageFile(context: Context, file: File, maxSizeInBytes: Long = 1 * 1024 * 1024): File? {
         val bitmap = BitmapFactory.decodeFile(file.path)
         var quality = 100
         var stream: ByteArrayOutputStream

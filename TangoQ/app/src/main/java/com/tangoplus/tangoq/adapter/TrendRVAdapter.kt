@@ -75,9 +75,7 @@ class TrendRVAdapter(
                         it.columnName.startsWith(columnName)
                     }
                 }.toMutableList()
-                if (currentIndex == 4) {
-                    Log.v("후면 값들 보기", "$currentIndex, $analysisUnits")
-                }
+
                 // 점수 넣기
                 val score = calculatePercent(analysisUnits)
                 holder.tvMTIScore2.text = "${String.format("%.1f 점", score)}"
