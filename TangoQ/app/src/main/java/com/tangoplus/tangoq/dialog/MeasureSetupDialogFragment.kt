@@ -177,6 +177,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
     override fun onResume() {
         super.onResume()
         dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
+        dialog?.setCancelable(false)
     }
 
     private fun showAgreement4() {

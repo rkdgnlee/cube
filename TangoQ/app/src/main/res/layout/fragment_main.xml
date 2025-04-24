@@ -178,7 +178,7 @@
                                 android:id="@+id/tvMMeasureResult1"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
+                                android:layout_marginStart="24dp"
                                 android:layout_marginEnd="10dp"
                                 android:text="_"
                                 android:textColor="@color/subColor800"
@@ -186,7 +186,6 @@
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintVertical_bias="0.3333" />
@@ -195,7 +194,7 @@
                                 android:id="@+id/tvMMeasureResult2"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
+                                android:layout_marginStart="24dp"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginEnd="10dp"
                                 android:layout_marginBottom="15dp"
@@ -205,10 +204,33 @@
                                 android:textSize="14dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/tvMMeasureResult1"
                                 app:layout_constraintVertical_bias="0.0" />
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cvMResult1"
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:layout_marginEnd="8dp"
+                                app:cardBackgroundColor="@color/deleteColor"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="0dp"
+                                app:layout_constraintBottom_toBottomOf="@+id/tvMMeasureResult1"
+                                app:layout_constraintEnd_toStartOf="@+id/tvMMeasureResult1"
+                                app:layout_constraintTop_toTopOf="@+id/tvMMeasureResult1" />
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cvMResult2"
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:layout_marginEnd="8dp"
+                                app:cardBackgroundColor="@color/cautionColor"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="0dp"
+                                app:layout_constraintBottom_toBottomOf="@+id/tvMMeasureResult2"
+                                app:layout_constraintEnd_toStartOf="@+id/tvMMeasureResult2"
+                                app:layout_constraintTop_toTopOf="@+id/tvMMeasureResult2" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <TextView

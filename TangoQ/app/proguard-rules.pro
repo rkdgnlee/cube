@@ -48,3 +48,13 @@
 -keep class com.tangoplus.tangoq.listener.* { *; }
 -keep class com.tangoplus.tangoq.db.* { *; }
 # 난독화
+
+# MediaPipe - Keep task-based models and fields
+-keep class com.google.mediapipe.** { *; }
+-keep class com.google.protobuf.** { *; }
+-keepclassmembers class * {
+    @com.google.protobuf.* <fields>;
+}
+-keepclassmembers class * {
+    public <init>(...);
+}

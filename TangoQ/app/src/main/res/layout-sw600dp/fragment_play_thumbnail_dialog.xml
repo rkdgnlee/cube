@@ -341,9 +341,9 @@
 
             <ImageButton
                 android:id="@+id/ibtnPTDShare"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="6dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="26dp"
                 android:background="@drawable/effect_ibtn_12dp"
                 android:backgroundTint="@color/white"
                 android:contentDescription="shareThisExercise"

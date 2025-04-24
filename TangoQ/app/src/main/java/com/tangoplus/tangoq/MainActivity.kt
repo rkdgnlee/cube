@@ -48,6 +48,7 @@ import com.tangoplus.tangoq.function.DeepLinkManager
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.AppViewModel
 import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,13 +61,15 @@ class MainActivity : AppCompatActivity() {
     private val pvm : PlayViewModel by viewModels()
     private val mvm : MeasureViewModel by viewModels()
     private val avm : AnalysisViewModel by viewModels()
-    private val evm: ExerciseViewModel by viewModels()
+    private val fvm: FragmentViewModel by viewModels()
     private lateinit var appViewModel: AppViewModel
     private var selectedTabId = R.id.main
     private lateinit var singletonMeasure : Singleton_t_measure
     private lateinit var measureSkeletonLauncher: ActivityResultLauncher<Intent>
     private lateinit var wifiManager: WifiManager
     private lateinit var myApplication: MyApplication
+    private var isConfigurationChanging = false
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         // 새로운 인텐트가 들어왔을 때 딥링크 처리
@@ -115,20 +118,24 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "취약한 보안 환경에서 접근했습니다($securityType)\n3분뒤 자동 로그아웃 됩니다.", Toast.LENGTH_LONG).show()
                 Handler(Looper.getMainLooper()).postDelayed({
                     logout(this@MainActivity, 0)
-                },   3 * 60000) //
+                },   3 * 60000)
             }
             else -> {
                 Log.v("현재 네트워크 타입", securityType)
             }
         }
-        val networkType = wifiManager.checkNetworkType()
-        Log.v("현재 네트워크 타입", networkType)
+
         // ------# 접근 방지 #------
 
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
-        setCurrentFragment(selectedTabId)
-//        if (appViewModel.getCF() == null) appViewModel.setCF("MainFragment")
-
+        isConfigurationChanging = true
+        fvm.currentFragmentType.observe(this) { fragmentType ->
+            Log.v("현재 타입", "$fragmentType")
+            if (isConfigurationChanging) {
+                loadFragment(fragmentType)
+                isConfigurationChanging = false // 한 번만 실행되도록 플래그 리셋
+            }
+        }
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         // bottomnavigation도 같이 backstack 반응하기
@@ -186,7 +193,6 @@ class MainActivity : AppCompatActivity() {
 
         singletonMeasure = Singleton_t_measure.getInstance(this)
 
-
         binding.bnbMain.itemIconTintList = null
         binding.bnbMain.isItemActiveIndicatorEnabled = false
 
@@ -237,6 +243,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun loadFragment(fragmentType: FragmentViewModel.FragmentType) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+
+        val fragment = when (fragmentType) {
+            FragmentViewModel.FragmentType.MAIN_FRAGMENT -> MainFragment()
+            FragmentViewModel.FragmentType.MAIN_ANALYSIS_FRAGMENT -> avm.currentPart.value?.let { MainAnalysisFragment.newInstance(it) }
+            FragmentViewModel.FragmentType.ANALYZE_FRAGMENT -> AnalyzeFragment()
+            FragmentViewModel.FragmentType.EXERCISE_FRAGMENT -> ExerciseFragment()
+            FragmentViewModel.FragmentType.EXERCISE_DETAIL_FRAGMENT -> ExerciseDetailFragment()
+            FragmentViewModel.FragmentType.MEASURE_FRAGMENT -> MeasureFragment()
+            FragmentViewModel.FragmentType.MEASURE_DETAIL_FRAGMENT -> MeasureDetailFragment()
+            FragmentViewModel.FragmentType.MEASURE_HISTORY_FRAGMENT -> MeasureHistoryFragment()
+            FragmentViewModel.FragmentType.PROFILE_FRAGMENT -> ProfileFragment()
+
+            // 다른 Fragment 타입 처리
+        }
+
+        if (fragment != null) {
+            fragmentTransaction.replace(R.id.flMain, fragment)
+        }
+        fragmentTransaction.commit()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt("selectedTabId", selectedTabId)
@@ -251,6 +281,18 @@ class MainActivity : AppCompatActivity() {
             R.id.measure -> MeasureFragment()
             R.id.profile -> ProfileFragment()
             else -> MainFragment()
+        }
+        when (fragment) {
+            is MainFragment -> fvm.setCurrentFragment(FragmentViewModel.FragmentType.MAIN_FRAGMENT)
+            is AnalyzeFragment -> fvm.setCurrentFragment(FragmentViewModel.FragmentType.ANALYZE_FRAGMENT)
+            is ExerciseFragment -> fvm.setCurrentFragment(FragmentViewModel.FragmentType.EXERCISE_FRAGMENT)
+            is MeasureFragment -> fvm.setCurrentFragment(FragmentViewModel.FragmentType.MEASURE_FRAGMENT)
+            is ProfileFragment -> fvm.setCurrentFragment(FragmentViewModel.FragmentType.PROFILE_FRAGMENT)
+
+//            is MeasureDetailFragment -> appViewModel.setCurrentFragment(AppViewModel.FragmentType.MEASURE_DETAIL_FRAGMENT)
+//            is MeasureHistoryFragment -> appViewModel.setCurrentFragment(AppViewModel.FragmentType.MEASURE_HISTORY_FRAGMENT)
+//            is MainAnalysisFragment -> appViewModel.setCurrentFragment(AppViewModel.FragmentType.MAIN_ANALYSIS_FRAGMENT)
+//            is ExerciseDetailFragment -> appViewModel.setCurrentFragment(AppViewModel.FragmentType.EXERCISE_DETAIL_FRAGMENT)
         }
         selectedTabId = itemId
         supportFragmentManager.beginTransaction().apply {
@@ -270,7 +312,7 @@ class MainActivity : AppCompatActivity() {
             @Suppress("DEPRECATION")
             intent?.getSerializableExtra("feedback_finish") as? Triple<Int, Int, Int>
         }
-//        Log.v("intent>feedback", "$feedbackData")
+
         if (feedbackData != null) {
             if (pvm.isDialogShown.value == false) {
                 pvm.exerciseLog = feedbackData

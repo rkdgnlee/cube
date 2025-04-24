@@ -28,6 +28,8 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.listener.OnDialogClosedListener
+import com.tangoplus.tangoq.viewmodel.AppViewModel
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 import com.tangoplus.tangoq.vo.ExerciseHistoryVO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +46,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     private var currentCateHistorys : MutableList<ExerciseHistoryVO>? = null
 
     private val evm : ExerciseViewModel by activityViewModels()
-
+    private val fvm : FragmentViewModel by activityViewModels()
     private lateinit var categoryList : List<String>
     private lateinit var categoryMap : Map<String, Int>
     private lateinit var prefs : PreferencesManager
@@ -57,21 +59,6 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         return binding.root
     }
 
-    companion object {
-        private const val ARG_CATEGORY_ID = "category_id"
-        private const val ARG_SN = "SN"
-
-        fun newInstance(category: ArrayList<Int>, sn: Int): ExerciseDetailFragment {
-            val fragment = ExerciseDetailFragment()
-            val args = Bundle()
-            args.putIntegerArrayList(ARG_CATEGORY_ID, category)
-            args.putInt(ARG_SN, sn)
-
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,8 +66,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
         Log.v("쉬머스타트", "쉬머스타트")
 
         // ------# 선택 카테고리 & 타입 가져오기 시작 #------
-        evm.categoryId = arguments?.getIntegerArrayList(ARG_CATEGORY_ID)
-        evm.sn = arguments?.getInt(ARG_SN)
+
         prefs = PreferencesManager(requireContext())
         binding.ibtnEDAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
@@ -140,8 +126,9 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
                 removeAll(zeroItems)
                 addAll(zeroItems)
             }
+
             if (evm.sn != null) {
-                val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryCountList, this@ExerciseDetailFragment,  evm.sn ,"subCategory" )
+                val adapter2 = ExerciseCategoryRVAdapter(mutableListOf(), categoryCountList, this@ExerciseDetailFragment,  evm.sn, evm, fvm,"subCategory" )
                 adapter2.onCategoryClickListener = this@ExerciseDetailFragment
                 binding.rvEDCategory.adapter = adapter2
                 val linearLayoutManager2 = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

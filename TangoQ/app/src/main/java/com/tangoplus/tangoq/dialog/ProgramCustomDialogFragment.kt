@@ -352,6 +352,15 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             binding.rvPCDHorizontal.adapter = adapter
             adapter.notifyDataSetChanged()
             val adapter2 = program.exercises?.let { it -> ExerciseRVAdapter(this@ProgramCustomDialogFragment, it, progresses?.sortedBy { it.uvpSn }?.toMutableList(), null, sequence, "PCD") }
+            program.exercises?.let {
+                adapter2?.itemStates = MutableList(it.size) { 0 } // 모든 아이템을 초기 상태로 설정
+            }
+            progresses?.forEachIndexed { index, progressUnitVO ->
+                if (progressUnitVO.isWatched == 1) {
+                    Log.v("프로그레스watched", "$index, ${progressUnitVO.isWatched}")
+                    adapter2?.setTouchLockedForItem(index, 2)
+                }
+            }
 
             binding.rvPCD.adapter = adapter2
             val layoutManager2 = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -411,7 +420,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
             // 모든 운동을 완료했을 때
             if (selectedWeekValue == pvm.currentWeek && pvm.dailySeqFinished) {
-                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(2)
+                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLockedForAll(2)
                 binding.btnPCDRight.apply {
                     isEnabled = false
                     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
@@ -419,7 +428,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 }
                 // 현재 주차 ok > 현재 회차 벗어남
             } else if (selectedWeekValue < pvm.currentWeek || selectedWeekValue > pvm.currentWeek) {
-                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(2)
+                (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLockedForAll(2)
                 binding.btnPCDRight.apply {
                     isEnabled = false
                     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.subColor150))
@@ -429,7 +438,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             } else if (selectedSeqValue != null &&  selectedSeqValue < pvm.currentSequence) {
                 // rv와 버튼 잠금
                 if (binding.rvPCD.adapter != null) {
-                    (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(2)
+                    (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLockedForAll(2)
                 }
                 binding.btnPCDRight.apply {
                     isEnabled = false
@@ -439,7 +448,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 // 오늘자인데.
             }  else if (selectedSeqValue == pvm.currentSequence  && pvm.dailySeqFinished) {
                 if (binding.rvPCD.adapter != null) {
-                    (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(1)
+                    (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLockedForAll(1)
                 }
                 binding.btnPCDRight.apply {
                     isEnabled = false
@@ -448,7 +457,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 }
             } else if (selectedSeqValue == pvm.currentSequence) {
                 if (binding.rvPCD.adapter != null) {
-                    (binding.rvPCD.adapter as ExerciseRVAdapter).setTouchLocked(0)
+                    (binding.rvPCD.adapter as ExerciseRVAdapter)
                 }
                 binding.btnPCDRight.apply {
                     isEnabled = true
@@ -535,7 +544,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                                     dailyFinishDialog?.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
                                 }
                             }
-                            // 당일날 모두 끝났을 때 체크 ( 현재 주차가 나왔을 때만 )
+                            // 당일 운동 끝났는데 이번주 아직 안지남
                             else if (isAllFinish &&  rightNow == recentUpdateDate && pvm.selectedWeek.value == pvm.currentWeek) {
                                 Log.w("회차", "회차1번")
                                 pvm.dailySeqFinished = true
@@ -543,7 +552,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                                     dailyFinishDialog?.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
                                 }
 
-                            } // 당일이 끝나고 해당 주차가 끝나지 않았을 때
+                            } // 운동 끝났는데 이번주 아직 안지남
                             else if (isAllFinish&& pvm.selectedWeek.value == pvm.currentWeek && currentWeekCompleted  && !isCurrentWeekEnd) {
                                 Log.w("회차", "회차2번")
                                 pvm.dailySeqFinished = true

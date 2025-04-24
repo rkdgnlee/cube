@@ -139,7 +139,10 @@ class QRCodeDialogFragment : DialogFragment() {
                             if (responseJo != null) {
                                 val msg = responseJo.optString("pin_login_result_msg")
                                 when (msg) {
-                                    "pin login fail" -> Toast.makeText(requireContext(), "인증에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
+                                    "pin login fail" -> {
+                                        Toast.makeText(requireContext(), "인증에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
+                                        binding.otvLSD.setOTP("")
+                                    }
                                     "" -> Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
                                 }
                             }
@@ -206,7 +209,10 @@ class QRCodeDialogFragment : DialogFragment() {
                         if (responseJo != null) {
                             val msg = responseJo.optString("qr_login_result_msg")
                             when (msg) {
-                                "qr login time over" -> Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
+                                "qr login time over" -> {
+                                    Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
+                                    Handler(Looper.getMainLooper()).postDelayed({ codeScanner.startPreview() }, 500)
+                                }
                                 "" -> Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
                             }
                         }

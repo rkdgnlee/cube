@@ -17,6 +17,8 @@ import com.tangoplus.tangoq.dialog.ExerciseSearchDialogFragment
 import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.api.NetworkExercise.fetchExerciseJson
+import com.tangoplus.tangoq.viewmodel.AppViewModel
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
 class ExerciseFragment : Fragment(), OnCategoryClickListener {
     lateinit var binding : FragmentExerciseBinding
     private val evm : ExerciseViewModel by activityViewModels()
-
+    private val fvm : FragmentViewModel by activityViewModels()
     // ------! 블루투스 변수 !------
 
     companion object {
@@ -63,7 +65,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                 categoryArrayList.add(arrayListOf(6, 7, 8, 9)) // 상지 하지  근육 스트레칭 운동, 상지 하지  근육 강화 운동
                 categoryArrayList.add(arrayListOf(10, 11)) // 근골격계질환 개선 위한 강화운동, 근골격계질환 개선 위한 스트레칭 운동
 //            categoryArrayList.add(arrayListOf(12)) // 큐브
-                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, listOf(),this@ExerciseFragment,  sn, "mainCategory" )
+                val adapter = ExerciseCategoryRVAdapter(categoryArrayList, listOf(),this@ExerciseFragment,  sn, evm, fvm,"mainCategory" )
                 binding.rvEMainCategory.adapter = adapter
                 val linearLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 binding.rvEMainCategory.layoutManager = linearLayoutManager

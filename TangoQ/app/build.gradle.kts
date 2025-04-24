@@ -29,11 +29,10 @@ android {
     buildTypes {
         debug {
             isDebuggable = true
+
         }
         release {
             isDebuggable = false
-            isMinifyEnabled = true
-            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -55,6 +54,9 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    aaptOptions {
+        noCompress += "task"
+    }
 }
 //noinspection UseTomlInstead
 dependencies {
@@ -63,9 +65,7 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")
 
     // 스켈레톤
-    implementation("com.google.mediapipe:tasks-vision:0.10.21")
-    implementation("com.google.mlkit:face-detection:16.1.7")
-
+    implementation("com.google.mediapipe:tasks-vision:0.10.14")
 
     // 외부 라이브러리
     implementation("com.github.shuhart:StepView:v1.5.1")
@@ -74,7 +74,6 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.tbuonomo:dotsindicator:5.0")
     implementation("com.airbnb.android:lottie:6.4.0")
-//    implementation("io.github.litao0621:nifty-slider:1.4.6")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
     implementation(libs.firebase.appcheck.ktx)

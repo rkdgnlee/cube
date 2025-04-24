@@ -1,7 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +17,15 @@ import com.tangoplus.tangoq.databinding.RvExerciseSubCategoryItemBinding
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
+import com.tangoplus.tangoq.viewmodel.ExerciseViewModel
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 
 class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
                                 private val subCategorys: List<Pair<String, Int?>>, // subCategory는 Pair<관절이름, 운동 갯수>
                                 private val fragment: Fragment,
                                 private val sn : Int?,
+                                private val evm : ExerciseViewModel,
+                                private val fvm: FragmentViewModel,
                                 private var xmlname: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var onCategoryClickListener: OnCategoryClickListener? = null
@@ -114,10 +117,11 @@ class ExerciseCategoryRVAdapter(private val mainCategorys: List<ArrayList<Int>>,
     private fun goExerciseDetail(category : ArrayList<Int>) {
 //        Log.v("ClickIndex", "category: $category")
 //        Log.v("EDsn", "$sn")
-
+        evm.categoryId = category
+        evm.sn = sn
+        fvm.setCurrentFragment(FragmentViewModel.FragmentType.EXERCISE_DETAIL_FRAGMENT)
         fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
-            sn?.let { ExerciseDetailFragment.newInstance(category, it) }
-                ?.let { replace(R.id.flMain, it) }
+            replace(R.id.flMain, ExerciseDetailFragment())
             commit()
         }
     }

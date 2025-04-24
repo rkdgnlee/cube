@@ -73,11 +73,6 @@ import com.google.android.gms.common.util.DeviceProperties.isTablet
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.mediapipe.tasks.vision.core.RunningMode
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.Face
-import com.google.mlkit.vision.face.FaceDetection
-import com.google.mlkit.vision.face.FaceDetector
-import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.shuhart.stepview.StepView
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.viewmodel.SkeletonViewModel
@@ -100,7 +95,6 @@ import com.tangoplus.tangoq.vision.MathHelpers.calculateAngle
 import com.tangoplus.tangoq.vision.MathHelpers.calculateSlope
 import com.tangoplus.tangoq.vision.OverlayView
 import com.tangoplus.tangoq.vision.PoseLandmarkAdapter
-import com.tangoplus.tangoq.vision.PoseLandmarkerHelper
 import com.tangoplus.tangoq.api.NetworkMeasure.sendMeasureData
 import com.tangoplus.tangoq.db.FileStorageUtil.getPathFromUri
 import com.tangoplus.tangoq.function.SaveSingletonManager
@@ -119,6 +113,7 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedFileF
 import com.tangoplus.tangoq.function.SoundManager.playSound
 import com.tangoplus.tangoq.function.SoundManager.release
 import com.tangoplus.tangoq.vision.MathHelpers.normalizeAngle90
+import com.tangoplus.tangoq.vision.PoseLandmarkerHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -203,9 +198,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private var isNameInit = false
     private var dynamicStartTime = ""
     private var dynamicEndTime = ""
-
-    // 영상 모자이크
-    private lateinit var detector : FaceDetector
 
     // ------! 싱글턴 패턴 객체 가져오기 !------
     private lateinit var decryptedUUID : String
@@ -466,14 +458,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             playSound(R.raw.seq0_start)
         }, 1500)
 
-        // ------# faceDetection init #------
-        val options = FaceDetectorOptions.Builder()
-            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-            .setContourMode(FaceDetectorOptions.CONTOUR_MODE_NONE)
-            .enableTracking()
-            .build()
-        detector = FaceDetection.getClient(options)
-
         // ------# sensor 연결 #------
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -529,7 +513,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 Log.e("PoseLandmarkerHelper", "UnsatisfiedLinkError. Failed to load libmediapipe_tasks_vision_jni.so", e)
             } catch (e: RuntimeException) {
                 Log.e("PoseLandmarkerHelper", "RuntimeException. Failed to load libmediapipe_tasks_vision_jni.so", e)
-                Toast.makeText(this@MeasureSkeletonActivity, "${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MeasureSkeletonActivity, "${e.message}", Toast.LENGTH_LONG).show()
             }
             if (!hasPermissions(this)) {
                 ActivityCompat.requestPermissions(
@@ -609,16 +593,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 loadingDialog.show(supportFragmentManager, "LoadingDialogFragment")
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    // 모자이크 시작
-                    val outputPath = File(cacheDir, "mirrored_video.mp4").absolutePath
-                    if (mvm.notMosaicVideoInputPath != null) {
-                        val success = flipVideoHorizontallySuspend(mvm.notMosaicVideoInputPath!!, outputPath)
-                        if (success) {
-                            saveMediaToCache(this@MeasureSkeletonActivity, Uri.fromFile(File(outputPath)), videoFileName, false)
-                        } else {
-                            Log.e(TAG, "Failed to apply mirror effect to video.")
-                        }
-                    }
 
                     // t_measure_info 생성
                     val userJson = singletonUser.jsonObject
@@ -803,27 +777,34 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
 
         // ------# 주의사항 키기 #------
-        val dialog1 = MeasureSkeletonDialogFragment.newInstance(true, 0)
+        val dialog1 = MeasureSkeletonDialogFragment.newInstance(isPose = true, 0, cameraFacing)
         dialog1.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
-        val dialog2 = MeasureSkeletonDialogFragment.newInstance(false)
+        val dialog2 = MeasureSkeletonDialogFragment.newInstance(isPose = false)
         dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
-        val dialog4 = MeasureSetupDialogFragment.newInstance(0)
+        val dialog4 = MeasureSetupDialogFragment.newInstance(case = 0)
         dialog4.show(supportFragmentManager, "MeasureSetupDialogFragment")
 
         binding.ibtnMeasureSkeletonChange.setOnSingleClickListener {
 //            dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
             MaterialAlertDialogBuilder(this@MeasureSkeletonActivity, R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
                 setTitle("알림")
-                setMessage("카메라 방향을 전환하시겠습니까?")
-                setPositiveButton("예") {_, _ ->
-                    switchCamera()
+                if (seqStep.value == 0) {
+                    setMessage("카메라 방향을 전환하시겠습니까?")
+                    setPositiveButton("예") {_, _ ->
+                        switchCamera()
+                    }
+                    setNegativeButton("아니오") { _, _ -> }
+                } else {
+                    setMessage("측정 도중에는 카메라를 전환할 수 없습니다. 종료 후 다시 시도해주세요")
+                    setPositiveButton("예") {_, _ ->
+
+                    }
                 }
-                setNegativeButton("아니오") { _, _ -> }
                 show()
             }
         }
         binding.fabtnMeasureSkeleton.setOnSingleClickListener {
-            val dialog3 = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
+            val dialog3 = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1, cameraFacing)
             dialog3.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         }
         binding.ibtnMeasureSkeletonSetup.setOnSingleClickListener {
@@ -1005,16 +986,27 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 binding.svMeasureSkeleton.go(seqStep.value?.toInt() ?: 0, true)
 
                 Handler(Looper.getMainLooper()).postDelayed({
-                    val dialog = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1)
+                    val dialog = MeasureSkeletonDialogFragment.newInstance(true, seqStep.value?.toInt() ?: -1, cameraFacing)
                     if (!this@MeasureSkeletonActivity.isFinishing) {
                         dialog.show(supportFragmentManager, "MeasureSkeletonDialogFragment") }
                     }
-                    , 1000)
+                    , 900)
 
-                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${seqStep.value!!.toInt()}", "drawable", packageName))
+                val drawable = ContextCompat.getDrawable(this, resources.getIdentifier("drawable_measure_${
+                    if (cameraFacing == CameraSelector.LENS_FACING_BACK) {
+                        when (seqStep.value) {
+                            3 -> seqStep.value!!.toInt() + 1
+                            4 -> seqStep.value!!.toInt() - 1
+                            else -> seqStep.value!!.toInt()
+                        }
+                    } else {
+                        seqStep.value!!.toInt()
+                    }
+                
+                }", "drawable", packageName))
                 Handler(Looper.getMainLooper()).postDelayed({
                     binding.ivMeasureSkeletonFrame.setImageDrawable(drawable)
-                }, 1100)
+                }, 1000)
             }
         }
         Log.v("updateUI", "progressbar: ${progress}, seqStep: ${seqStep.value}")
@@ -1055,19 +1047,18 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 mvm.statics.removeAt(seqStep.value ?: 0) // static을
                 mvm.staticFiles.removeAt(seqStep.value ?: 0)
                 mvm.staticJsonFiles.removeAt(seqStep.value ?: 0)
-                val mirroredVideoFile = mvm.notMosaicVideoInputPath?.let { File(it) }
-                if (mirroredVideoFile?.exists() == true) {
+                val mirroredVideoFile = File(cacheDir, "mirrored_video.mp4")
+                if (mirroredVideoFile.exists()) {
                     // 파일 삭제
                     val isDeleted = mirroredVideoFile.delete()
                     if (isDeleted) {
-                        Log.v("MPEGLog","영상 파일이 성공적으로 삭제되었습니다.")
+                        Log.v("MPEGLog","mirrored_video.mp4 파일이 성공적으로 삭제되었습니다.")
                     } else {
-                        Log.v("MPEGLog","영상 파일 삭제에 실패했습니다.")
+                        Log.v("MPEGLog","mirrored_video.mp4 파일 삭제에 실패했습니다.")
                     }
                 } else {
-                    Log.v("MPEGLog","영상 파일이 존재하지 않습니다.")
+                    Log.v("MPEGLog","mirrored_video.mp4 파일이 존재하지 않습니다.")
                 }
-                mvm.notMosaicVideoInputPath = null
             }
             // 1번 이상 (dynamic, static 들)
             2, 3, 4, 5, 6 -> {
@@ -1287,6 +1278,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
 
     override fun onError(error: String, errorCode: Int) {
         runOnUiThread {
+            Log.e("PoseLandmarkerHelper", "error: $error")
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
         }
     }
@@ -1973,10 +1965,18 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                             isRecording = false
                             startRecording = false
                             val savedUri = recordEvent.outputResults.outputUri
-                            // 모자이크 안한 파일을 가져옴 그리고 저장
-                            mvm.notMosaicVideoInputPath = getPathFromUri(this@MeasureSkeletonActivity, savedUri) // URI를 파일 경로로 변환
-                            if (mvm.notMosaicVideoInputPath != null) {
-                                callback()
+                            val inputPath = getPathFromUri(this@MeasureSkeletonActivity, savedUri) // URI를 파일 경로로 변환
+                            val outputPath = File(cacheDir, "mirrored_video.mp4").absolutePath
+
+                            if (inputPath != null) {
+                                flipVideoHorizontally(inputPath, outputPath) { success ->
+                                    if (success) {
+                                        saveMediaToCache(this@MeasureSkeletonActivity, Uri.fromFile(File(outputPath)), videoFileName, false)
+                                        callback()
+                                    } else {
+                                        Log.e(TAG, "Failed to apply mirror effect to video.")
+                                    }
+                                }
                             }
                         } else {
                             CoroutineScope(Dispatchers.Main).launch  {
@@ -2066,24 +2066,15 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 // 스케일 조정
                 bitmap = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
 
-                val faceBitmap = bitmap.config?.let { bitmap.copy(it, true) }
-
                 val outputStream = FileOutputStream(file)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
                 outputStream.flush()
                 outputStream.close()
 
-                lifecycleScope.launch {
-                    runFaceContourDetection(faceBitmap,
-                        onResult = { mosaicBitmap ->
-                            val mosaicFile = File(context.cacheDir, "$fileName$extension")
-                            FileOutputStream(mosaicFile).use { out ->
-                                mosaicBitmap?.compress(Bitmap.CompressFormat.JPEG, 90, out)
-                            }
-                            mvm.staticFiles.add(mosaicFile)
-                        }, onError = {})
-                }
-
+                // 임시 파일과 비트맵 정리
+                tempFile.delete()
+                bitmap.recycle()
+                mvm.staticFiles.add(file)
 
             }  else {
                 // 비디오일 경우 그대로 캐시에 저장
@@ -2273,170 +2264,31 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
 
     private fun flipVideoHorizontally(inputPath: String, outputPath: String, callback: (Boolean) -> Unit) {
+        val command = "-i $inputPath -vf hflip -y -c:v libx264 -crf 18 -preset veryfast -c:a copy $outputPath"
         lifecycleScope.launch(Dispatchers.Main) {
-            val dialog = LoadingDialogFragment.newInstance("모자이크").apply {
+            val dialog = LoadingDialogFragment.newInstance("동영상").apply {
                 show(supportFragmentManager, "LoadingDialogFragment")
             }
+
             withContext(Dispatchers.IO) {
-                // 임시 디렉토리 생성
-                val tempDir = File(cacheDir, "video_frames")
-                if (!tempDir.exists()) tempDir.mkdirs()
-
-                // 1. 비디오를 프레임으로 추출
-                val extractCommand = "-i $inputPath -vf hflip,fps=25 -q:v 4 ${tempDir.absolutePath}/frame_%04d.jpg"
-                val extractSession = FFmpegKit.execute(extractCommand)
-
-                if (!ReturnCode.isSuccess(extractSession.returnCode)) {
-                    Log.e("FFMPEGAlert", "프레임 추출 실패: ${extractSession.getLogsAsString()}")
-                    withContext(Dispatchers.Main) { callback(false) }
-                    return@withContext
-                }
-
-                val frameFiles = tempDir.listFiles { _, name ->
-                    name.startsWith("frame_") && name.endsWith(".jpg")
-                }?.sortedBy { it.name }
-
-                if (frameFiles.isNullOrEmpty()) {
-                    Log.e("FaceDetection", "프레임이 없습니다.")
-                    callback(false)
-                    return@withContext
-                }
-
-                val scope = CoroutineScope(Dispatchers.IO)
-                val jobs = mutableListOf<Deferred<Int>>()
-    //                val bitmaps = frameFiles.map { BitmapFactory.decodeFile(it.absolutePath) }
-                frameFiles.forEachIndexed { index, frameFile ->
-                    val job = scope.async {
-                        val bitmap = BitmapFactory.decodeFile(frameFile.absolutePath)
-                        suspendCoroutine { continuation ->
-                            runFaceContourDetection(
-                                bitmap,
-                                onResult = { processedBitmap ->
-                                    try {
-                                        val processedDir = File(cacheDir, "video_frames")
-                                        if (!processedDir.exists()) {
-                                            processedDir.mkdirs()
-                                        }
-                                        val processedFile = File(processedDir, frameFile.name)
-                                        FileOutputStream(processedFile).use { out ->
-                                            processedBitmap?.compress(Bitmap.CompressFormat.JPEG, 90, out)
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.e("BitmapSaveError", "저장 실패: ${e.message}")
-                                    } finally {
-                                        bitmap.recycle()
-                                        continuation.resume(Unit)
-                                    }
-                                },
-                                onError = { e ->
-                                    Log.e("FaceDetectionError", "프레임 $index 처리 실패: ${e.message}")
-                                    bitmap.recycle()
-                                    continuation.resume(Unit)
-                                }
-                            )
+                // FFmpeg 명령 실행
+                FFmpegKit.executeAsync(command) { session ->
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        val returnCode = session.returnCode
+                        if (!isFinishing && !isDestroyed) {
+                            dialog.dismiss()
                         }
-                        Log.v("FaceDetectionProgress", "프레임 $index 처리 완료")
-                    }
-                    jobs.add(job)
-                }
-
-                // 병렬 처리 기다리기
-                scope.launch {
-                    jobs.awaitAll()
-
-                    // 모든 프레임 처리 완료 후 FFmpeg로 영상 생성
-                    val combineCommand =
-                        "-framerate 30 -i ${tempDir.absolutePath}/frame_%04d.jpg -vf hflip -y -c:v mpeg4 -q:v 4 $outputPath"
-
-                    val combineSession = FFmpegKit.execute(combineCommand)
-
-                    // 임시 파일 삭제
-    //                    tempDir.deleteRecursively()
-
-                    withContext(Dispatchers.Main) {
-                        if (ReturnCode.isSuccess(combineSession.returnCode)) {
-                            Log.d("FFMPEGAlert", "얼굴 감지와 좌우반전 처리가 완료되었습니다: $outputPath")
+                        if (ReturnCode.isSuccess(returnCode)) {
+                            Log.d("FFMPEGAlert", "Video successfully mirrored and saved to: $outputPath")
                             callback(true)
-                            if (!isFinishing && !isDestroyed) {
-                                dialog.dismiss()
-                            }
                         } else {
-                            Log.e("FFMPEGAlert", "비디오 생성 실패: ${combineSession.getLogsAsString()}")
+                            Log.e("FFMPEGAlert", "Error occurred while mirroring video: ${session.getLogsAsString()}")
                             callback(false)
-                            if (!isFinishing && !isDestroyed) {
-                                dialog.dismiss()
-                            }
                         }
                     }
                 }
             }
         }
-    }
-
-    private fun runFaceContourDetection(bitmap: Bitmap?, onResult: (Bitmap?) -> Unit, onError: (Exception) -> Unit) {
-        if (bitmap == null) {
-            onResult(null)
-            return
-        }
-        val image = InputImage.fromBitmap(bitmap, 0)
-
-        detector.process(image)
-            .addOnSuccessListener { faces ->
-                // 영상일때만 seq 판단하기
-                val editedFaces = if (faces.isNotEmpty()) {
-                    mvm.previousFaces = faces
-                    faces
-                } else {
-                    mvm.previousFaces ?: emptyList()
-                }
-                onResult(applyMosaicToBitmap(bitmap, editedFaces))
-            }
-            .addOnFailureListener { e ->
-                e.printStackTrace()
-                onError(e)
-            }
-    }
-    fun applyMosaicToBitmap(originalBitmap: Bitmap, faces: List<Face>): Bitmap {
-        val mutableBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
-        val canvas = Canvas(mutableBitmap)
-        val paint = Paint()
-
-        for (face in faces.ifEmpty { mvm.previousFaces }) {
-            val boundingBox = face.boundingBox
-
-            // 얼굴 범위가 이미지 바깥으로 나가지 않도록 보정
-            val rect = Rect(
-                boundingBox.left.coerceIn(0, originalBitmap.width - 1),
-                boundingBox.top.coerceIn(0, originalBitmap.height - 1),
-                boundingBox.right.coerceIn(1, originalBitmap.width),
-                boundingBox.bottom.coerceIn(1, originalBitmap.height)
-            )
-
-            if (rect.width() <= 1 || rect.height() <= 1) {
-                Log.e("얼굴모자이크", "너무 작은 얼굴 영역: ${rect.width()}x${rect.height()}")
-                continue
-            }
-
-            try {
-                val faceBitmap = Bitmap.createBitmap(mutableBitmap, rect.left, rect.top, rect.width(), rect.height())
-
-                val mosaicSize = max(5, min(rect.width(), rect.height()) / 20)
-                val mosaicBitmap = Bitmap.createScaledBitmap(faceBitmap, mosaicSize, mosaicSize, false)
-                val scaledBack = Bitmap.createScaledBitmap(mosaicBitmap, rect.width(), rect.height(), false)
-
-                // 원본 위치에 덮어쓰기
-                canvas.drawBitmap(scaledBack, null, RectF(rect), paint)
-
-                // 메모리 정리
-                faceBitmap.recycle()
-                mosaicBitmap.recycle()
-                scaledBack.recycle()
-            } catch (e: Exception) {
-                Log.e("얼굴모자이크", "모자이크 처리 오류: ${e.message}", e)
-            }
-        }
-
-        return mutableBitmap
     }
 
     private fun createMultipartBody() : MultipartBody {

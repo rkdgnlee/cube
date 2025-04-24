@@ -37,6 +37,8 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.WifiManager
+import com.tangoplus.tangoq.viewmodel.AppViewModel
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.vo.DateDisplay
@@ -52,6 +54,7 @@ import java.time.format.DateTimeFormatter
 class MeasureFragment : Fragment() {
     lateinit var binding : FragmentMeasureBinding
     val mvm : MeasureViewModel by activityViewModels()
+    private val fvm : FragmentViewModel by activityViewModels()
     private var balloon : Balloon? = null
     private var measures : MutableList<MeasureVO>? = null
     private lateinit var ssm : SaveSingletonManager
@@ -157,6 +160,7 @@ class MeasureFragment : Fragment() {
                                                 mvm.selectMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
 
                                                 Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
+                                                fvm.setCurrentFragment(FragmentViewModel.FragmentType.MEASURE_DETAIL_FRAGMENT)
                                                 requireActivity().supportFragmentManager.beginTransaction().apply {
                                                     replace(R.id.flMain, MeasureDetailFragment())
                                                     commit()
@@ -218,6 +222,7 @@ class MeasureFragment : Fragment() {
         }
 
         binding.btnM2.setOnSingleClickListener {
+            fvm.setCurrentFragment(FragmentViewModel.FragmentType.MEASURE_HISTORY_FRAGMENT)
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MeasureHistoryFragment())
                 commit()
@@ -308,6 +313,7 @@ class MeasureFragment : Fragment() {
                 setDrawCircleHole(false)
                 setDrawFilled(false)
                 mode = LineDataSet.Mode.CUBIC_BEZIER
+
             }
             lcXAxis.apply {
                 isEnabled = false
@@ -390,7 +396,6 @@ class MeasureFragment : Fragment() {
 
             // ------! 값 클릭 시 벌룬 나오기 시작 !------+
             setScoresDates(lcDataList)
-
             lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                 override fun onValueSelected(e: Entry?, h: Highlight?) {
                     e?.let { entry ->
@@ -617,5 +622,23 @@ class MeasureFragment : Fragment() {
                 tvMScores[i].text =bodyText
             }
         }
+    }
+
+    private fun createTypeBalloon(isKiosk : Boolean) {
+//        val balloonlc1 = Balloon.Builder(requireContext())
+//            .setWidthRatio(0.5f)
+//            .setHeight(BalloonSizeSpec.WRAP)
+//            .setText(balloonText)
+//            .setTextColorResource(R.color.subColor800)
+//            .setTextSize(15f)
+//            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+//            .setArrowSize(0)
+//            .setMargin(10)
+//            .setPadding(12)
+//            .setCornerRadius(8f)
+//            .setBackgroundColorResource(R.color.white)
+//            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+//            .setLifecycleOwner(viewLifecycleOwner)
+//            .build()
     }
 }

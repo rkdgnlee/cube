@@ -19,11 +19,5 @@ class AppViewModel: ViewModel() {
         _logoutTrigger.postValue(false)
     }
 
-//    private var currentFragmentTag: String? = null
-//    fun setCF(fragmentTag : String) {
-//        currentFragmentTag = fragmentTag
-//    }
-//    fun getCF() : String? {
-//        return currentFragmentTag
-//    }
+
 }

@@ -124,7 +124,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
         if (!videoUrls.isNullOrEmpty()) {
             pvm.baseUrls.addAll(videoUrls)
-        } else if (videoUrl != null) {
+        } else if (videoUrl != null && pvm.baseUrls.size < 1) {
             pvm.baseUrls.add(videoUrl)
         }
 
@@ -141,7 +141,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
             Log.v("재생시점원시", "$playbackPosition")
             pvm.isResume = false
 //            setPlayer()
-
         }
 
         exoPlay = findViewById(R.id.btnPlay)

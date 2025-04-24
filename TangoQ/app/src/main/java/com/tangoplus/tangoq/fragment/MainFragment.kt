@@ -3,7 +3,6 @@ package com.tangoplus.tangoq.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -24,7 +23,7 @@ import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MainProgressRVAdapter
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.adapter.MainPartRVAdapter
+import com.tangoplus.tangoq.adapter.PartRVAdapter
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
@@ -48,6 +47,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.core.graphics.toColorInt
 import androidx.datastore.core.IOException
+import com.tangoplus.tangoq.dialog.MeasureSkeletonDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.createGuide
+import com.tangoplus.tangoq.viewmodel.AppViewModel
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 import java.net.SocketTimeoutException
 
 class MainFragment : Fragment() {
@@ -55,6 +58,7 @@ class MainFragment : Fragment() {
     private val avm by activityViewModels<AnalysisViewModel>()
     private val mvm : MeasureViewModel by activityViewModels()
     private val pvm: ProgressViewModel by activityViewModels()
+    private val fvm : FragmentViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     private lateinit var prefsManager : PreferencesManager
     private var measures : MutableList<MeasureVO>? = null
@@ -90,6 +94,9 @@ class MainFragment : Fragment() {
 
         latestRecSn = prefsManager.getLatestRecommendation()
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
+        singletonMeasure?.forEach {
+            Log.v("isMobile", "${it.regDate} - isMobile: ${it.isMobile}")
+        }
         // ------# 알람 intent #------
         binding.ibtnMAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
@@ -128,6 +135,7 @@ class MainFragment : Fragment() {
                         it.setOnSingleClickListener {
                             (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
                             // 다운로드 후 이동
+
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flMain, MeasureDetailFragment())
                                 commit()
@@ -142,6 +150,8 @@ class MainFragment : Fragment() {
                     if (isFirstRun("Tooltip_isFirstRun_not_existed_${Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")}")) {
                         notExistedMeasurementGuide()
                     }
+                    binding.cvMResult1.visibility =View.INVISIBLE
+                    binding.cvMResult2.visibility = View.INVISIBLE
                 }
                 updateUI()
 
@@ -161,7 +171,7 @@ class MainFragment : Fragment() {
         val layoutManager1 = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvM1.layoutManager = layoutManager1
         val filteredParts = measures?.get(index)?.dangerParts?.filter { it.second == 1f || it.second == 2f}
-        val partAdapter = MainPartRVAdapter(this@MainFragment, filteredParts?.toMutableList(), avm, "main")
+        val partAdapter = PartRVAdapter(this@MainFragment, filteredParts?.toMutableList(), avm, fvm,"main")
         binding.rvM1.adapter = partAdapter
         binding.rvM1.isNestedScrollingEnabled = false
     }
@@ -386,33 +396,4 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun createGuide(
-        context: Context,
-        text: String,
-        anchor: View,
-        gravity: Int,
-        dismiss: () -> Unit,
-    ) {
-        SimpleTooltip.Builder(context).apply {
-            anchorView(anchor)
-            backgroundColor(ContextCompat.getColor(context, R.color.mainColor))
-            arrowColor("#00FFFFFF".toColorInt())
-            gravity(gravity)
-            animated(true)
-            transparentOverlay(false)
-            contentView(R.layout.tooltip)
-            highlightShape( OverlayView.HIGHLIGHT_SHAPE_RECTANGULAR_ROUNDED)
-
-            onShowListener {
-                val tooltipTextView: TextView = it.findViewById(R.id.tooltip_instruction)
-                tooltipTextView.text = text
-            }
-            onDismissListener {
-                dismiss()
-            }
-            build()
-                .show()
-        }
-
-    }
 }

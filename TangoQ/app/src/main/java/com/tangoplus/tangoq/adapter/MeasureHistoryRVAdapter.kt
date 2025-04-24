@@ -20,17 +20,20 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.hideBadgeOnClick
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.MeasureDetailFragment
 import com.tangoplus.tangoq.function.SaveSingletonManager
+import com.tangoplus.tangoq.viewmodel.AppViewModel
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 import com.tangoplus.tangoq.vo.DateDisplay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<MeasureVO>, private val viewModel : MeasureViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<MeasureVO>, private val viewModel : MeasureViewModel, private val fvm: FragmentViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private lateinit var ssm : SaveSingletonManager
     inner class MHViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMIName: TextView = view.findViewById(R.id.tvMIName)
         val tvMIScore : TextView = view.findViewById(R.id.tvMIScore)
+        val tvMIType : TextView  = view.findViewById(R.id.tvMIType)
         val tvMISub : TextView = view.findViewById(R.id.tvMISub)
         val clMI : ConstraintLayout = view.findViewById(R.id.clMI)
     }
@@ -49,22 +52,31 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
         val currentItem = measures[position]
         if (holder is MHViewHolder) {
             val regDate = currentItem.regDate.substring(0, 10) // , ${currentItem.userName}
+
+            // 모바일, 키오스크 측정 판단
+            val isMobileMeasure = if (currentItem.isMobile) {
+                "모바일 앱 측정"
+            } else {
+                "키오스크 측정"
+            }
             holder.tvMIName.text = regDate
+            holder.tvMIType.text = isMobileMeasure
             val dangerPartsExplanation = "위험부위: ${currentItem.dangerParts.map { it.first }.joinToString()}"
             holder.tvMISub.text = dangerPartsExplanation
             holder.tvMIScore.text = currentItem.overall.toString()
             val hideBadgeFunction = fragment.hideBadgeOnClick(holder.tvMIName, holder.clMI, "${holder.tvMIName.text}", ContextCompat.getColor(fragment.requireContext(), R.color.thirdColor))
 
             holder.clMI.setOnSingleClickListener {
+                val loadingDialog = LoadingDialogFragment.newInstance("측정파일")
+                loadingDialog.show(fragment.requireActivity().supportFragmentManager, "LoadingDialogFragment")
                 try {
                     viewModel.selectedMeasure = currentItem
+                    // 현재 선택한 fragment 저장
+
 
                     ssm = SaveSingletonManager(fragment.requireContext(), fragment.requireActivity())
-                    fragment.lifecycleScope.launch(Dispatchers.IO) {
-//                        ssm.setRecent5MeasureResult(position)
-                        val dialog = LoadingDialogFragment.newInstance("측정파일")
-                        dialog.show(fragment.requireActivity().supportFragmentManager, "LoadingDialogFragment")
 
+                    fragment.lifecycleScope.launch(Dispatchers.IO) {
                         val currentMeasure = viewModel.selectedMeasure
                         val uriTuples = currentMeasure?.sn?.let { ssm.get1MeasureUrls(it) }
                         if (uriTuples != null) {
@@ -83,12 +95,14 @@ class MeasureHistoryRVAdapter(val fragment: Fragment, val measures: MutableList<
                                     viewModel.selectMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
                                     // 뱃지 제거
                                     hideBadgeFunction?.invoke()
+                                    fvm.setCurrentFragment(FragmentViewModel.FragmentType.MEASURE_DETAIL_FRAGMENT)
                                     // 다운로드 후 이동
-                                    dialog.dismiss()
+                                    loadingDialog.dismiss()
                                     fragment.requireActivity().supportFragmentManager.beginTransaction().apply {
                                         replace(R.id.flMain, MeasureDetailFragment())
                                         commit()
                                     }
+                                    // 마지막 프레그먼트 저장
                                 }
                             }
                         }

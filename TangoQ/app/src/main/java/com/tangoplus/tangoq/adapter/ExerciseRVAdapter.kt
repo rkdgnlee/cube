@@ -205,32 +205,33 @@ class ExerciseRVAdapter (
                             }
                         }
                     }
-                    itemState.observe(fragment.viewLifecycleOwner) { state ->
-                        holder.vEI.setOnSingleClickListener {
-                            // 0 일 때 uvp 같이 넣어서 볼 수 있는 상태
-                            // 1 일 때 uvp는 안들어가지만 재생은 가능한 상태
-                            // 2 클릭만 감지되고 playthumbnail은 안나오는 상태
-                            when (state) {
-                                0, 1 -> {
-                                    exerciseClickListener?.exerciseClick(currentExerciseItem?.exerciseName.toString())
-                                    val currentItem = progresses?.get(position)
-                                    val dialogFragment = PlayThumbnailDialogFragment().apply {
-                                        arguments = Bundle().apply {
-                                            putParcelable("ExerciseUnit", currentExerciseItem)
-                                            if (progresses != null && state == 0) {
-                                                Log.v("state", "state확인: $state")
-                                                // 지난 값일 경우
-                                                putBoolean("isProgram", true)
-                                                putInt("uvpSn", currentItem?.uvpSn ?: 0)
+                    val state = itemStates.getOrNull(position) ?: 0
+                    Log.v("currentState", "${currentExerciseItem?.exerciseName}, $state")
+                    holder.vEI.setOnSingleClickListener {
+                        // 0 일 때 uvp 같이 넣어서 볼 수 있는 상태
+                        // 1 일 때 uvp는 안들어가지만 재생은 가능한 상태
+                        // 2 클릭만 감지되고 playthumbnail은 안나오는 상태
+                        Log.v("currentState", "$currentExerciseItem, $state")
+                        when (state) {
+                            0, 1 -> {
+                                exerciseClickListener?.exerciseClick(currentExerciseItem?.exerciseName.toString())
+                                val currentItem = progresses?.get(position)
+                                val dialogFragment = PlayThumbnailDialogFragment().apply {
+                                    arguments = Bundle().apply {
+                                        putParcelable("ExerciseUnit", currentExerciseItem)
+                                        if (progresses != null && state == 0) {
+                                            Log.v("state", "state확인: $state")
+                                            // 지난 값일 경우
+                                            putBoolean("isProgram", true)
+                                            putInt("uvpSn", currentItem?.uvpSn ?: 0)
 
-                                            }
                                         }
                                     }
-                                    dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
                                 }
-                                2 -> {
-                                    // 터치 동작 없음
-                                }
+                                dialogFragment.show(fragment.requireActivity().supportFragmentManager, "PlayThumbnailDialogFragment")
+                            }
+                            2 -> {
+                                // 터치 동작 없음
                             }
                         }
                     }
@@ -258,12 +259,21 @@ class ExerciseRVAdapter (
             }
         }
     }
+
+    var itemStates = mutableListOf<Int>()
     // itemState : 0 -> 터치 자유로움  // 1 -> 터치는 되는데 UVP는 안담김 // 2 -> 터치가 전혀 안됨
-    private var itemState = MutableLiveData(0)
-    fun setTouchLocked(state: Int) {
-        itemState.value = state
+    fun setTouchLockedForItem(position: Int, state: Int) {
+        if (position in itemStates.indices) {
+            itemStates[position] = state
+            notifyItemChanged(position)
+        } else {
+        }
     }
 
+    fun setTouchLockedForAll(state: Int) {
+        itemStates = MutableList(exerciseList?.size ?: 0) { state }
+        notifyDataSetChanged()
+    }
 //    private fun updateLikeButtonState(exerciseId: String, ibtn : ImageButton) {
 //        val isLike = prefs.existLike(exerciseId)
 //        ibtn.setImageDrawable(

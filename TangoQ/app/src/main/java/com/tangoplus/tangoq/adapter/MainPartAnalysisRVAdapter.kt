@@ -53,6 +53,11 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var anal
             if (currentItem != null) {
 
                 holder.tvMPAITitle.text = currentItem.rawDataName
+                    .replace(" - ", "")
+                    .replace("정면", "")
+                    .replace("후면", "")
+                    .replace("앉은 후면", "")
+
                 setState(holder, currentItem.state)
                 val rawDataValue = currentItem.rawData.toDouble() // null인 경우 0으로 대체
                 holder.tvMPAIData.text = if (currentItem.columnName.contains("distance")) {
