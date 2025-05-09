@@ -20,6 +20,8 @@ class AnalysisViewModel : ViewModel() {
     val currentPart = MutableLiveData<String>()
     var selectPart = MutableLiveData<String>()
 
+    // analysis에서 mainanalysis/measureDetail에 맞게 clicklistener따로 설정하기
+    var analysisType = 0
     // ------# 비교할 measure 담을 공간 #------
     val leftMeasurement = MutableLiveData<MeasureVO>()
     val rightMeasurement = MutableLiveData<MeasureVO>()

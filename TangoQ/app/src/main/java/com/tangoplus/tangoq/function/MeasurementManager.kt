@@ -558,9 +558,9 @@ object MeasurementManager {
 
     fun calculateOverall(parts: MutableList<Pair<String, Status>>) : Int {
         val scores = mapOf(
-            Status.DANGER to 39,
-            Status.WARNING to 64,
-            Status.NORMAL to 95
+            Status.DANGER to 41,
+            Status.WARNING to 63,
+            Status.NORMAL to 100
         )
         val weightScore = 1.65
         val reverseWeightScore = 0.7
@@ -672,8 +672,8 @@ object MeasurementManager {
 
     // dynamic에서
     fun judgeFrontCameraByDynamic(jaFrame1: List<List<Pair<Float, Float>>>) : Boolean {
-        // 첫번쨰 index는 부위임 0 : 왼쪽 어깨 1: 오른쪽 어깨  / 2번째 인덱스가 frame
-        return if (jaFrame1[0][5].first > jaFrame1[1][5].first) {
+        // 첫번쨰 index는 총 영상의 프레임 위치임 5프레임 이후 11 : 왼쪽 어깨 12: 오른쪽 어깨
+        return if (jaFrame1[5][11].first > jaFrame1[5][12].first) {
             true
         } else {
             false
@@ -1102,6 +1102,8 @@ object MeasurementManager {
             listOf("좌측 골반", "우측 무릎") to "우측 쏠림을 의심해보세요",
             listOf("우측 어깨", "우측 팔꿉", "우측 손목") to "우측 상체의 긴장을 의심해야 합니다.",
             listOf("우측 어깨", "좌측 골반") to "상체 좌측 쏠림으로 인한 긴장을 의심해야 합니다.",
+            listOf("좌측 골반", "좌측 무릎") to "우측과 비교하여 좌측 다리의 긴장 혹은 부정렬을 확인하세요",
+            listOf("좌측 골반", "우측 무릎") to "좌측과 비교하여 우측 다리의 긴장 혹은 부정렬을 확인하세요",
             listOf("우측 골반", "좌측 무릎") to "좌측 쏠림을 의심해보세요",
             listOf("좌측 팔꿉", "좌측 손목") to "좌측 팔 근육과 주변 어깨 근육을 확인하세요",
             listOf("좌측 어깨", "우측 골반") to "상체 우측 쏠림으로 인한 긴장을 의심해야 합니다.",

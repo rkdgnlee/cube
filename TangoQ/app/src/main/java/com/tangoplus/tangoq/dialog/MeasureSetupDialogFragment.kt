@@ -1,9 +1,17 @@
 package com.tangoplus.tangoq.dialog
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -11,7 +19,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
@@ -24,11 +35,19 @@ import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import java.util.regex.Pattern
+import kotlin.math.asin
 
-class MeasureSetupDialogFragment : DialogFragment() {
+class MeasureSetupDialogFragment : DialogFragment(), SensorEventListener {
     private lateinit var  binding: FragmentMeasureSetupDialogBinding
     private val mvm : MeasureViewModel by activityViewModels()
-
+    private lateinit var sensorManager: SensorManager
+    private var accelerometer: Sensor? = null
+    private var currentBiasZ = 0f
+    private var currentBiasX = 0f
+    private var filteredAngleZ = 0f
+    private var filteredAngleX = 0f
+    private val ALPHA = 0.1f
+    private val INTERPOLATION_FACTOR = 0.1f
     companion object {
         const val ARG_SETUP_CASE = "measure_setup_case"
         fun newInstance(case: Int) : MeasureSetupDialogFragment {
@@ -39,6 +58,7 @@ class MeasureSetupDialogFragment : DialogFragment() {
             return fragment
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.AppTheme_FlexableDialogFragment)
@@ -48,7 +68,6 @@ class MeasureSetupDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMeasureSetupDialogBinding.inflate(inflater)
-
         return binding.root
     }
 
@@ -63,12 +82,15 @@ class MeasureSetupDialogFragment : DialogFragment() {
         }
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
         val case = arguments?.getInt(ARG_SETUP_CASE) ?: 1
-        binding.clMSDAgreement1.visibility = View.VISIBLE
-        binding.clMSDAgreement2.visibility = View.VISIBLE
+
+        setCaseVisibility(case)
         when (case) {
             0 -> {
+                binding.clMSDAgreement1.visibility = View.VISIBLE
+                binding.clMSDAgreement2.visibility = View.VISIBLE
+
                 binding.ibtnMSDNameClear.setOnClickListener{ binding.etMSDName.setText("")}
-                binding.tvMSDSkip.setOnClickListener { dismiss() }
+
                 binding.ibtnMSDAgreement1.setOnClickListener {
                     showAgreement4()
                 }
@@ -128,19 +150,15 @@ class MeasureSetupDialogFragment : DialogFragment() {
                 mvm.setupName = userName ?: ""
             }
             1 -> {
-                binding.ivMSDAgreement1.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_part_checkbox_enabled))
-                binding.ivMSDAgreement2.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icon_part_checkbox_enabled))
-                binding.clMSDAgreement1.setOnSingleClickListener { showAgreement4() }
-                binding.clMSDAgreement2.setOnSingleClickListener { showAgreement5() }
+                sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+                accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
-                binding.btnMSDDeny.visibility = View.GONE
-                binding.btnMSDFinish.text = "설정 완료"
-
-                mvm.setupNameCondition.observe(viewLifecycleOwner) { isEnabled ->
-                    binding.btnMSDFinish.isEnabled = isEnabled
-                    binding.btnMSDFinish.backgroundTintList = ColorStateList.valueOf(resources.getColor(
-                        if (isEnabled) R.color.mainColor else R.color.subColor400
-                    , null))
+                accelerometer?.let {
+                    sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+                }
+                binding.btnMSDConfirm1.setOnSingleClickListener {
+                    sensorManager.unregisterListener(this)
+                    dismiss()
                 }
             }
             else -> {
@@ -165,19 +183,34 @@ class MeasureSetupDialogFragment : DialogFragment() {
         binding.etMSDName.setText(mvm.setupName)
 
         binding.ibtnMSDNameClear.setOnClickListener{ binding.etMSDName.setText("")}
-        binding.tvMSDSkip.setOnClickListener { dismiss() }
-
-
         binding.btnMSDFinish.setOnClickListener {
             mvm.setupName = binding.etMSDName.text.toString()
             dismiss()
         }
     }
 
+    private fun setCaseVisibility(case: Int) {
+        when (case) {
+            0 -> {
+                binding.clMTD0.visibility = View.VISIBLE
+                binding.clMTD1.visibility = View.GONE
+                dialog?.setCancelable(false)
+            }
+            1 -> {
+                binding.clMTD0.visibility = View.GONE
+                binding.clMTD1.visibility = View.VISIBLE
+                Log.v("케이스1", "case1 is finished $case")
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        dialog?.window?.setBackgroundDrawable(resources.getDrawable(R.drawable.bckgnd_rectangle_20, null))
-        dialog?.setCancelable(false)
+        dialog?.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.bckgnd_rectangle_20))
+
+//        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+//        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+//        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
     private fun showAgreement4() {
@@ -188,5 +221,68 @@ class MeasureSetupDialogFragment : DialogFragment() {
     private fun showAgreement5() {
         val dialog = AgreementDetailDialogFragment.newInstance("agreement5")
         dialog.show(requireActivity().supportFragmentManager, "agreement_dialog")
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
+            // 수직 감지 (Z축)
+            val z = event.values[2]
+            val clampedZ = z.coerceIn(-SensorManager.GRAVITY_EARTH, SensorManager.GRAVITY_EARTH)
+            val angleZ = Math.toDegrees(asin((clampedZ / SensorManager.GRAVITY_EARTH).toDouble()))
+            filteredAngleZ = lowPassFilterZ(angleZ.toFloat())
+            val normalizedAngleZ = (filteredAngleZ + 90).coerceIn(0f, 180f)
+            val targetBiasZ = 1 - (normalizedAngleZ / 180f)
+            currentBiasZ = interpolateZ(targetBiasZ)
+
+            // 수평 감지 (X축)
+            val x = event.values[0]
+            val clampedX = x.coerceIn(-SensorManager.GRAVITY_EARTH, SensorManager.GRAVITY_EARTH)
+            val angleX = Math.toDegrees(asin((clampedX / SensorManager.GRAVITY_EARTH).toDouble()))
+            filteredAngleX = lowPassFilterX(angleX.toFloat())
+            val normalizedAngleX = (filteredAngleX + 90).coerceIn(0f, 180f)
+            val targetBiasX = normalizedAngleX / 180f
+            currentBiasX = interpolateX(targetBiasX)
+
+            // 하나의 LayoutParams 객체에 두 값을 모두 설정
+            val layoutParams = binding.cvMTDGyro.layoutParams as ConstraintLayout.LayoutParams
+            layoutParams.verticalBias = currentBiasZ
+            layoutParams.horizontalBias = currentBiasX
+            binding.cvMTDGyro.layoutParams = layoutParams
+
+            // 한 번만 requestLayout 호출
+            binding.cvMTDGyro.requestLayout()
+
+            // 두 조건을 함께 확인하여 배경색 결정
+            val isVerticalCorrect = normalizedAngleZ in 88f..92f
+            val isHorizontalCorrect = normalizedAngleX in 88f..92f
+
+            if (isVerticalCorrect && isHorizontalCorrect) {
+                // 두 방향 모두 정확할 때만 mainColor 적용
+                binding.cvMTDGyro.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.mainColor))
+            } else {
+                // 하나라도 정확하지 않으면 subColor 적용
+                binding.cvMTDGyro.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.mainHalfColor))
+            }
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+    // ------! 센서 시작 !------
+    private fun lowPassFilterZ(input: Float): Float {
+        filteredAngleZ += ALPHA * (input - filteredAngleZ)
+        return filteredAngleZ
+    }
+
+    private fun lowPassFilterX(input: Float): Float {
+        filteredAngleX += ALPHA * (input - filteredAngleX)
+        return filteredAngleX
+    }
+
+    private fun interpolateZ(target: Float): Float {
+        return currentBiasZ + (target - currentBiasZ) * INTERPOLATION_FACTOR
+    }
+
+    private fun interpolateX(target: Float): Float {
+        return currentBiasX + (target - currentBiasX) * INTERPOLATION_FACTOR
     }
 }

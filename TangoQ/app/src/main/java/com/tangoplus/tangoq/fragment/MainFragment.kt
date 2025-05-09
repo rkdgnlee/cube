@@ -94,9 +94,6 @@ class MainFragment : Fragment() {
 
         latestRecSn = prefsManager.getLatestRecommendation()
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
-        singletonMeasure?.forEach {
-            Log.v("isMobile", "${it.regDate} - isMobile: ${it.isMobile}")
-        }
         // ------# 알람 intent #------
         binding.ibtnMAlarm.setOnSingleClickListener {
             val dialog = AlarmDialogFragment()
@@ -272,12 +269,15 @@ class MainFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.Main) {
             try {
                 startShimmer()
+                binding.rvM2.visibility = View.GONE
+
                 binding.clMRefresh.visibility = View.GONE
                 // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
                 val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
                 mvm.selectedMeasure?.recommendations = progressRec
                 Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
                 setAdapter()
+                binding.rvM2.visibility = View.VISIBLE
             } catch (e: IOException) {
                 binding.clMRefresh.visibility = View.VISIBLE
                 Log.e("renderProgram", "IOException: ${e.message}")
@@ -297,7 +297,7 @@ class MainFragment : Fragment() {
     private fun setAdapter() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         Log.w("rec갯수", "${mvm.selectedMeasure?.recommendations?.size}, ${mvm.selectedMeasure?.recommendations?.map { it.title }}")
-        val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf(), pvm)
+        val adapter = MainProgressRVAdapter(this@MainFragment,  mvm.selectedMeasure?.recommendations?: listOf(), pvm)
         binding.rvM2.layoutManager = layoutManager
         binding.rvM2.adapter = adapter
         binding.btnMProgram.text = when {

@@ -40,7 +40,7 @@ class BadgeButton @JvmOverloads constructor(
             invalidate()
         }
 
-    var badgeRadius = 6f
+    var badgeRadius = 8f
         set(value) {
             field = value
             invalidate()

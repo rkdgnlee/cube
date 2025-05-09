@@ -77,6 +77,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
 
             @RequiresApi(Build.VERSION_CODES.R)
             override fun onFinish() {
+                binding.pvFullScreen.isClickable = true
                 setAnimation(binding.tvFullScreenGuide, 500, 0, false ) { }
                 pvm.simpleExoPlayer?.play()
             }
@@ -412,6 +413,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         pvm.simpleExoPlayer?.pause()
         binding.tvFullScreenGuide.visibility = View.VISIBLE
         binding.tvFullScreenGuide.alpha = 1f
+        binding.pvFullScreen.isClickable = false
         mCountDown.start()
     }
 

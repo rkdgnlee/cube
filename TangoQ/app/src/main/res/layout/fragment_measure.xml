@@ -378,10 +378,10 @@
                         android:layout_width="0dp"
                         android:layout_height="10dp"
                         android:src="@drawable/line_dash_horizontal"
-                        app:layout_constraintBottom_toBottomOf="@+id/lcM"
-                        app:layout_constraintEnd_toEndOf="@+id/lcM"
-                        app:layout_constraintStart_toStartOf="@+id/lcM"
-                        app:layout_constraintTop_toTopOf="@+id/lcM"
+                        app:layout_constraintBottom_toBottomOf="@+id/flM"
+                        app:layout_constraintEnd_toEndOf="@id/flM"
+                        app:layout_constraintStart_toStartOf="@+id/flM"
+                        app:layout_constraintTop_toTopOf="@+id/flM"
                         app:layout_constraintVertical_bias="0.2" />
 
                     <ImageView
@@ -389,10 +389,10 @@
                         android:layout_width="0dp"
                         android:layout_height="10dp"
                         android:src="@drawable/line_dash_horizontal"
-                        app:layout_constraintBottom_toBottomOf="@+id/lcM"
-                        app:layout_constraintEnd_toEndOf="@+id/lcM"
-                        app:layout_constraintStart_toStartOf="@+id/lcM"
-                        app:layout_constraintTop_toTopOf="@+id/lcM"
+                        app:layout_constraintBottom_toBottomOf="@id/flM"
+                        app:layout_constraintEnd_toEndOf="@id/flM"
+                        app:layout_constraintStart_toStartOf="@+id/flM"
+                        app:layout_constraintTop_toTopOf="@+id/flM"
                         app:layout_constraintVertical_bias="0.60" />
 
                     <androidx.cardview.widget.CardView
@@ -401,11 +401,11 @@
                         android:layout_height="0dp"
                         app:cardCornerRadius="6dp"
                         app:cardElevation="0dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/lcM"
-                        app:layout_constraintEnd_toEndOf="@+id/lcM"
+                        app:layout_constraintBottom_toBottomOf="@+id/flM"
+                        app:layout_constraintEnd_toEndOf="@+id/flM"
                         app:layout_constraintHorizontal_bias="1.0"
-                        app:layout_constraintStart_toStartOf="@+id/lcM"
-                        app:layout_constraintTop_toTopOf="@+id/lcM">
+                        app:layout_constraintStart_toStartOf="@+id/flM"
+                        app:layout_constraintTop_toTopOf="@+id/flM">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -448,20 +448,26 @@
                         app:layout_constraintStart_toEndOf="@+id/imageView12"
                         app:layout_constraintTop_toTopOf="@+id/imageView12" />
 
-                    <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/lcM"
-                        android:layout_width="0dp"
+                    <FrameLayout
+                        android:id="@+id/flM"
+                        android:layout_width="match_parent"
                         android:layout_height="156dp"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="20dp"
-                        android:background="@drawable/gradient_top_white_90"
-                        android:backgroundTint="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvMScoreGuide">
 
-                    </com.github.mikephil.charting.charts.LineChart>
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/lcM"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/gradient_top_white_90"
+                            android:backgroundTint="@color/white">
+
+                        </com.github.mikephil.charting.charts.LineChart>
+                    </FrameLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnM2"
@@ -510,7 +516,7 @@
                         app:layout_constraintEnd_toEndOf="@+id/cvM"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/lcM" />
+                        app:layout_constraintTop_toBottomOf="@+id/flM" />
 
                     <TextView
                         android:id="@+id/tvM2"
@@ -525,7 +531,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.2875"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/lcM" />
+                        app:layout_constraintTop_toBottomOf="@+id/flM" />
 
                     <TextView
                         android:id="@+id/tvM3"
@@ -539,7 +545,7 @@
                         android:textSize="13dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/lcM" />
+                        app:layout_constraintTop_toBottomOf="@+id/flM" />
 
                     <TextView
                         android:id="@+id/tvM4"
@@ -554,7 +560,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.7125"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/lcM" />
+                        app:layout_constraintTop_toBottomOf="@+id/flM" />
 
                     <TextView
                         android:id="@+id/tvM5"
@@ -569,8 +575,8 @@
                         android:textSize="13dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="1.0"
-                        app:layout_constraintStart_toStartOf="@+id/lcM"
-                        app:layout_constraintTop_toBottomOf="@+id/lcM" />
+                        app:layout_constraintStart_toStartOf="@+id/flM"
+                        app:layout_constraintTop_toBottomOf="@+id/flM" />
 
                     <TextView
                         android:id="@+id/tvM6"
@@ -705,6 +711,7 @@
                         android:text="측정 기록이 없습니다\n상단 버튼을 눌러 측정을 시작해보세요"
                         android:textColor="@color/subColor800"
                         android:textSize="18dp"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

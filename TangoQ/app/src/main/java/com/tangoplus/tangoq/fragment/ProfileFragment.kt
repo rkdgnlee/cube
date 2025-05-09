@@ -119,8 +119,6 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "QR코드 핀번호 로그인",
             "키오스크 핀번호 재설정",
 
-//            "연동 관리",
-
             "자주 묻는 질문",
             "문의하기",
             "공지사항",

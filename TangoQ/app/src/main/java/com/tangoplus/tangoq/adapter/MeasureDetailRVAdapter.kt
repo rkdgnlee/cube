@@ -30,6 +30,7 @@ import com.tangoplus.tangoq.function.MeasurementManager.seqs
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.AnalysisVO
+import com.tangoplus.tangoq.vo.DataDynamicVO
 import java.security.MessageDigest
 
 class MeasureDetailRVAdapter(private val fragment: Fragment, private val data : List<AnalysisVO>, private val avm: AnalysisViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -54,7 +55,7 @@ class MeasureDetailRVAdapter(private val fragment: Fragment, private val data : 
             holder.tvMDAITitle.text = seqs[currentItem.indexx]
             holder.tvMDAIExplain.text = createSeqGuideComment(currentItem.indexx)
 
-            val isFrontCamera = setAdapter(currentItem.indexx, holder, currentItem.labels)
+            val isFrontCamera = setAdapter(currentItem.indexx, holder, currentItem)
             Glide.with(fragment.requireContext())
                 .load(currentItem.url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -89,42 +90,76 @@ class MeasureDetailRVAdapter(private val fragment: Fragment, private val data : 
         return data.size
     }
 
-    private fun setAdapter(partIndex: Int, holder: MDAIViewHolder, analysisVO: List<AnalysisUnitVO>) : Boolean {
+    private fun setAdapter(partIndex: Int, holder: MDAIViewHolder, analysis: AnalysisVO) : Boolean {
         if (partIndex == 1) {
-            val connections = listOf(
-                15, 16, 23, 24, 25, 26 // 좌측 골반의 pose번호를 가져옴
-            )
-            val coordinates = extractVideoCoordinates(avm.mdMeasureResult)
-            val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
-            for (connection in connections) {
-                val filteredCoordinate = mutableListOf<Pair<Float, Float>>() // 부위 하나당 몇 십 프레임의 x,y 좌표임
-                for (element in coordinates) {
-                    if (connection == 23) {
-                        val a = element[connection]
-                        val b = element[connection]
-                        val midHip = Pair((a.first + b.first) / 2, (a.second + b.second) / 2)
-                        filteredCoordinate.add(midHip)
-                    } else {
-                        filteredCoordinate.add(element[connection]) // element의 23, 24가 각각 담김
-                    }
-                }
-                filteredCoordinates.add(filteredCoordinate)
-            }
-            // data 는 6개
-            val isFrontCamera = judgeFrontCameraByDynamic(filteredCoordinates)
-            val linearLayoutManager1 = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
-            val dynamicAdapter = DataDynamicRVAdapter(filteredCoordinates, avm.dynamicTitles, isFrontCamera)
-            holder.rvMDAI.layoutManager = linearLayoutManager1
-            holder.rvMDAI.adapter = dynamicAdapter
-            return isFrontCamera
+            return setDynamicAdapter(holder)
         } else {
             val layoutManager = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
-            val adapter = MainPartAnalysisRVAdapter(fragment, analysisVO)
+            val adapter = MainPartAnalysisRVAdapter(fragment, analysis, avm)
             holder.rvMDAI.layoutManager = layoutManager
             holder.rvMDAI.adapter = adapter
             // true 로 보내야 정적측정에서는 그냥 flip
             return false
         }
+    }
+
+    private fun setDynamicAdapter(holder: MDAIViewHolder) : Boolean {
+
+        // avm.currentPart.value을 통해 만약 dynamic이 속했으면 해당 joint만 추출
+        val connections = if (avm.currentPart.value?.contains("어깨") == true) {
+            listOf(15, 16)
+        } else if (avm.currentPart.value?.contains("골반") == true) {
+            listOf(23, 24)
+        } else if (avm.currentPart.value?.contains("무릎")== true) {
+            listOf(25, 26)
+        } else {
+            listOf(15, 16, 23, 24, 25, 26)
+        }
+        val titleList = if (avm.currentPart.value?.contains("어깨") == true) {
+            listOf("좌측 어깨", "우측 어깨")
+        } else if (avm.currentPart.value?.contains("골반") == true) {
+            listOf("좌측 골반", "우측 골반")
+        } else if (avm.currentPart.value?.contains("무릎")== true) {
+            listOf("좌측 무릎", "우측 무릎")
+        } else {
+            listOf("좌측 어깨", "우측 어깨", "좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎")
+        }
+
+        val coordinates = extractVideoCoordinates(avm.mdMeasureResult)
+        val dataDynamicVOList = mutableListOf<DataDynamicVO>()
+
+        for (i in connections.indices step 2) {
+            val connection1 = connections[i]
+            val connection2 = connections[i + 1]
+            val title1 = titleList[i]
+            val title2 = titleList[i + 1]
+
+            val filteredCoordinate1 = mutableListOf<Pair<Float, Float>>()
+            val filteredCoordinate2 = mutableListOf<Pair<Float, Float>>()
+
+            for (element in coordinates) {
+                // 단순히 해당 인덱스의 좌표를 가져와서 추가
+                filteredCoordinate1.add(element[connection1])
+                filteredCoordinate2.add(element[connection2])
+            }
+
+            val dataDynamicVO = DataDynamicVO(
+                data1 = filteredCoordinate1,
+                title1 = title1,
+                data2 = filteredCoordinate2,
+                title2 = title2
+            )
+            dataDynamicVOList.add(dataDynamicVO)
+        }
+
+        // data 는 6개
+        val isFrontCamera = judgeFrontCameraByDynamic(coordinates)
+        Log.v("쿨디네이츠", "${coordinates.size}, $isFrontCamera")
+        val linearLayoutManager1 = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
+        val dynamicAdapter = DataDynamicRVAdapter(dataDynamicVOList, isFrontCamera)
+        holder.rvMDAI.layoutManager = linearLayoutManager1
+        holder.rvMDAI.adapter = dynamicAdapter
+        return isFrontCamera
     }
 
     inner class FlipHorizontalTransformation : BitmapTransformation() {

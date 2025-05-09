@@ -65,7 +65,7 @@ face-detection (16.1.7) - ML Kit Terms of Service
 ultraytics YOLO face-detection (v11) - AGPL-3.0 license
 https://github.com/ultralytics/ultralytics?tab=AGPL-3.0-1-ov-file
 
-ffmpeg-kit-full-gpl (4.5.LTS) - GNU Lesser General Public License, Version 3
+ffmpeg-kit-full-gpl (6.0-2.LTS) - GNU Lesser General Public License, Version 3
 Includes FFmpeg with dav1d, fontconfig, freetype, fribidi, gmp, gnutls, kvazaar, lame, libass, libiconv, libilbc, libtheora, libvid.stab, libvorbis, libvpx, libwebp, libxml2, opencore-amr, opus, shine, snappy, soxr, speex, twolame, vo-amrwbenc, x264, x265 and xvidcore libraries enabled.
 https://github.com/tanersener/ffmpeg-kit
 
@@ -141,11 +141,11 @@ Lottie (6.4.0) - Apache-2.0
 Lottie is an animation library that renders Adobe After Effects animations natively in realtime.
 https://github.com/airbnb/lottie-android
 
-MediaPipe Taksks Core (0.10.21) - The Apache Software License, Version 2.0
+MediaPipe Taksks Core (0.10.14) - The Apache Software License, Version 2.0
 The MediaPipe Tasks core components.
 https://mediapipe.dev/
 
-MediaPipe Tasks Vision (0.10.21) - The Apache Software License, Version 2.0
+MediaPipe Tasks Vision (0.10.14) - The Apache Software License, Version 2.0
 The MediaPipe Tasks Vision APIs.
 https://mediapipe.dev/
 

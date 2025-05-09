@@ -149,7 +149,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListener, SensorEventListener {
+class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.LandmarkerListener {
     /*  1. button 클릭
     *   2. 카운트 다운 시작
     *   3. 카운트 다운 종료
@@ -217,19 +217,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
     private var timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
     private val startTime = LocalDateTime.now()
     private var endTime : LocalDateTime? = null
-
-    // ------# 수직 감지기 #------
-    private lateinit var hideIndicatorHandler: Handler
-    private lateinit var hideIndicatorRunnable: Runnable
-    private var accelerometer: Sensor? = null
-    private lateinit var sensorManager: SensorManager
-    private var currentBiasZ = 0f
-    private var currentBiasX = 0f
-    private var filteredAngleZ = 0f
-    private var filteredAngleX = 0f
-    private val ALPHA = 0.1f
-    private val INTERPOLATION_FACTOR = 0.1f
-    private var hideIndicator = false
 
     // 네트워크 감지 클래스
     private lateinit var nco : NetworkConnectionObserver
@@ -330,7 +317,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                                                     synchronized(mvm) {
                                                         mvm.dynamic = mvm.convertToMeasureDynamic(modifiedObject)
                                                         mvm.toSendDynamicJo = modifiedObject
-                                                        Log.v("넣을dynamicJo", "${mvm.toSendDynamicJo}")
+                                                        Log.v("넣을dynamicJo", "${mvm.dynamic}, ${mvm.toSendDynamicJo}")
                                                     }
                                                 }
                                                 binding.pvDynamic.visibility = View.INVISIBLE
@@ -387,12 +374,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             setUpCamera()
         }
 
-        // ------# 수직 감지기 #------
-        if (!hideIndicator) {
-            accelerometer?.let {
-                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
-            }
-        }
         backgroundExecutor.execute {
             if (this::poseLandmarkerHelper.isInitialized) {
                 if (poseLandmarkerHelper.isClose()) {
@@ -410,9 +391,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             viewModel.setDelegate(poseLandmarkerHelper.currentDelegate)
             backgroundExecutor.execute { poseLandmarkerHelper.clearPoseLandmarker() }
             mCountDown.cancel()
-            if (hideIndicator) {
-                sensorManager.unregisterListener(this)
-            }
+
         }
         release()
     }
@@ -424,8 +403,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             Long.MAX_VALUE, TimeUnit.NANOSECONDS
         )
         mCountDown.cancel()
-        sensorManager.unregisterListener(this)
-        hideIndicatorHandler.removeCallbacks(hideIndicatorRunnable)
         release()
         nco.unregister()
     }
@@ -458,9 +435,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             playSound(R.raw.seq0_start)
         }, 1500)
 
-        // ------# sensor 연결 #------
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         binding.pvDynamic.visibility = View.INVISIBLE
 
         // 인터넷 연결 옵저버 연결 + 전송 실패일 때, 인터넷이 복구됐을 때 알려주는
@@ -583,9 +557,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                     viewModel.setDelegate(poseLandmarkerHelper.currentDelegate)
 
                     backgroundExecutor.execute { poseLandmarkerHelper.clearPoseLandmarker() }
-                    if (hideIndicator) {
-                        sensorManager.unregisterListener(this)
-                    }
                 }
 
                 // ------# 업로드 시작 #------
@@ -781,6 +752,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         dialog1.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
         val dialog2 = MeasureSkeletonDialogFragment.newInstance(isPose = false)
         dialog2.show(supportFragmentManager, "MeasureSkeletonDialogFragment")
+        val dialog5 = MeasureSetupDialogFragment.newInstance(case = 1)
+        dialog5.show(supportFragmentManager, "MeasureSetupDialogFragment")
         val dialog4 = MeasureSetupDialogFragment.newInstance(case = 0)
         dialog4.show(supportFragmentManager, "MeasureSetupDialogFragment")
 
@@ -831,30 +804,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
         // ------! 다시 찍기 관리 끝 !------
 
-        // ------! 수직 감도 사라지기 보이기 시작 !------
-        hideIndicatorHandler = Handler(Looper.getMainLooper())
-        hideIndicatorRunnable = Runnable {
-            binding.clCautionAngleVerti.animate().alpha(0f).setDuration(300).start()
-            binding.clCautionAngleHorizon.animate().alpha(0f).setDuration(300).start()
-            hideIndicator = true
-        }
-        hideIndicatorHandler.postDelayed(hideIndicatorRunnable, 30000)
 
-        binding.clCautionAngleVerti.setOnClickListener {
-            if (!hideIndicator) {
-                binding.clCautionAngleVerti.animate().alpha(0f).setDuration(300).start()
-                binding.clCautionAngleHorizon.animate().alpha(0f).setDuration(300).start()
-                hideIndicator = true
-                hideIndicatorHandler.removeCallbacks(hideIndicatorRunnable)
-            } else {
-                binding.clCautionAngleVerti.animate().alpha(1f).setDuration(300).start()
-                binding.clCautionAngleHorizon.animate().alpha(1f).setDuration(300).start()
-                hideIndicator = false
-                // 다시 타이머 시작
-                hideIndicatorHandler.postDelayed(hideIndicatorRunnable, 5000)
-            }
-        }
-        // ------! 수직 감도 사라지기 보이기 끝 !------
     }
 
     // 뒤로가기 버튼 잠금
@@ -871,70 +821,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         }
     }
 
-    override fun onSensorChanged(event: SensorEvent?) {
-        if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            val z = event.values[2]
-            val clampedZ = z.coerceIn(-SensorManager.GRAVITY_EARTH, SensorManager.GRAVITY_EARTH)
-            val angleZ = Math.toDegrees(asin((clampedZ / SensorManager.GRAVITY_EARTH).toDouble()))
-            filteredAngleZ = lowPassFilterZ(angleZ.toFloat())
-            val normalizedAngleZ = (filteredAngleZ + 90).coerceIn(0f, 180f)
-
-            val targetBiasZ = 1 - (normalizedAngleZ / 180f)
-            currentBiasZ = interpolateZ(targetBiasZ)
-
-            // cvCautionVerti의 layoutParams를 독립적으로 가져와 수정
-            val layoutParamsVerti = (binding.cvCautionVerti.layoutParams as ConstraintLayout.LayoutParams)
-            layoutParamsVerti.verticalBias = currentBiasZ
-            binding.cvCautionVerti.layoutParams = layoutParamsVerti
-            binding.cvCautionVerti.requestLayout()
-            if (normalizedAngleZ in 88f..92f) {
-                binding.cvCautionVerti.setCardBackgroundColor(ContextCompat.getColor(this, R.color.mainColor))
-            } else {
-                binding.cvCautionVerti.setCardBackgroundColor(ContextCompat.getColor(this, R.color.subColor100))
-            }
-
-
-            // 수평 감지
-            val x = event.values[0]
-            val clampedX = x.coerceIn(-SensorManager.GRAVITY_EARTH, SensorManager.GRAVITY_EARTH)
-            val angleX = Math.toDegrees(asin((clampedX / SensorManager.GRAVITY_EARTH).toDouble()))
-            filteredAngleX = lowPassFilterX(angleX.toFloat())
-            val normalizedAngleX = (filteredAngleX + 90).coerceIn(0f, 180f)
-
-            val targetBiasX = normalizedAngleX / 180f
-            currentBiasX = interpolateX(targetBiasX)
-
-            // cvCautionHorizon의 layoutParams를 독립적으로 가져와 수정
-            val layoutParamsHoriz = (binding.cvCautionHorizon.layoutParams as ConstraintLayout.LayoutParams)
-            layoutParamsHoriz.horizontalBias = currentBiasX
-            binding.cvCautionHorizon.layoutParams = layoutParamsHoriz
-            binding.cvCautionHorizon.requestLayout()
-            if (normalizedAngleX in 89f..91f) {
-                binding.cvCautionHorizon.setCardBackgroundColor(ContextCompat.getColor(this, R.color.mainColor))
-            } else {
-                binding.cvCautionHorizon.setCardBackgroundColor(ContextCompat.getColor(this, R.color.subColor100))
-            }
-        }
-    }
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-    // ------! 센서 시작 !------
-    private fun lowPassFilterZ(input: Float): Float {
-        filteredAngleZ += ALPHA * (input - filteredAngleZ)
-        return filteredAngleZ
-    }
-
-    private fun lowPassFilterX(input: Float): Float {
-        filteredAngleX += ALPHA * (input - filteredAngleX)
-        return filteredAngleX
-    }
-
-    private fun interpolateZ(target: Float): Float {
-        return currentBiasZ + (target - currentBiasZ) * INTERPOLATION_FACTOR
-    }
-
-    private fun interpolateX(target: Float): Float {
-        return currentBiasX + (target - currentBiasX) * INTERPOLATION_FACTOR
-    }
     // ------# 측정 seq가 종료될 때 실행되는 함수 #------
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
@@ -968,7 +854,6 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                         })
 
                 }, 1500)
-                Log.v("dynamic잘들어갔", "${mvm.dynamic}, ${mvm.dynamicJa.length()}")
                 binding.tvMeasureSkeletonGuide.text = when (seqStep.value) {
                     1 -> "손을 머리 위로 올리고 스쿼트를 진행합니다"
                     2 -> "수직으로 양팔을 굽혀 팔꿈치 밸런스를 측정합니다"
@@ -1259,22 +1144,8 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         permissionDialog?.let { dialog ->
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.black))
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.black))
-        }    }
-//    private fun showSettingsDialog() {
-//        AlertDialog.Builder(this)
-//            .setTitle("권한 설정 필요")
-//            .setMessage("설정에서 권한을 허용해주세요.")
-//            .setPositiveButton("설정으로 이동") { _, _ ->
-//                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-//                    data = Uri.fromParts("package", packageName, null)
-//                })
-//            }
-//            .setNegativeButton("취소") { dialog, _ ->
-//                dialog.dismiss()
-//                finish()
-//            }
-//            .show()
-//    }
+        }
+    }
 
     override fun onError(error: String, errorCode: Int) {
         runOnUiThread {
@@ -2229,42 +2100,9 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
         return if (value.isNaN()) 0f else value
     }
 
-//    private fun flipVideoHorizontally(inputPath: String, outputPath: String, callback: (Boolean) -> Unit) {
-//        val command = "-i $inputPath -vf hflip -y -c:v libx264 -crf 18 -preset veryfast -c:a copy $outputPath"
-//        lifecycleScope.launch(Dispatchers.Main) {
-//            val dialog = LoadingDialogFragment.newInstance("동영상").apply {
-//                show(supportFragmentManager, "LoadingDialogFragment")
-//            }
-//
-//            withContext(Dispatchers.IO) {
-//                // FFmpeg 명령 실행
-//                FFmpegKit.executeAsync(command) { session ->
-//                    lifecycleScope.launch(Dispatchers.Main) {
-//                        val returnCode = session.returnCode
-//                        if (!isFinishing && !isDestroyed) {
-//                            dialog.dismiss()
-//                        }
-//                        if (ReturnCode.isSuccess(returnCode)) {
-//                            Log.d("FFMPEGAlert", "Video successfully mirrored and saved to: $outputPath")
-//                            callback(true)
-//                        } else {
-//                            Log.e("FFMPEGAlert", "Error occurred while mirroring video: ${session.getLogsAsString()}")
-//                            callback(false)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-    suspend fun flipVideoHorizontallySuspend(inputPath: String, outputPath: String): Boolean =
-        suspendCancellableCoroutine { cont ->
-            flipVideoHorizontally(inputPath, outputPath) { success ->
-                cont.resume(success)
-            }
-        }
-
     private fun flipVideoHorizontally(inputPath: String, outputPath: String, callback: (Boolean) -> Unit) {
         val command = "-i $inputPath -vf hflip -y -c:v libx264 -crf 18 -preset veryfast -c:a copy $outputPath"
+//        val command = "-i \"$inputPath\" -vf \"drawtext=text='Before ↔ After':fontcolor=white:fontsize=50:x=(w-text_w)/2:y=20,hflip\" -y -c:v libx264 -crf 18 -preset veryfast -c:a copy \"$outputPath\""
         lifecycleScope.launch(Dispatchers.Main) {
             val dialog = LoadingDialogFragment.newInstance("동영상").apply {
                 show(supportFragmentManager, "LoadingDialogFragment")
@@ -2275,6 +2113,7 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
                 FFmpegKit.executeAsync(command) { session ->
                     lifecycleScope.launch(Dispatchers.Main) {
                         val returnCode = session.returnCode
+                        Log.d("FFmpeg", "ReturnCode: $returnCode\nLogs:\n${session.allLogsAsString}")
                         if (!isFinishing && !isDestroyed) {
                             dialog.dismiss()
                         }
@@ -2290,6 +2129,13 @@ class MeasureSkeletonActivity : AppCompatActivity(), PoseLandmarkerHelper.Landma
             }
         }
     }
+    suspend fun flipVideoHorizontallySuspend(inputPath: String, outputPath: String): Boolean =
+        suspendCancellableCoroutine { cont ->
+            flipVideoHorizontally(inputPath, outputPath) { success ->
+                cont.resume(success)
+            }
+        }
+
 
     private fun createMultipartBody() : MultipartBody {
         // ------# 업로드 준비 #------

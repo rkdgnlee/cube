@@ -38,6 +38,7 @@ import com.tangoplus.tangoq.function.WifiManager
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.db.Singleton_t_user
 import com.tangoplus.tangoq.dialog.AlertDialogFragment
+import com.tangoplus.tangoq.dialog.MeasureSetupDialogFragment
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.fragment.ExerciseDetailFragment
 import com.tangoplus.tangoq.fragment.AnalyzeFragment
@@ -130,7 +131,6 @@ class MainActivity : AppCompatActivity() {
         selectedTabId = savedInstanceState?.getInt("selectedTabId") ?: R.id.main
         isConfigurationChanging = true
         fvm.currentFragmentType.observe(this) { fragmentType ->
-            Log.v("현재 타입", "$fragmentType")
             if (isConfigurationChanging) {
                 loadFragment(fragmentType)
                 isConfigurationChanging = false // 한 번만 실행되도록 플래그 리셋

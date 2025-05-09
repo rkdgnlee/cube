@@ -70,7 +70,7 @@ class MeasureDetailFragment : Fragment() {
         if (showMeasure) {
             showGuideAfterFinishMeasure()
         }
-
+        avm.analysisType = 1
         btns = listOf(binding.btnMD0, binding.btnMD1, binding.btnMD2, binding.btnMD3,
             binding.btnMD4, binding.btnMD5, binding.btnMD6, binding.btnMD7,
             binding.btnMD8, binding.btnMD9, binding.btnMD10, binding.btnMD11, binding.btnMD12 )
@@ -100,7 +100,6 @@ class MeasureDetailFragment : Fragment() {
                                     Handler(Looper.getMainLooper()).postDelayed({
                                         scrollToView(binding.ivMDSkeleton, binding.nsvMD)
                                     }, 400)
-
                                     break
                                 }
                             }
@@ -209,7 +208,6 @@ class MeasureDetailFragment : Fragment() {
                 groupedAnalyses[seqIndex] = mutableListOf()
             }
             groupedAnalyses[seqIndex]?.add(analyses)
-
         }
 
         adapterAnalysises = groupedAnalyses.map { (indexx, analysesList) ->
@@ -220,7 +218,6 @@ class MeasureDetailFragment : Fragment() {
             )
         }.sortedBy { it.indexx }
 
-//        Log.v("변환analysis", "${adapterAnalysises.map { it.labels.size }}, ${ adapterAnalysises.map { it } }")
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         val adapter = MeasureDetailRVAdapter(this@MeasureDetailFragment, adapterAnalysises, avm) // avm.currentIndex가 2인데 adapterAnalysises에는 0, 5밖에없어서 indexOutOfBoundException이 나옴.
         binding.rvMD.layoutManager = layoutManager
@@ -244,65 +241,6 @@ class MeasureDetailFragment : Fragment() {
         binding.tvMDScore.text = measure?.overall.toString()
         binding.tvMDDate.text = "${measure?.regDate?.substring(0, 16)}" // ${measure?.userName}
     }
-
-    private var idleJob: Job? = null
-
-//    private fun startIdleDetection() {
-//        Log.v("startDetection", "startDetection")
-//        if (isDelayed) {
-//            notPartIndexes?.forEach { index ->
-//                if (!btns.isNullOrEmpty()) {
-//                    btns?.get(index)?.let { fadeIn(it, 800) }
-//                }
-//            }
-//            isDelayed = false
-//        }
-//        idleJob?.cancel() // 이전 타이머 취소
-//        idleJob = lifecycleScope.launch {
-//            delay(4500) // 3초 대기
-//            onIdleDetected() // 여기에 3초 동안 아무 동작이 없었을 때 실행할 동작
-//        }
-//    }
-//
-//    private fun onIdleDetected() {
-//        isDelayed = true
-//        notPartIndexes?.forEach { index ->
-//            if (!btns.isNullOrEmpty()) {
-//                btns?.get(index)?.let { fadeOut(it, 800) }
-//            }
-//        }
-//    }
-//
-//    private fun createNotDangerPartIndexes(dangerParts: List<Pair<String, Float>>?): List<Int> {
-//        val totalIndexes: List<Int> = (0 .. 12).toList()
-//
-//        val dangerIndexes: List<Int> = dangerParts?.mapNotNull { pair ->
-//            partIndexes.entries.find { it.value == pair.first }?.key
-//        }!!
-//
-//        return (totalIndexes - dangerIndexes).toList()
-//    }
-//
-//
-//    fun fadeOut(view: View, duration: Long = 1000) {
-//        view.animate()
-//            .setInterpolator(DecelerateInterpolator())
-//            .alpha(0f)
-//            .setDuration(duration)
-//            .withEndAction {
-//                view.visibility = View.INVISIBLE
-//            }
-//            .start()
-//    }
-//    fun fadeIn(view: View, duration: Long = 1000) {
-//        view.alpha = 0f
-//        view.visibility = View.VISIBLE
-//        view.animate()
-//            .setInterpolator(DecelerateInterpolator())
-//            .alpha(1f)
-//            .setDuration(duration)
-//            .start()
-//    }
 
     private fun showGuideAfterFinishMeasure() {
         context.let { safeContext ->

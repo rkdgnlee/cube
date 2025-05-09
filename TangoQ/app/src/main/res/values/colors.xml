@@ -7,6 +7,7 @@
     <color name="mainColor">#2EE88B</color>
     <color name="mainDeepColor">#0C894C</color>
     <color name="mainContainerColor">#EFFEF6</color>
+    <color name="mainHalfColor">#A6FAD0</color>
 
     <color name="secondaryColor">#2C4FD0</color>
     <color name="secondDeepColor">#1B2450</color>

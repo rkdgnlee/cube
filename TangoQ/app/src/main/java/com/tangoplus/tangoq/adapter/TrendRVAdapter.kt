@@ -125,7 +125,8 @@ class TrendRVAdapter(
 
 
                 val rightScore = calculatePercent(rightAnalysisUnits)
-                val state = if (leftScore == rightScore) {
+                Log.v("왼오", "$leftScore $rightScore")
+                val state = if (leftScore == rightScore || abs(leftScore - rightScore) < 2.0) {
                     2
                 } else if (leftScore > rightScore){
                     1

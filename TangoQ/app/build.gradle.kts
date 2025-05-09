@@ -20,8 +20,8 @@ android {
         minSdk = 27
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
-        versionCode = 48
-        versionName = "1.57"
+        versionCode = 49
+        versionName = "1.58"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -29,8 +29,8 @@ android {
     buildTypes {
         debug {
             isDebuggable = true
-
         }
+
         release {
             isDebuggable = false
             proguardFiles(
@@ -53,9 +53,6 @@ android {
     }
     buildFeatures {
         viewBinding = true
-    }
-    aaptOptions {
-        noCompress += "task"
     }
 }
 //noinspection UseTomlInstead
@@ -84,20 +81,19 @@ dependencies {
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
-    implementation("com.arthenica:ffmpeg-kit-full-gpl:4.5.LTS") // 최신버전은 implementation 'com.arthenica:ffmpeg-kit-full:6.0-2' 인데 이 부분은 안드로이드 버전 업그레이드할 때 필요
+    implementation("com.arthenica:ffmpeg-kit-full-gpl:6.0-2")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
-//    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
 
     // api
     implementation("com.navercorp.nid:oauth:5.10.0")
-    implementation("com.kakao.sdk:v2-common:2.19.0")
-    implementation("com.kakao.sdk:v2-user:2.20.6")
-    implementation("com.kakao.sdk:v2-auth:2.19.0")
+    implementation("com.kakao.sdk:v2-common:2.21.1")
+    implementation("com.kakao.sdk:v2-user:2.21.1")
+    implementation("com.kakao.sdk:v2-auth:2.21.1")
     implementation("com.google.gms:google-services:4.4.2")
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
-    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
-    implementation("com.google.firebase:firebase-analytics:22.2.0")
-    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.1")
+    implementation("com.google.firebase:firebase-analytics:22.4.0")
+    implementation("com.google.firebase:firebase-auth-ktx:23.2.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
@@ -110,7 +106,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 //    implementation("com.android.volley:volley:1.2.1")
     implementation("com.github.yuriy-budiyev:code-scanner:2.3.0")
-    implementation("androidx.work:work-runtime:2.10.0")
+    implementation("androidx.work:work-runtime:2.10.1")
 
     // room
     val roomVersion = "2.6.1"

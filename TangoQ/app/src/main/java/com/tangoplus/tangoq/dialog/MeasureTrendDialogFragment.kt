@@ -67,6 +67,7 @@ import kotlin.math.max
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.doOnLayout
 import androidx.media3.common.util.UnstableApi
+import com.arthenica.ffmpegkit.ReturnCode
 
 class MeasureTrendDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureTrendDialogBinding
@@ -241,7 +242,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
         } catch (e: Exception) {
             Log.e("TrendError", "Exception: ${e.message}")
         }
-
     }
 
     // 오른쪽 actv에 대한 listener
@@ -450,8 +450,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
             }?.toMutableList()
 
         }
-        Log.v("오른쪽 필터링", "$filteredRightAnalysises")
-
         val filteredIndexes = if (currentSeq == 1 ) {
             listOf(1, 2, 7, 8, 9, 10)
         } else {
@@ -634,11 +632,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 if (aspectRatio < 1) {
                     val inputPath = avm.trendRightUri.toString() // 기존 파 일 경로
                     val tempOutputPath = "${context?.cacheDir}/right_temp_video.mp4" // 임시 파일
-
+                    Log.v("avm.rightEditedFile", "${avm.rightEditedFile?.absolutePath}, ${avm.rightEditedFile?.exists()}")
                     // 이미 처리한 영상 파일이 남아있을 때
                     if (avm.rightEditedFile != null && avm.rightEditedFile!!.exists()) {
                         Log.v("rightFileExisted", "${avm.rightEditedFile}")
                         setPlayerByCroppedVideo(true, videoWidth.toFloat(), videoHeight.toFloat())
+                    } else {
+
                     }
                     // 로딩창 키기
                     if (!isLoadingShown) {
@@ -652,8 +652,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                     lifecycleScope.launch {
                         FFmpegKit.executeAsync(command) { session ->
-                            if (session.returnCode.isSuccess) {
-                                Log.d("FFmpeg", "✅ 9:16 크롭 성공!")
+                            val returnCode = session.returnCode
+                            Log.v("returnCode", "$returnCode")
+                            if (ReturnCode.isSuccess(returnCode)) {
+                                Log.d("FFmpeg결과", "✅ 9:16 크롭 성공!")
 
                                 avm.rightEditedFile = File(tempOutputPath)
 
@@ -662,19 +664,22 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                     requireActivity().runOnUiThread {
                                         setPlayerByCroppedVideo(true, videoWidth.toFloat(), videoHeight.toFloat())
                                         avm.onPlayer2Ready.value = true
+
+                                        Log.v("로딩창state", "right: ${loadingDialog.isAdded}, ${loadingDialog.isVisible}")
+                                        if (loadingDialog.isAdded) {
+                                            loadingDialog.dismiss()
+                                            Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
+                                            simpleExoPlayer2?.pause()
+                                        }
+
                                     }
-                                    Log.v("로딩창state", "right: ${loadingDialog.isAdded}, ${loadingDialog.isVisible}")
-                                    if (loadingDialog.isAdded) {
-                                        loadingDialog.dismiss()
-                                        Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
-                                        simpleExoPlayer2?.pause()
-                                    }
+
                                     isLoadingShown = false
                                 } else {
-                                    Log.e("FFmpeg", "❌ 변환된 파일이 존재하지 않음!")
+                                    Log.e("FFmpeg결과", "❌ 변환된 파일이 존재하지 않음!")
                                 }
                             } else {
-                                Log.e("FFmpeg", "❌ 크롭 실패! ${session.returnCode}")
+                                Log.e("FFmpeg결과", "❌ 크롭 실패! ${session.returnCode}")
                             }
                         }
                     }
@@ -714,7 +719,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 if (aspectRatio < 1) {
                     val inputPath = avm.trendLeftUri.toString() // 기존 파일 경로
                     val tempOutputPath = "${context?.cacheDir}/left_temp_video.mp4" // 임시 파일
-
+                    Log.v("avm.rightEditedFile", "${avm.rightEditedFile?.absolutePath}, ${avm.rightEditedFile?.exists()}")
                     if (avm.leftEditedFile != null && avm.leftEditedFile!!.exists()) {
                         Log.v("rightFileExisted", "${avm.leftEditedFile}")
                         setPlayerByCroppedVideo(false, videoWidth.toFloat(), videoHeight.toFloat())
@@ -729,7 +734,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                     lifecycleScope.launch {
                         FFmpegKit.executeAsync(command) { session ->
-                            if (session.returnCode.isSuccess) {
+                            val returnCode = session.returnCode
+                            Log.v("returnCode", "$returnCode")
+                            if (ReturnCode.isSuccess(returnCode)) {
                                 Log.d("FFmpeg", "✅ 9:16 크롭 성공! output: $tempOutputPath")
 
                                 avm.leftEditedFile = File(tempOutputPath)
@@ -750,13 +757,12 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                             loadingDialog.dismiss()
                                             isLoadingShown = false
                                         }
-
                                     }
                                 } else {
-                                    Log.e("FFmpeg", "❌ 변환된 파일이 존재하지 않음!")
+                                    Log.e("FFmpeg결과", "❌ 변환된 파일이 존재하지 않음!")
                                 }
                             } else {
-                                Log.e("FFmpeg", "❌ 크롭 실패! ${session.failStackTrace}")
+                                Log.e("FFmpeg결과", "❌ 크롭 실패! ${session.failStackTrace}, ${session.allLogsAsString}")
                             }
                         }
                     }
