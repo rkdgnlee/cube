@@ -1,0 +1,133 @@
+package com.tangoplus.tangobody.dialog
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.tangoplus.tangobody.MainActivity
+import com.tangoplus.tangobody.adapter.AlarmRVAdapter
+import com.tangoplus.tangobody.callback.SwipeHelperCallback
+import com.tangoplus.tangobody.vo.MessageVO
+import com.tangoplus.tangobody.databinding.FragmentAlarmDialogBinding
+import com.tangoplus.tangobody.function.PreferencesManager
+import com.tangoplus.tangobody.listener.OnAlarmClickListener
+import com.tangoplus.tangobody.listener.OnAlarmDeleteListener
+import com.tangoplus.tangobody.db.Singleton_t_user
+import com.tangoplus.tangobody.fragment.ExtendedFunctions.setOnSingleClickListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.properties.Delegates
+
+class AlarmDialogFragment : DialogFragment(), OnAlarmClickListener, OnAlarmDeleteListener {
+    lateinit var binding : FragmentAlarmDialogBinding
+    private lateinit var swipeHelperCallback: SwipeHelperCallback
+    private lateinit var alarmRVAdapter : AlarmRVAdapter
+    private var alarmList = mutableListOf<MessageVO>()
+    private lateinit var pm: PreferencesManager
+
+    private var userSn by Delegates.notNull<Int>()
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentAlarmDialogBinding.inflate(inflater)
+        return binding.root
+    }
+
+    @SuppressLint("ClickableViewAccessibility", "NotifyDataSetChanged")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // api35이상 화면 크기 조절
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 상태 표시줄 높이만큼 상단 패딩 적용
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        pm = PreferencesManager(requireContext())
+        val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
+        binding.ibtnAlarmBack.setOnSingleClickListener { dismiss() }
+        userSn = userJson?.optInt("sn") ?:0
+        CoroutineScope(Dispatchers.IO).launch {
+            withContext(Dispatchers.Main) {
+
+                alarmList = pm.getAlarms(userSn)
+                alarmList.sortByDescending { it.timeStamp }
+                // ------! alarm touchhelper 연동 시작 !------
+                if (alarmList.isEmpty()) {
+                    binding.tvAlarm.visibility = View.VISIBLE
+                } else {
+                    binding.tvAlarm.visibility = View.GONE
+                }
+
+                alarmRVAdapter = AlarmRVAdapter(this@AlarmDialogFragment, alarmList, this@AlarmDialogFragment, this@AlarmDialogFragment)
+                swipeHelperCallback = SwipeHelperCallback().apply {
+                    setClamp(250f)
+                }
+
+                val itemTouchHelper = ItemTouchHelper(swipeHelperCallback)
+                itemTouchHelper.attachToRecyclerView(binding.rvAlarm)
+                binding.rvAlarm.apply {
+                    layoutManager = LinearLayoutManager(requireContext().applicationContext)
+                    adapter = alarmRVAdapter
+                    setOnTouchListener{ _, _ ->
+                        swipeHelperCallback.removePreviousClamp(binding.rvAlarm)
+                        false
+                    }
+                } // -----! alarm touchhelper 연동 끝 !-----
+
+            }
+        }
+
+        binding.tvAlarmClear.setOnSingleClickListener {
+            alarmList.clear()
+            pm.deleteAllAlarms(userSn)
+            alarmRVAdapter.notifyDataSetChanged()
+        }
+    }
+
+    override fun onAlarmClick(fragmentId: String) {
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        intent.putExtra("fragmentId", fragmentId)
+        intent.putExtra("fromAlarmActivity", true)
+        startActivity(intent)
+        intent.replaceExtras(null)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onAlarmDelete(timeStamp: Long?) {
+        // ------! 삭제 후 스와이프 초기화 시작 !------
+        swipeHelperCallback.removePreviousClamp(binding.rvAlarm)
+        binding.rvAlarm.adapter?.notifyDataSetChanged()
+        binding.rvAlarm.post {
+            binding.rvAlarm.invalidateItemDecorations()
+        }
+        alarmList.remove(alarmList.find { it.timeStamp == timeStamp })
+        pm.deleteAlarm(userSn, timeStamp ?: 0L)
+
+
+        // ------! 삭제 후 스와이프 초기화 끝 !------
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+    }
+}

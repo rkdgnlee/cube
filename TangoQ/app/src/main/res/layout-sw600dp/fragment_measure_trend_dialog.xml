@@ -268,7 +268,7 @@
                             </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
-                        <com.tangoplus.tangoq.vision.OverlayView
+                        <com.tangoplus.tangobody.vision.OverlayView
                             android:id="@+id/ovMTDLeft"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
@@ -383,7 +383,7 @@
                             </androidx.cardview.widget.CardView>
                         </FrameLayout>
 
-                        <com.tangoplus.tangoq.vision.OverlayView
+                        <com.tangoplus.tangobody.vision.OverlayView
                             android:id="@+id/ovMTDRight"
                             android:layout_width="0dp"
                             android:layout_height="0dp"

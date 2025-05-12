@@ -269,7 +269,7 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <com.tangoplus.tangoq.view.BadgeButton
+                <com.tangoplus.tangobody.view.BadgeButton
                     android:id="@+id/btnMD0"
                     android:layout_width="86dp"
                     android:layout_height="32dp"
@@ -307,7 +307,7 @@
                     app:layout_constraintTop_toTopOf="@+id/ivMDSkeleton"
                     app:layout_constraintVertical_bias="1.0">
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD1"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -320,7 +320,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD3"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -333,7 +333,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD5"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -346,7 +346,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD7"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -359,7 +359,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD9"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -372,7 +372,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD11"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -397,7 +397,7 @@
                     app:layout_constraintTop_toTopOf="@+id/ivMDSkeleton"
                     app:layout_constraintVertical_bias="1.0">
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD2"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -410,7 +410,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD4"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -423,7 +423,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD6"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -436,7 +436,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD8"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -449,7 +449,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD10"
                         android:layout_width="86dp"
                         android:layout_height="32dp"
@@ -462,7 +462,7 @@
                         android:textColor="@color/whiteText"
                         android:textSize="14dp" />
 
-                    <com.tangoplus.tangoq.view.BadgeButton
+                    <com.tangoplus.tangobody.view.BadgeButton
                         android:id="@+id/btnMD12"
                         android:layout_width="86dp"
                         android:layout_height="32dp"

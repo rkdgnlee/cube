@@ -72,7 +72,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/line_dash_horizontal" />
 
-            <com.tangoplus.tangoq.view.TrendCurveView
+            <com.tangoplus.tangobody.view.TrendCurveView
                 android:id="@+id/cvDDI1"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -146,7 +146,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/line_dash_horizontal" />
 
-            <com.tangoplus.tangoq.view.TrendCurveView
+            <com.tangoplus.tangobody.view.TrendCurveView
                 android:id="@+id/cvDDI2"
                 android:layout_width="0dp"
                 android:layout_height="0dp"

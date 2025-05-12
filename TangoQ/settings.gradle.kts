@@ -21,6 +21,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TangoQ"
+rootProject.name = "TangoBody"
 include(":app")
  

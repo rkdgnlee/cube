@@ -122,7 +122,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.tangoplus.tangoq.provider"
+            android:authorities="com.tangoplus.tangobody.provider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
