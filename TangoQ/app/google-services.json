@@ -7,43 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:196772683133:android:4613778278a6e413d34014",
-        "android_client_info": {
-          "package_name": "com.tangoplus.tangobody"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "196772683133-55dpvjl29sb44lb66bma8nvu77csdh2g.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.tangoplus.tangobody",
-            "certificate_hash": "56a79fe9b17660533f6a513a6d573755d1ec3da1"
-          }
-        },
-        {
-          "client_id": "196772683133-gko53tnta50fi6php2rg1bib8k1q0856.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC4Hx5fAaEp_VCNtpa7u4c4H3mCV8GuSEk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "196772683133-gko53tnta50fi6php2rg1bib8k1q0856.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:196772683133:android:6e5b58b866f38a01d34014",
         "android_client_info": {
           "package_name": "com.tangoplus.tangoq"

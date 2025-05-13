@@ -94,7 +94,7 @@
 
         </FrameLayout>
 
-        <com.tangoplus.tangobody.vision.OverlayView
+        <com.tangoplus.tangoq.vision.OverlayView
             android:id="@+id/ovPD"
             android:layout_width="0dp"
             android:layout_height="0dp"
