@@ -167,7 +167,7 @@ class ExerciseRVAdapter (
                         // ------# 시청 기록 및 완료 버튼 #------
                         val currentItem = progresses[position] // 프로그램 갯수만큼의 progresses의 1개에 접근
                         // currentItem의 currentWeek와 currentSequence로 현재 운동의 회차를 계산
-                        Log.v("currentItem", "$currentItem")
+//                        Log.v("currentItem", "$currentItem")
                         val condition = when (currentItem.cycleProgress * 100 / currentItem.duration) {
                             in 95 .. 1000 -> 0
                             in 1 .. 94 -> 1
@@ -205,7 +205,7 @@ class ExerciseRVAdapter (
                         // 0 일 때 uvp 같이 넣어서 볼 수 있는 상태
                         // 1 일 때 uvp는 안들어가지만 재생은 가능한 상태
                         // 2 클릭만 감지되고 playthumbnail은 안나오는 상태
-                        Log.v("currentState", "$currentExerciseItem, $state")
+//                        Log.v("currentState", "$currentExerciseItem, $state")
                         when (state) {
                             0, 1 -> {
                                 exerciseClickListener?.exerciseClick(currentExerciseItem?.exerciseName.toString())
@@ -214,7 +214,7 @@ class ExerciseRVAdapter (
                                     arguments = Bundle().apply {
                                         putParcelable("ExerciseUnit", currentExerciseItem)
                                         if (progresses != null && state == 0) {
-                                            Log.v("state", "state확인: $state")
+//                                            Log.v("state", "state확인: $state")
                                             // 지난 값일 경우
                                             putBoolean("isProgram", true)
                                             putInt("uvpSn", currentItem?.uvpSn ?: 0)

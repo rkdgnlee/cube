@@ -41,8 +41,14 @@ import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.datastore.core.IOException
+import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.createGuide
+import com.tangoplus.tangoq.function.MeasurementManager.createResultComment
+import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
 import com.tangoplus.tangoq.viewmodel.FragmentViewModel
+import com.tangoplus.tangoq.vo.DataDynamicVO
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import java.net.SocketTimeoutException
 
 class MainFragment : Fragment() {
@@ -153,6 +159,52 @@ class MainFragment : Fragment() {
                 // ------# 인터넷 연결이 없을 때 #------
             }
         }
+
+//        lifecycleScope.launch {
+//            avm.mdMeasureResult = mvm.selectedMeasure?.measureResult?.optJSONArray(1) ?: JSONArray()
+//            // 비디오 사이즈 6개넣어서 그대로 씀.
+//            val connections = listOf(25, 26) // 좌측 골반의 pose번호를 가져옴
+//            val titleList = listOf("좌측 무릎", "우측 무릎")
+//            val coordinates = extractVideoCoordinates(avm.mdMeasureResult)
+//            val dataDynamicVOList = mutableListOf<DataDynamicVO>()
+//
+//            for (i in connections.indices step 2) {
+//                val connection1 = connections[i]
+//                val connection2 = connections[i + 1]
+//                val title1 = titleList[i]
+//                val title2 = titleList[i + 1]
+//
+//                val filteredCoordinate1 = mutableListOf<Pair<Float, Float>>()
+//                val filteredCoordinate2 = mutableListOf<Pair<Float, Float>>()
+//
+//                for (element in coordinates) {
+//                    // 단순히 해당 인덱스의 좌표를 가져와서 추가
+//                    filteredCoordinate1.add(element[connection1])
+//                    filteredCoordinate2.add(element[connection2])
+//                }
+//
+//                val dataDynamicVO = DataDynamicVO(
+//                    data1 = filteredCoordinate1,
+//                    title1 = title1,
+//                    data2 = filteredCoordinate2,
+//                    title2 = title2
+//                )
+//                dataDynamicVOList.add(dataDynamicVO)
+//            }
+//            val md = MeasureDatabase.getDatabase(requireContext())
+//            val mDao = md.measureDao()
+//            withContext(Dispatchers.IO) {
+//                val allInfo = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")?.let { mDao.getAllInfo(it) }
+//                val currentInfo = allInfo?.get(2)
+//                Log.v("currentInfo", "$currentInfo")
+//                val statics = currentInfo?.sn?.let { mDao.getStaticsBy1Info(it) }
+//                val dynamics = Pair(dataDynamicVOList.flatMap{ it.data1} , dataDynamicVOList.flatMap { it.data2 })
+//                if (currentInfo != null && statics != null) {
+//                    val commen = createResultComment(currentInfo,  statics, dynamics)
+//                    Log.v("comment", commen)
+//                }
+//            }
+//        }
     }
 
     // 상단 어댑터와 하단 어댑터 같이 나옴
@@ -168,7 +220,7 @@ class MainFragment : Fragment() {
     // 블러 유무 판단하기
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
-        Log.v("measure있는지", "${measures?.size}")
+//        Log.v("measure있는지", "${measures?.size}")
         startShimmer()
         if (measures.isNullOrEmpty()) {
             // ------# measure에 뭐라도 들어있으면 위 코드 #-------
@@ -205,7 +257,7 @@ class MainFragment : Fragment() {
                         try {
                             lifecycleScope.launch(Dispatchers.Main) {
 
-                                Log.v("날짜 비교", "$selectedDate, ${measures!!.map { it.regDate }} ")
+//                                Log.v("날짜 비교", "$selectedDate, ${measures!!.map { it.regDate }} ")
                                 val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate.fullDateTime })
                                 if (dateIndex != null) {
 
@@ -223,7 +275,7 @@ class MainFragment : Fragment() {
                                         if (measureSize > 1) {
                                             val summaryComments  = createMeasureComment(measures?.get(dateIndex)?.dangerParts)
 
-                                            Log.v("써머리들어간 후", "$summaryComments")
+//                                            Log.v("써머리들어간 후", "$summaryComments")
                                             if (summaryComments.size > 1) {
                                                 binding.tvMMeasureResult1.text = summaryComments[0]
                                                 binding.tvMMeasureResult2.text = summaryComments[1]
@@ -288,7 +340,7 @@ class MainFragment : Fragment() {
 
     private fun setAdapter() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        Log.w("rec갯수", "${mvm.selectedMeasure?.recommendations?.size}, ${mvm.selectedMeasure?.recommendations?.map { it.title }}")
+//        Log.w("rec갯수", "${mvm.selectedMeasure?.recommendations?.size}, ${mvm.selectedMeasure?.recommendations?.map { it.title }}")
         val adapter = MainProgressRVAdapter(this@MainFragment,  mvm.selectedMeasure?.recommendations?: listOf(), pvm)
         binding.rvM2.layoutManager = layoutManager
         binding.rvM2.adapter = adapter

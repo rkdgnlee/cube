@@ -548,7 +548,7 @@ class MainAnalysisFragment : Fragment() {
     private fun setVideoAdapter(data: List<DataDynamicVO>, coordinates: List<List<Pair<Float,Float>>>) {
 
         val isFrontCamera = judgeFrontCameraByDynamic(coordinates)
-        Log.v("전면?", "${coordinates.size} ${isFrontCamera}")
+//        Log.v("전면?", "${coordinates.size} ${isFrontCamera}")
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val dynamicAdapter = DataDynamicRVAdapter(data, isFrontCamera)
         binding.rvMA.layoutManager = linearLayoutManager1

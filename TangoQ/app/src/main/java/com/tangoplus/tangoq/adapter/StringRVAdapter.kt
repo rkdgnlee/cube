@@ -195,7 +195,7 @@ class StringRVAdapter(private val fragment: Fragment,
                 holder.cbPBSI.setOnSingleClickListener {
                     if (currentItem != null) {
                         vm.selectPart.value = currentItem
-                        Log.v("selectedDate", "현재: ${vm.currentPart.value}, 선택값: ${vm.selectPart}")
+//                        Log.v("selectedDate", "현재: ${vm.currentPart.value}, 선택값: ${vm.selectPart}")
                     }
                 }
             }

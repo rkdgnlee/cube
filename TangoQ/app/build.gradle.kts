@@ -4,14 +4,8 @@ plugins {
     id("com.google.gms.google-services")
     id ("kotlin-kapt")
     id("com.google.firebase.crashlytics")
-    id("com.jaredsburrows.license") version ("0.9.4")
 }
 
-licenseReport {
-    generateHtmlReport = true
-    generateJsonReport = true
-    // 필요에 따라 다른 옵션 설정
-}
 android {
     namespace = "com.tangoplus.tangoq"
     compileSdk = 35
@@ -20,8 +14,8 @@ android {
         minSdk = 27
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
-        versionCode = 49
-        versionName = "1.58"
+        versionCode = 51
+        versionName = "1.60"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -153,6 +147,7 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
     implementation("androidx.webkit:webkit:1.13.0")
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.runtime.android)

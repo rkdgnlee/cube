@@ -128,7 +128,7 @@ class MeasureDetailFragment : Fragment() {
 
         // summary 넣기
         val summaryComments  = createMeasureComment(measure?.dangerParts)
-        Log.v("써머리들어간 후", "$summaryComments")
+//        Log.v("써머리들어간 후", "$summaryComments")
         if (summaryComments.size > 1) {
             binding.tvMDResult1.text = summaryComments[0]
             binding.tvMDResult2.text = summaryComments[1]

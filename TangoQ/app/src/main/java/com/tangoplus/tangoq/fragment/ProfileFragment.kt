@@ -88,7 +88,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
         val getGender = svm.User.value?.optString("gender")
         svm.setGender.value = if (getGender in listOf("", "null", null)) null else getGender
-        Log.v("userJson보기", "${svm.setBirthday.value}")
+//        Log.v("userJson보기", "${svm.setBirthday.value}")
 
 //        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
@@ -148,7 +148,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         }
         svm.setBirthday.observe(viewLifecycleOwner) { birthday ->
             if (birthday != null && birthday.length >= 8 && birthday != "0000-00-00") {
-                Log.v("버스데이", birthday)
+//                Log.v("버스데이", birthday)
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = (c.get(Calendar.YEAR) - birthday.substring(0, 4).toInt()).toString() + "세"
             }
@@ -284,7 +284,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
     private fun updateUserData() {
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-        Log.v("Singleton>updateUserData", "$userJson")
+//        Log.v("Singleton>updateUserData", "$userJson")
         val heightJo = userJson?.optDouble("height")
         val weightJo = userJson?.optDouble("weight")
         requireActivity().runOnUiThread {
@@ -331,7 +331,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                 // ----- 이미지 로드 시작 -----
                 val imageUri = userJson.optString("profile_file_path") ?: null
                 if (imageUri != "" && !imageUri.isNullOrEmpty() && imageUri != "null") {
-                    Log.v("inside ImageUri", imageUri)
+//                    Log.v("inside ImageUri", imageUri)
                     Glide.with(this)
                         .load(imageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))

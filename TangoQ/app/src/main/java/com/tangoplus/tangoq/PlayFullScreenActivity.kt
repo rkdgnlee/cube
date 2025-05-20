@@ -120,7 +120,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         pvm.isProgram = isProgram
         pvm.uvpSn = uvpSn
 
-        Log.v("url들", "isEVP: ${pvm.isEVP}, urls: $videoUrls, uvpSns: ${pvm.uvpSns}, isProgram: $isProgram, uvpSn: $uvpSn, cycle: ${pvm.cycle}, weekNumber: ${pvm.weekNumber}")
+//        Log.v("url들", "isEVP: ${pvm.isEVP}, urls: $videoUrls, uvpSns: ${pvm.uvpSns}, isProgram: $isProgram, uvpSn: $uvpSn, cycle: ${pvm.cycle}, weekNumber: ${pvm.weekNumber}")
 
         // ------# 이걸로 재생 1개든 여러 개든 이곳에 담음 #------
         if (!videoUrls.isNullOrEmpty()) {
@@ -139,7 +139,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }
         if (pvm.baseUrls.isNotEmpty()) {
             playbackPosition = intent.getLongExtra("current_position", 0L)
-            Log.v("재생시점원시", "$playbackPosition")
+//            Log.v("재생시점원시", "$playbackPosition")
             pvm.isResume = false
 //            setPlayer()
         }
@@ -227,7 +227,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         } else {
             pvm.setPlaybackPosition(pvm.getPlaybackPosition() / 1000)
         }
-        Log.v("setPlayer", "position: ${pvm.getPlaybackPosition()}, windowIndex: ${pvm.getWindowIndex()}")
+//        Log.v("setPlayer", "position: ${pvm.getPlaybackPosition()}, windowIndex: ${pvm.getWindowIndex()}")
         initPlayer(pvm.baseUrls, pvm.getWindowIndex(), pvm.getPlaybackPosition())
         pvm.simpleExoPlayer?.addListener(object : Player.Listener {
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
@@ -241,24 +241,24 @@ class PlayFullScreenActivity : AppCompatActivity() {
             }
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
-                Log.v("PlaybackState", "State: $playbackState")
+//                Log.v("PlaybackState", "State: $playbackState")
                 when (playbackState) {
                     Player.STATE_IDLE -> Log.v("PlaybackState", "Player.STATE_IDLE")
                     Player.STATE_BUFFERING -> Log.v("PlaybackState", "Player.STATE_BUFFERING")
                     Player.STATE_READY -> {
-                        Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: ${pvm.currentMediaSourceIndex}")
+//                        Log.v("PlaybackState", "Player.STATE_READY, currentMediaSourceIndex: ${pvm.currentMediaSourceIndex}")
                         pvm.currentVideoDuration = pvm.simpleExoPlayer?.duration ?: 0
-                        Log.e("currentVideoDuration임", "${pvm.currentVideoDuration}")
+//                        Log.e("currentVideoDuration임", "${pvm.currentVideoDuration}")
                     }
                     Player.STATE_ENDED -> {
-                        Log.v("PlaybackState", "Player.STATE_ENDED")
+//                        Log.v("PlaybackState", "Player.STATE_ENDED")
 
                         if (!pvm.isEVP) {
                             sendUVP(true) {
                                 val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
                                 val elapsedSeconds = elapsedMillis / 1000
                                 chronometer.stop()
-                                Log.v("elapsedSeconds", "$elapsedSeconds")
+//                                Log.v("elapsedSeconds", "$elapsedSeconds")
 //                                pvm.exerciseLog = Triple(totalDuration, elapsedSeconds.toInt(), baseUrls.size )
                                 // 이 곳에 총 크로노미터 + 도합 운동시간 + 운동 갯수 3개 보내야함.
                                 val intent = Intent(this@PlayFullScreenActivity, MainActivity::class.java)
@@ -293,7 +293,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
 //                        pvm.currentWindowIndex.value = currentWindowIndex
 //                        pvm.currentPlaybackPosition.value = currentPlaybackPosition
                         if (currentWindowIndex != null) {
-                            Log.v("현재윈도index", "$currentWindowIndex")
+//                            Log.v("현재윈도index", "$currentWindowIndex")
                             pvm.setWindowIndex(currentWindowIndex)
                         }
                         pvm.simpleExoPlayer?.let { player ->
@@ -303,12 +303,12 @@ class PlayFullScreenActivity : AppCompatActivity() {
                             if (currentWindowIndex < mediaSourceList.size) {
                                 pvm.totalProgressDuration += pvm.simpleExoPlayer?.duration?.toInt() ?: 0
                                 pvm.currentMediaSourceIndex++
-                                Log.v("윈도우인덱스", "${pvm.currentMediaSourceIndex}")
+//                                Log.v("윈도우인덱스", "${pvm.currentMediaSourceIndex}")
 
                                 currentExerciseId = pvm.sns?.get(currentWindowIndex) ?: ""
                                 startNextVideoCountdown()
                                 pvm.currentVideoDuration = pvm.simpleExoPlayer?.duration ?: 0
-                                Log.e("currentVideoDuration임", "${pvm.currentVideoDuration}")
+//                                Log.e("currentVideoDuration임", "${pvm.currentVideoDuration}")
                             }
                         }
                     }
@@ -346,7 +346,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
 //        val savedPosition = playbackPositions[windowIndex] ?: positionMs
 //        pvm.simpleExoPlayer?.seekTo(windowIndex, savedPosition)
         pvm.simpleExoPlayer?.playWhenReady = true  // 준비되면 자동 재생
-        Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${pvm.simpleExoPlayer?.duration}")
+//        Log.v("재생시점", "${pvm.getPlaybackPosition()} / ${pvm.simpleExoPlayer?.duration}")
     }
 
     // ------# isFinish는 영상 길이 전부 시청했는지 여부 #------
@@ -368,15 +368,15 @@ class PlayFullScreenActivity : AppCompatActivity() {
         jo.put("week_number", pvm.weekNumber)
         jo.put("cycle", pvm.cycle)
 
-        Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()},currentPositionSeconds: $currentPositionSeconds,  jo: $jo, totalDuration: $totalDurationMs")
+//        Log.v("미디어소스인덱스", "${pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()},currentPositionSeconds: $currentPositionSeconds,  jo: $jo, totalDuration: $totalDurationMs")
         val currentUvpSns = pvm.uvpSns?.get(pvm.currentMediaSourceIndex)?.toInt()
         if (pvm.uvpSns?.isNotEmpty() == true && currentUvpSns != null) {
             patchProgress1Item(getString(R.string.API_progress), currentUvpSns, jo, this@PlayFullScreenActivity) { }
-            Log.v("progresses완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
+//            Log.v("progresses완료업데이트", "${currentUvpSns}, currentPosition: $currentPositionMs")
             callback()
         } else if (pvm.uvpSn != 0) {
             patchProgress1Item(getString(R.string.API_progress), pvm.uvpSn, jo, this@PlayFullScreenActivity) { }
-            Log.v("progress완료업데이트", "week: ${pvm.weekNumber} cycle: ${pvm.cycle}, currentPosition: $currentPositionMs")
+//            Log.v("progress완료업데이트", "week: ${pvm.weekNumber} cycle: ${pvm.cycle}, currentPosition: $currentPositionMs")
             callback()
         }
     }

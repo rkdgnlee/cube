@@ -34,9 +34,9 @@ object NetworkMeasure {
                 client.newCall(request).execute().use { response ->
                     // 서버 응답이 성공하지 않았을 경우 처리
                     if (response.code == 500) {
-                        Log.e("전송실패3", "$response")
+//                        Log.e("전송실패3", "$response")
                         val errorBody = response.body?.string()
-                        Log.e("전송실패3", "Exception(Failed to fetch data: code - ${response.code} body - $errorBody ")
+//                        Log.e("전송실패3", "Exception(Failed to fetch data: code - ${response.code} body - $errorBody ")
                         return@withContext Result.failure(Exception("failed to response: ${response.code} ${errorBody}"))
                     }
 
@@ -126,32 +126,32 @@ object NetworkMeasure {
                     val bodyJo = JSONObject(responseBody.toString())
 
                     if (bodyJo.optInt("row_count") == 0) {
-                        Log.v("getAllMeasureOut", "rowCount: ${bodyJo.optInt("row_count")}, stop the getAllMeasures")
+//                        Log.v("getAllMeasureOut", "rowCount: ${bodyJo.optInt("row_count")}, stop the getAllMeasures")
                         return@withContext callback(false)
                     }
                     val ja = bodyJo.getJSONArray("data") // 3개가 들어가있음.
                     val roomInfoSns =  mDao.getAllSns(userUUID) // 1845의 server sn인 sn을 가져옴
-                    Log.v("룸에저장된info들", "$roomInfoSns")
+//                    Log.v("룸에저장된info들", "$roomInfoSns")
 
                     val getInfos = mutableListOf<MeasureInfo>() // info로 변환해서 넣기
                     for (i in 0 until ja.length()) {
                         val jo = ja.optJSONObject(i)
                         getInfos.add(jo.toMeasureInfo())
                     }
-                    Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID).size}")
+//                    Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID).size}")
 
                     val newInfos = getInfos.filter { apiInfo ->
                         apiInfo.sn !in roomInfoSns
                     }
 
                     // ------# 없는 것들만 필터링 #------
-                    Log.v("db없는infoSn", "newInfos: ${newInfos.size}")
+//                    Log.v("db없는infoSn", "newInfos: ${newInfos.size}")
                     mvm.totalInfoCount = if (newInfos.isEmpty()) {
                         1
                     } else {
                         newInfos.size
                     }
-                    Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
+//                    Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
                     newInfos.forEach{ newInfo ->
                         mDao.insertInfo(newInfo)
                         newInfo.sn?.let { getMeasureResult(context, myUrl, it) }

@@ -71,14 +71,14 @@ class MyApplication : Application() {
 
     fun setBiometricSuccess() {
         isBiometricSuccess = true
-        Log.v("biometricSuccess", "setBiometricSuccess $isBiometricSuccess")
+//        Log.v("biometricSuccess", "setBiometricSuccess $isBiometricSuccess")
     }
     fun clearBiometricSuccess() {
         isBiometricSuccess = false
-        Log.v("biometricSuccess", "clearBiometricSuccess $isBiometricSuccess")
+//        Log.v("biometricSuccess", "clearBiometricSuccess $isBiometricSuccess")
     }
     fun verifyBiometric() : Boolean {
-        Log.v("biometricSuccess", "verifyBiometric $isBiometricSuccess")
+//        Log.v("biometricSuccess", "verifyBiometric $isBiometricSuccess")
         return isBiometricSuccess
     }
 

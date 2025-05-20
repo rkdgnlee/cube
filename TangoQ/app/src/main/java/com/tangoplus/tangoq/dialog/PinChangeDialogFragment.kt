@@ -132,7 +132,7 @@ class PinChangeDialogFragment : DialogFragment() {
                     val jo = JSONObject().apply {
                         put("password", encryptedPin)
                     }
-                    Log.v("password", "$jo")
+//                    Log.v("password", "$jo")
                     CoroutineScope(Dispatchers.IO).launch {
                         val isFinish = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userSn.toString())
                         withContext(Dispatchers.Main) {

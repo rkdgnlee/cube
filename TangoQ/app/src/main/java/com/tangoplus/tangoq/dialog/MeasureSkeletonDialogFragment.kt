@@ -81,11 +81,11 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
         binding.vpMSD.adapter = CautionVPAdapter(requireContext(), layouts, isPose, seq, isFront)
         binding.vpMSD.currentItem = 0
         binding.btnMSDConfirm.setOnSingleClickListener {
-            Log.v("resumePoseLandmarker", "btnMSDConfirm")
+//            Log.v("resumePoseLandmarker", "btnMSDConfirm")
             dismiss()
         }
         binding.ibtnMSDExit.setOnSingleClickListener {
-            Log.v("resumePoseLandmarker", "ibtnMSDExit")
+//            Log.v("resumePoseLandmarker", "ibtnMSDExit")
             dismiss()
         }
         setUI(isPose)

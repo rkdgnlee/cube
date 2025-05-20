@@ -152,7 +152,7 @@ class MeasureDetailRVAdapter(private val fragment: Fragment, private val data : 
 
         // data 는 6개
         val isFrontCamera = judgeFrontCameraByDynamic(coordinates)
-        Log.v("쿨디네이츠", "${coordinates.size}, $isFrontCamera")
+//        Log.v("쿨디네이츠", "${coordinates.size}, $isFrontCamera")
         val linearLayoutManager1 = LinearLayoutManager(fragment.requireContext(), LinearLayoutManager.VERTICAL, false)
         val dynamicAdapter = DataDynamicRVAdapter(dataDynamicVOList, isFrontCamera)
         holder.rvMDAI.layoutManager = linearLayoutManager1

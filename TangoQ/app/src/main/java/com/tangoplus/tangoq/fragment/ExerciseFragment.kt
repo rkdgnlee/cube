@@ -73,7 +73,7 @@ class ExerciseFragment : Fragment(), OnCategoryClickListener {
                 // ------# exercise 전부 미리 다운받아 VM에 넣기  #------
                 if (evm.allExercises.isNullOrEmpty()) {
                     evm.allExercises = fetchExerciseJson(getString(R.string.API_exercise))?.toMutableList()
-                    Log.v("VM>AllExercises", "${evm.allExercises?.size}")
+//                    Log.v("VM>AllExercises", "${evm.allExercises?.size}")
                 }
 
             } catch (e: IndexOutOfBoundsException) {

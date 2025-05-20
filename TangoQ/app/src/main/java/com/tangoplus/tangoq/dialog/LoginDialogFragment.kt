@@ -183,7 +183,7 @@ class LoginDialogFragment : DialogFragment() {
 
             lifecycleScope.launch {
                 getUserIdentifyJson(getString(R.string.API_user), jsonObject) { jo ->
-                    Log.v("loginResult", "$jo")
+//                    Log.v("loginResult", "$jo")
                     val isAccessEmpty = jo?.optString("access_jwt")?.isBlank()
                     if (jo == null) {
                         dialog.dismiss()
@@ -362,7 +362,7 @@ class LoginDialogFragment : DialogFragment() {
                     binding.btnLDCodeSend.isEnabled = false
                     viewModel.saveEmail = ""
                 }
-                Log.v("VMEmail", viewModel.saveEmail)
+//                Log.v("VMEmail", viewModel.saveEmail)
             }
         })
     }

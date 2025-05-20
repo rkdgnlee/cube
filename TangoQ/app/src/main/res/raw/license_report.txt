@@ -60,11 +60,6 @@ douglasjunior/android-simple-tooltip (1.1.0) - MIT License
 A simple library based on PopupWindow to create Tooltips on Android. 💚
 https://github.com/douglasjunior/android-simple-tooltip
 
-face-detection (16.1.7) - ML Kit Terms of Service
-
-ultraytics YOLO face-detection (v11) - AGPL-3.0 license
-https://github.com/ultralytics/ultralytics?tab=AGPL-3.0-1-ov-file
-
 ffmpeg-kit-full-gpl (6.0-2.LTS) - GNU Lesser General Public License, Version 3
 Includes FFmpeg with dav1d, fontconfig, freetype, fribidi, gmp, gnutls, kvazaar, lame, libass, libiconv, libilbc, libtheora, libvid.stab, libvorbis, libvpx, libwebp, libxml2, opencore-amr, opus, shine, snappy, soxr, speex, twolame, vo-amrwbenc, x264, x265 and xvidcore libraries enabled.
 https://github.com/tanersener/ffmpeg-kit

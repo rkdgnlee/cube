@@ -31,18 +31,18 @@ object HttpClientProvider {
                 .addInterceptor { chain ->
                     val networkType = WifiManager(context).checkNetworkType()
                     if (networkType == "none") {
-                        Log.v("networkType", networkType)
+//                        Log.v("networkType", networkType)
                         throw IOException("네트워크 연결이 없습니다")
                     }
                     var request = chain.request()
                     val accessToken = getEncryptedAccessJwt(context)
-                    Log.v("액세스토큰", "$accessToken")
+//                    Log.v("액세스토큰", "$accessToken")
                     request = request.newBuilder()
                         .header("Authorization", "Bearer $accessToken")
                         .build()
                     val response = chain.proceed(request)
                     // 토큰 만료 시 처리
-                    Log.v("inGetClient", "access expired?: ${response.code}")
+//                    Log.v("inGetClient", "access expired?: ${response.code}")
                     if (response.code in listOf(400, 401, 404, 500)) {
                         response.close() // 기존 응답 닫기
 

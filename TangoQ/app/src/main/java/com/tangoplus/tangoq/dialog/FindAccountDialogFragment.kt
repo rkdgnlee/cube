@@ -285,7 +285,7 @@ class FindAccountDialogFragment : DialogFragment() {
             null -> null
         }
         svm.textWatcher?.let { binding.etFADAuth.addTextChangedListener(it) }
-        Log.v("텍스트워처 세팅", "${svm.isFindEmail.value}, ${svm.textWatcher}")
+//        Log.v("텍스트워처 세팅", "${svm.isFindEmail.value}, ${svm.textWatcher}")
     }
 
     private fun setMobileAuth() {
@@ -395,10 +395,10 @@ class FindAccountDialogFragment : DialogFragment() {
             put("mobile", configureMobile)
             put("otp", binding.etFADAuthNumber.text)
         }
-        Log.v("verifyMobileCode","$bodyJo")
+//        Log.v("verifyMobileCode","$bodyJo")
         lifecycleScope.launch(Dispatchers.IO) {
             val findEmail = verityMobileOTPToFindEmail(getString(R.string.API_user), bodyJo.toString())
-            Log.v("findEmail", "$findEmail")
+//            Log.v("findEmail", "$findEmail")
             withContext(Dispatchers.Main) {
 
                 // 로딩창 닫기
@@ -617,7 +617,7 @@ class FindAccountDialogFragment : DialogFragment() {
             put("email", svm.saveEmail)
             put("otp", binding.etFADAuthNumber.text)
         }
-        Log.v("body", "$bodyJo")
+//        Log.v("body", "$bodyJo")
         verifyPWCode(getString(R.string.API_user), bodyJo.toString()) { jo ->
             if (jo != null) {
                 val code = jo.optInt("status")

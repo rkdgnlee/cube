@@ -263,7 +263,7 @@ class IntroActivity : AppCompatActivity() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e("카카오톡", "카카오톡 로그인 실패 ${error.message}")
-                Toast.makeText(this@IntroActivity, "카카오톡 계정와 연동이 실패했습니다", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@IntroActivity, "카카오톡 계정과 연동이 실패했습니다", Toast.LENGTH_SHORT).show()
                 enabledAllLoginBtn()
                 when {
                     error.toString() == AuthErrorCause.AccessDenied.toString() -> {

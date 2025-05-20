@@ -86,7 +86,7 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
             // 선택
             holder.clMPI.setOnSingleClickListener {
                 pvm.selectedRecProgress = (currentItem.totalProgress * 100).toFloat() / (currentItem.totalDuration * 12)
-                Log.w("메인프로그램선택", "${currentItem.programSn}, ${currentItem.recommendationSn}")
+//                Log.w("메인프로그램선택", "${currentItem.programSn}, ${currentItem.recommendationSn}")
                 val dialog = ProgramCustomDialogFragment.newInstance(currentItem.programSn, currentItem.recommendationSn)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
             }

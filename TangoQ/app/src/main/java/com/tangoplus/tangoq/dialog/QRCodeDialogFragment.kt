@@ -199,7 +199,7 @@ class QRCodeDialogFragment : DialogFragment() {
         codeScanner.decodeCallback = DecodeCallback {
             lifecycleScope.launch {
                 CoroutineScope(Dispatchers.IO).launch {
-                    Log.v("decodeResult", it.text)
+//                    Log.v("decodeResult", it.text)
                     val responseJo = loginWithQRCode(getString(R.string.API_kiosk), userJson.optString("user_uuid"))
                     withContext(Dispatchers.Main) {
                         if (responseJo != null) {

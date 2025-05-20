@@ -28,10 +28,13 @@ import java.io.FileNotFoundException
 import kotlin.coroutines.resume
 import kotlin.math.abs
 import androidx.core.graphics.scale
+import com.tangoplus.tangoq.db.MeasureStatic
 import com.tangoplus.tangoq.vision.ImageProcessingUtil.drawDirectionUIOnBitmap
 import com.tangoplus.tangoq.vision.ImageProcessingUtil.rePaintDirection
 import com.tangoplus.tangoq.vision.MathHelpers.determineDirection
 import com.tangoplus.tangoq.vision.PoseLandmarkResult
+import kotlin.math.pow
+import kotlin.reflect.full.memberProperties
 
 object MeasurementManager {
     var partIndexes = mapOf(
@@ -854,7 +857,7 @@ object MeasurementManager {
                                 // 가로비율은 2배로 확대 세로 비율은 그대로 보여주기
                                 if (case in listOf("solo") ) {
                                     val targetRatio = combinedBitmap.height.toFloat() / combinedBitmap.width.toFloat()
-                                    Log.v("targetRatio", "$targetRatio, ${combinedBitmap.height}, ${combinedBitmap.width}")
+//                                    Log.v("targetRatio", "$targetRatio, ${combinedBitmap.height}, ${combinedBitmap.width}")
                                     val scaleFactor = if (targetRatio > 1 ) 1f else 2f // 원하는 확대 비율 (가로만 확대하기 )
                                     val scaledBitmap = combinedBitmap.scale(
                                         (combinedBitmap.width * scaleFactor).toInt(),
@@ -933,7 +936,7 @@ object MeasurementManager {
     }
     fun getVideoDimensions(context : Context, videoUri: Uri?) : Pair<Int, Int> {
         if (videoUri == null) {
-            Log.e("videoUri", "$videoUri")
+//            Log.e("videoUri", "$videoUri")
             return Pair(0, 0) // 기본값 반환
         }
 //        Log.e("videoUri", "$videoUri")
@@ -1214,5 +1217,138 @@ object MeasurementManager {
             }
         }
         return if (resultString.isEmpty()) "${part} 부위가 정상 범위 내에 있습니다." else resultString.toString()
+    }
+
+    fun createResultComment(info:MeasureInfo, statics: List<MeasureStatic>, dynamicData: Pair<List<Pair<Float, Float>>, List<Pair<Float, Float>>>) : String {
+
+        val frontData = listOf(
+            Pair("front_horizontal_angle_ear", statics[0].front_horizontal_angle_ear),
+            Pair("front_horizontal_angle_shoulder", statics[0].front_horizontal_angle_shoulder),
+            Pair("front_horizontal_angle_hip", statics[0].front_horizontal_angle_hip)
+        )
+        val tempFrontPart = getStatus(frontData)
+        val frontComment = if (tempFrontPart.count { it == Status.DANGER } == 2) {
+            "좌우 기울기의 밸런스 교정이 필요합니다."
+        } else if (tempFrontPart.count { it == Status.WARNING } >= 2) {
+            "좌우 기울기 균형에 주의가 필요합니다."
+        } else {
+            "좌우 기울기 균형이 잘 맞습니다."
+        }
+
+        val sideData = listOf(
+            Pair("side_left_vertical_angle_shoulder_elbow_wrist", statics[2].side_left_vertical_angle_shoulder_elbow_wrist),
+            Pair("side_right_vertical_angle_shoulder_elbow_wrist", statics[3].side_right_vertical_angle_shoulder_elbow_wrist)
+        )
+        val tempSidePart = getStatus(sideData)
+        val sideComment = if (tempSidePart[0] in listOf(Status.DANGER, Status.WARNING) ) {
+            "왼쪽 이두근이 긴장되어 있습니다."
+        } else if (tempSidePart[1] in listOf(Status.DANGER, Status.WARNING)) {
+            "오른쪽 이두근이 긴장되어 있습니다."
+        } else {
+            "좌우 팔의 균형이 잘 맞습니다."
+        }
+
+        val backData = listOf(
+            Pair("back_vertical_angle_shoudler_center_hip", statics[4].back_vertical_angle_shoudler_center_hip),
+            Pair("back_sit_vertical_angle_shoulder_center_hip", statics[5].back_sit_vertical_angle_shoulder_center_hip)
+        )
+        val tempBackPart = getStatus(backData)
+        val backComment = if (tempBackPart[0] in listOf(Status.DANGER, Status.WARNING) && tempBackPart[1] == Status.NORMAL ) {
+            "골반 질환이 예상됩니다."
+        } else if (tempBackPart[1] in listOf(Status.DANGER, Status.WARNING) && tempBackPart[0] in listOf(Status.WARNING, Status.DANGER)) {
+            "발목질환이 의심됩니다."
+        } else {
+            "상지와 하지의 균형이 잘 맞습니다."
+        }
+        val armData = listOf(
+            Pair("front_elbow_align_angle_left_shoulder_elbow_wrist", statics[1].front_elbow_align_angle_left_shoulder_elbow_wrist),
+            Pair("front_elbow_align_angle_right_shoulder_elbow_wrist", statics[1].front_elbow_align_angle_right_shoulder_elbow_wrist)
+        )
+        val tempArmPart = getStatus(armData)
+        val armComment = if (tempArmPart[0] in listOf(Status.DANGER, Status.WARNING)) {
+            "왼쪽 아래팔 근육이 긴장되어 있습니다."
+        } else if (tempFrontPart.count { it == Status.WARNING } >= 2) {
+            "오른쪽 아래팔 근육이 긴장되어 있습니다."
+        } else {
+            "정상 범위에 있습니다."
+        }
+
+        // 스쿼트
+        val leftVar = calculateVariance(dynamicData.first)
+        val rightVar = calculateVariance(dynamicData.second)
+
+        val diff = abs(leftVar - rightVar)
+
+        val dynamicComment =  when {
+            diff < 10f -> "좌우 무릎의 이동 궤적이 유사합니다."
+            leftVar < rightVar -> "왼쪽 무릎의 흔들임이 더 큽니다."
+            else -> "오른쪽 무릎의 흔들임이 더 큽니다."
+        }
+
+        val dangerParts = getDangerParts(info).map { (part, value) ->
+            part
+        }.joinToString (", ")
+//        Log.v("댄저인포", "${getDangerParts(info)}, $dangerParts")
+        return """
+            [체형 분석 결과]
+            정면 - 좌우 균형: $frontComment
+            측면 - 상지 좌우 균형: $sideComment
+            후면 - 상하 균형: $backComment
+            스쿼트 - 좌우 균형: $dynamicComment
+            팔꿈치 정렬 - 좌우 균형: $armComment
+            
+            주의 부위: $dangerParts
+        """.trimIndent()
+    }
+
+    private val dangerBounds = mapOf(
+        "front_horizontal_angle_ear" to Triple(180f, 1.6f, 2.9f),
+        "front_horizontal_angle_shoulder" to Triple(180f, 2.1f, 3.9f),
+        "front_horizontal_angle_hip" to Triple(180f, 1.7f, 2.89f),
+        "front_elbow_align_angle_left_shoulder_elbow_wrist" to Triple(5f,9f, 13f),
+        "front_elbow_align_angle_right_shoulder_elbow_wrist" to Triple(5f,9f, 13f),
+        "side_left_vertical_angle_shoulder_elbow_wrist" to Triple(170f, 5f, 9f),
+        "side_right_vertical_angle_shoulder_elbow_wrist" to Triple(170f, 8f, 11f),
+        "back_vertical_angle_shoudler_center_hip" to Triple(90f, 2.5f, 4f),
+        "back_sit_vertical_angle_shoulder_center_hip" to Triple(90f, 6f, 9.2f),
+    )
+
+    private fun getStatus(data: List<Pair<String, Float>>) : List<Status> {
+        val tempPart = mutableListOf<Status>()
+        data.forEach{ (columnName, data) ->
+            val boundTriple = dangerBounds.get(columnName) // Triple<Float, Float, Float> 사용
+            if (boundTriple != null) {
+                val (center, warning, danger) = boundTriple
+                val lowerWarning = center - warning
+                val upperWarning = center + warning
+                val lowerDanger = center - danger
+                val upperDanger = center + danger
+
+                when {
+                    data < lowerDanger || data > upperDanger -> {
+                        // 위험
+                        tempPart.add( Status.DANGER)
+                    }
+                    data < lowerWarning || data > upperWarning -> {
+                        // 주의
+                        tempPart.add( Status.WARNING)
+                    }
+                    else -> {
+                        // 정상
+                        tempPart.add(Status.NORMAL)
+                    }
+                }
+            }
+        }
+        return tempPart
+    }
+
+    fun calculateVariance(points: List<Pair<Float, Float>>): Float {
+        val meanX = points.map { it.first }.average().toFloat()
+        val meanY = points.map { it.second }.average().toFloat()
+
+        return points.sumOf { (x, y) ->
+            ((x - meanX).pow(2) + (y - meanY).pow(2)).toDouble()
+        }.toFloat() / points.size
     }
 }

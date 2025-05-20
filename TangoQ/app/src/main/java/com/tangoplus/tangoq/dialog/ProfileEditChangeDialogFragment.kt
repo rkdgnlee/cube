@@ -93,7 +93,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
         // ------# init #-----
         arg = arguments?.getString(ARG_EDIT_BS_TITLE).toString()
         val value = arguments?.getString(ARG_EDIT_BS_VALUE).toString()
-        Log.v("arg", "$arg, $value")
+//        Log.v("arg", "$arg, $value")
         userJson = Singleton_t_user.getInstance(requireContext()).jsonObject ?: JSONObject()
 
         disabledButton()
@@ -444,7 +444,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 "성별" -> put("gender", svm.selectGender.value)
             }
         }
-        Log.v("현재젠더", "jo: $jo")
+//        Log.v("현재젠더", "jo: $jo")
         lifecycleScope.launch(Dispatchers.IO) {
             val isUpdateFinished = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userJson.optInt("sn").toString())
             if (isUpdateFinished == true) {
@@ -459,7 +459,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                         userJson.put("mobile", svm.passMobile.value)
                         withContext(Dispatchers.Main) {
                             svm.setMobile.value = svm.passMobile.value
-                            Log.v("svm.setMobile", "${svm.setMobile.value}")
+//                            Log.v("svm.setMobile", "${svm.setMobile.value}")
                         }
                     }
                     "신장" -> {
@@ -521,7 +521,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
                 svm.selectGender.value = "여자"
             }
         }
-        Log.v("현재젠더", "select: ${svm.selectGender.value}, set: ${svm.setGender.value}")
+//        Log.v("현재젠더", "select: ${svm.selectGender.value}, set: ${svm.setGender.value}")
     }
 
     private fun sendMobileCode() {
@@ -598,7 +598,7 @@ class ProfileEditChangeDialogFragment : DialogFragment() {
             put("mobile", configureMobile)
             put("otp", binding.etPCDAuthNumber.text)
         }
-        Log.v("verifyMobileCode","$bodyJo")
+//        Log.v("verifyMobileCode","$bodyJo")
         lifecycleScope.launch(Dispatchers.IO) {
             val statusCode = verifyMobileOTP(getString(R.string.API_user), bodyJo.toString())?.second
             when (statusCode) {

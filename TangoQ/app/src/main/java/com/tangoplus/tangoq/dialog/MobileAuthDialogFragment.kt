@@ -280,7 +280,7 @@ class MobileAuthDialogFragment : DialogFragment() {
             put("temp_id", svm.tempId)
             put("email", svm.fullEmail.value)
         }
-        Log.v("bodyJo", "$bodyJo")
+//        Log.v("bodyJo", "$bodyJo")
         lifecycleScope.launch(Dispatchers.IO) {
             val response = verifyMobileOTPToSNS(getString(R.string.API_user), bodyJo.toString())
             withContext(Dispatchers.Main) {
@@ -410,7 +410,7 @@ class MobileAuthDialogFragment : DialogFragment() {
                                     put("provider", svm.provider)
                                     put("access_token", svm.sdkToken)
                                 }
-                                Log.v("409Json", "$jo, ${svm.insertToken}, ${svm.sdkToken}")
+//                                Log.v("409Json", "$jo, ${svm.insertToken}, ${svm.sdkToken}")
                                 linkOAuthAccount(getString(R.string.API_user), svm.insertToken, jo.toString(), requireContext()) { responseJo ->
                                     if (responseJo != null) {
                                         navigateOAuthLink(responseJo)
@@ -459,7 +459,7 @@ class MobileAuthDialogFragment : DialogFragment() {
             200, 201 -> {
                 storeUserInSingleton(requireContext(), responseJo)
                 createKey(getString(R.string.SECURE_KEY_ALIAS))
-                Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+//                Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                 val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")
                 val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt()
                 if (userUUID != null && userInfoSn != null) {
@@ -484,7 +484,7 @@ class MobileAuthDialogFragment : DialogFragment() {
                                     put("provider", svm.provider)
                                     put("access_token", svm.sdkToken)
                                 }
-                                Log.v("409Json", "$jo, ${svm.insertToken} ${svm.sdkToken}")
+//                                Log.v("409Json", "$jo, ${svm.insertToken} ${svm.sdkToken}")
                                 linkOAuthAccount(getString(R.string.API_user), svm.insertToken, jo.toString(), requireContext()) { responseJo ->
                                     if (responseJo != null) {
                                         navigateOAuthLink(responseJo)
@@ -533,7 +533,7 @@ class MobileAuthDialogFragment : DialogFragment() {
                         put("sms_receive", if (svm.agreementMk1.value == true) 1 else 0)
                         put("email_receive", if (svm.agreementMk2.value == true) 1 else 0)
                     }
-                    Log.v("insertSNSUser", "$jo, ${svm.insertToken}")
+//                    Log.v("insertSNSUser", "$jo, ${svm.insertToken}")
                     insertSNSUser(getString(R.string.API_user), svm.insertToken, jo.toString(), requireContext()) { responseJo ->
                         if (responseJo != null) {
                             navigateSNSInsert(responseJo)
@@ -555,7 +555,7 @@ class MobileAuthDialogFragment : DialogFragment() {
             200, 201 -> {
                 storeUserInSingleton(requireContext(), responseJo)
                 createKey(getString(R.string.SECURE_KEY_ALIAS))
-                Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
+//                Log.v("SDK>싱글톤", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
                 val userUUID = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")
                 val userInfoSn =  Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("sn")?.toInt()
                 if (userUUID != null && userInfoSn != null) {

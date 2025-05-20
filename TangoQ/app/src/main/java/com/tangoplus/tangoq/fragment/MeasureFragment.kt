@@ -157,7 +157,7 @@ class MeasureFragment : Fragment() {
                                                 mvm.selectedMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
                                                 mvm.selectMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
 
-                                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
+//                                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
                                                 fvm.setCurrentFragment(FragmentViewModel.FragmentType.MEASURE_DETAIL_FRAGMENT)
                                                 requireActivity().supportFragmentManager.beginTransaction().apply {
                                                     replace(R.id.flMain, MeasureDetailFragment())

@@ -57,7 +57,7 @@ class ExerciseDetailFragment : Fragment(), OnCategoryClickListener, OnDialogClos
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.sflED.startShimmer()
-        Log.v("쉬머스타트", "쉬머스타트")
+//        Log.v("쉬머스타트", "쉬머스타트")
 
         // ------# 선택 카테고리 & 타입 가져오기 시작 #------
 

@@ -48,7 +48,7 @@ object NetworkProgress {
                             } else {
                                 0f
                             }
-                             Log.v("총,진행시간", "$duration, $progress, percent: $percent")
+//                             Log.v("총,진행시간", "$duration, $progress, percent: $percent")
                             pv3s.add(percent)
                         }
 
@@ -81,7 +81,7 @@ object NetworkProgress {
                         }
                     }
                     val sortedProgresses = progresses.sortedBy { it.uvpSn }.toMutableList()
-                    Log.w("총,진행시간", "$pv3s")
+//                    Log.w("총,진행시간", "$pv3s")
                     callback(pv3s, sortedProgresses)
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -181,13 +181,13 @@ object NetworkProgress {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     val bodyJson = JSONObject(responseBody.toString())
-                    Log.v("poseGetPrgBody", "$bodyJson")
+//                    Log.v("poseGetPrgBody", "$bodyJson")
 
                     val latest = bodyJson.optJSONObject("latest")
                     val progressHistorySn = latest?.optInt("progress_history_sn")
                     val currentWeek = latest?.optInt("week_number")
                     val currentCycle = latest?.optInt("cycle")
-                    Log.v("포스트getProgress", "$latest, $progressHistorySn, $currentWeek, $currentCycle")
+//                    Log.v("포스트getProgress", "$latest, $progressHistorySn, $currentWeek, $currentCycle")
                     val result = mutableListOf<ProgressUnitVO>()
                     val exerciseCount = bodyJson.optInt("row_count") / 4
                     val data = bodyJson.optJSONArray("data")
@@ -451,7 +451,7 @@ object NetworkProgress {
                             )
                             progresses.add(progressHistory)
                         }
-                        Log.v("진행길이", "${progresses.size}")
+//                        Log.v("진행길이", "${progresses.size}")
                     }
                     progresses
                 }
@@ -503,7 +503,7 @@ object NetworkProgress {
                             result.add(dateString)
                         }
                     }
-                    Log.v("getMonthProgress", "$result")
+//                    Log.v("getMonthProgress", "$result")
                     return@use result
                 }
             } catch (e: IndexOutOfBoundsException) {

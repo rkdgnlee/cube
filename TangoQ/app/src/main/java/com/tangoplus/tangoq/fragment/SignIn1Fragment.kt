@@ -126,7 +126,7 @@ class SignIn1Fragment : Fragment() {
                 id: Long,
             ) {
                 binding.spinner.getItemAtPosition(position).toString()
-                Log.v("이메일", "$position ${binding.spinner.selectedItem}")
+//                Log.v("이메일", "$position ${binding.spinner.selectedItem}")
                 if (position == 3) {
                     binding.etEmail.visibility = View.VISIBLE
                     binding.spinner.visibility = View.INVISIBLE
@@ -255,7 +255,7 @@ class SignIn1Fragment : Fragment() {
     private fun sendEmailCode() {
         val emailId = binding.etEmailId.text.toString()
         svm.fullEmail.value = if (binding.etEmail.isGone) emailId + "@" + binding.spinner.selectedItem.toString() else emailId + "@" + binding.etEmail.text.toString()
-        Log.v("이메일 전체", "${svm.fullEmail.value}")
+//        Log.v("이메일 전체", "${svm.fullEmail.value}")
 
         MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
             setTitle("인증번호 전송")

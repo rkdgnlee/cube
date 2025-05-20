@@ -87,7 +87,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
-
         if (Singleton_t_user.getInstance(this).jsonObject == null || Singleton_t_user.getInstance(this).jsonObject?.optString("user_name") == "") {
             Toast.makeText(this, "올바르지 않은 접근입니다.\n다시 로그인을 진행해주세요", Toast.LENGTH_LONG).show()
             logout(this@MainActivity, 0)
@@ -98,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         appViewModel = myApplication.appViewModel
         appViewModel.logoutTrigger.observe(this) { shouldLogout ->
             if (shouldLogout) {
-                Log.e("RefreshTokenFail", "get the code to Logout : ${shouldLogout}")
+//                Log.e("RefreshTokenFail", "get the code to Logout : ${shouldLogout}")
                 showLogoutDialog()
                 appViewModel.resetTrigger()
             }
@@ -117,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 },   3 * 60000)
             }
             else -> {
-                Log.v("현재 네트워크 타입", securityType)
+//                Log.v("현재 네트워크 타입", securityType)
             }
         }
 
@@ -163,7 +162,7 @@ class MainActivity : AppCompatActivity() {
                 calendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             val pendingIntent = PendingIntent.getBroadcast(this@MainActivity, 8080, intent, PendingIntent.FLAG_IMMUTABLE)
-            Log.v("setAlarm", "Success to Alarm $title, $time")
+//            Log.v("setAlarm", "Success to Alarm $title, $time")
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
 
             val time2 = Triple(19, 30, 0)
@@ -180,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                 calendar2.add(Calendar.DAY_OF_MONTH, 1)
             }
             val pendingIntent2 = PendingIntent.getBroadcast(this@MainActivity, 8080, intent2, PendingIntent.FLAG_IMMUTABLE)
-            Log.v("setAlarm", "Success to Alarm $title, $time2")
+//            Log.v("setAlarm", "Success to Alarm $title, $time2")
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent2)
         }
 
@@ -368,7 +367,7 @@ class MainActivity : AppCompatActivity() {
 
         // 알람에서 왔을 때
         val alarmNav = intent.getStringExtra("fragmentId")
-        Log.v("finishEVP", "$finishEVP")
+//        Log.v("finishEVP", "$finishEVP")
         if (deepLinkPath != null) {
             if (exerciseId != null) {
                 navigateToFragment(deepLinkPath, exerciseId)
@@ -380,7 +379,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToFragment(path: String, exerciseId : String?) {
-        Log.v("Main>NavigateDeeplink", "path : ${path}, exerciseId: $exerciseId")
+//        Log.v("Main>NavigateDeeplink", "path : ${path}, exerciseId: $exerciseId")
         when (path) {
             "PT" -> {
                 if (exerciseId != null) {

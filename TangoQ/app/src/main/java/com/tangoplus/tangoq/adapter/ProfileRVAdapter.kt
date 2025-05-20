@@ -266,7 +266,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
 //                                }
                                 "비밀번호" -> {
                                     val provider = Singleton_t_user.getInstance(fragment.requireContext()).jsonObject?.optString("provider") ?: ""
-                                    Log.v("provider", provider)
+//                                    Log.v("provider", provider)
                                     if (provider == "null") {
                                         val dialog = InputDialogFragment.newInstance(1)
                                         dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")

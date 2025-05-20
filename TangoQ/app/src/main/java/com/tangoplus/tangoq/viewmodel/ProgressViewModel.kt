@@ -64,12 +64,12 @@ class ProgressViewModel : ViewModel() {
     }
     suspend fun getProgressData(context: Context) {
         val sns = Triple(recommendationSn, selectedWeek.value?.plus(1) ?: 1, selectedSequence.value?.plus(1) ?: 1)
-        Log.v("현재주차가져오기", "$sns")
+//        Log.v("현재주차가져오기", "$sns")
         postProgressInCurrentProgram(context.getString(R.string.API_progress), sns, context) { pv3s, progressUnits -> // MutableList<ProgressUnitVO>
             val programExerciseCount = currentProgram?.exercises?.size ?: 0
             currentProgresses = if (progressUnits.size > programExerciseCount) {
                 val croppedProgresses = progressUnits.sortedBy { it.uvpSn }.subList(0 , programExerciseCount).toMutableList()
-                Log.v("croppedPRogres", "${croppedProgresses.map { it.uvpSn }}, ${croppedProgresses.map { it.cycleProgress }}")
+//                Log.v("croppedPRogress", "${croppedProgresses.map { it.uvpSn }}, ${croppedProgresses.map { it.cycleProgress }}")
                 croppedProgresses
             } else {
                 progressUnits
@@ -77,7 +77,7 @@ class ProgressViewModel : ViewModel() {
             seqHpvs = if (progressUnits.size > programExerciseCount) {
                 pv3s.map { it * 2 }
             } else pv3s
-            Log.v("현재주차꺼", "$pv3s $seqHpvs ${currentProgresses.map { it.cycleProgress }}")
+//            Log.v("현재주차꺼", "$pv3s $seqHpvs ${currentProgresses.map { it.cycleProgress }}")
             // pv3도 넘겨줘야함
 
         }

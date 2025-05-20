@@ -117,14 +117,14 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             .into(binding.ivPTD)
 
         val networkType = wm.checkNetworkType()
-        Log.v("networkType", networkType)
+//        Log.v("networkType", networkType)
 
         // ------! 관련 관절, 근육 recyclerview 시작 !------
         val fullMuscleList = pvm.exerciseData?.relatedMuscle?.replace("(", ", ")
             ?.replace(")", "")
             ?.split(", ")
             ?.toMutableList()
-        Log.v("fullMuscleList", "$fullMuscleList")
+//        Log.v("fullMuscleList", "$fullMuscleList")
         val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullMuscleList, null,"muscle", evm)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

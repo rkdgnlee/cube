@@ -32,6 +32,7 @@ import com.tangoplus.tangoq.db.FileStorageUtil.deleteCorruptedFile
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.Singleton_t_measure
+import com.tangoplus.tangoq.function.MeasurementManager.createResultComment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.decryptFileToTempFile
 import com.tangoplus.tangoq.function.SecurePreferencesManager.deleteAllEncryptedFiles
 import com.tangoplus.tangoq.function.SecurePreferencesManager.deleteDirectory
@@ -89,7 +90,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             it
                         )
                     }
-                    Log.v("notUploaded데이터", "${info}, ${notUploadedStatics?.map { it.mobile_info_sn }}, ${notUploadedDynamic?.mobile_info_sn}")
+//                    Log.v("notUploaded데이터", "${info}, ${notUploadedStatics?.map { it.mobile_info_sn }}, ${notUploadedDynamic?.mobile_info_sn}")
                     if (info != null && !notUploadedStatics.isNullOrEmpty() && notUploadedDynamic != null) {
                         withContext(Dispatchers.Main) {
                             val userWantToResend = showResendDialog(context)
@@ -107,7 +108,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                 // 수정할 Room의 static, dynamic sn 들
                                 val staticSns = notUploadedStatics.map { it.mobile_sn }.toMutableList()
                                 val dynamicSn = notUploadedDynamic.mobile_sn
-                                Log.v("해당SN추출", "$staticSns, $dynamicSn")
+//                                Log.v("해당SN추출", "$staticSns, $dynamicSn")
                                 val requestBody = createMultipartBody(info, notUploadedStatics, notUploadedDynamic)
 
                                 return@withContext suspendCoroutine<Boolean> { continuation ->
@@ -153,7 +154,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                                 val allDynamicUploaded = dynamicUploadResults.first && dynamicUploadResults.second && dynamicUploadResults.third
 
                                                 if (allStaticsUploaded && allDynamicUploaded) {
-                                                    Log.d("Upload", "모든 파일이 성공적으로 업로드되었습니다.")
+//                                                    Log.d("Upload", "모든 파일이 성공적으로 업로드되었습니다.")
                                                     CoroutineScope(Dispatchers.Main).launch {
                                                         withContext(Dispatchers.Main) {
                                                             if (dialog != null) {
@@ -171,7 +172,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                             },
                                             onFailure = { error ->
                                                 // IOException 등으로 exception catch 상황
-                                                Log.e("전송 실패", "before transmitFailed changed: $error")
+//                                                Log.e("전송 실패", "before transmitFailed changed: $error")
                                                 CoroutineScope(Dispatchers.Main).launch {
                                                     if (dialog != null) {
                                                         if (dialog.isAdded && dialog.isVisible) {
@@ -588,7 +589,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                             measure.recommendations = groupedRecs[measureSn] ?: emptyList()
                         } else {
                             val (types, stages) = convertToJsonArrays(measure.dangerParts)
-                            Log.v("types와stages", "types: $types, stages: $stages, $measureSn")
+//                            Log.v("types와stages", "types: $types, stages: $stages, $measureSn")
                             val recommendJson = JSONObject().apply {
                                 put("exercise_type_id", types) // [0, 6, 7, 8, 13 ]
                                 put("exercise_stage", stages) // [ 2, 1, 1, 1, 2 ]
@@ -662,25 +663,25 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         val motherJo = JSONObject()
         val infoJson = JSONObject(measureInfo.toJson())
         motherJo.put("measure_info", infoJson)
-        Log.v("viewModelStatic", "multipartBody로 넣기 전 statics의 size: ${measureStatics.size}")
+//        Log.v("viewModelStatic", "multipartBody로 넣기 전 statics의 size: ${measureStatics.size}")
 
         for (i in measureStatics.indices) {
             val staticUnit = measureStatics[i].toJson()
             val joStaticUnit = JSONObject(staticUnit)
-            Log.v("스태틱변환", "$joStaticUnit")
+//            Log.v("스태틱변환", "$joStaticUnit")
             motherJo.put("static_${i+1}", joStaticUnit)
         }
 
         val dynamicJo = JSONObject(measureDynamic.toJson().toString())
         motherJo.put("dynamic", dynamicJo)
-        Log.v("motherJo1", "${motherJo.optJSONObject("measure_info")}")
-        Log.v("dynamic", "${motherJo.getJSONObject("dynamic").keys().asSequence().toList().filter { !it.startsWith("ohs") && !it.startsWith("ols")}}")
+//        Log.v("motherJo1", "${motherJo.optJSONObject("measure_info")}")
+//        Log.v("dynamic", "${motherJo.getJSONObject("dynamic").keys().asSequence().toList().filter { !it.startsWith("ohs") && !it.startsWith("ols")}}")
 
         // ------# 멀티파트 init 하면서 data 넣기 #------
         val requestBodyBuilder = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("json", motherJo.toString())
-        Log.v("멀티파트바디빌드", "전체 데이터 - motherJo키값들 ${motherJo.keys().asSequence().toList()}")
+//        Log.v("멀티파트바디빌드", "전체 데이터 - motherJo키값들 ${motherJo.keys().asSequence().toList()}")
 
         // static jpg파일들
         val aseKey = generateAESKey(context)
@@ -693,7 +694,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     newFile
                 }
             }
-            Log.v("파일정보", "Static File: 이름=${file?.name}, 크기=${file?.length()} bytes")
+//            Log.v("파일정보", "Static File: 이름=${file?.name}, 크기=${file?.length()} bytes")
             file?.asRequestBody("image/jpeg".toMediaTypeOrNull())?.let {
                 requestBodyBuilder.addFormDataPart(
                     "static_file_${i+1}",
@@ -710,7 +711,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     newFile
                 }
             }
-            Log.v("파일정보", "Static JSON: 이름=${jsonfile?.name}, 크기=${jsonfile?.length()} bytes")
+//            Log.v("파일정보", "Static JSON: 이름=${jsonfile?.name}, 크기=${jsonfile?.length()} bytes")
             jsonfile?.asRequestBody("application/json".toMediaTypeOrNull())?.let {
                 requestBodyBuilder.addFormDataPart(
                     "static_json_${i+1}",
@@ -730,7 +731,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
             }
         }
         dynamicJsonFile?.let { file ->
-            Log.v("파일정보", "Dynamic JSON: 이름=${file.name}, 크기=${file.length()} bytes")
+//            Log.v("파일정보", "Dynamic JSON: 이름=${file.name}, 크기=${file.length()} bytes")
             requestBodyBuilder.addFormDataPart(
                 "dynamic_json",
                 file.name,
@@ -748,7 +749,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
 
         }
         dynamicFile?.let { file ->
-            Log.v("파일정보", "Dynamic MP4: 이름=${file.name}, 크기=${file.length()} bytes")
+//            Log.v("파일정보", "Dynamic MP4: 이름=${file.name}, 크기=${file.length()} bytes")
             requestBodyBuilder.addFormDataPart(
                 "dynamic_file",
                 file.name,
@@ -757,7 +758,7 @@ class SaveSingletonManager(private val context: Context, private val activity: F
         }
         val joKeys = motherJo.keys()
         for (key in joKeys) {
-            Log.v("파일제외바디", "motherJo: $key")
+//            Log.v("파일제외바디", "motherJo: $key")
         }
 
         return requestBodyBuilder.build()

@@ -191,7 +191,7 @@ class MeasureSetupDialogFragment : DialogFragment(), SensorEventListener {
             1 -> {
                 binding.clMTD0.visibility = View.GONE
                 binding.clMTD1.visibility = View.VISIBLE
-                Log.v("케이스1", "case1 is finished $case")
+//                Log.v("케이스1", "case1 is finished $case")
             }
         }
     }
