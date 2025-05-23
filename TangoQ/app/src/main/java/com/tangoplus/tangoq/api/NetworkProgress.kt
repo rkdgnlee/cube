@@ -181,7 +181,7 @@ object NetworkProgress {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     val bodyJson = JSONObject(responseBody.toString())
-//                    Log.v("poseGetPrgBody", "$bodyJson")
+                    val dataJa = bodyJson.optJSONArray("data")
 
                     val latest = bodyJson.optJSONObject("latest")
                     val progressHistorySn = latest?.optInt("progress_history_sn")
@@ -190,7 +190,8 @@ object NetworkProgress {
 //                    Log.v("포스트getProgress", "$latest, $progressHistorySn, $currentWeek, $currentCycle")
                     val result = mutableListOf<ProgressUnitVO>()
                     val exerciseCount = bodyJson.optInt("row_count") / 4
-                    val data = bodyJson.optJSONArray("data")
+                    val data = dataJa?.let { sortJsonArrayByUvpSn(it) }
+
                     if (data != null) {
                         for (i in 0 until data.length()) {
                             val jo = data.optJSONObject(i)
@@ -212,22 +213,22 @@ object NetworkProgress {
                                     updatedAt = jo.optString("updated_at"),
                                     isWatched = jo.optInt("is_watched")
                                 )
-//                                Log.v("seq,week계산하기", "$i $progressUnitVO")
+                //                                Log.v("seq,week계산하기", "$i $progressUnitVO")
                                 result.add(progressUnitVO)
                             }
                         }
-                        if (result.isNotEmpty()) {
-                            val chunckedResult = result.chunked(exerciseCount)
-                            callback(
-                                Triple(
-                                    progressHistorySn ?: -1,
-                                    currentWeek ?: -1,
-                                    currentCycle ?: -1
-                                ),
-                                chunckedResult
-                            )
+                    }
+                    if (result.isNotEmpty()) {
+                        val chunckedResult = result.chunked(exerciseCount)
+                        callback(
+                            Triple(
+                                progressHistorySn ?: -1,
+                                currentWeek ?: -1,
+                                currentCycle ?: -1
+                            ),
+                            chunckedResult
+                        )
 //                            callback(Triple(-1, -1, -1), mutableListOf())
-                        }
                     }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -251,6 +252,25 @@ object NetworkProgress {
             }
         }
     }
+    fun sortJsonArrayByUvpSn(jsonArray: JSONArray): JSONArray {
+        // JSONArray를 List<JSONObject>로 변환
+        val jsonObjectList = mutableListOf<JSONObject>()
+        for (i in 0 until jsonArray.length()) {
+            jsonObjectList.add(jsonArray.getJSONObject(i))
+        }
+
+        // uvp_sn 기준으로 오름차순 정렬
+        val sortedList = jsonObjectList.sortedBy { it.getInt("uvp_sn") }
+
+        // 다시 JSONArray로 변환
+        val sortedJsonArray = JSONArray()
+        for (obj in sortedList) {
+            sortedJsonArray.put(obj)
+        }
+
+        return sortedJsonArray
+    }
+
     suspend fun getLatestProgresses(myUrl: String, context: Context) : Pair<MutableList<ProgressUnitVO>, ProgramVO>? {
         val client = getClient(context)
         val request = Request.Builder()

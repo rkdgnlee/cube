@@ -95,7 +95,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             NotificationManager.IMPORTANCE_DEFAULT
         )
         notificationManager.createNotificationChannel(channel)
-
         notificationManager.notify(0, notificationBuilder.build())
     }
 

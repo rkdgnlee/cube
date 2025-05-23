@@ -40,7 +40,6 @@ class LoadingDialogFragment : DialogFragment() {
     }
 
     override fun dismiss() {
-        super.dismiss()
         dismissAllowingStateLoss()
     }
 
@@ -78,8 +77,13 @@ class LoadingDialogFragment : DialogFragment() {
                 binding.pvLD.progressFromPrevious = true
                 mvm.progressInfoCount.observe(viewLifecycleOwner) { count ->
                     val percent = ( count.toFloat()  / mvm.totalInfoCount.toFloat() ) * 100f
-                    if (percent <= 100f) {
+                    if (percent < 100f) {
                         binding.pvLD.progress = percent
+                        val percentText = "${percent.roundToInt()} %"
+                        binding.tvPercent.text = percentText
+                    } else if (percent == 100f ) {
+                        binding.pvLD.progress = 100f
+                        binding.pvLD.autoAnimate = false
                         val percentText = "${percent.roundToInt()} %"
                         binding.tvPercent.text = percentText
                     } else {

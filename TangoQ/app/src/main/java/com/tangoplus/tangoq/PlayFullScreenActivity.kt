@@ -54,7 +54,6 @@ class PlayFullScreenActivity : AppCompatActivity() {
     var currentExerciseId = ""
     private var isExitDialogVisible = false
     private lateinit var mediaSourceList: List<MediaSource>
-//    private var pvm.simpleExoPlayer : pvm.simpleExoPlayer? = null
     private var exoPlay: ImageButton? = null
     private var exoPause: ImageButton? = null
     private var llSpeed: LinearLayout? = null
@@ -62,7 +61,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
     private var exo05: ImageButton? = null
     private var exo075: ImageButton? = null
     private var exo10: ImageButton? = null
-
+    private lateinit var exitButton : ImageButton
     // ------! 카운트 다운  시작 !-------
     private  val mCountDown : CountDownTimer by lazy {
         object : CountDownTimer(3000, 1000) {
@@ -72,6 +71,8 @@ class PlayFullScreenActivity : AppCompatActivity() {
                     binding.tvFullScreenGuide.visibility = View.VISIBLE
                     binding.tvFullScreenGuide.alpha = 1f
                     binding.tvFullScreenGuide.text = "다음 운동이 곧 시작합니다 !\n준비해 주세요\n\n${(millisUntilFinished.toFloat() / 1000.0f).roundToInt()}"
+                    exitButton = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_exit)
+                    exitButton.isClickable = false
                 }
             }
 
@@ -80,6 +81,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
                 binding.pvFullScreen.isClickable = true
                 setAnimation(binding.tvFullScreenGuide, 500, 0, false ) { }
                 pvm.simpleExoPlayer?.play()
+                exitButton.isClickable = true
             }
         }
     }
@@ -171,7 +173,7 @@ class PlayFullScreenActivity : AppCompatActivity() {
         }
 
         // -----! 받아온 즐겨찾기 재생 목록 끝 !-----
-        val exitButton = binding.pvFullScreen.findViewById<ImageButton>(R.id.exo_exit)
+        exitButton = binding.pvFullScreen.findViewById(R.id.exo_exit)
         exitButton.setOnClickListener {
             showExitDialog()
         }

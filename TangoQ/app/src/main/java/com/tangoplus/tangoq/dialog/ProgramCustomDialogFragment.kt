@@ -166,7 +166,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                     // startIndex가 유효한지 확인
                     if (startIndex >= 0 && startIndex < currentSequenceProgresses.size) {
-//                        Log.w("startIndex", "${startIndex}, currentSequenceProgresses: ${currentSequenceProgresses.size}")
+                        Log.w("startIndex", "${startIndex}, currentSequenceProgresses: ${currentSequenceProgresses.size}")
                         val videoUrls = mutableListOf<String>()
                         val exerciseIds = mutableListOf<String>()
                         val uvpIds = mutableSetOf<String>() // 중복 제거를 위해 Set 사용
@@ -257,7 +257,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         /* 어댑터에는 현재 회차를 자체적으로 가져와서 넣기.
                         * */
                         if ( pvm.selectedSequence.value != null ) {
-//                            Log.w("업데이트UI", "어댑터갱신전: ${pvm.currentProgresses.map { it.cycleProgress }}, ${currentSeq}, ${pvm.selectedSequence.value}")
+                            Log.w("업데이트UI", "어댑터갱신전: ${pvm.currentProgresses.map { it.cycleProgress }}, ${currentSeq}, ${pvm.selectedSequence.value}")
                             setAdapter(currentProgram, currentProgresses, Pair(currentSeq, pvm.selectedSequence.value))
                         }
 
@@ -265,7 +265,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                         binding.etPCDTitle.isEnabled = false
                         binding.btnPCDRight.text = "운동 시작하기"
                         binding.etPCDTitle.setText(currentProgram.programName)
-//                        Log.w("시간", "programTime: ${currentProgram.programTime}")
+                        Log.w("시간", "programTime: ${currentProgram.programTime}")
                         binding.tvPCDTime.text = if (currentProgram.programTime <= 60) {
                             "${currentProgram.programTime}초"
                         } else {
@@ -357,7 +357,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             }
             progresses?.forEachIndexed { index, progressUnitVO ->
                 if (progressUnitVO.isWatched == 1) {
-//                    Log.v("프로그레스watched", "$index, ${progressUnitVO.isWatched}")
+                    Log.v("프로그레스watched", "$index, ${progressUnitVO.isWatched}")
                     adapter2?.setTouchLockedForItem(index, 2)
                 }
             }
@@ -375,11 +375,11 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
             CoroutineScope(Dispatchers.IO).launch {
                 pvm.getProgressData(requireContext())
                 withContext(Dispatchers.Main) {
-                    //            Log.w("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence}")
+                                Log.w("historys", "selectedSequence : ${pvm.selectedSequence.value}, currentSequence: ${pvm.currentSequence}")
                     val selectedWeekValue = pvm.selectedWeek.value
                     val selectedSeqValue = pvm.selectedSequence.value
                     if (selectedWeekValue != null && selectedSeqValue != null) {
-//                        Log.w("회차들", "selectedWeekValue: $selectedWeekValue, selectedSeqValue: $selectedSeqValue, VM.selectedSeq: ${pvm.selectedSequence.value}, VM.currentSeq: ${pvm.currentSequence}")
+                        Log.w("회차들", "selectedWeekValue: $selectedWeekValue, selectedSeqValue: $selectedSeqValue, VM.selectedSeq: ${pvm.selectedSequence.value}, VM.currentSeq: ${pvm.currentSequence}")
                         setAdapter(pvm.currentProgram, pvm.currentProgresses, Pair(pvm.currentSequence, selectedSeqValue))
                         setButtonFlavor()
                     }
@@ -390,12 +390,12 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     private fun isTodayEnd() {
         // 시퀀스, 계산하는곳에서 flag인 pvm.dailySeqFinished를 넘겨줌.
         val isAllFinish = pvm.currentProgresses.map { it.isWatched }.all { it == 1 }
-//        Log.w("isTodayEnd", "${pvm.currentProgresses.map { it.isWatched }}")
+        Log.w("isTodayEnd", "${pvm.currentProgresses.map { it.isWatched }}")
 
         val rightNow = LocalDate.now()
         if (pvm.currentProgresses.isNotEmpty()) {
             val recentUpdatedAt = pvm.currentProgresses.sortedByDescending { it.updatedAt }[0].updatedAt
-//            Log.w("recentUpdateAt", "$recentUpdatedAt")
+            Log.w("recentUpdateAt", "$recentUpdatedAt")
             val recentUpdateDate = if (!recentUpdatedAt.isNullOrBlank() && recentUpdatedAt != "null") {
                 LocalDate.parse(recentUpdatedAt, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
             } else {
@@ -413,7 +413,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
     }
 
     private fun setButtonFlavor() {
-//        Log.v("버튼", "operate function setButtonFlavor.")
+        Log.v("버튼", "operate function setButtonFlavor.")
         val selectedWeekValue = pvm.selectedWeek.value // 다 끝났을 때 3(4주차), 4(실제로 5주차인거임)
         val selectedSeqValue = pvm.selectedSequence.value
         if (selectedWeekValue != null && pvm.currentProgresses.isNotEmpty()) {
@@ -494,7 +494,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                 put("exercise_program_sn", programSn)
                 put("server_sn", mvm.selectedMeasure?.sn)
             }
-//            Log.w("json>Progress", "$jo")
+            Log.w("json>Progress", "$jo")
             lifecycleScope.launch(Dispatchers.IO) {
                 getProgress(getString(R.string.API_progress), jo, requireContext()) { (_, week, seq), result ->
                     CoroutineScope(Dispatchers.Main).launch {  // LiveData 업데이트는 메인 스레드에서
@@ -546,7 +546,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             }
                             // 당일 운동 끝났는데 이번주 아직 안지남
                             else if (isAllFinish &&  rightNow == recentUpdateDate && pvm.selectedWeek.value == pvm.currentWeek) {
-                                Log.w("회차", "회차1번")
+
                                 pvm.dailySeqFinished = true
                                 if (dailyFinishDialog?.isVisible == false || dailyFinishDialog?.isAdded == false) {
                                     dailyFinishDialog?.show(requireActivity().supportFragmentManager, "ProgramAlertDialogFragment")
@@ -554,7 +554,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                             } // 운동 끝났는데 이번주 아직 안지남
                             else if (isAllFinish&& pvm.selectedWeek.value == pvm.currentWeek && currentWeekCompleted  && !isCurrentWeekEnd) {
-                                Log.w("회차", "회차2번")
+
                                 pvm.dailySeqFinished = true
                                 if (dailyFinishDialog?.isVisible == false || dailyFinishDialog?.isAdded == false) {
                                     dailyFinishDialog = ProgramAlertDialogFragment.newInstance(this@ProgramCustomDialogFragment, 3)
@@ -562,7 +562,8 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                                 }
                             }
 
-//                            Log.w("seq계산하기", "week,seq: ($adjustedWeek, $adjustedSeq), max: $isMaxSeq, min: $isMinSeq, $isAllFinish, $isCurrentWeekEnd, 올피니쉬: ${countSets.map { it == adjustedSeq + 1 }}, $countSets ${editedProgresses.map { it.updatedAt }}")
+
+                            Log.w("seq계산하기", "week,seq: ($adjustedWeek, $adjustedSeq), max: $isMaxSeq, min: $isMinSeq, $isAllFinish, $isCurrentWeekEnd, 올피니쉬: ${countSets.map { it == adjustedSeq + 1 }}, $countSets ${editedProgresses.map { it.updatedAt }}")
                             // 이전 주차로 감
                             if ((pvm.selectedWeek.value ?: 0) < pvm.currentWeek) {
                                 pvm.currentSequence = 2
@@ -573,6 +574,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                                 pvm.currentSequence = 2
                                 pvm.selectedSequence.value = 2
                             } else if (isMaxSeq && isAllFinish && isCurrentWeekEnd) { // 모든 회차가 끝남 ( 주차가 넘어가야하는 상황 )
+                                Log.w("회차", "회차1번")
                                 pvm.currentSequence = 0
                                 pvm.selectedSequence.value = 0
                             }     // 회차 진행중
@@ -581,9 +583,11 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
 
                                     // 3회차가 아님. 최근 받아온 회차가 모두 끝남. 마지막 업데이트일자가 오늘이 아님 (어제 이전에 회차가 완료된 상황)
                                     if (!isMaxSeq && isAllFinish && isMinSeq > 0  && rightNow != recentUpdateDate) {
+                                        Log.w("회차", "회차2번")
                                         pvm.currentSequence = adjustedSeq + 1
                                         pvm.selectedSequence.value= adjustedSeq + 1
                                     } else {
+                                        Log.w("회차", "회차3번")
                                         pvm.currentSequence = adjustedSeq
                                         pvm.selectedSequence.value= adjustedSeq
                                     }
@@ -651,7 +655,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             LocalDate.parse(currentWeekEndDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         } else LocalDate.now().minusMonths(1)
                         val isCurrentWeekEnd = LocalDate.now() > weekDDay
-//                        Log.v("isCurrenWeek", "$isAllFinish, $rightNow == $recentUpdateDate 주차 끝남 판단: $isCurrentWeekEnd, ${LocalDate.now()} > $weekDDay")
+                        Log.v("isCurrenWeek", "$isAllFinish, $rightNow == $recentUpdateDate 주차 끝남 판단: $isCurrentWeekEnd, ${LocalDate.now()} > $weekDDay")
 
                         // 해당 프로그램 끝
                         // 모두 종료된 프로그램 ( adjuestedWeek == 3(4주차), adjustedSeq == 2(3회차) )
@@ -710,7 +714,7 @@ class ProgramCustomDialogFragment : DialogFragment(), OnCustomCategoryClickListe
                             pvm.selectedWeek.value = adjustedWeek
                         }
                     }
-//                    Log.w("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}")
+                    Log.w("초기WeekSeq", "selectedWeek: ${pvm.selectedWeek.value} selectWeek: ${pvm.selectWeek.value}, currentWeek: ${pvm.currentWeek}, currentSeq: ${pvm.currentSequence}, selectedSequence: ${pvm.selectedSequence.value}")
                 }
             }
         }

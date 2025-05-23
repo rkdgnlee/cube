@@ -14,8 +14,8 @@ android {
         minSdk = 27
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
-        versionCode = 51
-        versionName = "1.60"
+        versionCode = 53
+        versionName = "1.62"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -56,6 +56,9 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")
 
     // 스켈레톤
+    //noinspection Aligned16KB
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
+    //noinspection Aligned16KB
     implementation("com.google.mediapipe:tasks-vision:0.10.14")
 
     // 외부 라이브러리
@@ -75,6 +78,7 @@ dependencies {
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
+    //noinspection Aligned16KB
     implementation("com.arthenica:ffmpeg-kit-full-gpl:6.0-2")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
@@ -115,9 +119,9 @@ dependencies {
     annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
     //noinspection KaptUsageInsteadOfKsp
     kapt("androidx.room:room-compiler:2.6.1")
-    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
     implementation("androidx.sqlite:sqlite:2.4.0")
-
+    //noinspection Aligned16KB
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
 
     // 미디어
     val camera_version = "1.4.1"

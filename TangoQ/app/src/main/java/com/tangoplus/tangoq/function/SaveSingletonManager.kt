@@ -301,7 +301,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                     measureResult = null,
                                     fileUris = null,
                                     isMobile = info.device_sn == 0,
-                                    recommendations = null
+                                    recommendations = null,
+                                    isShowLines = info.show_lines ?: 1
                                 )
                                 val serverSn = info.sn
                                 val uriTuples = get1MeasureUrls(serverSn)
@@ -321,7 +322,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                                     measureResult = null,
                                     fileUris = null,
                                     isMobile = info.device_sn == 0,
-                                    recommendations = null
+                                    recommendations = null,
+                                    isShowLines = info.show_lines ?: 1
                                 )
                                 measures.add(measureVO)
                             }
@@ -553,7 +555,8 @@ class SaveSingletonManager(private val context: Context, private val activity: F
                     measureResult = ja,
                     fileUris = uris,
                     isMobile = info.device_sn == 0,
-                    recommendations = null
+                    recommendations = null,
+                    isShowLines = info.show_lines ?: 1
                 )
 //                Log.v("싱글턴Measure넣기전 다른 값", "t_score: ${info.t_score},ja:  ${ja},uris: ${uris}, ${info.device_sn}")
                 // ------# 초기 측정 상태일 때 null 예외 처리 #------

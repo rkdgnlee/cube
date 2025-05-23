@@ -58,3 +58,21 @@
 -keepclassmembers class * {
     public <init>(...);
 }
+-dontwarn com.google.mediapipe.proto.CalculatorProfileProto$CalculatorProfile
+-dontwarn com.google.mediapipe.proto.GraphTemplateProto$CalculatorGraphTemplate
+
+# proguard-rules.pro 파일에 아래 규칙 추가
+-keep class com.google.mediapipe.** { *; }
+-keepclassmembers class com.google.mediapipe.** { *; }
+
+# Native libraries
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Keep classes that use reflection
+-keepattributes *Annotation*
+-keepclassmembers class * {
+    @androidx.annotation.Keep *;
+}
+-keep @androidx.annotation.Keep class *

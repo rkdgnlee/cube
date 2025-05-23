@@ -408,80 +408,84 @@ class MeasureFragment : Fragment() {
                         val entry = dataSet.getEntryForIndex(j)
                         val pos = lineChart.getPosition(entry, YAxis.AxisDependency.LEFT)
                         if (pos != null && context != null) {
-                            val tv = TextView(context).apply {
-                                text = when (typeList[j]) {
-                                    true -> "M"
-                                    false -> "K"
-                                    else -> ""
-                                }
-                                setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
-                                setTextSize(TypedValue.COMPLEX_UNIT_SP, if (isTablet(context)) 16f else 12f)
+                            if (typeList.isNotEmpty()) {
+                                val tv = TextView(context).apply {
+                                    text = when (typeList[j]) {
+                                        true -> "M"
+                                        false -> "K"
+                                        else -> ""
+                                    }
+                                    setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
+                                    setTextSize(TypedValue.COMPLEX_UNIT_SP, if (isTablet(context)) 16f else 12f)
 //                                if (isTablet(context)) setTypeface(null, Typeface.BOLD)
-                                setBackgroundColor(Color.TRANSPARENT)
-                            }
-                            tv.measure(
-                                View.MeasureSpec.UNSPECIFIED,
-                                View.MeasureSpec.UNSPECIFIED
-                            )
-                            val textWidth = tv.measuredWidth
-                            val textHeight = tv.measuredHeight
+                                    setBackgroundColor(Color.TRANSPARENT)
+                                }
+                                tv.measure(
+                                    View.MeasureSpec.UNSPECIFIED,
+                                    View.MeasureSpec.UNSPECIFIED
+                                )
+                                val textWidth = tv.measuredWidth
+                                val textHeight = tv.measuredHeight
 
-                            tv.x = pos.x - textWidth / 2
-                            tv.y = pos.y - textHeight - 48f
-                            binding.flM.addView(tv)
+                                tv.x = pos.x - textWidth / 2
+                                tv.y = pos.y - textHeight - 48f
+                                binding.flM.addView(tv)
+
+
+
+                                lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                                    override fun onValueSelected(e: Entry?, h: Highlight?) {
+                                        e?.let { entry ->
+                                            val originalIndex = startIndex + entry.x.toInt()
+                                            val selectedData = lcDataList[originalIndex]
+                                            val balloonText = if (selectedData.first != "") "측정날짜: ${
+                                                selectedData.first.substring(
+                                                    0,
+                                                    10
+                                                )
+                                            }\n" + "측정 타입: ${
+                                                when (typeList[originalIndex]) {
+                                                    true -> "모바일앱"
+                                                    false -> "키오스크"
+                                                    null -> ""
+                                                }
+                                            }\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
+                                            val balloonlc1 = Balloon.Builder(requireContext())
+                                                .setWidthRatio(0.5f)
+                                                .setHeight(BalloonSizeSpec.WRAP)
+                                                .setText(balloonText)
+                                                .setTextColorResource(R.color.subColor800)
+                                                .setTextSize(15f)
+                                                .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                                                .setArrowSize(0)
+                                                .setMargin(10)
+                                                .setPadding(12)
+                                                .setCornerRadius(8f)
+                                                .setBackgroundColorResource(R.color.white)
+                                                .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+                                                .setLifecycleOwner(viewLifecycleOwner)
+                                                .build()
+
+                                            val pts = FloatArray(2)
+                                            pts[0] = entry.x
+                                            pts[1] = entry.y
+                                            lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
+                                            balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
+//                                            Log.v("originalIndex", "$originalIndex")
+                                            if ( selectedData.second > 50) {
+                                                mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
+                                                mvm.selectedMeasureIndex.value = originalIndex
+                                            }
+                                        }
+                                    }
+                                    override fun onNothingSelected() {}
+                                })
+                            }
                         }
                     }
                 }
             }
-            lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-                override fun onValueSelected(e: Entry?, h: Highlight?) {
-                    e?.let { entry ->
-                        val originalIndex = startIndex + entry.x.toInt()
-                        val selectedData = lcDataList[originalIndex]
-                        val balloonText = if (selectedData.first != "") "측정날짜: ${
-                            selectedData.first.substring(
-                                0,
-                                10
-                            )
-                        }\n" + "측정 타입: ${
-                            when (typeList[originalIndex]) {
-                                true -> "모바일앱"
-                                false -> "키오스크"
-                                null -> ""
-                            }
-                        }\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
-                        val balloonlc1 = Balloon.Builder(requireContext())
-                            .setWidthRatio(0.5f)
-                            .setHeight(BalloonSizeSpec.WRAP)
-                            .setText(balloonText)
-                            .setTextColorResource(R.color.subColor800)
-                            .setTextSize(15f)
-                            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
-                            .setArrowSize(0)
-                            .setMargin(10)
-                            .setPadding(12)
-                            .setCornerRadius(8f)
-                            .setBackgroundColorResource(R.color.white)
-                            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-                            .setLifecycleOwner(viewLifecycleOwner)
-                            .build()
 
-                        val pts = FloatArray(2)
-                        pts[0] = entry.x
-                        pts[1] = entry.y
-                        lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
-                        balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
-//                        Log.v("originalIndex", "$originalIndex")
-                        if ( selectedData.second > 50) {
-                            mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
-                            mvm.selectedMeasureIndex.value = originalIndex
-                        }
-                    }
-
-                }
-
-                override fun onNothingSelected() {}
-            })
             // ------! 꺾은선 그래프 코드 끝 !------
 
             // ------! balloon 시작 !------

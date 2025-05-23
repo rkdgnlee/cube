@@ -129,7 +129,8 @@ object NetworkMeasure {
 //                        Log.v("getAllMeasureOut", "rowCount: ${bodyJo.optInt("row_count")}, stop the getAllMeasures")
                         return@withContext callback(false)
                     }
-                    val ja = bodyJo.getJSONArray("data") // 3개가 들어가있음.
+                    // TODO 이곳에서 실시간으로 각 measure_info들의 show_lines가 수정되게끔 해야함.
+                    val ja = bodyJo.getJSONArray("data") // 총 measure Info 들이 array로 들어가있음
                     val roomInfoSns =  mDao.getAllSns(userUUID) // 1845의 server sn인 sn을 가져옴
 //                    Log.v("룸에저장된info들", "$roomInfoSns")
 
@@ -140,6 +141,9 @@ object NetworkMeasure {
                     }
 //                    Log.v("Room>getInfos", "${mDao.getAllInfo(userUUID).size}")
 
+                    // newInfos = room에 저장되지 않은 info
+                    // apiInfo = api response에 담겨있던 info
+                    // roomInfoSns = room에 저장된 info
                     val newInfos = getInfos.filter { apiInfo ->
                         apiInfo.sn !in roomInfoSns
                     }
@@ -151,12 +155,25 @@ object NetworkMeasure {
                     } else {
                         newInfos.size
                     }
-//                    Log.v("db없는infoSn", "newInfos: ${newInfos.map { it.sn }}")
-                    newInfos.forEach{ newInfo ->
+                    Log.v("db없는infoSn", "newInfos: ${newInfos.size} ${newInfos.map { it.sn }}")
+                    newInfos.forEach { newInfo ->
                         mDao.insertInfo(newInfo)
+
                         newInfo.sn?.let { getMeasureResult(context, myUrl, it) }
                         mvm.progressInfoCount.postValue(mvm.progressInfoCount.value?.plus(1))
                         Log.v("db없는infoSn", "다운로드진행상황: ${mvm.progressInfoCount.value} / ${newInfos.size}")
+                    }
+                    if (newInfos.isEmpty()) {
+                        mvm.progressInfoCount.postValue(mvm.progressInfoCount.value?.plus(1))
+                    }
+
+                    // DB수정 속도: 약 42건 0.05초
+                    getInfos.forEach { getInfo ->
+                            if (getInfo.sn != null && getInfo.show_lines != null) {
+                                val showLines = getInfo.show_lines ?: 1
+                                mDao.updateShowLinesAfterCompare(getInfo.sn, showLines)
+
+                            }
                     }
                     return@withContext callback(true)
                 }
@@ -176,7 +193,6 @@ object NetworkMeasure {
                 Log.e("saveAllInfo", "Error Exception SaveAllMeasureInfo : ${e.message}")
                 return@withContext callback(false)
             }
-
         }
     }
 

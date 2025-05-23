@@ -59,6 +59,22 @@ interface MeasureDao {
     @Query("DELETE FROM t_measure_info WHERE user_uuid = :userUUID")
     fun deleteUserInfos(userUUID: String)
 
+    // show Lines 데이터 바로 바로 갱신
+    @Query("SELECT show_lines FROM t_measure_info WHERE sn = :serverSn")
+    fun getShowLines(serverSn: Int) : Int
+
+    @Query("UPDATE t_measure_info SET show_lines = :showLines WHERE sn = :serverSn")
+    fun updateShowLines(serverSn : Int, showLines : Int)
+
+    // room에 저장된 showLines 값이 같은 지 판단해서 서버측 값이 다르면 update하기
+    @Transaction
+    fun updateShowLinesAfterCompare(serverSn: Int, newShowLines: Int) {
+        val currentShowLines = getShowLines(serverSn)
+        if (currentShowLines != newShowLines) {
+            updateShowLines(serverSn, newShowLines)
+        }
+    }
+
     // -------------------------------# MeasureStatic #-------------------------------
     @Insert
     suspend fun insertByStatic(entity: MeasureStatic) : Long

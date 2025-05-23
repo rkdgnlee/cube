@@ -1057,10 +1057,13 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             try {
                 client.newCall(request).execute().use { response ->
-                    val code = response.code
                     val responseBody = response.body?.string()
 //                    Log.v("PIN>ResponseBody", "$responseBody, $code")
-                    responseBody.let { JSONObject(it) }
+                    if (responseBody != null) {
+                        JSONObject(responseBody)
+                    } else {
+                        null
+                    }
                 }
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "${e.message}")
@@ -1094,10 +1097,13 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             try {
                 client.newCall(request).execute().use { response ->
-                    val statusCode = response.code
                     val responseBody = response.body?.string()
 //                     Log.v("QRcode>ResponseBody", "$responseBody, $statusCode")
-                    responseBody.let { JSONObject(it) }
+                    if (responseBody != null) {
+                        JSONObject(responseBody)
+                    } else {
+                        null
+                    }
                 }
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "${e.message}")

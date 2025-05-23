@@ -46,10 +46,8 @@ class WifiManager(private val context: Context) {
         }
     }
 
-
     // 네트워크 보안 수준 반환
     private fun getSecurityType(configuration: WifiConfiguration): String {
-
         return when {
             configuration.wepKeys[0] != null -> "WEP"
             configuration.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_PSK) -> "WPA/WPA2"

@@ -560,6 +560,7 @@ object MeasurementManager {
     }
 
     fun calculateOverall(parts: MutableList<Pair<String, Status>>) : Int {
+        // TODO 여기서 만약 전부 정상이라고 나오면 100점이 나와야함.
         val scores = mapOf(
             Status.DANGER to 41,
             Status.WARNING to 63,
@@ -572,6 +573,8 @@ object MeasurementManager {
         for (part in parts) {
             val (bodyPart, status) = part
             val weight = when {
+                status == Status.NORMAL -> 100.0 // 전부 정상일 때 100점을 계산하기 위한 값
+                // 그 이외 값들
                 bodyPart.contains("팔꿉") -> reverseWeightScore
                 bodyPart.contains("손목") -> reverseWeightScore
                 bodyPart.contains("무릎") -> weightScore
@@ -845,13 +848,19 @@ object MeasurementManager {
 
                                 val poseLandmarkResult = fromCoordinates(coordinates)
 //                                Log.v("댄저파트", "${measureVO.dangerParts}")
-                                val combinedBitmap = ImageProcessingUtil.combineImageAndOverlay(
-                                    bitmap,
-                                    poseLandmarkResult,
-                                    seq,
-                                    measureVO.dangerParts,
-                                    fragment.requireContext()
-                                )
+
+                                val combinedBitmap = if (measureVO.isShowLines == 1) {
+                                    ImageProcessingUtil.combineImageAndOverlay(
+                                        bitmap,
+                                        poseLandmarkResult,
+                                        seq,
+                                        measureVO.dangerParts,
+                                        fragment.requireContext()
+                                    )
+                                } else {
+                                    bitmap
+                                }
+
                                 isSet = true
                                 // ------# MeasureDetail의 Solo #------
                                 // 가로비율은 2배로 확대 세로 비율은 그대로 보여주기
@@ -1053,7 +1062,7 @@ object MeasurementManager {
             "front_horizontal_distance_knee_left" -> "몸의 중심에서 우측 무릎의 거리는 값 13cm를 기준으로 약 2cm 이내가 정상입니다.\n우측 무릎과 비교해서 거리가 유난히 멀다면, 발의 정렬이 잘못돼 정강이, 대퇴부의 긴장을 풀어주세요."
             "front_vertical_angle_hip_knee_ankle_left" -> "골반-무릎-발목 간의 기울기는 175° 기준으로 약 3° 오차 이내가 표준적인 기울기 입니다.\n벗어날 경우 슬개골 왕복운동을 추천드립니다."
             "side_left_vertical_angle_hip_knee" -> "측면에서 골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다.\n벗어날 경우, 햄스트링, 종아리 근육의 긴장이 있을 수 있으니 스트레칭을 추천드립니다"
-            "side_left_vertical_angle_hip_knee_ankle" -> "측면에서 골반-무릎-발목의 기울기는 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다.\n정면과 비교해서 평소 서있는 자세에서 다리가 조금 굽힘이 있는지 확인하고 교정 해보세요"
+            "side_left_vertical_angle_hip_knee_ankle" -> "측면에서 골반-무릎-발목의 기울기는 180° 기준으로 5° 이내의 범위를 표준적인 기울기입니다.\n정면과 비교해서 평소 서있는 자세에서 다리가 조금 굽힘이 있는지 확인하고 교정 해보세요"
             "back_horizontal_angle_knee" -> "몸 뒷편의 무릎 기울기는  0°를 기준으로 약 2° 오차 이내가 정상입니다.\n이를 벗어나면 발의 정렬 문제, 주변 근육인 햄스트링과 종아리 근육의 긴장을 풀어보세요"
             "back_horizontal_distance_knee_left" -> "몸의 중심에서 좌측 무릎까지의 거리를 의미합니다. 거리 12cm 기준으로 5cm 오차 이내가 표준적인 거리 입니다.\n벗어날 경우 좌측 다리에 무게를 더 실어 서는 습관이 의심됩니다. 골반 교정 운동을 추천드립니다"
             // 우측 무릎
@@ -1061,7 +1070,7 @@ object MeasurementManager {
             "front_horizontal_distance_knee_right" -> "몸의 중심에서 우측 무릎의 거리는 값 13cm를 기준으로 약 2cm 이내가 정상입니다.\n우측 무릎과 비교해서 거리가 유난히 멀다면, 발의 정렬이 잘못돼 정강이, 대퇴부의 긴장을 풀어주세요."
             "front_vertical_angle_hip_knee_ankle_right" -> "골반-무릎-발목 간의 기울기는 175° 기준으로 약 3° 오차 이내가 표준적인 기울기 입니다.\n벗어날 경우 슬개골 왕복운동을 추천드립니다."
             "side_right_vertical_angle_hip_knee" -> "측면에서 골반-무릎의 기울기를 의미합니다. 기울기 값 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다.\n벗어날 경우, 햄스트링, 종아리근육의 긴장이 있을 수 있으니 스트레칭을 추천드립니다"
-            "side_right_vertical_angle_hip_knee_ankle" -> "측면에서 골반-무릎-발목의 기울기는 90° 기준으로 5° 이내의 범위를 표준적인 기울기입니다.\n정면과 비교해서 평소 서있는 자세에서 다리가 조금 굽힘이 있는지 확인하고 교정 해보세요"
+            "side_right_vertical_angle_hip_knee_ankle" -> "측면에서 골반-무릎-발목의 기울기는 180° 기준으로 5° 이내의 범위를 표준적인 기울기입니다.\n정면과 비교해서 평소 서있는 자세에서 다리가 조금 굽힘이 있는지 확인하고 교정 해보세요"
 //            "back_horizontal_angle_knee" -> "양 무릎의 기울기를 의미합니다. 기울기 값 0° 기준으로 0.5° 오차 이내가 표준적인 기울기 입니다"
             "back_horizontal_distance_knee_right" -> "몸의 중심에서 좌측 무릎까지의 거리를 의미합니다. 기울기 값 10cm 기준으로 5cm 오차 이내가 표준적인 거리 입니다.\n벗어날 경우 좌측 다리에 무게를 더 실어 서는 습관이 의심됩니다. 골반 교정 운동을 추천드립니다"
             // 좌측 발목

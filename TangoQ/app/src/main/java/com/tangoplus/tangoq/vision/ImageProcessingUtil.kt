@@ -9,6 +9,7 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RadialGradient
 import android.graphics.Shader
+import android.util.Log
 import android.util.TypedValue
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
 import androidx.core.graphics.toColorInt
@@ -89,11 +90,11 @@ object ImageProcessingUtil {
         }
 
         val borderPaint = Paint().apply {
-            color = "#2EE88B".toColorInt() // 테두리 색
+            color = "#4DFFFFFF".toColorInt() // 테두리 색
             strokeWidth = strokeWidths
             style = Paint.Style.STROKE // 테두리만 그리기
             isAntiAlias = true
-            setShadowLayer(10f, 0f, 0f, "#1A2EE88B".toColorInt()) // 반지름, x-offset, y-offset, 그림자 색상
+            setShadowLayer(15f, 0f, 0f, "#4DFFFFFF".toColorInt()) // 반지름, x-offset, y-offset, 그림자 색상
         }
         val fillPaint = Paint().apply {
             color = "#FFFFFF".toColorInt() // 내부 색
@@ -140,72 +141,72 @@ object ImageProcessingUtil {
             when (sequence) {
                 0 -> {
                     val midAnkleX = (leftAnkle.x + rightAnkle.x) / 2
-                    canvas.drawLine(leftEar.x, leftEar.y, rightEar.x, rightEar.y, axisSubPaint)
+//                    canvas.drawLine(leftEar.x, leftEar.y, rightEar.x, rightEar.y, axisSubPaint)
                     canvas.drawLine(midAnkleX, leftAnkle.y + 100, midAnkleX, nose.y - 100, axisPaint)
-                    canvas.drawLine(leftShoulder.x ,leftShoulder.y, rightShoulder.x, rightShoulder.y, axisSubPaint)
-                    canvas.drawLine(leftElbow.x ,leftElbow.y, rightElbow.x, rightElbow.y, axisSubPaint)
-                    canvas.drawLine(leftWrist.x ,leftWrist.y, rightWrist.x, rightWrist.y, axisSubPaint)
-                    canvas.drawLine(leftKnee.x ,leftKnee.y, rightKnee.x, rightKnee.y, axisSubPaint)
-                    canvas.drawLine(leftAnkle.x ,leftAnkle.y, rightAnkle.x, rightAnkle.y, axisSubPaint)
-                    canvas.drawLine(midShoulderX, midShoulderY, midHipX, midHipY , axisSubPaint)
-                    canvas.drawLine(midShoulderX, midShoulderY, nose.x, nose.y , axisSubPaint)
-                    canvas.drawLine(leftKnee.x, leftKnee.y - 50 ,  leftKnee.x, leftAnkle.y + 100, axisPaint)
-                    canvas.drawLine(rightKnee.x, rightKnee.y - 50 , rightKnee.x, rightAnkle.y + 100, axisPaint)
+//                    canvas.drawLine(leftShoulder.x ,leftShoulder.y, rightShoulder.x, rightShoulder.y, axisSubPaint)
+//                    canvas.drawLine(leftElbow.x ,leftElbow.y, rightElbow.x, rightElbow.y, axisSubPaint)
+//                    canvas.drawLine(leftWrist.x ,leftWrist.y, rightWrist.x, rightWrist.y, axisSubPaint)
+//                    canvas.drawLine(leftKnee.x ,leftKnee.y, rightKnee.x, rightKnee.y, axisSubPaint)
+//                    canvas.drawLine(leftAnkle.x ,leftAnkle.y, rightAnkle.x, rightAnkle.y, axisSubPaint)
+//                    canvas.drawLine(midShoulderX, midShoulderY, midHipX, midHipY , axisSubPaint)
+//                    canvas.drawLine(midShoulderX, midShoulderY, nose.x, nose.y , axisSubPaint)
+//                    canvas.drawLine(leftKnee.x, leftKnee.y - 50 ,  leftKnee.x, leftAnkle.y + 100, axisPaint)
+//                    canvas.drawLine(rightKnee.x, rightKnee.y - 50 , rightKnee.x, rightAnkle.y + 100, axisPaint)
                 }
                 3 -> {
                     canvas.drawLine(leftAnkle.x, leftAnkle.y + 50, leftAnkle.x, nose.y - 200, axisPaint)
-                    canvas.drawLine(nose.x - 100, nose.y, nose.x + 100, nose.y , axisPaint)
-                    canvas.drawLine(leftShoulder.x - 100, leftShoulder.y , leftShoulder.x + 100, leftShoulder.y , axisPaint)
+//                    canvas.drawLine(nose.x - 100, nose.y, nose.x + 100, nose.y , axisPaint)
+//                    canvas.drawLine(leftShoulder.x - 100, leftShoulder.y , leftShoulder.x + 100, leftShoulder.y , axisPaint)
 
-                    canvas.drawLine(nose.x, nose.y, leftShoulder.x, leftShoulder.y, axisSubPaint)
-                    canvas.drawLine(leftWrist.x, leftWrist.y, leftAnkle.x, leftWrist.y, axisSubPaint)
-                    canvas.drawLine(leftAnkle.x, leftHip.y, leftHip.x, leftHip.y, axisSubPaint)
-                    canvas.drawLine(leftAnkle.x, leftKnee.y, leftKnee.x, leftKnee.y, axisSubPaint)
+//                    canvas.drawLine(nose.x, nose.y, leftShoulder.x, leftShoulder.y, axisSubPaint)
+//                    canvas.drawLine(leftWrist.x, leftWrist.y, leftAnkle.x, leftWrist.y, axisSubPaint)
+//                    canvas.drawLine(leftAnkle.x, leftHip.y, leftHip.x, leftHip.y, axisSubPaint)
+//                    canvas.drawLine(leftAnkle.x, leftKnee.y, leftKnee.x, leftKnee.y, axisSubPaint)
                 }
                 4 -> {
                     canvas.drawLine(rightAnkle.x, rightAnkle.y + 50, rightAnkle.x, nose.y - 200, axisPaint)
-                    canvas.drawLine(nose.x - 100, nose.y, nose.x + 100, nose.y , axisPaint)
-                    canvas.drawLine(nose.x, nose.y, rightShoulder.x, rightShoulder.y, axisSubPaint)
-                    canvas.drawLine(rightShoulder.x - 100, rightShoulder.y , rightShoulder.x + 100, rightShoulder.y , axisPaint)
-                    canvas.drawLine(rightAnkle.x, rightHip.y, rightHip.x, rightHip.y, axisSubPaint)
-                    canvas.drawLine(rightWrist.x, rightWrist.y, rightAnkle.x, rightWrist.y, axisSubPaint)
-                    canvas.drawLine(rightAnkle.x, rightKnee.y, rightKnee.x, rightKnee.y, axisSubPaint)
+//                    canvas.drawLine(nose.x - 100, nose.y, nose.x + 100, nose.y , axisPaint)
+//                    canvas.drawLine(nose.x, nose.y, rightShoulder.x, rightShoulder.y, axisSubPaint)
+//                    canvas.drawLine(rightShoulder.x - 100, rightShoulder.y , rightShoulder.x + 100, rightShoulder.y , axisPaint)
+//                    canvas.drawLine(rightAnkle.x, rightHip.y, rightHip.x, rightHip.y, axisSubPaint)
+//                    canvas.drawLine(rightWrist.x, rightWrist.y, rightAnkle.x, rightWrist.y, axisSubPaint)
+//                    canvas.drawLine(rightAnkle.x, rightKnee.y, rightKnee.x, rightKnee.y, axisSubPaint)
                 }
                 5 -> {
                     val midFootX = (leftAnkle.x + rightAnkle.x) / 2
                     canvas.drawLine(midFootX, leftAnkle.y + 100, midFootX, nose.y - 100, axisPaint)
-                    canvas.drawLine(leftShoulder.x, leftShoulder.y, rightShoulder.x, rightShoulder.y , axisSubPaint)
-                    canvas.drawLine(leftHip.x, leftHip.y, rightHip.x, rightHip.y , axisSubPaint)
-                    canvas.drawLine(leftShoulder.x, leftShoulder.y, rightShoulder.x, rightShoulder.y , axisSubPaint)
-                    canvas.drawLine(leftKnee.x, leftKnee.y, rightKnee.x, rightKnee.y , axisSubPaint)
-                    canvas.drawLine(leftAnkle.x, leftAnkle.y, rightAnkle.x, rightAnkle.y , axisSubPaint)
+//                    canvas.drawLine(leftShoulder.x, leftShoulder.y, rightShoulder.x, rightShoulder.y , axisSubPaint)
+//                    canvas.drawLine(leftHip.x, leftHip.y, rightHip.x, rightHip.y , axisSubPaint)
+//                    canvas.drawLine(leftShoulder.x, leftShoulder.y, rightShoulder.x, rightShoulder.y , axisSubPaint)
+//                    canvas.drawLine(leftKnee.x, leftKnee.y, rightKnee.x, rightKnee.y , axisSubPaint)
+//                    canvas.drawLine(leftAnkle.x, leftAnkle.y, rightAnkle.x, rightAnkle.y , axisSubPaint)
 
-                    canvas.drawLine(midShoulderX, midShoulderY, midHipX, midHipY , axisSubPaint)
-                    canvas.drawLine(midShoulderX, midShoulderY, nose.x, nose.y , axisSubPaint)
+//                    canvas.drawLine(midShoulderX, midShoulderY, midHipX, midHipY , axisSubPaint)
+//                    canvas.drawLine(midShoulderX, midShoulderY, nose.x, nose.y , axisSubPaint)
                 }
                 6 -> {
-                    canvas.drawLine(noseX, noseY, leftShoulderX, leftShoulderY, paint)
-                    canvas.drawLine(noseX, noseY, rightShoulderX, rightShoulderY, paint)
-                    canvas.drawLine(midShoulderX, midShoulderY, noseX, noseY, axisSubPaint)
-                    canvas.drawLine(midHipX, midHipY, leftShoulderX, leftShoulderY, paint)
-                    canvas.drawLine(midHipX, midHipY, rightShoulderX, rightShoulderY, paint)
-                    canvas.drawLine(midHipX, midHipY, midShoulderX, midShoulderY, axisSubPaint)
+//                    canvas.drawLine(noseX, noseY, leftShoulderX, leftShoulderY, paint)
+//                    canvas.drawLine(noseX, noseY, rightShoulderX, rightShoulderY, paint)
+//                    canvas.drawLine(midShoulderX, midShoulderY, noseX, noseY, axisSubPaint)
+//                    canvas.drawLine(midHipX, midHipY, leftShoulderX, leftShoulderY, paint)
+//                    canvas.drawLine(midHipX, midHipY, rightShoulderX, rightShoulderY, paint)
+//                    canvas.drawLine(midHipX, midHipY, midShoulderX, midShoulderY, axisSubPaint)
                     // 골반 다이아 부터 머리 다이아까지
                     val midFootY = ((leftHeel.y + rightHeel.y) / 2  )
                     canvas.drawLine(midHipX, midFootY + 100, noseX, noseY - 100, axisPaint)
 
-                    val connections = listOf(Pair(7, 8), Pair(11, 12), Pair(23, 24))
-                    connections.forEach { (start, end) ->
-                        val startLandmark = plr.getOrNull(start)
-                        val endLandmark = plr.getOrNull(end)
-                        if (startLandmark != null && endLandmark != null) {
-                            val startX = (startLandmark.x  )
-                            val startY = (startLandmark.y )
-                            val endX = (endLandmark.x )
-                            val endY = (endLandmark.y )
-                            canvas.drawLine(startX, startY, endX, endY, paint)
-                        }
-                    }
+//                    val connections = listOf(Pair(7, 8), Pair(11, 12), Pair(23, 24))
+//                    connections.forEach { (start, end) ->
+//                        val startLandmark = plr.getOrNull(start)
+//                        val endLandmark = plr.getOrNull(end)
+//                        if (startLandmark != null && endLandmark != null) {
+//                            val startX = (startLandmark.x  )
+//                            val startY = (startLandmark.y )
+//                            val endX = (endLandmark.x )
+//                            val endY = (endLandmark.y )
+//                            canvas.drawLine(startX, startY, endX, endY, paint)
+//                        }
+//                    }
                 }
             }
             // 관절 연결 선
@@ -243,20 +244,20 @@ object ImageProcessingUtil {
             }
 
             connections.forEach { (start, end) ->
-                val startLandmark = plr.getOrNull(start)
-                val endLandmark = plr.getOrNull(end)
-                if (startLandmark != null && endLandmark != null) {
-                    val startX = startLandmark.x
-                    val startY = startLandmark.y
-                    val endX = endLandmark.x
-                    val endY = endLandmark.y
-                    canvas.drawLine(startX, startY, endX, endY, paint)
-                }
+//                val startLandmark = plr.getOrNull(start)
+//                val endLandmark = plr.getOrNull(end)
+//                if (startLandmark != null && endLandmark != null) {
+//                    val startX = startLandmark.x
+//                    val startY = startLandmark.y
+//                    val endX = endLandmark.x
+//                    val endY = endLandmark.y
+//                    canvas.drawLine(startX, startY, endX, endY, paint)
+//                }
             }
             if (sequence !in 3 .. 4) {
                 val midX = (leftShoulderX + rightShoulderX) / 2
                 val midY = (leftShoulderY + rightShoulderY) / 2
-                canvas.drawLine(nose.x, nose.y, midX, midY, paint)
+//                canvas.drawLine(nose.x, nose.y, midX, midY, paint)
                 canvas.drawCircle(midX, midY, 5f, fillPaint)
             }
             val pointAccentRange = when (sequence) {
@@ -282,16 +283,16 @@ object ImageProcessingUtil {
                 val x = plr.getOrNull(index)?.x
                 val y = plr.getOrNull(index)?.y
                 if (x != null && y != null) {
-                    canvas.drawCircle(x, y, 7f, borderPaint)
-                    canvas.drawCircle(x, y, 7f, fillPaint)
+                    canvas.drawCircle(x, y, 6f, borderPaint)
+                    canvas.drawCircle(x, y, 6f, fillPaint)
                 }
             }
             pointRange.forEach { index ->
                 val x = plr.getOrNull(index)?.x
                 val y = plr.getOrNull(index)?.y
                 if (x != null && y != null) {
-                    canvas.drawCircle(x, y, 5f, borderPaint)
-                    canvas.drawCircle(x, y, 5f, fillPaint)
+                    canvas.drawCircle(x, y, 4f, borderPaint)
+                    canvas.drawCircle(x, y, 4f, fillPaint)
                 }
             }
             val allPartsValue = mapOf(
@@ -373,7 +374,7 @@ object ImageProcessingUtil {
             canvas.drawCircle(resultBitmap.width - leftCircleX, leftCircleY, circleRadius - innerRadius, innerCirclePaint)
             canvas.drawText("R", resultBitmap.width - leftCircleX, leftCircleY + textPaint.textSize / 3, textPaint)
         }
-
+        drawGrid(canvas, gridSize = 50)
         return resultBitmap
     }
 
@@ -458,7 +459,7 @@ object ImageProcessingUtil {
         return Bitmap.createBitmap(original, x, y, cropWidth, cropHeight)
     }
 
-    fun reverseLeftRight(landmarks: List<PoseLandmarkResult.PoseLandmark>, screenWidth: Float): List<PoseLandmarkResult.PoseLandmark> {
+    private fun reverseLeftRight(landmarks: List<PoseLandmarkResult.PoseLandmark>, screenWidth: Float): List<PoseLandmarkResult.PoseLandmark> {
         println("Before swap - First 3 landmarks:")
         landmarks.take(3).forEachIndexed { index, landmark ->
         }
@@ -476,7 +477,7 @@ object ImageProcessingUtil {
         return result
     }
 
-    fun setPartCircle(context: Context, canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
+    private fun setPartCircle(context: Context, canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
         val dangerPart = Paint().apply {
             isDither = true
             isAntiAlias = true
@@ -611,4 +612,54 @@ object ImageProcessingUtil {
         "좌측 발목" to 0.92f,
         "우측 발목" to 0.92f,
     )
+
+
+    private fun drawGrid(
+        canvas: Canvas,
+        gridSize: Int = 100,
+        highlightX: List<Int>? = null,
+        highlightY: List<Int>? = null
+    ): Canvas {
+
+        val gridPaint = Paint().apply {
+            color = Color.WHITE
+            alpha = 51 // 투명도 25%
+            strokeWidth = 2f
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+        }
+        val highlightPaint = Paint().apply {
+            color = Color.RED
+            alpha = 255
+            strokeWidth = 4f
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+        }
+
+        val width = canvas.width
+        val height = canvas.height
+
+        // 하이라이트 격자 계산
+        val highlightXGrid = highlightX?.map { (it / gridSize) * gridSize }?.toSet() ?: emptySet()
+        val highlightYGrid = highlightY?.map { (it / gridSize) * gridSize }?.toSet() ?: emptySet()
+
+        // 세로선 (X 방향)
+        var x = 0
+        while (x <= width) {
+            val paintToUse = if (x in highlightXGrid) highlightPaint else gridPaint
+            canvas.drawLine(x.toFloat(), 0f, x.toFloat(), height.toFloat(), paintToUse)
+            x += gridSize
+        }
+
+        // 가로선 (Y 방향)
+        var y = 0
+        while (y <= height) {
+            val paintToUse = if (y in highlightYGrid) highlightPaint else gridPaint
+            canvas.drawLine(0f, y.toFloat(), width.toFloat(), y.toFloat(), paintToUse)
+            y += gridSize
+        }
+
+        Log.v("그리드그리기", "Grid is draw.")
+        return canvas
+    }
 }
