@@ -29,7 +29,10 @@ import com.tangoplus.tangoq.function.BiometricManager
 import com.tangoplus.tangoq.listener.BooleanClickListener
 import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
+import com.tangoplus.tangoq.db.MeasureDao
+import com.tangoplus.tangoq.db.MeasureDatabase
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -88,6 +91,34 @@ class ProfileEditDialogFragment : DialogFragment(), BooleanClickListener {
                 withDrawalDialog.show(requireActivity().supportFragmentManager, "withDrawalDialogFragment")
             }
         }
+        // db 정리
+        binding.tvDeleteDataLogout.setOnSingleClickListener {
+            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
+                setTitle("알림")
+                setMessage("기기에 저장된 데이터를 삭제하시겠습니까?\n삭제 후 자동 로그아웃 됩니다.")
+                setPositiveButton("예") { _, _ ->
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val userUUID = singletonUser.jsonObject?.optString("user_uuid") ?: ""
+                        val md = MeasureDatabase.getDatabase(context)
+                        val mDao = md.measureDao()
+
+                        mDao.deleteUserInfos(userUUID)
+                        mDao.deleteUserStatics(userUUID)
+                        mDao.deleteUserDynamics(userUUID)
+                        logout(requireActivity(), 0)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "로그아웃이 완료됐습니다", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                setNegativeButton("아니오") { _, _ ->
+
+                }
+                show()
+             }
+        }
+
+
         // ------# 초기 생체인증 init #------
         biometricManager = BiometricManager(this)
         biometricManager.authenticate(

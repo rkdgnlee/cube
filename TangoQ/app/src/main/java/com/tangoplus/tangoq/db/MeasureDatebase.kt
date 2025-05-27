@@ -1,7 +1,6 @@
 package com.tangoplus.tangoq.db
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -10,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.tangoplus.tangoq.function.SecurePreferencesManager.generateSecurePassphrase
 import net.sqlcipher.database.SupportFactory
 
-@Database(entities = [MeasureInfo::class, MeasureStatic::class, MeasureDynamic::class], version = 14)
+@Database(entities = [MeasureInfo::class, MeasureStatic::class, MeasureDynamic::class], version = 15)
 abstract class MeasureDatabase : RoomDatabase() {
     abstract fun measureDao(): MeasureDao
 
@@ -32,6 +31,11 @@ abstract class MeasureDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE t_measure_dynamic ADD COLUMN mobile_info_sn INTEGER")
             }
         }
+        val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE t_measure_info ADD COLUMN show_lines INTEGER")
+            }
+        }
 
         @Volatile
         private var INSTANCE: MeasureDatabase? = null
@@ -46,6 +50,7 @@ abstract class MeasureDatabase : RoomDatabase() {
                     .addMigrations(MIGRATION_11_12)
                     .addMigrations(MIGRATION_12_13)
                     .addMigrations(MIGRATION_13_14)
+                    .addMigrations(MIGRATION_14_15)
                     .build()
                 INSTANCE = instance
                 instance

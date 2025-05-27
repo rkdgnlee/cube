@@ -48,3 +48,31 @@
 -keep class com.tangoplus.tangoq.listener.* { *; }
 -keep class com.tangoplus.tangoq.db.* { *; }
 # 난독화
+
+# MediaPipe - Keep task-based models and fields
+-keep class com.google.mediapipe.** { *; }
+-keep class com.google.protobuf.** { *; }
+-keepclassmembers class * {
+    @com.google.protobuf.* <fields>;
+}
+-keepclassmembers class * {
+    public <init>(...);
+}
+-dontwarn com.google.mediapipe.proto.CalculatorProfileProto$CalculatorProfile
+-dontwarn com.google.mediapipe.proto.GraphTemplateProto$CalculatorGraphTemplate
+
+# proguard-rules.pro 파일에 아래 규칙 추가
+-keep class com.google.mediapipe.** { *; }
+-keepclassmembers class com.google.mediapipe.** { *; }
+
+# Native libraries
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Keep classes that use reflection
+-keepattributes *Annotation*
+-keepclassmembers class * {
+    @androidx.annotation.Keep *;
+}
+-keep @androidx.annotation.Keep class *

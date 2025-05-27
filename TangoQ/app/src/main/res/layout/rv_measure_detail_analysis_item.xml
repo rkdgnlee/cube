@@ -5,7 +5,7 @@
     android:id="@+id/clMDAI"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/subColor100">
+    android:background="@color/secondBgContainerColor">
 
     <TextView
         android:id="@+id/tvMDAITitle"
@@ -53,8 +53,7 @@
         <ImageView
             android:id="@+id/ivMDAI"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:srcCompat="@color/cautionColor" />
+            android:layout_height="match_parent" />
     </androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView

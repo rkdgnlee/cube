@@ -13,7 +13,6 @@ import androidx.core.graphics.toColorInt
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
         const val VIDEO_STROKE_WIDTH = 5F
-        const val LIVE_STROKE_WIDTH = 5F
     }
 
     private var results: PoseLandmarkResult? = null
@@ -97,7 +96,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             minOf(width * 1f / imageWidth, height * 1f / imageHeight)
         else
             maxOf(width * 1f / imageWidth, height * 1f / imageHeight)
-//        Log.v("스케일값", "(${scaleFactorX}, ${scaleFactorY}), ($width, $height), ($imageWidth, $imageHeight)")
+
         invalidate()
     }
 
@@ -180,7 +179,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
         else { // video 일 때
             val isFrontLens = judgeFrontCamera(1, landmarks)
-//            Log.v("영상", "$isFrontLens")
             canvas.scale(if (isFrontLens) 1f else -1f, 1f, width / 2f, 0f)
             val offsetX = (width - imageWidth * scaleFactorX) / 2
             val offsetY = (height - imageHeight * scaleFactorY) / 2
@@ -200,7 +198,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
             val leftAnkle = landmarks.getOrNull(27)
             val rightAnkle = landmarks.getOrNull(28)
-            // 코와 어깨 중간점 연결선 그리기 (모든 필요한 점이 있을 때만)
             if (nose != null && leftShoulder != null && rightShoulder != null
                 && leftIndex != null && rightIndex != null
                 && leftHip != null && rightHip != null
@@ -210,7 +207,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 val noseY = nose.y * scaleFactorY + offsetY
                 val midShoulderX = (leftShoulder.x + rightShoulder.x) / 2 * scaleFactorX + offsetX
                 val midShoulderY = (leftShoulder.y + rightShoulder.y) / 2 * scaleFactorY + offsetY
-//                Log.v("좌표들", "$noseX, $noseY, ${leftAnkle.x}, ${leftAnkle.y}, ${rightAnkle.x}, ${rightAnkle.y}")
                 val leftIndexX = leftIndex.x * scaleFactorX + offsetX
                 val leftIndexY = leftIndex.y * scaleFactorY + offsetY
                 val rightIndexX = rightIndex.x * scaleFactorX + offsetX
@@ -233,7 +229,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
                 canvas.drawLine(noseX, noseY, midShoulderX, midShoulderY, linePaint)
                 // 가로축
                 val extraLineWidth = 150
-//                val isFrontLens = leftIndexX > rightIndexX
                 when (isFrontLens) {
                     true -> {
                         canvas.drawLine(leftIndexX + extraLineWidth  , leftIndexY, rightIndexX - extraLineWidth, rightIndexY, axisPaint)

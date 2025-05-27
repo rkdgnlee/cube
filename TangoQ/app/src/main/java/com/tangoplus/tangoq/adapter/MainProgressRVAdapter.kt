@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.skydoves.progressview.ProgressView
@@ -17,7 +18,6 @@ import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvMainProgressItemBinding
 import com.tangoplus.tangoq.dialog.ProgramCustomDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
 import com.tangoplus.tangoq.vo.RecommendationVO
 
@@ -71,7 +71,10 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
 
             if (currentItem.totalProgress > 0) {
                 val durationSet = (currentItem.totalProgress * 100).toFloat() / (currentItem.totalDuration * 12)
-                holder.tvMPIPercent.text = "${durationSet.toInt()} %"
+                holder.tvMPIPercent.text = if (durationSet > 100f) "100 %" else "${durationSet.toInt()} %"
+                if (durationSet >= 100f) {
+                    holder.clMPI.backgroundTintList = ContextCompat.getColorStateList(fragment.requireContext(), R.color.secondContainerColor)
+                }
                 holder.pvMPI.progress = durationSet
             } else {
                 holder.tvMPIPercent.text = "0%"
@@ -83,7 +86,7 @@ class MainProgressRVAdapter(private val fragment: Fragment, private val recommen
             // 선택
             holder.clMPI.setOnSingleClickListener {
                 pvm.selectedRecProgress = (currentItem.totalProgress * 100).toFloat() / (currentItem.totalDuration * 12)
-                Log.w("메인프로그램선택", "${currentItem.programSn}, ${currentItem.recommendationSn}")
+//                Log.w("메인프로그램선택", "${currentItem.programSn}, ${currentItem.recommendationSn}")
                 val dialog = ProgramCustomDialogFragment.newInstance(currentItem.programSn, currentItem.recommendationSn)
                 dialog.show(fragment.requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
             }

@@ -3,16 +3,11 @@ package com.tangoplus.tangoq.service
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
-import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.tangoplus.tangoq.MainActivity
@@ -20,7 +15,6 @@ import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.MessageVO
 import com.tangoplus.tangoq.function.PreferencesManager
-import androidx.core.net.toUri
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -101,7 +95,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             NotificationManager.IMPORTANCE_DEFAULT
         )
         notificationManager.createNotificationChannel(channel)
-
         notificationManager.notify(0, notificationBuilder.build())
     }
 

@@ -488,6 +488,23 @@
                 app:layout_constraintTop_toBottomOf="@+id/clPEDAgreementMk2"
                 app:layout_constraintVertical_bias="0.0" />
 
+            <TextView
+                android:id="@+id/tvDeleteDataLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/effect_ibtn_12dp"
+                android:padding="4dp"
+                android:text="기기 데이터 삭제"
+                android:textColor="@color/subColor400"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvWithDrawal"
+                app:layout_constraintTop_toBottomOf="@+id/clPEDAgreementMk2"
+                app:layout_constraintVertical_bias="0.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -1,9 +1,7 @@
 package com.tangoplus.tangoq.dialog
 
-import android.animation.ObjectAnimator
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,10 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
@@ -23,7 +19,6 @@ import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
-import com.skydoves.balloon.showAlignBottom
 import com.skydoves.balloon.showAlignTop
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.api.NetworkUser.fetchUserUPDATEJson
@@ -33,7 +28,6 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.fadeInView
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SecurePreferencesManager.encrypt
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
-import `in`.aabhasjindal.otptextview.OTPListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -138,7 +132,7 @@ class PinChangeDialogFragment : DialogFragment() {
                     val jo = JSONObject().apply {
                         put("password", encryptedPin)
                     }
-                    Log.v("password", "$jo")
+//                    Log.v("password", "$jo")
                     CoroutineScope(Dispatchers.IO).launch {
                         val isFinish = fetchUserUPDATEJson(requireContext(), getString(R.string.API_user), jo.toString(), userSn.toString())
                         withContext(Dispatchers.Main) {

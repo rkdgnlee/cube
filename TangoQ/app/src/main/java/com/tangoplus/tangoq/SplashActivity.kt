@@ -12,6 +12,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
@@ -35,6 +36,7 @@ import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefres
 import com.tangoplus.tangoq.function.SecurePreferencesManager.isValidToken
 import com.tangoplus.tangoq.function.SecurePreferencesManager.logout
 import com.tangoplus.tangoq.function.SoundManager
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,6 +47,7 @@ class SplashActivity : AppCompatActivity() {
     lateinit var binding : ActivitySplashBinding
     private lateinit var firebaseAuth : FirebaseAuth
     private lateinit var ssm : SaveSingletonManager
+    val mvm : MeasureViewModel by viewModels()
     private val timeoutHandler = Handler(Looper.getMainLooper())
     private val timeoutRunnable = Runnable {
         // 일정 시간이 지나도 응답이 없으면 IntroActivity로 이동
@@ -97,7 +100,7 @@ class SplashActivity : AppCompatActivity() {
         KakaoSdk.init(this, getString(R.string.kakao_client_id))
         firebaseAuth = Firebase.auth
 
-        ssm = SaveSingletonManager(this@SplashActivity, this)
+        ssm = SaveSingletonManager(this@SplashActivity, this, mvm)
         // ------! API 초기화 끝 !------
 
         // ------! 인터넷 연결 확인 !------
@@ -107,7 +110,7 @@ class SplashActivity : AppCompatActivity() {
                 AlarmReceiver()
                 FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
-                        Log.w("firebaseMessaging", "FETCHING FCM registration token failed : ${task.exception?.message}")
+//                        Log.w("firebaseMessaging", "FETCHING FCM registration token failed : ${task.exception?.message}")
                         return@OnCompleteListener
                     }
                     val token = task.result.toString()
@@ -128,11 +131,6 @@ class SplashActivity : AppCompatActivity() {
                     else AppCompatDelegate.MODE_NIGHT_NO
                 )
                 val encryptedJwtJo = getEncryptedJwtJo(this@SplashActivity)
-                Log.v("encryptedJwtJo", "${encryptedJwtJo?.length()}, ${encryptedJwtJo?.let {
-                    isValidToken(
-                        it
-                    )
-                }}")
                 if (encryptedJwtJo != null && isValidToken(encryptedJwtJo)) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         // TODO trySelfLogin에서 버전에 대해서 알려주고 여기서 로그인 전 해당 데이터를 토대로 앱이 업데이트가 필수적이라면 앱스토어로 경로 이동해줘야함.
@@ -146,7 +144,7 @@ class SplashActivity : AppCompatActivity() {
                                     navigateDeepLink()
                                 }
                             } else {
-                                Log.v("invalidRefresh", "logout invalidRefreshToken.")
+//                                Log.v("invalidRefresh", "logout invalidRefreshToken.")
                                 logout(this@SplashActivity, 0)
                             }
                         }
@@ -198,7 +196,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun navigateDeepLink() {
         val data: Uri? = intent?.data
-        Log.v("splash>deeplink", "data: $data")
+//        Log.v("splash>deeplink", "data: $data")
         if (data != null) {
             // 딥링크 처리
             DeepLinkManager.handleDeepLink(this, data)

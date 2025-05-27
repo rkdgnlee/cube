@@ -28,7 +28,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
-            android:id="@+id/progressBar2"
+            android:id="@+id/pbLD"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,5 +39,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLD" />
+
+        <TextView
+            android:id="@+id/tvPercent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="0 %"
+            android:textColor="@color/subColor800"
+            android:textSize="13dp"
+            app:layout_constraintBottom_toTopOf="@+id/pvLD"
+            app:layout_constraintEnd_toEndOf="@+id/pvLD"
+            app:layout_constraintStart_toStartOf="@+id/pvLD" />
+
+        <com.skydoves.progressview.ProgressView
+            android:id="@+id/pvLD"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLD"
+            app:progressView_autoAnimate="true"
+            app:progressView_colorBackground="@color/subColor100"
+            app:progressView_colorProgress="@color/mainColor"
+            app:progressView_radius="16dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

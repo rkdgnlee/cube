@@ -15,6 +15,7 @@ data class ProgressUnitVO(
     val progress : Int,
     val countSet: Int,
     val requiredSet: Int,
+    val completed: Int,
     val isWatched : Int,
     val updatedAt : String?,
     val cycleProgress: Int = 0,

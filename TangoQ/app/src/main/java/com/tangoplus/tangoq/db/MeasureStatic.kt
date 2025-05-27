@@ -2,8 +2,6 @@ package com.tangoplus.tangoq.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.tangoplus.tangoq.db.MeasureDynamic.Companion
-import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

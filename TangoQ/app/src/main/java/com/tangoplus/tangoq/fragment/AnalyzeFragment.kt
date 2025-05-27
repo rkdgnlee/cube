@@ -154,7 +154,7 @@ class AnalyzeFragment : Fragment() {
                 setCalendarMonthData()
                 binding.cvACalendar.notifyCalendarChanged()
 
-                Log.v("날짜선택됨", "1 ${pvm.selectedDate}")
+//                Log.v("날짜선택됨", "1 ${pvm.selectedDate}")
             }
 
             setup(currentMonth.minusMonths(24), currentMonth.plusMonths(0), DayOfWeek.SUNDAY)
@@ -167,7 +167,7 @@ class AnalyzeFragment : Fragment() {
                 currentMonth = currentMonth.plusMonths(1)
                 setCalendarMonthData()
                 pvm.selectedDate = null
-                Log.v("날짜선택됨", "3 ${pvm.selectedDate}")
+//                Log.v("날짜선택됨", "3 ${pvm.selectedDate}")
 
             }
         }
@@ -178,14 +178,14 @@ class AnalyzeFragment : Fragment() {
                 currentMonth = currentMonth.minusMonths(1)
                 setCalendarMonthData()
                 pvm.selectedDate = null
-                Log.v("날짜선택됨", "4 ${pvm.selectedDate}")
+//                Log.v("날짜선택됨", "4 ${pvm.selectedDate}")
 
             }
         }
 
         binding.monthText.setOnClickListener {
             updateMonthProgress("${currentMonth.year}-${String.format("%02d", currentMonth.monthValue)}")
-            Log.v("날짜선택됨", "5 ${pvm.selectedDate}")
+//            Log.v("날짜선택됨", "5 ${pvm.selectedDate}")
 
         }
 
@@ -272,7 +272,7 @@ class AnalyzeFragment : Fragment() {
                 mvm.selectedMeasureDate.value = DateDisplay(selectMeasure?.regDate.toString(), selectMeasure?.regDate?.substring(0, 11).toString())
                 mvm.selectMeasureDate.value =  DateDisplay(selectMeasure?.regDate.toString(), selectMeasure?.regDate?.substring(0, 11).toString())
 
-                Log.v("mvmSSelectedMeasure", "$serverSn ${selectMeasure?.sn}, ${selectMeasure?.recommendations?.map { it.recommendationSn }}, date: ${mvm.selectedMeasureDate.value}, ${mvm.selectMeasureDate.value}")
+//                Log.v("mvmSSelectedMeasure", "$serverSn ${selectMeasure?.sn}, ${selectMeasure?.recommendations?.map { it.recommendationSn }}, date: ${mvm.selectedMeasureDate.value}, ${mvm.selectMeasureDate.value}")
 
                 ProgramCustomDialogFragment.newInstance(programSn, recSn)
                     .show(requireActivity().supportFragmentManager, "ProgramCustomDialogFragment")
@@ -310,6 +310,7 @@ class AnalyzeFragment : Fragment() {
         when {
             avm.existedMonthProgresses.value.contains(day.date.toString()) -> {
                 if (day.date == pvm.selectedDate) {
+                    Log.v("isSelectedDate", "existed And isSelectedDate, ${pvm.selectedDate}")
                     container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                     container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
                     container.removeBadge()
@@ -319,6 +320,7 @@ class AnalyzeFragment : Fragment() {
                 }
             }
             day.date == pvm.selectedDate -> {
+                Log.v("isSelectedDate", "isSelectedDate, ${pvm.selectedDate}")
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
             }
@@ -409,7 +411,7 @@ class AnalyzeFragment : Fragment() {
             if (dateList != null) {
                 avm.updateMonthProgress(dateList)
             }
-            Log.v("날짜선택됨", "6 ${pvm.selectedDate}")
+//            Log.v("날짜선택됨", "6 ${pvm.selectedDate}")
 
 //            Log.v("VMProgresses", "${avm.existedMonthProgresses}")
         }
@@ -534,7 +536,7 @@ class AnalyzeFragment : Fragment() {
         if (index != null) {
             pvm.selectedDate = LocalDate.now().minusDays((6 - index).toLong())
         }
-
+        Log.v("선택 날짜", "${pvm.selectedDate}, ${LocalDate.now().dayOfMonth}")
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
@@ -556,8 +558,8 @@ class AnalyzeFragment : Fragment() {
             }
             withContext(Dispatchers.Main) {
                 // 이곳에서 오늘 날짜 초기화
-                pvm.selectedDate = LocalDate.now()
-                Log.v("날짜선택됨", "7 ${pvm.selectedDate}")
+//                pvm.selectedDate = LocalDate.now()
+//                Log.v("날짜선택됨", "7 ${pvm.selectedDate}")
                 binding.cvACalendar.notifyCalendarChanged()
             }
         }
@@ -598,7 +600,7 @@ class AnalyzeFragment : Fragment() {
         // ------# 그래프에 들어갈 가장 최근 일주일간 수치 넣기 #------
         lifecycleScope.launch(Dispatchers.Main) {
             pvm.graphProgresses = getWeekProgress(getString(R.string.API_progress), requireContext())
-            Log.v("그래프프로그레스", "${pvm.graphProgresses}")
+//            Log.v("그래프프로그레스", "${pvm.graphProgresses}")
             setGraph()
 
             // 상단 프로그레스 받아오기
@@ -610,9 +612,9 @@ class AnalyzeFragment : Fragment() {
                 binding.tvANoProgram.visibility = View.GONE
                 evm.latestUVP = progressResult.first.sortedBy { it.uvpSn }.toMutableList() // .sortedBy { it.uvpSn }.toMutableList()
                 evm.latestProgram = progressResult.second
-                Log.v("progressResult", "${evm.latestUVP}")
+//                Log.v("progressResult", "${evm.latestUVP}")
                 if (!evm.latestUVP.isNullOrEmpty()) {
-                    Log.v("progressResult", "${evm.latestUVP}")
+//                    Log.v("progressResult", "${evm.latestUVP}")
                     val currentEId = evm.latestUVP?.get(0)?.exerciseId
                     val currentExerciseItem = evm.latestProgram?.exercises?.find { it.exerciseId?.toInt() == currentEId }
                     val second = "${currentExerciseItem?.duration?.toInt()?.div(60)}분 ${currentExerciseItem?.duration?.toInt()?.rem(60)}초"

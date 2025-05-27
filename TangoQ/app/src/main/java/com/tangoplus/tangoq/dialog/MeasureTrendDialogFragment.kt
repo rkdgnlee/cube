@@ -67,6 +67,7 @@ import kotlin.math.max
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.doOnLayout
 import androidx.media3.common.util.UnstableApi
+import com.arthenica.ffmpegkit.ReturnCode
 
 class MeasureTrendDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureTrendDialogBinding
@@ -132,7 +133,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
             insets
         }
         measures = Singleton_t_measure.getInstance(requireContext()).measures ?: mutableListOf()
-        ssm = SaveSingletonManager(requireContext(), requireActivity())
+        ssm = SaveSingletonManager(requireContext(), requireActivity(), mvm)
         singletonMeasure = Singleton_t_measure.getInstance(requireContext())
 
         try {
@@ -166,7 +167,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                     avm.leftMeasureDate.value = avm.measureDisplayDates.find { it.fullDateTime == selectedDate.fullDateTime }
                     binding.actvMTDLeft.setText(avm.leftMeasureDate.value?.displayDate, false)
-                    Log.v("selectedDateLeft", "${avm.leftMeasureDate.value?.fullDateTime}, ${avm.measureDisplayDates.map { it.fullDateTime }}")
+//                    Log.v("selectedDateLeft", "${avm.leftMeasureDate.value?.fullDateTime}, ${avm.measureDisplayDates.map { it.fullDateTime }}")
                     lifecycleScope.launch(Dispatchers.IO) {
                         // 측정파일 없으면 다운로드
                         setMeasureFiles(avm.leftMeasureDate.value?.fullDateTime, false)
@@ -241,7 +242,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
         } catch (e: Exception) {
             Log.e("TrendError", "Exception: ${e.message}")
         }
-
     }
 
     // 오른쪽 actv에 대한 listener
@@ -310,13 +310,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                     // 왼쪽이 없을 때는 오른쪽만 갱신
                     withContext(Dispatchers.Main) {
-                        Log.v("avm.leftMeasurement", "${avm.leftMeasurement.value}")
+//                        Log.v("avm.leftMeasurement", "${avm.leftMeasurement.value}")
                         if (avm.leftMeasurement.value == null) {
                             // 이미지 0~6
                             if (avm.currentIndex != 6) {
                                 setVideoUI(false, true)
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, transIndex, binding.ssivMTDRight, "trend")
-
+                                pvm.rightUpdateUI = false
                             } else {
                                 simpleExoPlayer2?.stop()
                                 simpleExoPlayer2?.release()
@@ -338,10 +338,12 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 simpleExoPlayer2?.release()
                                 simpleExoPlayer2 = null
 
-                                setVideoUI(false, false)
-                                setVideoUI(false, true)
+                                setVideoUI(isVideo = false, isRight = false)
+                                setVideoUI(isVideo = false, isRight = true)
                                 setImage(this@MeasureTrendDialogFragment, avm.leftMeasurement.value, transIndex, binding.ssivMTDLeft, "trend")
                                 setImage(this@MeasureTrendDialogFragment, avm.rightMeasurement.value, transIndex, binding.ssivMTDRight, "trend")
+                                pvm.rightUpdateUI = false
+                                pvm.leftUpdateUI = false
                             } else  {
                                 setVideoUI(true, false)
                                 setClickListener(false)
@@ -448,8 +450,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
             }?.toMutableList()
 
         }
-        Log.v("오른쪽 필터링", "$filteredRightAnalysises")
-
         val filteredIndexes = if (currentSeq == 1 ) {
             listOf(1, 2, 7, 8, 9, 10)
         } else {
@@ -545,7 +545,6 @@ class MeasureTrendDialogFragment : DialogFragment() {
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
-    @UnstableApi
     private fun setPlayer(isRight: Boolean) {
         when (isRight) {
             true -> {
@@ -560,8 +559,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 val videoDuration = simpleExoPlayer2?.duration ?: 0L
                                 lifecycleScope.launch {
                                     while (simpleExoPlayer2?.isPlaying == true) {
-                                        if (!pvm.rightUpdateUI) updateVideoUI(isRight)
+                                        if (!pvm.rightUpdateUI) updateVideoUI(true)
 //                                        updateVideoUI(isRight)
+//                                        Log.e("비디오레이아웃", "right: ${pvm.leftUpdateUI}")
                                         updateFrameData(true, videoDuration, rightJa.length())
                                         delay(24)
                                         pvm.rightUpdateUI = true
@@ -593,7 +593,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 val videoDuration = simpleExoPlayer1?.duration ?: 0L
                                 lifecycleScope.launch {
                                     while (simpleExoPlayer1?.isPlaying == true) {
-                                        Log.e("비디오레이아웃", "${pvm.leftUpdateUI}")
+//                                        Log.e("비디오레이아웃", "left: ${pvm.leftUpdateUI}")
                                         if (!pvm.leftUpdateUI) updateVideoUI(false)
                                         updateFrameData(false, videoDuration, leftJa.length())
                                         delay(24)
@@ -613,12 +613,14 @@ class MeasureTrendDialogFragment : DialogFragment() {
         }
     }
 
-    @UnstableApi
+
     private fun initPlayer(isRight: Boolean) {
 // 동영상 처리 로딩
         val loadingDialog = LoadingDialogFragment.newInstance("동영상")
         when (isRight) {
             true -> {
+                Log.e("오른쪽플레이어init", "initPlayer isRight: true")
+
                 setClickListener(true)
                 simpleExoPlayer2 = SimpleExoPlayer.Builder(requireContext()).build()
                 binding.pvMTDRight.player = simpleExoPlayer2
@@ -628,13 +630,15 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendRightUri?.toUri() ?: "".toUri())
                 val aspectRatio = videoHeight.toFloat() / videoWidth.toFloat()
                 if (aspectRatio < 1) {
-                    val inputPath = avm.trendRightUri.toString() // 기존 파일 경로
+                    val inputPath = avm.trendRightUri.toString() // 기존 파 일 경로
                     val tempOutputPath = "${context?.cacheDir}/right_temp_video.mp4" // 임시 파일
-
+//                    Log.v("avm.rightEditedFile", "${avm.rightEditedFile?.absolutePath}, ${avm.rightEditedFile?.exists()}")
                     // 이미 처리한 영상 파일이 남아있을 때
                     if (avm.rightEditedFile != null && avm.rightEditedFile!!.exists()) {
-                        Log.v("rightFileExisted", "${avm.rightEditedFile}")
+//                        Log.v("rightFileExisted", "${avm.rightEditedFile}")
                         setPlayerByCroppedVideo(true, videoWidth.toFloat(), videoHeight.toFloat())
+                    } else {
+
                     }
                     // 로딩창 키기
                     if (!isLoadingShown) {
@@ -648,8 +652,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                     lifecycleScope.launch {
                         FFmpegKit.executeAsync(command) { session ->
-                            if (session.returnCode.isSuccess) {
-                                Log.d("FFmpeg", "✅ 9:16 크롭 성공!")
+                            val returnCode = session.returnCode
+//                            Log.v("returnCode", "$returnCode")
+                            if (ReturnCode.isSuccess(returnCode)) {
+                                Log.d("FFmpeg결과", "✅ 9:16 크롭 성공!")
 
                                 avm.rightEditedFile = File(tempOutputPath)
 
@@ -658,19 +664,22 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                     requireActivity().runOnUiThread {
                                         setPlayerByCroppedVideo(true, videoWidth.toFloat(), videoHeight.toFloat())
                                         avm.onPlayer2Ready.value = true
+
+//                                        Log.v("로딩창state", "right: ${loadingDialog.isAdded}, ${loadingDialog.isVisible}")
+                                        if (loadingDialog.isAdded) {
+                                            loadingDialog.dismiss()
+                                            Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
+                                            simpleExoPlayer2?.pause()
+                                        }
+
                                     }
-                                    Log.v("로딩창state", "right: ${loadingDialog.isAdded}, ${loadingDialog.isVisible}")
-                                    if (loadingDialog.isAdded) {
-                                        loadingDialog.dismiss()
-                                        Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
-                                        simpleExoPlayer2?.pause()
-                                    }
+
                                     isLoadingShown = false
                                 } else {
-                                    Log.e("FFmpeg", "❌ 변환된 파일이 존재하지 않음!")
+                                    Log.e("FFmpeg결과", "❌ 변환된 파일이 존재하지 않음!")
                                 }
                             } else {
-                                Log.e("FFmpeg", "❌ 크롭 실패! ${session.returnCode}")
+                                Log.e("FFmpeg결과", "❌ 크롭 실패! ${session.returnCode}")
                             }
                         }
                     }
@@ -688,11 +697,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
                             avm.onPlayer2Ready.value = true
                             simpleExoPlayer2?.playWhenReady = true
                             if (loadingDialog.isAdded) {
-                                Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
+//                                Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
                                 simpleExoPlayer2?.pause()
                             }
-//
                         }
+                        Log.e("오른쪽notCrop", "${simpleExoPlayer2?.playWhenReady}")
                     }
                 }
             }
@@ -710,9 +719,9 @@ class MeasureTrendDialogFragment : DialogFragment() {
                 if (aspectRatio < 1) {
                     val inputPath = avm.trendLeftUri.toString() // 기존 파일 경로
                     val tempOutputPath = "${context?.cacheDir}/left_temp_video.mp4" // 임시 파일
-
+//                    Log.v("avm.rightEditedFile", "${avm.rightEditedFile?.absolutePath}, ${avm.rightEditedFile?.exists()}")
                     if (avm.leftEditedFile != null && avm.leftEditedFile!!.exists()) {
-                        Log.v("rightFileExisted", "${avm.leftEditedFile}")
+//                        Log.v("rightFileExisted", "${avm.leftEditedFile}")
                         setPlayerByCroppedVideo(false, videoWidth.toFloat(), videoHeight.toFloat())
                     }
                     if (!isLoadingShown) {
@@ -725,8 +734,10 @@ class MeasureTrendDialogFragment : DialogFragment() {
 
                     lifecycleScope.launch {
                         FFmpegKit.executeAsync(command) { session ->
-                            if (session.returnCode.isSuccess) {
-                                Log.d("FFmpeg", "✅ 9:16 크롭 성공! output: $tempOutputPath")
+                            val returnCode = session.returnCode
+                            Log.v("returnCode", "$returnCode")
+                            if (ReturnCode.isSuccess(returnCode)) {
+//                                Log.d("FFmpeg", "✅ 9:16 크롭 성공! output: $tempOutputPath")
 
                                 avm.leftEditedFile = File(tempOutputPath)
 
@@ -741,18 +752,17 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                         // 로딩창 종료
                                         Log.v("로딩창state", "left: ${loadingDialog.isAdded}, ${loadingDialog.isVisible}")
                                         if (loadingDialog.isAdded) {
-                                            Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
+//                                            Log.v("다이얼로그켜져있는지", "${loadingDialog.isAdded}")
                                             simpleExoPlayer1?.pause()
                                             loadingDialog.dismiss()
                                             isLoadingShown = false
                                         }
-
                                     }
                                 } else {
-                                    Log.e("FFmpeg", "❌ 변환된 파일이 존재하지 않음!")
+                                    Log.e("FFmpeg결과", "❌ 변환된 파일이 존재하지 않음!")
                                 }
                             } else {
-                                Log.e("FFmpeg", "❌ 크롭 실패! ${session.failStackTrace}")
+                                Log.e("FFmpeg결과", "❌ 크롭 실패! ${session.failStackTrace}, ${session.allLogsAsString}")
                             }
                         }
                     }
@@ -771,6 +781,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                                 simpleExoPlayer1?.pause()
                             }
                         }
+                        Log.e("왼쪽notCrop", "${simpleExoPlayer1?.playWhenReady}")
                     }
                 }
             }
@@ -1097,13 +1108,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
             true -> {
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendRightUri?.toUri()?: "".toUri())
                 val aspectRatio = videoWidth.toFloat() / videoHeight.toFloat()
-                Log.v("aspectRatio", "오른쪽: $aspectRatio")
+//                Log.v("aspectRatio", "오른쪽: $aspectRatio")
 
                 if (aspectRatio > 1) {
                     setPlayerByCroppedVideo(true, videoWidth.toFloat() , videoHeight.toFloat())
                 } else {
                     val resizingValue = 0.5f
-                    Log.v("오른쪽ratio", "$aspectRatio, $resizingValue")
+//                    Log.v("오른쪽ratio", "$aspectRatio, $resizingValue")
 
                     // clMA의 크기 조절
                     val displayMetrics = DisplayMetrics()
@@ -1115,13 +1126,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
                     params.width = (screenWidth  * resizingValue).toInt()
                     params.height = (adjustedHeight * resizingValue).toInt()
                     binding.clMTDRight.layoutParams = params
-                    Log.v("오른쪽Params", "${params.width}, ${params.height}")
+//                    Log.v("오른쪽Params", "${params.width}, ${params.height}")
 
                     binding.clMTDRight.doOnLayout {
                         val clMTDParams = binding.clMTD.layoutParams
                         clMTDParams.height = binding.clMTDRight.height
                         binding.clMTD.layoutParams = clMTDParams
-
+//                        Log.v("오른쪽뷰높이체크", "in right:: height: ${binding.clMTDRight.height}, visibility: ${binding.clMTDRight.visibility}")
                         val constraintSet = ConstraintSet()
                         constraintSet.clone(binding.clMTD)
                         constraintSet.connect(binding.tvMTDGuide.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
@@ -1132,13 +1143,13 @@ class MeasureTrendDialogFragment : DialogFragment() {
             false -> {
                 val (videoWidth, videoHeight) = getVideoDimensions(requireContext(), avm.trendLeftUri?.toUri()?: "".toUri())
                 val aspectRatio = videoWidth.toFloat() / videoHeight.toFloat() // 9: 16
-                Log.v("aspectRatio", "왼쪽: $aspectRatio")
+//                Log.v("aspectRatio", "왼쪽: $aspectRatio")
                 if (aspectRatio > 1) {
                     setPlayerByCroppedVideo(false, videoWidth.toFloat() , videoHeight.toFloat())
-                    Log.v("플레이어 틀어지나요", "setPlayerByCroppedVideo, false")
+//                    Log.v("플레이어 틀어지나요", "setPlayerByCroppedVideo, false")
                 } else {
                     val resizingValue = 0.5f
-                    Log.v("왼쪽ratio", "$aspectRatio, $resizingValue")
+//                    Log.v("왼쪽ratio", "$aspectRatio, $resizingValue")
 
                     // clMA의 크기 조절
                     val displayMetrics = DisplayMetrics()
@@ -1154,12 +1165,11 @@ class MeasureTrendDialogFragment : DialogFragment() {
                         val clMTDParams = binding.clMTD.layoutParams
                         clMTDParams.height = binding.clMTDRight.height
                         binding.clMTD.layoutParams = clMTDParams
-
+//                        Log.v("오른쪽뷰높이체크", "in left:: height: ${binding.clMTDRight.height}, visibility: ${binding.clMTDRight.visibility}")
                         val constraintSet = ConstraintSet()
                         constraintSet.clone(binding.clMTD)
                         constraintSet.connect(binding.rvMTD.id, ConstraintSet.TOP, binding.clMTD.id, ConstraintSet.BOTTOM)
                         constraintSet.applyTo(binding.clMTD)
-
                     }
                 }
             }
@@ -1170,7 +1180,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
        when (isRight) {
            true -> {
                Handler(Looper.getMainLooper()).post {
-                   Log.v("파일들", "${avm.leftEditedFile}, ${avm.leftEditedFile?.exists()} / ${avm.rightEditedFile}, ${avm.rightEditedFile?.exists()}")
+//                   Log.v("파일들", "${avm.leftEditedFile}, ${avm.leftEditedFile?.exists()} / ${avm.rightEditedFile}, ${avm.rightEditedFile?.exists()}")
                    val mediaItem = MediaItem.fromUri(Uri.fromFile(avm.rightEditedFile))
                    val mediaSource = ProgressiveMediaSource.Factory(DefaultDataSourceFactory(requireContext()))
                        .createMediaSource(mediaItem)
@@ -1223,7 +1233,7 @@ class MeasureTrendDialogFragment : DialogFragment() {
                    params.width = screenWidth / 2
                    params.height = adjustedHeight
                    binding.clMTDLeft.layoutParams = params
-                   Log.v("왼쪽croppedVideo", "$aspectRatio2, ${screenWidth / 2 }, $adjustedHeight")
+//                   Log.v("왼쪽croppedVideo", "$aspectRatio2, ${screenWidth / 2 }, $adjustedHeight")
                    // llMARV를 clMA 아래에 위치시키기
                    val constraintSet = ConstraintSet()
                    constraintSet.clone(binding.clMTD)

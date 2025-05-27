@@ -18,7 +18,6 @@ import com.tangoplus.tangoq.dialog.LoadingDialogFragment
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,7 +47,7 @@ class MeasureBSDialogFragment : BottomSheetDialogFragment() {
 
         // 초기 데이터 설정
         singletonMeasure = Singleton_t_measure.getInstance(requireContext())
-        ssm = SaveSingletonManager(requireContext(), requireActivity())
+        ssm = SaveSingletonManager(requireContext(), requireActivity(), mvm)
         val measures = singletonMeasure.measures
 
         val dates = measures?.let { measure ->

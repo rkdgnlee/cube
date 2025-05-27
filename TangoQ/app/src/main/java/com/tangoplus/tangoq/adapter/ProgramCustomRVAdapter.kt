@@ -71,7 +71,7 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
                         setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
                         if (holder.hpvPSI.progress > 97f) {
 
-                            setCompleted(holder, true)
+                            setCompleted(holder, 0)
                         }
                         // 선택한 회차 + 이전 회차
                     } else if (position == seq.third && position < seq.second) {
@@ -79,7 +79,7 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
                         setTextView(holder.tvPSIName, R.color.secondaryColor, R.color.whiteText)
 
                         if (holder.hpvPSI.progress > 97f) {
-                            setCompleted(holder, true)
+                            setCompleted(holder, 1)
                         }
                         // 선택하지 않은 회차 + 이전 회차
                     } else if (position < seq.second) {
@@ -88,12 +88,16 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
 
                         // 다 완료했을 경우
                         if (holder.hpvPSI.progress > 97f) {
-                            setCompleted(holder, false)
+                            setCompleted(holder, 1)
                         }
                         // 선택하지 않았을 때 현재 회차
                     } else if (position == seq.second) {
                         setHpv(holder, false, currentHpvProgresses)
                         setTextView(holder.tvPSIName, R.color.secondContainerColor, R.color.thirdColor)
+                        if (holder.hpvPSI.progress > 97f) {
+                            setCompleted(holder, 2)
+                        }
+
                     }  else {
                         setHpv(holder, false, 0f)
                         holder.ivPSICheck.visibility = View.INVISIBLE
@@ -117,10 +121,11 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
             }
         }
     }
-    private fun setCheckBadge(holder: CustomViewHolder, isSelect: Boolean) {
-        when (isSelect) {
-            true -> holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_white_secondary))
-            false -> holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_white))
+    private fun setCheckBadge(holder: CustomViewHolder, case: Int) {
+        when (case) {
+            0 -> holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_white_secondary))
+            1 -> holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_white))
+            2 -> holder.ivPSICheck.setImageDrawable(ContextCompat.getDrawable(fragment.requireContext(), R.drawable.icon_check_bckgnd_third))
         }
     }
 
@@ -134,19 +139,26 @@ class ProgramCustomRVAdapter(private val fragment: Fragment,
         }
     }
 
-    private fun setCompleted(holder: CustomViewHolder, isSelect: Boolean) {
+    private fun setCompleted(holder: CustomViewHolder, case: Int) {
         holder.cvPSI.visibility = View.VISIBLE
         holder.tvPSIName.text = "Complete"
         holder.tvPSIName.textSize = 16f
-        if (isSelect) {
-            setCheckBadge(holder, true)
-            holder.ivPSICheck.visibility = View.VISIBLE
-            holder.cvPSI.setCardBackgroundColor(ColorStateList.valueOf(fragment.resources.getColor(R.color.secondaryColor, null)))
-        } else {
-            setCheckBadge(holder, false)
-            holder.ivPSICheck.visibility = View.VISIBLE
-            holder.cvPSI.setCardBackgroundColor(ColorStateList.valueOf(fragment.resources.getColor(R.color.subColor400, null)))
-
+        when (case) {
+            0 -> { // 선택했음
+                setCheckBadge(holder, case)
+                holder.ivPSICheck.visibility = View.VISIBLE
+                holder.cvPSI.setCardBackgroundColor(ColorStateList.valueOf(fragment.resources.getColor(R.color.secondaryColor, null)))
+            }
+            1 -> { // 선택하지않음, 현재 회차 아님
+                setCheckBadge(holder, case)
+                holder.ivPSICheck.visibility = View.VISIBLE
+                holder.cvPSI.setCardBackgroundColor(ColorStateList.valueOf(fragment.resources.getColor(R.color.subColor400, null)))
+            }
+            2 -> { // 선택하지 않음, 현재 회차임
+                setCheckBadge(holder, case)
+                holder.ivPSICheck.visibility = View.VISIBLE
+                holder.cvPSI.setCardBackgroundColor(ColorStateList.valueOf(fragment.resources.getColor(R.color.subColor400, null)))
+            }
         }
     }
     private fun setTextView(tv: TextView, color1: Int, color2: Int) {

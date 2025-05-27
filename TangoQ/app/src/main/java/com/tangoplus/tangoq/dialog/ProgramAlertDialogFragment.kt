@@ -65,7 +65,7 @@ class ProgramAlertDialogFragment : DialogFragment() {
             3 -> {
                 binding.btnPAD2.text = "확인"
                 binding.ivPAD.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.drawable_finish_sequence))
-                alertMessage = "이번 주 필요한 운동을 모두 완료했습니다. 휴식과 다른 부위 운동을 진행해주세요"
+                alertMessage = "이번 주의 필요한 운동을 모두 완료했습니다. 휴식 및 다른 부위 운동을 진행해주세요"
                 binding.tvPAD.text = alertMessage
                 binding.btnPAD1.visibility = View.GONE
                 binding.btnPAD2.visibility = View.VISIBLE

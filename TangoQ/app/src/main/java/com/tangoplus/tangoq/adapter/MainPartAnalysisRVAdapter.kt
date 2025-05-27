@@ -16,10 +16,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.RvMainPartAnalysisItemBinding
+import com.tangoplus.tangoq.dialog.PoseDialogFragment
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.vision.MathHelpers.isTablet
-import com.tangoplus.tangoq.vo.AnalysisUnitVO
+import com.tangoplus.tangoq.vo.AnalysisVO
 
-class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var analyzeUnits : List<AnalysisUnitVO>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var analyze : AnalysisVO, private var avm: AnalysisViewModel): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class MPAViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMPAITitle : TextView = view.findViewById(R.id.tvMPAITitle)
         val vMPAILeft : View = view.findViewById(R.id.vMPAILeft)
@@ -33,6 +36,8 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var anal
         val ivMPAIArrow : ImageView = view.findViewById(R.id.ivMPAIArrow)
         val tvMPAIExplain : TextView = view.findViewById(R.id.tvMPAIExplain)
         val tvMPAIData : TextView = view.findViewById(R.id.tvMPAIData)
+
+        val clMPAI : ConstraintLayout = view.findViewById(R.id.clMPAI)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -42,33 +47,43 @@ class MainPartAnalysisRVAdapter(private val fragment: Fragment, private var anal
     }
 
     override fun getItemCount(): Int {
-        return analyzeUnits?.size ?: 0
+        return analyze.labels.size
     }
 
     @SuppressLint("DefaultLocale")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         if (holder is MPAViewHolder) {
-            val currentItem = analyzeUnits?.get(position)
-            if (currentItem != null) {
+            val currentItem = analyze.labels[position]
 
-                holder.tvMPAITitle.text = currentItem.rawDataName
-                setState(holder, currentItem.state)
-                val rawDataValue = currentItem.rawData.toDouble() // null인 경우 0으로 대체
-                holder.tvMPAIData.text = if (currentItem.columnName.contains("distance")) {
-                    "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else rawDataValue)}cm"
-                } else {
-                    "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else rawDataValue)}°"
-                }
-                val spannableString = SpannableString(currentItem.summary)
-                val accentIndex =  holder.tvMPAIExplain.text.indexOf("값")
-                if (accentIndex != -1) {
-                    val endIndex = minOf(accentIndex + 4, currentItem.summary.length)
-                    val colorSpan = ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
-                    spannableString.setSpan(colorSpan, accentIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
-                holder.tvMPAIExplain.text = spannableString
+            holder.tvMPAITitle.text = currentItem.rawDataName
+                .replace(" - ", "")
+                .replace("정면", "")
+                .replace("후면", "")
+                .replace("앉은 후면", "")
+
+            setState(holder, currentItem.state)
+            val rawDataValue = currentItem.rawData.toDouble() // null인 경우 0으로 대체
+            holder.tvMPAIData.text = if (currentItem.columnName.contains("distance")) {
+                "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else rawDataValue)}cm"
+            } else {
+                "${String.format("%.2f", if (rawDataValue.isNaN()) 0.0 else rawDataValue)}°"
             }
+            val spannableString = SpannableString(currentItem.summary)
+            val accentIndex =  holder.tvMPAIExplain.text.indexOf("값")
+            if (accentIndex != -1) {
+                val endIndex = minOf(accentIndex + 4, currentItem.summary.length)
+                val colorSpan = ForegroundColorSpan(ContextCompat.getColor(fragment.requireContext(), R.color.deleteColor))
+                spannableString.setSpan(colorSpan, accentIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            holder.tvMPAIExplain.text = spannableString
+            if (avm.analysisType == 1) {
+                holder.clMPAI.setOnSingleClickListener {
+                    val dialog = PoseDialogFragment.newInstance(analyze.indexx)
+                    dialog.show(fragment.requireActivity().supportFragmentManager, "MainPartPoseDialogFragment")
+                }
+            }
+
         }
     }
 

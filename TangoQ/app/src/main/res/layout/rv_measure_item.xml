@@ -53,10 +53,21 @@
         android:textColor="@color/subColor800"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView48"
         app:layout_constraintStart_toEndOf="@+id/constraintLayout26"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.333" />
+
+    <TextView
+        android:id="@+id/tvMIType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="모바일 앱 측정"
+        android:textColor="@color/subColor400"
+        android:textSize="13dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvMIName"
+        app:layout_constraintStart_toEndOf="@+id/tvMIName"
+        app:layout_constraintTop_toTopOf="@+id/tvMIName" />
 
     <TextView
         android:id="@+id/textView48"

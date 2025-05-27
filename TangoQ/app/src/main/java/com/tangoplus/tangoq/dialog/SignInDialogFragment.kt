@@ -1,17 +1,13 @@
 package com.tangoplus.tangoq.dialog
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
@@ -23,8 +19,6 @@ import com.tangoplus.tangoq.databinding.FragmentSignInDialogBinding
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
 import com.tangoplus.tangoq.adapter.etc.SignInVPAdapter
 import androidx.core.graphics.drawable.toDrawable
-import com.tangoplus.tangoq.db.MeasureDatabase
-import com.tangoplus.tangoq.fragment.MainFragment
 
 class SignInDialogFragment : DialogFragment() {
     private lateinit var binding : FragmentSignInDialogBinding

@@ -5,17 +5,13 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
-import android.graphics.Matrix
 import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.PathMeasure
 import android.graphics.RectF
 import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.tangoplus.tangoq.R
-import kotlin.math.atan2
 
 class TrendCurveView @JvmOverloads constructor(
     context: Context,

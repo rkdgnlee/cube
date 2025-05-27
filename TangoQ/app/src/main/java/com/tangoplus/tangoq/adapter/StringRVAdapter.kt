@@ -1,7 +1,6 @@
 package com.tangoplus.tangoq.adapter
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -196,7 +195,7 @@ class StringRVAdapter(private val fragment: Fragment,
                 holder.cbPBSI.setOnSingleClickListener {
                     if (currentItem != null) {
                         vm.selectPart.value = currentItem
-                        Log.v("selectedDate", "현재: ${vm.currentPart.value}, 선택값: ${vm.selectPart}")
+//                        Log.v("selectedDate", "현재: ${vm.currentPart.value}, 선택값: ${vm.selectPart}")
                     }
                 }
             }

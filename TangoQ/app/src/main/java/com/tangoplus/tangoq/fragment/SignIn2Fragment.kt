@@ -226,7 +226,7 @@ class SignIn2Fragment : Fragment() {
         svm.User.value?.put("email", svm.fullEmail.value)
         svm.User.value?.put("mobile", svm.passMobile.value?.replace("-", ""))
         svm.User.value?.put("user_name", svm.passName.value)
-        Log.v("viewModel에 담기", "${svm.User.value}")
+//        Log.v("viewModel에 담기", "${svm.User.value}")
     }
 
     private fun showAgreementBottomSheetDialog(context: FragmentActivity) {
@@ -248,7 +248,7 @@ class SignIn2Fragment : Fragment() {
                     jsonObj?.put("device_sn" ,0)
                     jsonObj?.put("user_sn", 0)
                     // ------! 광고성 넣기 끝 !------
-                    Log.v("회원가입Json", "$jsonObj")
+//                    Log.v("회원가입Json", "$jsonObj")
                     if (jsonObj != null) {
                         lifecycleScope.launch(Dispatchers.IO) {
                             insertUser(getString(R.string.API_user), jsonObj , svm.insertToken) { status ->
@@ -406,7 +406,7 @@ class SignIn2Fragment : Fragment() {
                 // 완료 후 모바일 인증 잠금
                 disabledSendBtn()
                 if (response.first.length > 20) {
-                    Log.v("토큰받아오기", response.first)
+//                    Log.v("토큰받아오기", response.first)
                     svm.insertToken = response.first
                 }
 

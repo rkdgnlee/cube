@@ -2,7 +2,6 @@ package com.tangoplus.tangoq.api
 
 import android.content.Context
 import android.util.Log
-import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.vo.ProgressUnitVO
 import com.tangoplus.tangoq.api.HttpClientProvider.getClient
@@ -20,10 +19,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 object NetworkProgress {
 
@@ -53,7 +48,7 @@ object NetworkProgress {
                             } else {
                                 0f
                             }
-                             Log.v("총,진행시간", "$duration, $progress, percent: $percent")
+//                             Log.v("총,진행시간", "$duration, $progress, percent: $percent")
                             pv3s.add(percent)
                         }
 
@@ -74,6 +69,7 @@ object NetworkProgress {
                                 weekEndAt = jo.optString("week_end_at"),
                                 countSet = jo.optInt("count_set"),
                                 requiredSet = jo.optInt("required_set"),
+                                completed = jo.optInt("completed"),
                                 duration = jo.optInt("duration"),
                                 progress = jo.optInt("progress"),
                                 updatedAt = jo.optString("updated_at") ?: "",
@@ -85,7 +81,7 @@ object NetworkProgress {
                         }
                     }
                     val sortedProgresses = progresses.sortedBy { it.uvpSn }.toMutableList()
-                    Log.w("총,진행시간", "$pv3s")
+//                    Log.w("총,진행시간", "$pv3s")
                     callback(pv3s, sortedProgresses)
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -141,6 +137,7 @@ object NetworkProgress {
                             weekEndAt = jo.optString("week_end_at"),
                             countSet = jo.optInt("count_set"),
                             requiredSet = jo.optInt("required_set"),
+                            completed = jo.optInt("completed"),
                             duration = jo.optInt("duration"),
                             progress = jo.optInt("progress"),
                             updatedAt = jo.optString("updated_at"),
@@ -184,7 +181,7 @@ object NetworkProgress {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     val bodyJson = JSONObject(responseBody.toString())
-                    Log.v("bodyJson", "$bodyJson")
+                    val dataJa = bodyJson.optJSONArray("data")
 
                     val latest = bodyJson.optJSONObject("latest")
                     val progressHistorySn = latest?.optInt("progress_history_sn")
@@ -193,7 +190,8 @@ object NetworkProgress {
 //                    Log.v("포스트getProgress", "$latest, $progressHistorySn, $currentWeek, $currentCycle")
                     val result = mutableListOf<ProgressUnitVO>()
                     val exerciseCount = bodyJson.optInt("row_count") / 4
-                    val data = bodyJson.optJSONArray("data")
+                    val data = dataJa?.let { sortJsonArrayByUvpSn(it) }
+
                     if (data != null) {
                         for (i in 0 until data.length()) {
                             val jo = data.optJSONObject(i)
@@ -209,27 +207,28 @@ object NetworkProgress {
                                     weekEndAt = jo.optString("week_end_at"),
                                     countSet = jo.optInt("count_set"),
                                     requiredSet = jo.optInt("required_set"),
+                                    completed = jo.optInt("completed"),
                                     duration = jo.optInt("duration"),
                                     progress = jo.optInt("progress"),
                                     updatedAt = jo.optString("updated_at"),
                                     isWatched = jo.optInt("is_watched")
                                 )
-//                                Log.v("seq,week계산하기", "$i $progressUnitVO")
+                //                                Log.v("seq,week계산하기", "$i $progressUnitVO")
                                 result.add(progressUnitVO)
                             }
                         }
-                        if (result.isNotEmpty()) {
-                            val chunckedResult = result.chunked(exerciseCount)
-                            callback(
-                                Triple(
-                                    progressHistorySn ?: -1,
-                                    currentWeek ?: -1,
-                                    currentCycle ?: -1
-                                ),
-                                chunckedResult
-                            )
+                    }
+                    if (result.isNotEmpty()) {
+                        val chunckedResult = result.chunked(exerciseCount)
+                        callback(
+                            Triple(
+                                progressHistorySn ?: -1,
+                                currentWeek ?: -1,
+                                currentCycle ?: -1
+                            ),
+                            chunckedResult
+                        )
 //                            callback(Triple(-1, -1, -1), mutableListOf())
-                        }
                     }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -253,6 +252,25 @@ object NetworkProgress {
             }
         }
     }
+    fun sortJsonArrayByUvpSn(jsonArray: JSONArray): JSONArray {
+        // JSONArray를 List<JSONObject>로 변환
+        val jsonObjectList = mutableListOf<JSONObject>()
+        for (i in 0 until jsonArray.length()) {
+            jsonObjectList.add(jsonArray.getJSONObject(i))
+        }
+
+        // uvp_sn 기준으로 오름차순 정렬
+        val sortedList = jsonObjectList.sortedBy { it.getInt("uvp_sn") }
+
+        // 다시 JSONArray로 변환
+        val sortedJsonArray = JSONArray()
+        for (obj in sortedList) {
+            sortedJsonArray.put(obj)
+        }
+
+        return sortedJsonArray
+    }
+
     suspend fun getLatestProgresses(myUrl: String, context: Context) : Pair<MutableList<ProgressUnitVO>, ProgramVO>? {
         val client = getClient(context)
         val request = Request.Builder()
@@ -284,6 +302,7 @@ object NetworkProgress {
                                 weekEndAt = jo.optString("week_end_at"),
                                 countSet = jo.optInt("count_set"),
                                 requiredSet = jo.optInt("required_set"),
+                                completed = jo.optInt("completed"),
                                 duration = jo.optInt("duration"),
                                 progress = jo.optInt("progress"),
                                 updatedAt = jo.optString("updated_at"),
@@ -452,7 +471,7 @@ object NetworkProgress {
                             )
                             progresses.add(progressHistory)
                         }
-                        Log.v("진행길이", "${progresses.size}")
+//                        Log.v("진행길이", "${progresses.size}")
                     }
                     progresses
                 }
@@ -504,7 +523,7 @@ object NetworkProgress {
                             result.add(dateString)
                         }
                     }
-                    Log.v("getMonthProgress", "$result")
+//                    Log.v("getMonthProgress", "$result")
                     return@use result
                 }
             } catch (e: IndexOutOfBoundsException) {

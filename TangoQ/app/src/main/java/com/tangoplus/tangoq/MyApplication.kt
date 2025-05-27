@@ -6,9 +6,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.viewmodel.AppViewModel
 import java.io.File
@@ -74,14 +71,14 @@ class MyApplication : Application() {
 
     fun setBiometricSuccess() {
         isBiometricSuccess = true
-        Log.v("biometricSuccess", "setBiometricSuccess $isBiometricSuccess")
+//        Log.v("biometricSuccess", "setBiometricSuccess $isBiometricSuccess")
     }
     fun clearBiometricSuccess() {
         isBiometricSuccess = false
-        Log.v("biometricSuccess", "clearBiometricSuccess $isBiometricSuccess")
+//        Log.v("biometricSuccess", "clearBiometricSuccess $isBiometricSuccess")
     }
     fun verifyBiometric() : Boolean {
-        Log.v("biometricSuccess", "verifyBiometric $isBiometricSuccess")
+//        Log.v("biometricSuccess", "verifyBiometric $isBiometricSuccess")
         return isBiometricSuccess
     }
 

@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="bottom_sheet_peek_height">56dp</dimen>
-    <dimen name="card_height">4dp</dimen>
-    <dimen name="card_corner_radius">4dp</dimen>
-    <dimen name="card_corner_elevation">0dp</dimen>
-    <dimen name="top_space_height_dialog">230dp</dimen>
-    <dimen name="top_space_height_fragment">320dp</dimen>
-    <dimen name="top_space_height_qr_code">680dp</dimen>
-
-    <dimen name="main_margin">20dp</dimen>
-
+    <dimen name="button_padding_horizontal_material">24</dimen>
 </resources>

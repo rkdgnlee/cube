@@ -53,10 +53,20 @@
         android:textColor="@color/subColor800"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView48"
         app:layout_constraintStart_toEndOf="@+id/constraintLayout26"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.333" />
+
+    <TextView
+        android:id="@+id/tvMIType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:textColor="@color/subColor400"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvMIName"
+        app:layout_constraintStart_toEndOf="@+id/tvMIName"
+        app:layout_constraintTop_toTopOf="@+id/tvMIName" />
 
     <TextView
         android:id="@+id/textView48"

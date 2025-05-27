@@ -1,5 +1,6 @@
 package com.tangoplus.tangoq.vision
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -12,6 +13,7 @@ import android.util.TypedValue
 import com.tangoplus.tangoq.function.MeasurementManager.partIndexes
 import androidx.core.graphics.toColorInt
 import com.tangoplus.tangoq.function.MeasurementManager.judgeFrontCamera
+import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 
 object ImageProcessingUtil {
     private val strokeWidths = 2.5f
@@ -20,7 +22,7 @@ object ImageProcessingUtil {
         poseLandmarkResult: PoseLandmarkResult,
         sequence: Int,
         painParts: MutableList<Pair<String, Float>>,
-
+        context: Context
     ) : Bitmap {
 
         // 후면 카메라, 정면 카메라(키오스크 포함) 대응
@@ -312,10 +314,10 @@ object ImageProcessingUtil {
                 if (columnNames.contains(string)) {
                     val selectParts = painParts.find { it.first == string }
                     when (index) {
-                        0 -> setPartCircle(canvas, selectParts?.second?.toInt(), (noseX + midShoulderX) / 2, (noseY + midShoulderY) / 2)
+                        0 -> setPartCircle(context, canvas,  selectParts?.second?.toInt(), (noseX + midShoulderX) / 2, (noseY + midShoulderY) / 2)
                         else -> {
                             if (filterIndexAndSequence(index, sequence)) {
-                                setPartCircle(canvas, selectParts?.second?.toInt(), allPartsValue[index]?.x, allPartsValue[index]?.y)
+                                setPartCircle(context, canvas, selectParts?.second?.toInt(), allPartsValue[index]?.x, allPartsValue[index]?.y)
                             }
                         }
                     }
@@ -341,7 +343,7 @@ object ImageProcessingUtil {
             textAlign = Paint.Align.CENTER
         }
         val outerCirclePaint = Paint().apply {
-        color = "#41000000".toColorInt()
+            color = "#41000000".toColorInt()
             style = Paint.Style.FILL
         }
         val innerCirclePaint = Paint().apply {
@@ -474,17 +476,18 @@ object ImageProcessingUtil {
         return result
     }
 
-    private fun setPartCircle(canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
+    private fun setPartCircle(context: Context, canvas: Canvas, degree: Int?, x: Float?, y: Float?) {
         val dangerPart = Paint().apply {
             isDither = true
             isAntiAlias = true
             style  = Paint.Style.FILL
         }
+        val circleRadius = if (isTablet(context)) 24f else 14f
         when (degree) {
             1 -> {
                 val radius = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
-                    14f,
+                    circleRadius,
                     Resources.getSystem().displayMetrics
                 )
                 val colors = intArrayOf(
@@ -508,7 +511,7 @@ object ImageProcessingUtil {
             2 -> {
                 val radius = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
-                    14f,
+                    circleRadius,
                     Resources.getSystem().displayMetrics
                 )
                 val colors = intArrayOf(
@@ -530,4 +533,82 @@ object ImageProcessingUtil {
             }
         }
     }
+
+
+    // drawable bitmap 변환해서 관절 별 circle 그리기
+    fun combineImageAndOverlay(context: Context, originalBitmap: Bitmap, dangerParts :  MutableList<Pair<String, Float>>?) : Bitmap {
+        val radius = if (isTablet(context)) 20f else 40f
+        val strokeWidthh = if (isTablet(context)) 4f else 8f
+//        val radius = 20f
+        val resultBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(resultBitmap)
+        val dangerPaint = Paint().apply {
+            color = "#FF5449".toColorInt()
+            style = Paint.Style.FILL
+        }
+        val dangerStrokePaint = Paint().apply {
+            color = "#FF5449".toColorInt()
+            style = Paint.Style.STROKE
+            strokeWidth = strokeWidthh // 테두리 굵기 조절
+            isAntiAlias = true
+        }
+        val warningPaint = Paint().apply {
+            color = "#FF971D".toColorInt()
+            style = Paint.Style.FILL
+        }
+        val warningStrokePaint = Paint().apply {
+            color = "#FF971D".toColorInt()
+            style = Paint.Style.STROKE
+            strokeWidth = strokeWidthh // 테두리 굵기 조절
+            isAntiAlias = true
+        }
+
+        val bitmapWidth = originalBitmap.width
+        val bitmapHeight = originalBitmap.height
+
+        if (!dangerParts.isNullOrEmpty()) {
+            dangerParts.forEach { pair ->
+                val pointX = bitmapWidth * (partXBias[pair.first] ?: 0f)
+                val pointY = bitmapHeight * (partYBias[pair.first] ?: 0f)
+                val currentPaint =  if (pair.second == 1.0f) warningPaint else dangerPaint
+                val currentStrokePaint = if (pair.second == 1.0f) warningStrokePaint else dangerStrokePaint
+
+                val strokeRadius = if (isTablet(context)) 10f else 20f
+//                val strokeRadius =  10f
+                canvas.drawCircle(pointX, pointY, radius, currentPaint)
+                canvas.drawCircle(pointX, pointY, radius + strokeRadius, currentStrokePaint)
+            }
+        }
+        return resultBitmap
+    }
+    val partXBias = mapOf(
+        "목관절" to 0.5f,
+        "좌측 어깨" to 0.26f,
+        "우측 어깨" to 0.74f,
+        "좌측 팔꿉" to 0.28f,
+        "우측 팔꿉" to 0.72f,
+        "좌측 손목" to 0.26f,
+        "우측 손목" to 0.74f,
+        "좌측 골반" to 0.41f,
+        "우측 골반" to 0.59f,
+        "좌측 무릎" to 0.425f,
+        "우측 무릎" to 0.575f,
+        "좌측 발목" to 0.44f,
+        "우측 발목" to 0.56f,
+    )
+    val partYBias = mapOf(
+        "목관절" to 0.18f,
+        "좌측 어깨" to 0.23f,
+        "우측 어깨" to 0.23f,
+        "좌측 팔꿉" to 0.375f,
+        "우측 팔꿉" to 0.375f,
+        "좌측 손목" to 0.51f,
+        "우측 손목" to 0.51f,
+        "좌측 골반" to 0.48f,
+        "우측 골반" to 0.48f,
+        "좌측 무릎" to 0.69f,
+        "우측 무릎" to 0.69f,
+        "좌측 발목" to 0.92f,
+        "우측 발목" to 0.92f,
+    )
 }

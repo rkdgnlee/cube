@@ -29,7 +29,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.ProfileRVAdapter
 import com.tangoplus.tangoq.viewmodel.SignInViewModel
@@ -41,7 +40,6 @@ import com.tangoplus.tangoq.listener.ProfileUpdateListener
 import com.tangoplus.tangoq.api.NetworkUser.sendProfileImage
 import com.tangoplus.tangoq.dialog.ProfileEditChangeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,7 +88,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
 
         val getGender = svm.User.value?.optString("gender")
         svm.setGender.value = if (getGender in listOf("", "null", null)) null else getGender
-        Log.v("userJson보기", "${svm.setBirthday.value}")
+//        Log.v("userJson보기", "${svm.setBirthday.value}")
 
 //        Log.v("Singleton>Profile", "$userJson")
         updateUserData()
@@ -119,8 +117,6 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "QR코드 핀번호 로그인",
             "키오스크 핀번호 재설정",
 
-//            "연동 관리",
-
             "자주 묻는 질문",
             "문의하기",
             "공지사항",
@@ -129,6 +125,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             "앱 버전",
             "개인정보 처리방침",
             "서비스 이용약관",
+            "오픈소스 라이선스",
             "로그아웃",
         )
         setAdapter(profilemenulist.subList(0,4), binding.rvPNormal,0)
@@ -151,7 +148,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
         }
         svm.setBirthday.observe(viewLifecycleOwner) { birthday ->
             if (birthday != null && birthday.length >= 8 && birthday != "0000-00-00") {
-                Log.v("버스데이", birthday)
+//                Log.v("버스데이", birthday)
                 val c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"))
                 binding.tvPAge.text = (c.get(Calendar.YEAR) - birthday.substring(0, 4).toInt()).toString() + "세"
             }
@@ -287,7 +284,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
     private fun updateUserData() {
         // ------! profile의 나이, 몸무게, 키  설정 코드 시작 !------
         val userJson = Singleton_t_user.getInstance(requireContext()).jsonObject
-        Log.v("Singleton>updateUserData", "$userJson")
+//        Log.v("Singleton>updateUserData", "$userJson")
         val heightJo = userJson?.optDouble("height")
         val weightJo = userJson?.optDouble("weight")
         requireActivity().runOnUiThread {
@@ -334,7 +331,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
                 // ----- 이미지 로드 시작 -----
                 val imageUri = userJson.optString("profile_file_path") ?: null
                 if (imageUri != "" && !imageUri.isNullOrEmpty() && imageUri != "null") {
-                    Log.v("inside ImageUri", imageUri)
+//                    Log.v("inside ImageUri", imageUri)
                     Glide.with(this)
                         .load(imageUri)
                         .apply(RequestOptions.bitmapTransform(MultiTransformation(CenterCrop(), RoundedCorners(16))))
@@ -411,7 +408,7 @@ class ProfileFragment : Fragment(), BooleanClickListener, ProfileUpdateListener 
             }
         }
     }
-    fun compressImageFile(context: Context, file: File, maxSizeInBytes: Long = 2 * 1024 * 1024): File? {
+    fun compressImageFile(context: Context, file: File, maxSizeInBytes: Long = 1 * 1024 * 1024): File? {
         val bitmap = BitmapFactory.decodeFile(file.path)
         var quality = 100
         var stream: ByteArrayOutputStream

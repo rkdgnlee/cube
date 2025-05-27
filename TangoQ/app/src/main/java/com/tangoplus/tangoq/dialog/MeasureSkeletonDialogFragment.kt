@@ -1,6 +1,5 @@
 package com.tangoplus.tangoq.dialog
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Point
@@ -24,14 +23,17 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
     lateinit var binding : FragmentMeasureSkeletonDialogBinding
     private var isPose = false
     private var seq = 0
+    private var isFront = 0
     companion object {
         const val ARG_MS_TYPE = "ms_alert"
         const val ARG_MS_SEQ = "ms_alert_seq"
-        fun newInstance(isPose: Boolean, seq: Int = 0): MeasureSkeletonDialogFragment {
+        const val ARG_MS_ISFRONT = "ms_alert_isfront"
+        fun newInstance(isPose: Boolean, seq: Int = 0, isFront: Int = 0): MeasureSkeletonDialogFragment {
             val fragment = MeasureSkeletonDialogFragment()
             val args = Bundle()
             args.putBoolean(ARG_MS_TYPE, isPose)
             args.putInt(ARG_MS_SEQ, seq)
+            args.putInt(ARG_MS_ISFRONT, isFront)
             fragment.arguments = args
             return fragment
         }
@@ -66,6 +68,7 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
 
         isPose = arguments?.getBoolean(ARG_MS_TYPE) ?: false
         seq = arguments?.getInt(ARG_MS_SEQ) ?: 0
+        isFront = arguments?.getInt(ARG_MS_ISFRONT) ?: 0
         val layouts = when (isPose) {
             true -> listOf(R.layout.measure_skeleton_caution1)
             false -> listOf(
@@ -75,14 +78,14 @@ class MeasureSkeletonDialogFragment : DialogFragment() {
                 R.layout.measure_skeleton_caution4,
                 R.layout.measure_skeleton_caution5,)
         }
-        binding.vpMSD.adapter = CautionVPAdapter(requireContext(), layouts, isPose, seq)
+        binding.vpMSD.adapter = CautionVPAdapter(requireContext(), layouts, isPose, seq, isFront)
         binding.vpMSD.currentItem = 0
         binding.btnMSDConfirm.setOnSingleClickListener {
-            Log.v("resumePoseLandmarker", "btnMSDConfirm")
+//            Log.v("resumePoseLandmarker", "btnMSDConfirm")
             dismiss()
         }
         binding.ibtnMSDExit.setOnSingleClickListener {
-            Log.v("resumePoseLandmarker", "ibtnMSDExit")
+//            Log.v("resumePoseLandmarker", "ibtnMSDExit")
             dismiss()
         }
         setUI(isPose)

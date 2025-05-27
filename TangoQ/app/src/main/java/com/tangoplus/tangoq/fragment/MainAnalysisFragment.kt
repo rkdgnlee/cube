@@ -46,6 +46,7 @@ import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.PlayViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.AnalysisVO
+import com.tangoplus.tangoq.vo.DataDynamicVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -104,7 +105,7 @@ class MainAnalysisFragment : Fragment() {
         avm.currentPart.value = part
         mr = mvm.selectedMeasure?.measureResult ?: JSONArray()
         avm.mdMeasureResult = JSONArray()
-
+        avm.analysisType = 0
 
         // viewModel에 들어가있던 동적 자세 기록들 초기화
 
@@ -213,7 +214,7 @@ class MainAnalysisFragment : Fragment() {
             // mainPartAnalysis 연결
             val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 //            Log.v("인덱스이외값전부", "${avm.currentIndex}, ${adapterAnalysises.find { it.indexx == avm.currentIndex }}")
-            val adapter = MainPartAnalysisRVAdapter(this@MainAnalysisFragment, adapterAnalysises.find { it.indexx == avm.currentIndex }?.labels) // avm.currentIndex가 2인데 adapterAnalysises에는 0, 5밖에없어서 indexOutOfBoundException이 나옴.
+            val adapter = adapterAnalysises.find { it.indexx == avm.currentIndex }?.let { MainPartAnalysisRVAdapter(this@MainAnalysisFragment, it, avm) } // avm.currentIndex가 2인데 adapterAnalysises에는 0, 5밖에없어서 indexOutOfBoundException이 나옴.
             binding.rvMA.layoutManager = layoutManager
             binding.rvMA.adapter = adapter
             if (!updateUI) updateUI = false
@@ -508,31 +509,48 @@ class MainAnalysisFragment : Fragment() {
         params.width = (screenWidth  * resizingValue).toInt()
         params.height = (adjustedHeight * resizingValue).toInt()
         binding.clMA.layoutParams = params
-
+        avm.mdMeasureResult = mvm.selectedMeasure?.measureResult?.optJSONArray(1) ?: JSONArray()
         // 비디오 사이즈 6개넣어서 그대로 씀.
         if (!updatedRv) {
-            val connections = listOf(
-                15, 16, 23, 24, 25, 26 // 좌측 골반의 pose번호를 가져옴
-            )
+            val connections = listOf(15, 16, 23, 24, 25, 26 ) // 좌측 골반의 pose번호를 가져옴
+            val titleList = listOf("좌측 어깨", "우측 어깨", "좌측 골반", "우측 골반", "좌측 무릎", "우측 무릎")
+            val coordinates = extractVideoCoordinates(avm.mdMeasureResult)
+            val dataDynamicVOList = mutableListOf<DataDynamicVO>()
 
-            val coordinates = extractVideoCoordinates(dynamicJa)
-            val filteredCoordinates = mutableListOf<List<Pair<Float, Float>>>()
-            for (connection in connections) {
-                val filteredCoordinate = mutableListOf<Pair<Float, Float>>() // 부위 하나당 몇 십 프레임의 x,y 좌표임
+            for (i in connections.indices step 2) {
+                val connection1 = connections[i]
+                val connection2 = connections[i + 1]
+                val title1 = titleList[i]
+                val title2 = titleList[i + 1]
+
+                val filteredCoordinate1 = mutableListOf<Pair<Float, Float>>()
+                val filteredCoordinate2 = mutableListOf<Pair<Float, Float>>()
+
                 for (element in coordinates) {
-                    filteredCoordinate.add(element[connection])
+                    // 단순히 해당 인덱스의 좌표를 가져와서 추가
+                    filteredCoordinate1.add(element[connection1])
+                    filteredCoordinate2.add(element[connection2])
                 }
-                filteredCoordinates.add(filteredCoordinate)
+
+                val dataDynamicVO = DataDynamicVO(
+                    data1 = filteredCoordinate1,
+                    title1 = title1,
+                    data2 = filteredCoordinate2,
+                    title2 = title2
+                )
+                dataDynamicVOList.add(dataDynamicVO)
             }
-            setVideoAdapter(filteredCoordinates)
+
+            setVideoAdapter(dataDynamicVOList, coordinates)
         }
     }
 
-    private fun setVideoAdapter(data: List<List<Pair<Float, Float>>>) {
-        val isFrontCamera = judgeFrontCameraByDynamic(data)
-        Log.v("전면카메라인가요", "$isFrontCamera")
+    private fun setVideoAdapter(data: List<DataDynamicVO>, coordinates: List<List<Pair<Float,Float>>>) {
+
+        val isFrontCamera = judgeFrontCameraByDynamic(coordinates)
+//        Log.v("전면?", "${coordinates.size} ${isFrontCamera}")
         val linearLayoutManager1 = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val dynamicAdapter = DataDynamicRVAdapter(data, avm.dynamicTitles, isFrontCamera)
+        val dynamicAdapter = DataDynamicRVAdapter(data, isFrontCamera)
         binding.rvMA.layoutManager = linearLayoutManager1
         binding.rvMA.adapter = dynamicAdapter
 

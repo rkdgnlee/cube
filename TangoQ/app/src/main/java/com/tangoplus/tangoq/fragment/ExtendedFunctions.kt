@@ -2,21 +2,22 @@ package com.tangoplus.tangoq.fragment
 
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Point
-import android.os.Build
-import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
+import android.widget.TextView
 import androidx.annotation.OptIn
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.core.widget.NestedScrollView
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.listener.OnSingleClickListener
+import io.github.douglasjunior.androidSimpleTooltip.OverlayView
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 
 object ExtendedFunctions {
 
@@ -58,9 +59,12 @@ object ExtendedFunctions {
         return null
     }
 
-    fun isKorean(str: String): Boolean {
-        val koreanRegex = Regex("[ㄱ-ㅎㅏ-ㅣ가-힣]+")
-        return koreanRegex.containsMatchIn(str)
+    fun safeDateSubstring(input: String?): String? {
+        return if (!input.isNullOrBlank() && input.length >= 10) {
+            input.substring(0, 10)  // 예: "2025-04-22"
+        } else {
+            null
+        }
     }
 
     fun View.setOnSingleClickListener(action: (v: View) -> Unit) {
@@ -88,5 +92,35 @@ object ExtendedFunctions {
         val scrollY = nsv.scrollY
         val scrollTo = scrollY + viewTop - scrollViewTop
         nsv.smoothScrollTo(0, scrollTo)
+    }
+
+    fun createGuide(
+        context: Context,
+        text: String,
+        anchor: View,
+        gravity: Int,
+        dismiss: () -> Unit,
+    ) {
+        SimpleTooltip.Builder(context).apply {
+            anchorView(anchor)
+            backgroundColor(ContextCompat.getColor(context, R.color.mainColor))
+            arrowColor("#00FFFFFF".toColorInt())
+            gravity(gravity)
+            animated(true)
+            transparentOverlay(false)
+            contentView(R.layout.tooltip)
+            highlightShape( OverlayView.HIGHLIGHT_SHAPE_RECTANGULAR_ROUNDED)
+            cornerRadius(20f)
+
+            onShowListener {
+                val tooltipTextView: TextView = it.findViewById(R.id.tooltip_instruction)
+                tooltipTextView.text = text
+            }
+            onDismissListener {
+                dismiss()
+            }
+            build()
+                .show()
+        }
     }
 }

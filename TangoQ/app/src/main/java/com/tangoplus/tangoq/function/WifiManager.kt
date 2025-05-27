@@ -7,7 +7,6 @@ import android.net.NetworkCapabilities
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
-import android.util.Log
 import android.widget.Toast
 
 @Suppress("DEPRECATION")
@@ -47,10 +46,8 @@ class WifiManager(private val context: Context) {
         }
     }
 
-
     // 네트워크 보안 수준 반환
     private fun getSecurityType(configuration: WifiConfiguration): String {
-
         return when {
             configuration.wepKeys[0] != null -> "WEP"
             configuration.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_PSK) -> "WPA/WPA2"

@@ -2,7 +2,6 @@ package com.tangoplus.tangoq.vision
 
 import android.content.Context
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.WindowManager
 import java.lang.Math.toDegrees
 import kotlin.math.abs

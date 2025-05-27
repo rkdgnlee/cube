@@ -17,7 +17,6 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -28,7 +27,6 @@ import com.budiyev.android.codescanner.AutoFocusMode
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ScanMode
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.skydoves.balloon.ArrowPositionRules
@@ -36,13 +34,11 @@ import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.showAlignBottom
-import com.skydoves.balloon.showAlignStart
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.databinding.FragmentQRCodeDialogBinding
 import com.tangoplus.tangoq.api.NetworkUser.loginWithPin
 import com.tangoplus.tangoq.api.NetworkUser.loginWithQRCode
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.function.SaveSingletonManager
 import `in`.aabhasjindal.otptextview.OTPListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -134,36 +130,44 @@ class QRCodeDialogFragment : DialogFragment() {
                 lifecycleScope.launch {
                     CoroutineScope(Dispatchers.IO).launch {
 
-                        val status = loginWithPin(getString(R.string.API_kiosk), otp.toInt(), userJson.optString("user_uuid"))
-                        Log.v("스테이터스", "$status")
+                        val responseJo = loginWithPin(getString(R.string.API_kiosk), otp.toInt(), userJson.optString("user_uuid"))
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(requireContext(), "코드: ${status}", Toast.LENGTH_LONG).show()
-                            when (status) {
-                                200 -> {
-                                    Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
-                                    Handler(Looper.getMainLooper()).postDelayed({  binding.otvLSD.setOTP("") }, 500)
-                                }
-                                401 -> {
-                                    Toast.makeText(requireContext(), "인증이 올바르지 않습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
-                                    Handler(Looper.getMainLooper()).postDelayed({
+                            if (responseJo != null) {
+                                val msg = responseJo.optString("pin_login_result_msg")
+                                when (msg) {
+                                    "pin login fail" -> {
+                                        Toast.makeText(requireContext(), "인증에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
                                         binding.otvLSD.setOTP("")
-                                    }, 500)
-                                }
-                                404 -> {
-                                    Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
-                                    Handler(Looper.getMainLooper()).postDelayed({
-                                        binding.otvLSD.setOTP("")
-                                    }, 500)
-                                }
-                                1 -> {
-                                    Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show()
-                                    Handler(Looper.getMainLooper()).postDelayed({
-                                        binding.otvLSD.setOTP("")
-                                        dismiss()
-                                    }, 500)
-
+                                    }
+                                    "" -> Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
                                 }
                             }
+//                            when (status) {
+//                                200 -> {
+//                                    Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
+//                                    Handler(Looper.getMainLooper()).postDelayed({  binding.otvLSD.setOTP("") }, 500)
+//                                }
+//                                401 -> {
+//                                    Toast.makeText(requireContext(), "인증이 올바르지 않습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
+//                                    Handler(Looper.getMainLooper()).postDelayed({
+//                                        binding.otvLSD.setOTP("")
+//                                    }, 500)
+//                                }
+//                                404 -> {
+//                                    Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
+//                                    Handler(Looper.getMainLooper()).postDelayed({
+//                                        binding.otvLSD.setOTP("")
+//                                    }, 500)
+//                                }
+//                                1 -> {
+//                                    Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show()
+//                                    Handler(Looper.getMainLooper()).postDelayed({
+//                                        binding.otvLSD.setOTP("")
+//                                        dismiss()
+//                                    }, 500)
+//
+//                                }
+//                            }
                         }
                     }
                 }
@@ -195,19 +199,28 @@ class QRCodeDialogFragment : DialogFragment() {
         codeScanner.decodeCallback = DecodeCallback {
             lifecycleScope.launch {
                 CoroutineScope(Dispatchers.IO).launch {
-                    Log.v("decodeResult", it.text)
-                    val status = loginWithQRCode(getString(R.string.API_kiosk), userJson.optString("user_uuid"))
+//                    Log.v("decodeResult", it.text)
+                    val responseJo = loginWithQRCode(getString(R.string.API_kiosk), userJson.optString("user_uuid"))
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "코드: ${status}", Toast.LENGTH_LONG).show()
-                        when (status) {
-                            200 -> {
-                                Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
-                                Handler(Looper.getMainLooper()).postDelayed({}, 500)
+                        if (responseJo != null) {
+                            val msg = responseJo.optString("qr_login_result_msg")
+                            when (msg) {
+                                "qr login time over" -> {
+                                    Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show()
+                                    Handler(Looper.getMainLooper()).postDelayed({ codeScanner.startPreview() }, 500)
+                                }
+                                "" -> Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
                             }
-                            400 -> { Toast.makeText(requireContext(), "인증이 올바르지 않습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show() }
-                            404 -> { Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show() }
-                            1 -> { Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show() }
                         }
+//                        when (status) {
+//                            200 -> {
+//                                Toast.makeText(requireContext(), "데이터를 전송했습니다. 잠시만 기다려주세요", Toast.LENGTH_LONG).show()
+//                                Handler(Looper.getMainLooper()).postDelayed({}, 500)
+//                            }
+//                            400 -> { Toast.makeText(requireContext(), "인증이 올바르지 않습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show() }
+//                            404 -> { Toast.makeText(requireContext(), "연결에 실패했습니다. 잠시 후 다시 시도해주세요", Toast.LENGTH_LONG).show() }
+//                            1 -> { Toast.makeText(requireContext(), "인터넷 연결이 필요합니다", Toast.LENGTH_LONG).show() }
+//                        }
                     }
                 }
             }
@@ -235,6 +248,7 @@ class QRCodeDialogFragment : DialogFragment() {
         balloon.dismissWithDelay(3000L)
         balloon.setOnBalloonClickListener { balloon.dismiss() }
     }
+
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,

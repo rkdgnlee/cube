@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.tangoplus.tangoq.R
 
-class CautionVPAdapter(private val context: Context, private val layouts: List<Int>, private val isPose: Boolean, private val seq: Int) : RecyclerView.Adapter<CautionVPAdapter.CautionViewHolder>() {
+class CautionVPAdapter(private val context: Context, private val layouts: List<Int>, private val isPose: Boolean, private val seq: Int, private val lensFront0 : Int = 0) : RecyclerView.Adapter<CautionVPAdapter.CautionViewHolder>() {
 
     inner class CautionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvMSC1Num: TextView? = itemView.findViewById(R.id.tvMSC1Num)
@@ -59,10 +59,8 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
         R.id.lavSC4,
         R.id.lavSC5
     )
-    private val lottieSeqAnimations = listOf<String>(
-//        "measure_seq_anime_1.json","measure_seq_anime_2.json","measure_seq_anime_3.json","measure_seq_anime_4.json","measure_seq_anime_5.json","measure_seq_anime_6.json","measure_seq_anime_7.json"
+    private val lottieSeqAnimations = listOf(
         "measure_guide_anime_1.json", "measure_guide_anime_2.json","measure_guide_anime_3.json", "measure_guide_anime_1.json", "measure_guide_anime_2.json","measure_guide_anime_3.json", "measure_guide_anime_1.json"
-
     )
 
     private val lottieAnimations = listOf(
@@ -88,7 +86,7 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
     }
 
     private fun setGuide(holder: CautionViewHolder?) {
-        holder?.tvMSC1Num?.text = "${seq +1}"
+        holder?.tvMSC1Num?.text = "${seq + 1}"
         holder?.tvMSC1Title?.text = seqNames[seq]
         holder?.tvMSC1Explain?.text = seqComments[seq]
         holder?.cvMSC10?.visibility = View.GONE
@@ -97,7 +95,17 @@ class CautionVPAdapter(private val context: Context, private val layouts: List<I
         holder?.cvMSC13?.visibility = View.GONE
         holder?.cvMSC14?.visibility = View.GONE
         holder?.tvMSC1Caution?.visibility = View.GONE
-        val imageResource = context.resources.getIdentifier("drawable_measure_$seq", "drawable", context.packageName)
+        val imageResource = context.resources.getIdentifier("drawable_measure_${
+            if (lensFront0 == 1) {
+                when (seq) {
+                    3 -> seq + 1
+                    4 -> seq - 1
+                    else -> seq    
+                }
+            } else { 
+                seq
+            }
+        }", "drawable", context.packageName)
         holder?.ivMSC1Frame?.setImageResource(imageResource)
         holder?.ivMSC1Frame?.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.black))
 

@@ -12,5 +12,6 @@ data class MeasureVO (
     var measureResult : JSONArray?, // index로 seq하고, jo, ja, jo, jo, jo, jo, jo
     var fileUris : MutableList<String>?,
     val isMobile : Boolean,
-    var recommendations : List<RecommendationVO>?
+    var recommendations : List<RecommendationVO>?,
+    var isShowLines: Int = 1
 )

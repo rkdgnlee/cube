@@ -135,9 +135,9 @@
                         android:drawableEnd="@drawable/icon_arrow_right_small"
                         android:gravity="center|center_vertical"
                         android:paddingStart="15dp"
-                        android:paddingTop="4dp"
+                        android:paddingTop="5dp"
                         android:paddingEnd="10dp"
-                        android:paddingBottom="4dp"
+                        android:paddingBottom="5dp"
                         android:textColor="@color/whiteText"
                         android:textSize="16dp"
                         android:textStyle="bold"
@@ -178,7 +178,7 @@
                                 android:id="@+id/tvMMeasureResult1"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
+                                android:layout_marginStart="24dp"
                                 android:layout_marginEnd="10dp"
                                 android:text="_"
                                 android:textColor="@color/subColor800"
@@ -186,7 +186,6 @@
                                 android:textStyle="bold"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintVertical_bias="0.3333" />
@@ -195,7 +194,7 @@
                                 android:id="@+id/tvMMeasureResult2"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
+                                android:layout_marginStart="24dp"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginEnd="10dp"
                                 android:layout_marginBottom="15dp"
@@ -205,10 +204,33 @@
                                 android:textSize="14dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/tvMMeasureResult1"
                                 app:layout_constraintVertical_bias="0.0" />
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cvMResult1"
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:layout_marginEnd="8dp"
+                                app:cardBackgroundColor="@color/deleteColor"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="0dp"
+                                app:layout_constraintBottom_toBottomOf="@+id/tvMMeasureResult1"
+                                app:layout_constraintEnd_toStartOf="@+id/tvMMeasureResult1"
+                                app:layout_constraintTop_toTopOf="@+id/tvMMeasureResult1" />
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cvMResult2"
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:layout_marginEnd="8dp"
+                                app:cardBackgroundColor="@color/cautionColor"
+                                app:cardCornerRadius="12dp"
+                                app:cardElevation="0dp"
+                                app:layout_constraintBottom_toBottomOf="@+id/tvMMeasureResult2"
+                                app:layout_constraintEnd_toStartOf="@+id/tvMMeasureResult2"
+                                app:layout_constraintTop_toTopOf="@+id/tvMMeasureResult2" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <TextView
@@ -287,6 +309,38 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvM2">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/clMRefresh"
+                            android:layout_width="match_parent"
+                            android:layout_height="318dp"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/textView12"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="로드에 실패했습니다\n다시 시도해주세요"
+                                android:textColor="@color/subColor800"
+                                android:textSize="16dp"
+                                app:layout_constraintBottom_toTopOf="@+id/ivMRefresh"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent" />
+
+                            <ImageView
+                                android:id="@+id/ivMRefresh"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/effect_ibtn_12dp"
+                                android:padding="8dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/icon_refresh"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/sflM"

@@ -47,7 +47,7 @@ object NetworkUser {
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val responseBody = response.body?.string()
-                        Log.v("trySelfLogin", "$responseBody")
+//                        Log.v("trySelfLogin", "$responseBody")
                         val bodyJo = JSONObject(responseBody.toString())
                         if (bodyJo.optJSONObject("login_data") == null) {
                             callback(null)
@@ -98,15 +98,15 @@ object NetworkUser {
 
             override fun onResponse(call: Call, response: Response) {
                 try {
-                    Log.e("oauthResponse", "$response")
+//                    Log.e("oauthResponse", "$response")
                     val responseBody = response.body?.string()  // ?.substringAfter("response: ")
-                    Log.v("oauthResult", "$responseBody")
+//                    Log.v("oauthResult", "$responseBody")
                     if (response.code == 500) {
                         return callback(null)
                     }
                     val dataJo = responseBody?.let { JSONObject(it) }
                     val statusCode = dataJo?.optInt("status")
-                    Log.v("responseJo", "$statusCode")
+//                    Log.v("responseJo", "$statusCode")
 
                     return when (statusCode) {
                         200, 201 -> {
@@ -115,7 +115,7 @@ object NetworkUser {
                             jsonObj.put("access_jwt", dataJo.optString("access_jwt"))
                             jsonObj.put("refresh_jwt", dataJo.optString("refresh_jwt"))
                             saveEncryptedJwtToken(context, jsonObj)
-                            Log.v("tokenNotify", "successed to Save Token. ${jsonObj.length()}")
+//                            Log.v("tokenNotify", "successed to Save Token. ${jsonObj.length()}")
                             callback(dataJo)
                         }
                         else -> {
@@ -159,7 +159,7 @@ object NetworkUser {
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseBody = response.body?.string()
-                    Log.v("자체로그인Success", "$responseBody")
+//                    Log.v("자체로그인Success", "$responseBody")
                     val jo = responseBody?.let { JSONObject(it) }
                     // ------# 저장 후 로그인 정보는 callback으로 반환 #------
                     CoroutineScope(Dispatchers.Main).launch {
@@ -235,14 +235,14 @@ object NetworkUser {
 
                     override fun onResponse(call: Call, response: Response) {
                         val responseBody = response.body?.string()
-                         Log.v("응답성공", "code: ${response.code}, body: $responseBody")
+//                         Log.v("응답성공", "code: ${response.code}, body: $responseBody")
 
                         if (response.isSuccessful) {
-                            Log.v("회원가입로그", "${response.code}")
+//                            Log.v("회원가입로그", "${response.code}")
                             callback(response.code)
                         } else {
                             callback(response.code) // 에러 코드 전달
-                            Log.v("회원가입로그", "${response.code}")
+//                            Log.v("회원가입로그", "${response.code}")
                         }
                     }
                 })
@@ -284,7 +284,7 @@ object NetworkUser {
                         }
                     }
                     val responseBody = response.body?.string()
-                    Log.v("회원update", "$responseBody")
+//                    Log.v("회원update", "$responseBody")
                     withContext(Dispatchers.Main) {
                         return@withContext true
                     }
@@ -356,7 +356,7 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string()
-                Log.v("verifyPW", "$responseBody")
+//                Log.v("verifyPW", "$responseBody")
                 val status = responseBody?.let { JSONObject(it).optInt("status") }
                 if (status != null) {
                     withContext(Dispatchers.Main) {
@@ -385,13 +385,13 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("mobileOTP실패", "ResponseCode: ${response.code}")
+                        Log.e("mobileOTP실패", "ResponseCode: ${response.message}")
                         return@withContext response.code
                     }
 
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
-                        Log.v("mobileOTP보내기", "$responseJo")
+//                        Log.v("mobileOTP보내기", "$responseJo")
                         return@withContext responseJo.optInt("status")
                     }
                 }
@@ -432,13 +432,13 @@ object NetworkUser {
             try {
                 client.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
-                        Log.e("mobile인증확인", "ResponseCode: ${response.code}")
+                        Log.e("mobile인증확인", "ResponseCode: ${response.message}")
                         return@withContext null
                     }
 
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
-                        Log.v("mobile인증확인", "$responseJo")
+//                        Log.v("mobile인증확인", "$responseJo")
                         return@withContext Pair(responseJo.optString("data"), responseJo.optInt("status"))
                     }
                 }
@@ -485,7 +485,7 @@ object NetworkUser {
 
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
-                        Log.v("mobileOTP보내기", "$responseJo")
+//                        Log.v("mobileOTP보내기", "$responseJo")
                         return@withContext responseJo.optInt("status")
                     }
                 }
@@ -533,7 +533,7 @@ object NetworkUser {
 
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
-                        Log.v("mobile인증확인", "sns verify: $responseJo")
+//                        Log.v("mobile인증확인", "sns verify: $responseJo")
                         return@withContext responseJo
                     }
                 }
@@ -583,7 +583,7 @@ object NetworkUser {
                 try {
                     val responseBody = response.body?.string()
                     val bodyJo = JSONObject(responseBody.toString())
-                    Log.v("oauthLink토큰", "$bodyJo")
+//                    Log.v("oauthLink토큰", "$bodyJo")
                     if (bodyJo.optJSONObject("login_data") != null) {
                         val jwtJo = JSONObject().apply {
                             put("access_jwt", bodyJo.optString("access_jwt"))
@@ -639,7 +639,7 @@ object NetworkUser {
                 try {
                     val responseBody = response.body?.string()
                     val bodyJo = JSONObject(responseBody.toString())
-                    Log.v("oauthLink토큰", "$bodyJo")
+//                    Log.v("oauthLink토큰", "$bodyJo")
                     if (bodyJo.optJSONObject("login_data") != null) {
                         val jwtJo = JSONObject().apply {
                             put("access_jwt", bodyJo.optString("access_jwt"))
@@ -688,7 +688,7 @@ object NetworkUser {
 
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
-                        Log.v("mobileOTP보내기", "$responseJo")
+//                        Log.v("mobileOTP보내기", "$responseJo")
                         return@withContext responseJo.optInt("result_code")
                     }
                 }
@@ -738,7 +738,7 @@ object NetworkUser {
 
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
-                        Log.v("mobile인증확인", "$responseJo, ${responseJo.optInt("status")}")
+//                        Log.v("mobile인증확인", "$responseJo, ${responseJo.optInt("status")}")
                         return@withContext when (responseJo.optInt("status")) {
                             0 -> responseJo.optString("email")
                             401 -> "otpFailed" // otp 만료 및 otp 올바르지 않음
@@ -791,7 +791,7 @@ object NetworkUser {
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
                         val provider = responseJo.optString("provider") ?: ""
-                        Log.v("emailOTP보내기", "$responseJo")
+//                        Log.v("emailOTP보내기", "$responseJo")
                         return@withContext Pair(responseJo.optInt("status"), provider)
                     }
                 }
@@ -838,7 +838,7 @@ object NetworkUser {
 
                     response.body?.string()?.let { responseString ->
                         val responseJo = JSONObject(responseString)
-                        Log.v("emailVerify", "$responseJo")
+//                        Log.v("emailVerify", "$responseJo")
                         return@withContext responseJo.optInt("status")
                     }
                 }
@@ -877,7 +877,7 @@ object NetworkUser {
                 try {
                     val responseBody = response.body?.string()
                     val jo = responseBody?.let{JSONObject(it)}
-                    Log.v("opt인증", "$jo")
+//                    Log.v("opt인증", "$jo")
                     CoroutineScope(Dispatchers.Main).launch {
                         callback(jo)
                     }
@@ -914,7 +914,7 @@ object NetworkUser {
                try {
                    val responseBody = response.body?.string()
                    val jo = responseBody?.let{ JSONObject(it) }
-                   Log.v("이메일보내기", "$jo")
+//                   Log.v("이메일보내기", "$jo")
                    val code = jo?.optInt("status")
                    if (code != null) {
                        CoroutineScope(Dispatchers.Main).launch {
@@ -965,7 +965,7 @@ object NetworkUser {
                 val responseBody = response.body?.string()
                 val jo = responseBody?.let{ JSONObject(it) }
                 val code = jo?.optInt("status")
-                Log.e("resetPw", "resetPw: $jo")
+//                Log.e("resetPw", "resetPw: $jo")
                 if (code != null) {
                     callback(code)
                 }
@@ -999,7 +999,7 @@ object NetworkUser {
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
                 val jo = responseBody?.let{ JSONObject(it) }
-                Log.v("응답값", jo.toString())
+//                Log.v("응답값", jo.toString())
                 val code = jo?.optInt("status")
                 if (code != null) {
                     callback(code)
@@ -1022,7 +1022,7 @@ object NetworkUser {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
                     if (responseBody != null) {
-                         Log.w("profileImage", "Success to execute request: ${response.code} $responseBody")
+//                         Log.w("profileImage", "Success to execute request: ${response.code} $responseBody")
                         callback(extractProfileImageUrl(responseBody))
                     }
                 }
@@ -1047,7 +1047,7 @@ object NetworkUser {
     }
 
     // ------# 핀번호 로그인 #------
-    suspend fun loginWithPin(myUrl: String,  pinNum: Int, userUUID: String) : Int {
+    suspend fun loginWithPin(myUrl: String,  pinNum: Int, userUUID: String) : JSONObject? {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}?category=24&login_pin_number=$pinNum&device_serial_number=SERIALNUMBERTANGOPLUS&user_uuid=$userUUID")
@@ -1057,21 +1057,29 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             try {
                 client.newCall(request).execute().use { response ->
-                    val code = response.code
                     val responseBody = response.body?.string()
-                    Log.v("PIN>ResponseBody", "$responseBody, $code")
-                    code
+//                    Log.v("PIN>ResponseBody", "$responseBody, $code")
+                    if (responseBody != null) {
+                        JSONObject(responseBody)
+                    } else {
+                        null
+                    }
                 }
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: IllegalArgumentException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: NullPointerException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: Exception) {
                 Log.e(TAG, "${e.message}")
+                null
             }
 
         }
@@ -1079,7 +1087,7 @@ object NetworkUser {
 
 
     // ------# QRCode 로그인 #------
-    suspend fun loginWithQRCode(myUrl: String, userUUID: String) : Int {
+    suspend fun loginWithQRCode(myUrl: String, userUUID: String) : JSONObject? {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("${myUrl}?category=26&device_serial_number=SERIALNUMBERTANGOPLUS&user_uuid:$userUUID")
@@ -1089,23 +1097,30 @@ object NetworkUser {
         return withContext(Dispatchers.IO) {
             try {
                 client.newCall(request).execute().use { response ->
-                    val statusCode = response.code
                     val responseBody = response.body?.string()
-                     Log.v("QRcode>ResponseBody", "$responseBody, $statusCode")
-                    statusCode
+//                     Log.v("QRcode>ResponseBody", "$responseBody, $statusCode")
+                    if (responseBody != null) {
+                        JSONObject(responseBody)
+                    } else {
+                        null
+                    }
                 }
             } catch (e: IllegalStateException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: IllegalArgumentException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: NullPointerException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Log.e(TAG, "${e.message}")
+                null
             } catch (e: Exception) {
                 Log.e(TAG, "${e.message}")
+                null
             }
-
         }
     }
 

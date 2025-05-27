@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 
 @Entity(tableName = "t_measure_info")
 data class MeasureInfo(
-    @PrimaryKey(autoGenerate = true) val mobile_info_sn: Int = 0, // 실제 기기의 measureSn 과 같은 역할 (로컬 기기의 measureSn)
+    @PrimaryKey(autoGenerate = true) val mobile_info_sn: Int = 0, // 실제 키오스크의 measureSn 과 같은 역할 (로컬 DB의 measureSn)
     val sn: Int? = null, // 132받아옴 -> 현재 132측정 1개 -> 모바일에서 측정함 -> null -> server로 업로드 -> sn 수정 ->
     val device_sn: Int = 0,
     val measure_sn: Int = 0,
@@ -53,7 +53,8 @@ data class MeasureInfo(
     var risk_ankle_right: String? = "0",
     var risk_result_ment: String? = "",
     var kakao_send_count: Int? = 0,
-    var kakao_send_date : String? = "0000-00-00 00:00:00"
+    var kakao_send_date : String? = "0000-00-00 00:00:00",
+    var show_lines: Int? = 1
     ) {
     companion object {
         fun getCurrentDateTime(): String =

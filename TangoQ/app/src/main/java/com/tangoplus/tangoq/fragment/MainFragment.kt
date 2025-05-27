@@ -1,9 +1,7 @@
 package com.tangoplus.tangoq.fragment
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,10 +11,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +20,7 @@ import com.tangoplus.tangoq.MainActivity
 import com.tangoplus.tangoq.R
 import com.tangoplus.tangoq.adapter.MainProgressRVAdapter
 import com.tangoplus.tangoq.db.Singleton_t_user
-import com.tangoplus.tangoq.adapter.MainPartRVAdapter
+import com.tangoplus.tangoq.adapter.PartRVAdapter
 import com.tangoplus.tangoq.function.PreferencesManager
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
@@ -42,17 +38,25 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.MeasurementManager.createMeasureComment
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
 import com.tangoplus.tangoq.viewmodel.ProgressViewModel
-import io.github.douglasjunior.androidSimpleTooltip.OverlayView
-import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import androidx.core.graphics.toColorInt
+import androidx.datastore.core.IOException
+import com.tangoplus.tangoq.db.MeasureDatabase
+import com.tangoplus.tangoq.fragment.ExtendedFunctions.createGuide
+import com.tangoplus.tangoq.function.MeasurementManager.createResultComment
+import com.tangoplus.tangoq.function.MeasurementManager.extractVideoCoordinates
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
+import com.tangoplus.tangoq.vo.DataDynamicVO
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import java.net.SocketTimeoutException
 
 class MainFragment : Fragment() {
     lateinit var binding: FragmentMainBinding
     private val avm by activityViewModels<AnalysisViewModel>()
     private val mvm : MeasureViewModel by activityViewModels()
     private val pvm: ProgressViewModel by activityViewModels()
+    private val fvm : FragmentViewModel by activityViewModels()
     private lateinit var startForResult: ActivityResultLauncher<Intent>
     private lateinit var prefsManager : PreferencesManager
     private var measures : MutableList<MeasureVO>? = null
@@ -85,7 +89,6 @@ class MainFragment : Fragment() {
         if (sn != null) {
             prefsManager.setUserSn(sn)
         }
-        Log.v("유저제이슨", "${Singleton_t_user.getInstance(requireContext()).jsonObject}")
 
         latestRecSn = prefsManager.getLatestRecommendation()
         singletonMeasure = Singleton_t_measure.getInstance(requireContext()).measures
@@ -103,6 +106,10 @@ class MainFragment : Fragment() {
         if (isFirstRun("GuideDialogFragment_isFirstRun")) {
             val dialog = GuideDialogFragment()
             dialog.show(requireActivity().supportFragmentManager, "GuideDialogFragment")
+        }
+
+        binding.ivMRefresh.setOnSingleClickListener {
+            renderProgramRV()
         }
 
         when (isNetworkAvailable(requireContext())) {
@@ -123,6 +130,7 @@ class MainFragment : Fragment() {
                         it.setOnSingleClickListener {
                             (activity as MainActivity).binding.bnbMain.selectedItemId = R.id.measure
                             // 다운로드 후 이동
+
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flMain, MeasureDetailFragment())
                                 commit()
@@ -137,8 +145,9 @@ class MainFragment : Fragment() {
                     if (isFirstRun("Tooltip_isFirstRun_not_existed_${Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")}")) {
                         notExistedMeasurementGuide()
                     }
+                    binding.cvMResult1.visibility =View.INVISIBLE
+                    binding.cvMResult2.visibility = View.INVISIBLE
                 }
-                Log.v("선택된measureDate", "${mvm.selectedMeasureDate.value}")
                 updateUI()
 
                 binding.tvMMeasureDate.setOnSingleClickListener {
@@ -150,6 +159,52 @@ class MainFragment : Fragment() {
                 // ------# 인터넷 연결이 없을 때 #------
             }
         }
+
+//        lifecycleScope.launch {
+//            avm.mdMeasureResult = mvm.selectedMeasure?.measureResult?.optJSONArray(1) ?: JSONArray()
+//            // 비디오 사이즈 6개넣어서 그대로 씀.
+//            val connections = listOf(25, 26) // 좌측 골반의 pose번호를 가져옴
+//            val titleList = listOf("좌측 무릎", "우측 무릎")
+//            val coordinates = extractVideoCoordinates(avm.mdMeasureResult)
+//            val dataDynamicVOList = mutableListOf<DataDynamicVO>()
+//
+//            for (i in connections.indices step 2) {
+//                val connection1 = connections[i]
+//                val connection2 = connections[i + 1]
+//                val title1 = titleList[i]
+//                val title2 = titleList[i + 1]
+//
+//                val filteredCoordinate1 = mutableListOf<Pair<Float, Float>>()
+//                val filteredCoordinate2 = mutableListOf<Pair<Float, Float>>()
+//
+//                for (element in coordinates) {
+//                    // 단순히 해당 인덱스의 좌표를 가져와서 추가
+//                    filteredCoordinate1.add(element[connection1])
+//                    filteredCoordinate2.add(element[connection2])
+//                }
+//
+//                val dataDynamicVO = DataDynamicVO(
+//                    data1 = filteredCoordinate1,
+//                    title1 = title1,
+//                    data2 = filteredCoordinate2,
+//                    title2 = title2
+//                )
+//                dataDynamicVOList.add(dataDynamicVO)
+//            }
+//            val md = MeasureDatabase.getDatabase(requireContext())
+//            val mDao = md.measureDao()
+//            withContext(Dispatchers.IO) {
+//                val allInfo = Singleton_t_user.getInstance(requireContext()).jsonObject?.optString("user_uuid")?.let { mDao.getAllInfo(it) }
+//                val currentInfo = allInfo?.get(2)
+//                Log.v("currentInfo", "$currentInfo")
+//                val statics = currentInfo?.sn?.let { mDao.getStaticsBy1Info(it) }
+//                val dynamics = Pair(dataDynamicVOList.flatMap{ it.data1} , dataDynamicVOList.flatMap { it.data2 })
+//                if (currentInfo != null && statics != null) {
+//                    val commen = createResultComment(currentInfo,  statics, dynamics)
+//                    Log.v("comment", commen)
+//                }
+//            }
+//        }
     }
 
     // 상단 어댑터와 하단 어댑터 같이 나옴
@@ -157,7 +212,7 @@ class MainFragment : Fragment() {
         val layoutManager1 = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvM1.layoutManager = layoutManager1
         val filteredParts = measures?.get(index)?.dangerParts?.filter { it.second == 1f || it.second == 2f}
-        val partAdapter = MainPartRVAdapter(this@MainFragment, filteredParts?.toMutableList(), avm, "main")
+        val partAdapter = PartRVAdapter(this@MainFragment, filteredParts?.toMutableList(), avm, fvm,"main")
         binding.rvM1.adapter = partAdapter
         binding.rvM1.isNestedScrollingEnabled = false
     }
@@ -165,7 +220,7 @@ class MainFragment : Fragment() {
     // 블러 유무 판단하기
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
-        Log.v("measure있는지", "${measures?.size}")
+//        Log.v("measure있는지", "${measures?.size}")
         startShimmer()
         if (measures.isNullOrEmpty()) {
             // ------# measure에 뭐라도 들어있으면 위 코드 #-------
@@ -202,7 +257,7 @@ class MainFragment : Fragment() {
                         try {
                             lifecycleScope.launch(Dispatchers.Main) {
 
-                                Log.v("날짜 비교", "$selectedDate, ${measures!!.map { it.regDate }} ")
+//                                Log.v("날짜 비교", "$selectedDate, ${measures!!.map { it.regDate }} ")
                                 val dateIndex = measures?.indexOf(measures?.find { it.regDate == selectedDate.fullDateTime })
                                 if (dateIndex != null) {
 
@@ -220,7 +275,7 @@ class MainFragment : Fragment() {
                                         if (measureSize > 1) {
                                             val summaryComments  = createMeasureComment(measures?.get(dateIndex)?.dangerParts)
 
-                                            Log.v("써머리들어간 후", "$summaryComments")
+//                                            Log.v("써머리들어간 후", "$summaryComments")
                                             if (summaryComments.size > 1) {
                                                 binding.tvMMeasureResult1.text = summaryComments[0]
                                                 binding.tvMMeasureResult2.text = summaryComments[1]
@@ -256,20 +311,37 @@ class MainFragment : Fragment() {
 
     private fun renderProgramRV() {
         lifecycleScope.launch(Dispatchers.Main) {
-            // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
-            val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
-            mvm.selectedMeasure?.recommendations = progressRec
-            Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
-            setAdapter()
-            stopShimmer()
+            try {
+                startShimmer()
+                binding.rvM2.visibility = View.GONE
+
+                binding.clMRefresh.visibility = View.GONE
+                // progress가 들어가지 않은 recommendation이다 -> 혹시모르니까 그냥 data 받아오기
+                val progressRec = getRecommendationProgress(getString(R.string.API_recommendation), requireContext(), mvm.selectedMeasure?.sn ?: 0)
+                mvm.selectedMeasure?.recommendations = progressRec
+                Singleton_t_measure.getInstance(requireContext()).measures?.find { it.sn == mvm.selectedMeasure?.sn }?.recommendations = progressRec
+                setAdapter()
+                binding.rvM2.visibility = View.VISIBLE
+            } catch (e: IOException) {
+                binding.clMRefresh.visibility = View.VISIBLE
+                Log.e("renderProgram", "IOException: ${e.message}")
+            } catch (e: SocketTimeoutException) {
+                binding.clMRefresh.visibility = View.VISIBLE
+                Log.e("renderProgram", "IOException: ${e.message}")
+            } catch (e: Exception) {
+                binding.clMRefresh.visibility = View.VISIBLE
+                Log.e("renderProgram", "IOException: ${e.message}")
+            } finally {
+                stopShimmer()
+            }
         }
     }
 
 
     private fun setAdapter() {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        Log.w("rec갯수", "${mvm.selectedMeasure?.recommendations?.size}, ${mvm.selectedMeasure?.recommendations?.map { it.title }}")
-        val adapter = MainProgressRVAdapter(this@MainFragment, mvm.selectedMeasure?.recommendations ?: listOf(), pvm)
+//        Log.w("rec갯수", "${mvm.selectedMeasure?.recommendations?.size}, ${mvm.selectedMeasure?.recommendations?.map { it.title }}")
+        val adapter = MainProgressRVAdapter(this@MainFragment,  mvm.selectedMeasure?.recommendations?: listOf(), pvm)
         binding.rvM2.layoutManager = layoutManager
         binding.rvM2.adapter = adapter
         binding.btnMProgram.text = when {
@@ -368,33 +440,4 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun createGuide(
-        context: Context,
-        text: String,
-        anchor: View,
-        gravity: Int,
-        dismiss: () -> Unit,
-    ) {
-        SimpleTooltip.Builder(context).apply {
-            anchorView(anchor)
-            backgroundColor(ContextCompat.getColor(context, R.color.mainColor))
-            arrowColor("#00FFFFFF".toColorInt())
-            gravity(gravity)
-            animated(true)
-            transparentOverlay(false)
-            contentView(R.layout.tooltip)
-            highlightShape( OverlayView.HIGHLIGHT_SHAPE_RECTANGULAR_ROUNDED)
-
-            onShowListener {
-                val tooltipTextView: TextView = it.findViewById(R.id.tooltip_instruction)
-                tooltipTextView.text = text
-            }
-            onDismissListener {
-                dismiss()
-            }
-            build()
-                .show()
-        }
-
-    }
 }

@@ -93,6 +93,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
                             "앱 버전" -> holder.ivPf.setImageResource(R.drawable.icon_copy)
                             "개인정보 처리방침" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
                             "서비스 이용약관" -> holder.ivPf.setImageResource(R.drawable.icon_paper)
+                            "오픈소스 라이선스" -> holder.ivPf.setImageResource(R.drawable.icon_license)
                             "로그아웃"-> holder.ivPf.setImageResource(R.drawable.icon_logout)
                         }
                         // ------! 앱 버전 text 설정 시작 !------
@@ -157,6 +158,11 @@ class ProfileRVAdapter(private val fragment: Fragment,
                                 "서비스 이용약관" -> {
                                     val dialog = AgreementDetailDialogFragment.newInstance("agreement1")
                                     dialog.show(fragment.requireActivity().supportFragmentManager, "agreement_dialog")
+                                }
+                                "오픈소스 라이선스" -> {
+                                    val dialog = AgreementDetailDialogFragment.newInstance("license")
+                                    dialog.show(fragment.requireActivity().supportFragmentManager, "license_dialog")
+
                                 }
                                 "로그아웃" -> {
                                     MaterialAlertDialogBuilder(fragment.requireContext(), R.style.ThemeOverlay_App_MaterialAlertDialog).apply {
@@ -260,7 +266,7 @@ class ProfileRVAdapter(private val fragment: Fragment,
 //                                }
                                 "비밀번호" -> {
                                     val provider = Singleton_t_user.getInstance(fragment.requireContext()).jsonObject?.optString("provider") ?: ""
-                                    Log.v("provider", provider)
+//                                    Log.v("provider", provider)
                                     if (provider == "null") {
                                         val dialog = InputDialogFragment.newInstance(1)
                                         dialog.show(fragment.requireActivity().supportFragmentManager, "InputDialogFragment")

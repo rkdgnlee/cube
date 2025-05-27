@@ -1,15 +1,13 @@
 package com.tangoplus.tangoq.viewmodel
 
-import android.net.Uri
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
-import com.google.mlkit.vision.face.Face
 import com.tangoplus.tangoq.vo.MeasureVO
 import com.tangoplus.tangoq.db.MeasureDynamic
 import com.tangoplus.tangoq.db.MeasureInfo
 import com.tangoplus.tangoq.db.MeasureStatic
-import com.tangoplus.tangoq.vo.AnalysisUnitVO
 import com.tangoplus.tangoq.vo.DateDisplay
 import org.json.JSONArray
 import org.json.JSONObject
@@ -18,6 +16,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class MeasureViewModel : ViewModel() {
+
+    // 서버 측정 결과 다운로드 progressBar 진행상황
+    val progressInfoCount = MutableLiveData(0)
+    var totalInfoCount = 1
+
 
     // 메인 측정 날짜 선택 담을 공간 index임
     var selectMeasureDate = MutableLiveData<DateDisplay>()
@@ -45,9 +48,6 @@ class MeasureViewModel : ViewModel() {
     var toSendDynamicJo :  JSONObject? = null
     val staticFiles = mutableListOf<File>()
     var dynamicFile : File? = null
-
-    var previousFaces = listOf<Face>()
-    var notMosaicVideoInputPath : String? = null
 
     val staticJsonFiles = mutableListOf<File>()
     var dynamicJsonFile : File? = null

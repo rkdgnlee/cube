@@ -85,6 +85,16 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <View
+                    android:id="@+id/view37"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="10dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/constraintLayout3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/constraintLayout3" />
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout3"
                     android:layout_width="match_parent"
@@ -98,107 +108,411 @@
                         android:id="@+id/tvMDDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="10dp"
-                        android:text="2024.08.07"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:lineSpacingExtra="-5dp"
+                        android:text="2024.08.07 13:55"
                         android:textColor="@color/subColor800"
-                        android:textSize="18dp"
+                        android:textSize="14dp"
                         android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@+id/constraintLayout29"
-                        app:layout_constraintTop_toTopOf="@+id/constraintLayout29" />
+                        app:layout_constraintBottom_toBottomOf="@+id/textView37"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView37"
+                        app:layout_constraintTop_toTopOf="@+id/textView37" />
 
                     <TextView
                         android:id="@+id/tvMDParts"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginBottom="10dp"
-                        android:text="보고 싶은 부위의 데이터를 선택해주세요"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:gravity="center"
+                        android:text="모바일 앱"
+                        android:textColor="@color/subColor800"
+                        android:textSize="14dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView38"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView38"
+                        app:layout_constraintTop_toTopOf="@+id/textView38" />
+
+                    <TextView
+                        android:id="@+id/tvMDScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="100"
+                        android:textColor="@color/thirdWhiteColor"
+                        android:textSize="32dp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView31"
+                        app:layout_constraintEnd_toStartOf="@+id/textView37"
+                        app:layout_constraintStart_toEndOf="@+id/textView31"
+                        app:layout_constraintTop_toTopOf="@+id/textView31" />
+
+                    <TextView
+                        android:id="@+id/textView31"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="30dp"
+                        android:text="종합 점수"
                         android:textColor="@color/subColor400"
-                        android:textSize="16dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout29"
-                        app:layout_constraintStart_toEndOf="@+id/constraintLayout29" />
+                        android:textSize="14dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView37"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="측정 날짜"
+                        android:textColor="@color/subColor400"
+                        android:textSize="14dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvMDScore" />
+
+                    <TextView
+                        android:id="@+id/textView38"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="측정 타입"
+                        android:textColor="@color/subColor400"
+                        android:textSize="14dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvMDScore"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView42"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="의견"
+                        android:textColor="@color/subColor400"
+                        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout17"
+                        app:layout_constraintEnd_toStartOf="@+id/constraintLayout17"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/constraintLayout17" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/constraintLayout29"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
+                        android:id="@+id/constraintLayout17"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/bckgnd_1_sub150_20"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/bckgnd_rectangle_12"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView31"
+                        app:layout_constraintTop_toBottomOf="@+id/tvMDScore">
 
-                        <TextView
-                            android:id="@+id/tvMDScore"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="100"
-                            android:textColor="@color/thirdWhiteColor"
-                            android:textSize="24dp"
-                            android:textStyle="bold"
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cvMDResult1"
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_marginEnd="5dp"
+                            app:cardBackgroundColor="@color/deleteColor"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/linearLayout21"
+                            app:layout_constraintEnd_toStartOf="@+id/linearLayout21"
+                            app:layout_constraintTop_toTopOf="@+id/linearLayout21"
+                            app:layout_constraintVertical_bias="0.19999999" />
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cvMDResult2"
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_marginEnd="5dp"
+                            app:cardBackgroundColor="@color/cautionColor"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/linearLayout21"
+                            app:layout_constraintEnd_toStartOf="@+id/linearLayout21"
+                            app:layout_constraintTop_toTopOf="@+id/linearLayout21"
+                            app:layout_constraintVertical_bias="0.85" />
+
+                        <LinearLayout
+                            android:id="@+id/linearLayout21"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <TextView
+                                android:id="@+id/tvMDResult1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxLines="2"
+                                android:textColor="@color/subColor800"
+                                android:textSize="16dp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvMDResult2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:maxLines="2"
+                                android:textColor="@color/subColor800"
+                                android:textSize="14dp" />
+                        </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <com.google.android.material.divider.MaterialDivider
-                    android:id="@+id/materialDivider21"
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    app:dividerColor="@color/subColor150"
+                <com.tangoplus.tangoq.view.BadgeButton
+                    android:id="@+id/btnMD0"
+                    android:layout_width="86dp"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="150dp"
+                    android:background="@drawable/effect_ibtn_12dp"
+                    android:backgroundTint="@color/subColor200"
+                    android:gravity="center"
+                    android:stateListAnimator="@null"
+                    android:text="목관절"
+                    android:textColor="@color/whiteText"
+                    android:textSize="14dp"
+                    app:layout_constraintEnd_toEndOf="@+id/ivMDSkeleton"
+                    app:layout_constraintTop_toTopOf="@+id/ivMDSkeleton" />
+
+                <View
+                    android:id="@+id/view8"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="-10dp"
+                    android:layout_marginEnd="-10dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivMDSkeleton"
+                    app:layout_constraintEnd_toEndOf="@+id/llMDRight"
+                    app:layout_constraintStart_toStartOf="@+id/llMDLeft"
+                    app:layout_constraintTop_toTopOf="@+id/ivMDSkeleton" />
+
+                <LinearLayout
+                    android:id="@+id/llMDLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivMDSkeleton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/ivMDSkeleton"
+                    app:layout_constraintVertical_bias="1.0">
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD1"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="좌측 어깨"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD3"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="좌측 팔꿉"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD5"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="좌측 손목"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD7"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="좌측 골반"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD9"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="좌측 무릎"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD11"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="좌측 발목"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llMDRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivMDSkeleton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/ivMDSkeleton"
+                    app:layout_constraintVertical_bias="1.0">
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD2"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="우측 어깨"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD4"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="우측 팔꿉"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD6"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="우측 손목"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD8"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="우측 골반"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD10"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="우측 무릎"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                    <com.tangoplus.tangoq.view.BadgeButton
+                        android:id="@+id/btnMD12"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/effect_ibtn_12dp"
+                        android:backgroundTint="@color/subColor200"
+                        android:gravity="center"
+                        android:stateListAnimator="@null"
+                        android:text="우측 발목"
+                        android:textColor="@color/whiteText"
+                        android:textSize="14dp" />
+
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/ivMDSkeleton"
+                    android:layout_width="198dp"
+                    android:layout_height="352dp"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/drawable_skeleton"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMDHorizon"
+                <TextView
+                    android:id="@+id/textView43"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:lineSpacingExtra="2dp"
+                    android:text="※ 측정 결과는 각 관절 상호간의 각도, 거리를 이용한 참고용 지표이며 의료 진단이나 치료를 위한 목적이 아닙니다.\n불편함이나 통증이 지속된다면 가까운 의료기관을 방문하시길 권장드립니다."
+                    android:textColor="@color/subColor300"
+                    android:textSize="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/materialDivider21" />
-
-                <com.github.mikephil.charting.charts.RadarChart
-                    android:id="@+id/rcMD"
-                    android:layout_width="0dp"
-                    android:layout_height="350dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rvMDHorizon" >
-
-                </com.github.mikephil.charting.charts.RadarChart>
-
-                <TextView
-                    android:id="@+id/textView31"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@color/secondContainerColor"
-                    android:paddingStart="20dp"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:text="부위별 분석"
-                    android:textColor="@color/subColor800"
-                    android:textSize="18dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rcMD" />
+                    app:layout_constraintTop_toBottomOf="@id/ivMDSkeleton" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMD"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="80dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView31" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView43" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

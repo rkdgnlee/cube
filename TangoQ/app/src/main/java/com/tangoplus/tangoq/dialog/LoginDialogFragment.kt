@@ -5,7 +5,6 @@ import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -60,10 +59,12 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.regex.Pattern
 import androidx.core.graphics.drawable.toDrawable
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 
 class LoginDialogFragment : DialogFragment() {
     lateinit var binding: FragmentLoginDialogBinding
     val viewModel : SignInViewModel by activityViewModels()
+    val mvm : MeasureViewModel by activityViewModels()
     private lateinit var loadingDialog : LoadingDialogFragment
     private lateinit var ssm : SaveSingletonManager
     private lateinit var prefs : PreferencesManager
@@ -96,7 +97,7 @@ class LoginDialogFragment : DialogFragment() {
         viewModel.fullEmail.value = ""
         prefs = PreferencesManager(requireContext())
         val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        ssm = SaveSingletonManager(requireContext(), requireActivity())
+        ssm = SaveSingletonManager(requireContext(), requireActivity(), mvm)
         binding.etLDEmail.requestFocus()
         binding.etLDEmail.postDelayed({
             imm.showSoftInput(binding.etLDEmail, InputMethodManager.SHOW_IMPLICIT)
@@ -182,7 +183,7 @@ class LoginDialogFragment : DialogFragment() {
 
             lifecycleScope.launch {
                 getUserIdentifyJson(getString(R.string.API_user), jsonObject) { jo ->
-                    Log.v("loginResult", "$jo")
+//                    Log.v("loginResult", "$jo")
                     val isAccessEmpty = jo?.optString("access_jwt")?.isBlank()
                     if (jo == null) {
                         dialog.dismiss()
@@ -361,7 +362,7 @@ class LoginDialogFragment : DialogFragment() {
                     binding.btnLDCodeSend.isEnabled = false
                     viewModel.saveEmail = ""
                 }
-                Log.v("VMEmail", viewModel.saveEmail)
+//                Log.v("VMEmail", viewModel.saveEmail)
             }
         })
     }

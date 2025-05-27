@@ -20,7 +20,7 @@ class PreferencesManager(private val context: Context) {
     fun getUserSn(): Int = globalPrefs.getInt(USER_SN_KEY, -1)
 
     fun setUserSn(userSn: Int) {
-        Log.v("setUserSn", "$userSn")
+//        Log.v("setUserSn", "$userSn")
         globalPrefs.edit { putInt(USER_SN_KEY, userSn) }
     }
 
@@ -80,7 +80,7 @@ class PreferencesManager(private val context: Context) {
         val allEntries = alarmPrefs.all
         val alarmsList = mutableListOf<MessageVO>()
         val gson = Gson()
-        Log.v("올엔트리알람", "$allEntries")
+//        Log.v("올엔트리알람", "$allEntries")
         for ((key, value) in allEntries) {
             if (key.startsWith("alarmMessage_$sn")) {
                 val alarmJson = value as? String ?: continue

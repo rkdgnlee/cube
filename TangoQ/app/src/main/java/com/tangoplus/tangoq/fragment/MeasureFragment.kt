@@ -1,13 +1,16 @@
 package com.tangoplus.tangoq.fragment
 
 import android.animation.ValueAnimator
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -37,6 +40,7 @@ import com.tangoplus.tangoq.dialog.QRCodeDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.function.SaveSingletonManager
 import com.tangoplus.tangoq.function.WifiManager
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 import com.tangoplus.tangoq.vision.MathHelpers.isTablet
 import com.tangoplus.tangoq.viewmodel.MeasureViewModel
 import com.tangoplus.tangoq.vo.DateDisplay
@@ -52,9 +56,11 @@ import java.time.format.DateTimeFormatter
 class MeasureFragment : Fragment() {
     lateinit var binding : FragmentMeasureBinding
     val mvm : MeasureViewModel by activityViewModels()
+    private val fvm : FragmentViewModel by activityViewModels()
     private var balloon : Balloon? = null
     private var measures : MutableList<MeasureVO>? = null
     private lateinit var ssm : SaveSingletonManager
+    private var typeList = mutableListOf<Boolean?>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -122,12 +128,7 @@ class MeasureFragment : Fragment() {
                         (activity as? MainActivity)?.launchMeasureSkeletonActivity()
                     }
                     if (measures?.isNotEmpty() == true) {
-//                        val hideBadgeFunction = hideBadgeOnClick(
-//                            binding.tvMBadge,
-//                            binding.llMPredictDisease,
-//                            "${binding.tvMBadge.text}",
-//                            ContextCompat.getColor(requireContext(), R.color.thirdColor)
-//                        )
+
                         binding.tvMEmptyGraph.visibility = View.GONE
                         val historyInitString = "최근 측정 기록: ${measures?.get(0)?.regDate?.substring(0, 10)}" // ?.replace("-", ". ")
                         binding.tvMMeasureHistory.text =historyInitString
@@ -138,7 +139,7 @@ class MeasureFragment : Fragment() {
                             dialog.show(activity?.supportFragmentManager ?: return@setOnSingleClickListener, "LoadingDialogFragment")
 
 //                            hideBadgeFunction?.invoke()
-                            ssm = SaveSingletonManager(requireContext(), requireActivity())
+                            ssm = SaveSingletonManager(requireContext(), requireActivity(), mvm)
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
                                     val measureIndex = 4 - (mvm.selectedMeasureIndex.value ?: 0)
@@ -156,7 +157,8 @@ class MeasureFragment : Fragment() {
                                                 mvm.selectedMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
                                                 mvm.selectMeasureDate.value = DateDisplay(currentMeasure.regDate, currentMeasure.regDate.substring(0, 11))
 
-                                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
+//                                                Log.v("수정완료", "index: $singletonIndex, rec: ${editedMeasure.recommendations?.map { it.createdAt }}")
+                                                fvm.setCurrentFragment(FragmentViewModel.FragmentType.MEASURE_DETAIL_FRAGMENT)
                                                 requireActivity().supportFragmentManager.beginTransaction().apply {
                                                     replace(R.id.flMain, MeasureDetailFragment())
                                                     commit()
@@ -218,6 +220,7 @@ class MeasureFragment : Fragment() {
         }
 
         binding.btnM2.setOnSingleClickListener {
+            fvm.setCurrentFragment(FragmentViewModel.FragmentType.MEASURE_HISTORY_FRAGMENT)
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flMain, MeasureHistoryFragment())
                 commit()
@@ -257,9 +260,12 @@ class MeasureFragment : Fragment() {
                 } else if (measureSize != null && measureSize <= 5 && measureSize >= 1) {
                     for (i in 0 until (5 - measureSize)) {
                         lcDataList.add(Pair("", 50))
+                        typeList.add(null)
                     }
                     for (i in measureSize - 1 downTo 0) {
                         val measureUnit = measures?.get(i)
+
+                        typeList.add(measureUnit?.isMobile == true)
                         val regDate = measureUnit?.regDate
                         val overall = measureUnit?.overall?.toInt()
                         if (regDate != null && overall != null) {
@@ -269,6 +275,7 @@ class MeasureFragment : Fragment() {
                 } else {
                     for (i in 4 downTo 0) {
                         val measureUnit = measures?.get(i)
+                        typeList.add(measureUnit?.isMobile == true)
                         val regDate = measureUnit?.regDate
                         val overall = measureUnit?.overall?.toInt()
                         if (regDate != null && overall != null) {
@@ -308,6 +315,7 @@ class MeasureFragment : Fragment() {
                 setDrawCircleHole(false)
                 setDrawFilled(false)
                 mode = LineDataSet.Mode.CUBIC_BEZIER
+
             }
             lcXAxis.apply {
                 isEnabled = false
@@ -339,7 +347,7 @@ class MeasureFragment : Fragment() {
                 lcLegend.formSize = 0f
             }
             lineChart.apply {
-                if (isTablet(requireContext())) setExtraOffsets(22f, 0f ,22f ,0f)
+                if (isTablet(requireContext())) setExtraOffsets(26f, 0f ,26f ,0f)
                 data = LineData(lcLineDataSet)
 //                animateX(1000, Easing.EaseInOutBack)
                 setTouchEnabled(true)
@@ -391,49 +399,93 @@ class MeasureFragment : Fragment() {
             // ------! 값 클릭 시 벌룬 나오기 시작 !------+
             setScoresDates(lcDataList)
 
-            lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-                override fun onValueSelected(e: Entry?, h: Highlight?) {
-                    e?.let { entry ->
-                        val originalIndex = startIndex + entry.x.toInt()
-                        val selectedData = lcDataList[originalIndex]
-                        val balloonText = if (selectedData.first != "") "측정날짜: ${
-                            selectedData.first.substring(
-                                0,
-                                10
-                            )
-                        }\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
-                        val balloonlc1 = Balloon.Builder(requireContext())
-                            .setWidthRatio(0.5f)
-                            .setHeight(BalloonSizeSpec.WRAP)
-                            .setText(balloonText)
-                            .setTextColorResource(R.color.subColor800)
-                            .setTextSize(15f)
-                            .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
-                            .setArrowSize(0)
-                            .setMargin(10)
-                            .setPadding(12)
-                            .setCornerRadius(8f)
-                            .setBackgroundColorResource(R.color.white)
-                            .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
-                            .setLifecycleOwner(viewLifecycleOwner)
-                            .build()
+            // 라인 차트 각 값에 접근하기
+            lineChart.post {
+                for (i in 0 until lineChart.data.dataSetCount) {
+                    val dataSet = lineChart.data.getDataSetByIndex(i) as LineDataSet
 
-                        val pts = FloatArray(2)
-                        pts[0] = entry.x
-                        pts[1] = entry.y
-                        lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
-                        balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
-//                        Log.v("originalIndex", "$originalIndex")
-                        if ( selectedData.second > 50) {
-                            mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
-                            mvm.selectedMeasureIndex.value = originalIndex
+                    for (j in 0 until dataSet.entryCount) {
+                        val entry = dataSet.getEntryForIndex(j)
+                        val pos = lineChart.getPosition(entry, YAxis.AxisDependency.LEFT)
+                        if (pos != null && context != null) {
+                            if (typeList.isNotEmpty()) {
+                                val tv = TextView(context).apply {
+                                    text = when (typeList[j]) {
+                                        true -> "M"
+                                        false -> "K"
+                                        else -> ""
+                                    }
+                                    setTextColor(ContextCompat.getColor(requireContext(), R.color.thirdColor))
+                                    setTextSize(TypedValue.COMPLEX_UNIT_SP, if (isTablet(context)) 16f else 12f)
+//                                if (isTablet(context)) setTypeface(null, Typeface.BOLD)
+                                    setBackgroundColor(Color.TRANSPARENT)
+                                }
+                                tv.measure(
+                                    View.MeasureSpec.UNSPECIFIED,
+                                    View.MeasureSpec.UNSPECIFIED
+                                )
+                                val textWidth = tv.measuredWidth
+                                val textHeight = tv.measuredHeight
+
+                                tv.x = pos.x - textWidth / 2
+                                tv.y = pos.y - textHeight - 48f
+                                binding.flM.addView(tv)
+
+
+
+                                lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                                    override fun onValueSelected(e: Entry?, h: Highlight?) {
+                                        e?.let { entry ->
+                                            val originalIndex = startIndex + entry.x.toInt()
+                                            val selectedData = lcDataList[originalIndex]
+                                            val balloonText = if (selectedData.first != "") "측정날짜: ${
+                                                selectedData.first.substring(
+                                                    0,
+                                                    10
+                                                )
+                                            }\n" + "측정 타입: ${
+                                                when (typeList[originalIndex]) {
+                                                    true -> "모바일앱"
+                                                    false -> "키오스크"
+                                                    null -> ""
+                                                }
+                                            }\n" + "점수: ${entry.y.toInt()}점" else "측정 기록이 없습니다."
+                                            val balloonlc1 = Balloon.Builder(requireContext())
+                                                .setWidthRatio(0.5f)
+                                                .setHeight(BalloonSizeSpec.WRAP)
+                                                .setText(balloonText)
+                                                .setTextColorResource(R.color.subColor800)
+                                                .setTextSize(15f)
+                                                .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                                                .setArrowSize(0)
+                                                .setMargin(10)
+                                                .setPadding(12)
+                                                .setCornerRadius(8f)
+                                                .setBackgroundColorResource(R.color.white)
+                                                .setBalloonAnimation(BalloonAnimation.OVERSHOOT)
+                                                .setLifecycleOwner(viewLifecycleOwner)
+                                                .build()
+
+                                            val pts = FloatArray(2)
+                                            pts[0] = entry.x
+                                            pts[1] = entry.y
+                                            lineChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pts)
+                                            balloonlc1.showAlignTop(lineChart, pts[0].toInt(), pts[1].toInt())
+//                                            Log.v("originalIndex", "$originalIndex")
+                                            if ( selectedData.second > 50) {
+                                                mvm.previousMeasureIndex = mvm.selectedMeasureIndex.value ?: 0
+                                                mvm.selectedMeasureIndex.value = originalIndex
+                                            }
+                                        }
+                                    }
+                                    override fun onNothingSelected() {}
+                                })
+                            }
                         }
                     }
-
                 }
+            }
 
-                override fun onNothingSelected() {}
-            })
             // ------! 꺾은선 그래프 코드 끝 !------
 
             // ------! balloon 시작 !------
@@ -565,18 +617,17 @@ class MeasureFragment : Fragment() {
 
     private fun animateCardViewToPercentage(index: Int) {
         val params = binding.cvM.layoutParams as ConstraintLayout.LayoutParams
-        Log.v("눌렀을 때", "${mvm.previousMeasureIndex}, ${mvm.selectedMeasureIndex.value}")
         val startBias = when(mvm.previousMeasureIndex) {
             4 -> 1.0f
-            3 -> 0.75f
-            1 -> 0.25f
+            3 -> 0.755f
+            1 -> 0.245f
             0 -> 0.0f
             else -> 0.5f
         }
         val endBias = when (index) {
             4 -> 1.0f
-            3 -> 0.75f
-            1 -> 0.25f
+            3 -> 0.755f
+            1 -> 0.245f
             0 -> 0.0f
             else -> 0.5f
         } // 이동할 목표 위치
@@ -618,4 +669,5 @@ class MeasureFragment : Fragment() {
             }
         }
     }
+
 }

@@ -7,13 +7,10 @@ import com.tangoplus.tangoq.vo.ExerciseHistoryVO
 import com.tangoplus.tangoq.vo.ExerciseVO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
@@ -186,7 +183,7 @@ object  NetworkExercise {
             try {
                 client.newCall(request).execute().use { response ->
                     val responseBody = response.body?.string()
-                    Log.v("ExerciseHistory", "$responseBody")
+//                    Log.v("ExerciseHistory", "$responseBody")
                 }
             } catch (e: IndexOutOfBoundsException) {
                 Log.e("ExerciseHistoryError", "IndexOutOfBounds: ${e.message}")
@@ -252,7 +249,7 @@ object  NetworkExercise {
                             )
                             results.add(exerciseHistoryVO)
                         }
-                         Log.v("getExerciseHistory", "results: $results")
+//                         Log.v("getExerciseHistory", "results: $results")
                         return@use results.toList()
                     }
                     return@use results.toList()

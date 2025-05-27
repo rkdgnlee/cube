@@ -1,11 +1,9 @@
 package com.tangoplus.tangoq.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tangoplus.tangoq.vo.AnalysisUnitVO
-import com.tangoplus.tangoq.vo.AnalysisVO
 import com.tangoplus.tangoq.vo.DateDisplay
 import com.tangoplus.tangoq.vo.MeasureVO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +18,8 @@ class AnalysisViewModel : ViewModel() {
     val currentPart = MutableLiveData<String>()
     var selectPart = MutableLiveData<String>()
 
+    // analysis에서 mainanalysis/measureDetail에 맞게 clicklistener따로 설정하기
+    var analysisType = 0
     // ------# 비교할 measure 담을 공간 #------
     val leftMeasurement = MutableLiveData<MeasureVO>()
     val rightMeasurement = MutableLiveData<MeasureVO>()

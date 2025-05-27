@@ -337,7 +337,7 @@
                         android:id="@+id/rvPCD"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginBottom="120dp"
                         android:nestedScrollingEnabled="false"
                         app:layout_constraintBottom_toBottomOf="parent"

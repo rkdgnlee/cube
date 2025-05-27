@@ -17,10 +17,12 @@ import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
 import com.tangoplus.tangoq.fragment.MainAnalysisFragment
 import com.tangoplus.tangoq.listener.OnCategoryClickListener
 import com.tangoplus.tangoq.viewmodel.AnalysisViewModel
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 
-class MainPartRVAdapter(private val fragment: Fragment, private val dangerParts:  MutableList<Pair<String, Float>>?, private val avm: AnalysisViewModel, private val xmlName: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PartRVAdapter(private val fragment: Fragment, private val dangerParts:  MutableList<Pair<String, Float>>?, private val avm: AnalysisViewModel, private val fvm: FragmentViewModel, private val xmlName: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var onCategoryClickListener: OnCategoryClickListener? = null
     private var selectedPosition = 0
+
 
     inner class MainPartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvPI : TextView = view.findViewById(R.id.tvMPI)
@@ -81,6 +83,7 @@ class MainPartRVAdapter(private val fragment: Fragment, private val dangerParts:
             }
 
             holder.clPI.setOnSingleClickListener {
+                fvm.setCurrentFragment(FragmentViewModel.FragmentType.MAIN_ANALYSIS_FRAGMENT)
                 avm.currentPart.value = currentItem?.first
                 avm.selectPart.value = currentItem?.first
                 fragment.requireActivity().supportFragmentManager.beginTransaction().apply {

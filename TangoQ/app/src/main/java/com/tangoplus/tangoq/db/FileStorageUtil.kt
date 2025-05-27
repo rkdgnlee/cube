@@ -19,8 +19,6 @@ import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.security.MessageDigest
-import javax.crypto.SecretKey
 
 object FileStorageUtil {
     private const val IMAGE_DIR = "images"
@@ -35,7 +33,7 @@ object FileStorageUtil {
     suspend fun saveFileFromUrl(context: Context, fileName: String, fileType: FileType): Boolean {
         return withContext(Dispatchers.IO) {
             val url = context.getString(R.string.file_url) + fileName  // url 형식 + 파일 이름
-            Log.v("url에서파일저장", url)
+//            Log.v("url에서파일저장", url)
             val dir = getDirectory(context, fileType)
             val file = File(dir, fileName)  // 파일 이름을 그대로 사용
 

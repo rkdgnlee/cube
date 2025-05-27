@@ -20,7 +20,6 @@ import com.tangoplus.tangoq.vo.ProgressHistoryVO
 import com.tangoplus.tangoq.databinding.RvProgressHistoryItemBinding
 import com.tangoplus.tangoq.dialog.PlayThumbnailDialogFragment
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
-import com.tangoplus.tangoq.listener.OnSingleClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

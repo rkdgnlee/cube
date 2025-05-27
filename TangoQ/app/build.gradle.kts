@@ -14,8 +14,8 @@ android {
         minSdk = 27
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
-        versionCode = 48
-        versionName = "1.57"
+        versionCode = 54
+        versionName = "1.63"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
     }
@@ -24,10 +24,9 @@ android {
         debug {
             isDebuggable = true
         }
+
         release {
             isDebuggable = false
-            isMinifyEnabled = true
-            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -57,9 +56,10 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")
 
     // 스켈레톤
-    implementation("com.google.mediapipe:tasks-vision:0.10.21")
-    implementation("com.google.mlkit:face-detection:16.1.7")
-    implementation("androidx.window:window:1.3.0")
+    //noinspection Aligned16KB
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
+    //noinspection Aligned16KB
+    implementation("com.google.mediapipe:tasks-vision:0.10.14")
 
     // 외부 라이브러리
     implementation("com.github.shuhart:StepView:v1.5.1")
@@ -68,8 +68,6 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.tbuonomo:dotsindicator:5.0")
     implementation("com.airbnb.android:lottie:6.4.0")
-    implementation("io.github.litao0621:nifty-slider:1.4.6")
-    implementation("com.mikhaellopez:circularprogressbar:3.1.0")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.kizitonwose.calendar:view:2.5.1")
     implementation(libs.firebase.appcheck.ktx)
@@ -80,36 +78,33 @@ dependencies {
     implementation("com.github.aabhasr1:OtpView:v1.1.2-ktx")
     implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
     implementation("com.github.douglasjunior:android-simple-tooltip:1.1.0")
-    implementation("com.arthenica:ffmpeg-kit-full-gpl:4.5.LTS") // 최신버전은 implementation 'com.arthenica:ffmpeg-kit-full:6.0-2' 인데 이 부분은 안드로이드 버전 업그레이드할 때 필요
+    //noinspection Aligned16KB
+    implementation("com.arthenica:ffmpeg-kit-full-gpl:6.0-2")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
-//    implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
 
     // api
     implementation("com.navercorp.nid:oauth:5.10.0")
-    implementation("com.kakao.sdk:v2-common:2.19.0")
-    implementation("com.kakao.sdk:v2-user:2.20.6")
-    implementation("com.kakao.sdk:v2-auth:2.19.0")
+    implementation("com.kakao.sdk:v2-common:2.21.1")
+    implementation("com.kakao.sdk:v2-user:2.21.1")
+    implementation("com.kakao.sdk:v2-auth:2.21.1")
     implementation("com.google.gms:google-services:4.4.2")
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
-    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
-    implementation("com.google.firebase:firebase-analytics:22.2.0")
-    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.1")
+    implementation("com.google.firebase:firebase-analytics:22.4.0")
+    implementation("com.google.firebase:firebase-auth-ktx:23.2.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
-    implementation("androidx.security:security-crypto:1.0.0")
-    implementation("androidx.datastore:datastore-preferences:1.1.2")
-    implementation("androidx.datastore:datastore-core:1.1.3")
+
 
     // 통신
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 //    implementation("com.android.volley:volley:1.2.1")
     implementation("com.github.yuriy-budiyev:code-scanner:2.3.0")
-    implementation("androidx.work:work-runtime:2.10.0")
+    implementation("androidx.work:work-runtime:2.10.1")
 
     // room
     val roomVersion = "2.6.1"
@@ -124,9 +119,9 @@ dependencies {
     annotationProcessor("android.arch.persistence.room:rxjava2:1.1.1")
     //noinspection KaptUsageInsteadOfKsp
     kapt("androidx.room:room-compiler:2.6.1")
-    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
     implementation("androidx.sqlite:sqlite:2.4.0")
-
+    //noinspection Aligned16KB
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
 
     // 미디어
     val camera_version = "1.4.1"
@@ -137,23 +132,26 @@ dependencies {
     implementation("androidx.camera:camera-extensions:$camera_version")
     implementation("androidx.camera:camera-view:$camera_version")
     implementation(libs.androidx.camera.core)
-
+    implementation("androidx.media3:media3-exoplayer:1.5.1")
+    implementation("androidx.media3:media3-effect:1.5.1")
+    implementation("androidx.media3:media3-common:1.2.0")
+    implementation("androidx.media3:media3-transformer:1.2.0")
     // 내부 라이브러리
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
+    implementation("androidx.datastore:datastore-core:1.1.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.fragment:fragment-ktx:1.8.6")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.google.protobuf:protobuf-javalite:4.26.1")
-
+    implementation("androidx.window:window:1.3.0")
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
-    implementation("androidx.media3:media3-exoplayer:1.5.1")
-    implementation("androidx.media3:media3-effect:1.5.1")
-    implementation("androidx.media3:media3-common:1.2.0")
-    implementation("androidx.media3:media3-transformer:1.2.0")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
     implementation("androidx.webkit:webkit:1.13.0")
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.runtime.android)

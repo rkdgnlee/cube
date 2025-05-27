@@ -8,17 +8,12 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
@@ -122,14 +117,14 @@ class PlayThumbnailDialogFragment : DialogFragment() {
             .into(binding.ivPTD)
 
         val networkType = wm.checkNetworkType()
-        Log.v("networkType", networkType)
+//        Log.v("networkType", networkType)
 
         // ------! 관련 관절, 근육 recyclerview 시작 !------
         val fullMuscleList = pvm.exerciseData?.relatedMuscle?.replace("(", ", ")
             ?.replace(")", "")
             ?.split(", ")
             ?.toMutableList()
-        Log.v("fullMuscleList", "$fullMuscleList")
+//        Log.v("fullMuscleList", "$fullMuscleList")
         val muscleAdapter = StringRVAdapter(this@PlayThumbnailDialogFragment, fullMuscleList, null,"muscle", evm)
         binding.rvPTMuscle.adapter = muscleAdapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

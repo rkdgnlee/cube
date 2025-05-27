@@ -19,6 +19,7 @@ import com.tangoplus.tangoq.databinding.FragmentMeasureHistoryBinding
 import com.tangoplus.tangoq.dialog.AlarmDialogFragment
 import com.tangoplus.tangoq.db.Singleton_t_measure
 import com.tangoplus.tangoq.fragment.ExtendedFunctions.setOnSingleClickListener
+import com.tangoplus.tangoq.viewmodel.FragmentViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -27,6 +28,7 @@ class MeasureHistoryFragment : Fragment() {
 
     private var measures : MutableList<MeasureVO>? = null
     private val viewModel : MeasureViewModel by activityViewModels()
+    private val fvm : FragmentViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -82,7 +84,7 @@ class MeasureHistoryFragment : Fragment() {
     }
 
     private fun setAdapter(measures: MutableList<MeasureVO>?) {
-        val adapter = MeasureHistoryRVAdapter(this@MeasureHistoryFragment, measures ?: mutableListOf(), viewModel)
+        val adapter = MeasureHistoryRVAdapter(this@MeasureHistoryFragment, measures ?: mutableListOf(), viewModel, fvm)
         binding.rvMH.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvMH.layoutManager = linearLayoutManager

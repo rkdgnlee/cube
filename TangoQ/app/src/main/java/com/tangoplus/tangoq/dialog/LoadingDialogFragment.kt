@@ -1,11 +1,7 @@
 package com.tangoplus.tangoq.dialog
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
-import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,10 +13,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import com.tangoplus.tangoq.databinding.FragmentLoadingDialogBinding
 import androidx.core.graphics.drawable.toDrawable
+import androidx.fragment.app.activityViewModels
+import com.tangoplus.tangoq.viewmodel.MeasureViewModel
+import kotlin.math.roundToInt
 
 class LoadingDialogFragment : DialogFragment() {
     lateinit var binding : FragmentLoadingDialogBinding
-
+    private val mvm : MeasureViewModel by activityViewModels()
     companion object{
         private const val ARG_CASE = "loading_case"
         fun newInstance(case: String): LoadingDialogFragment {
@@ -41,7 +40,6 @@ class LoadingDialogFragment : DialogFragment() {
     }
 
     override fun dismiss() {
-        super.dismiss()
         dismissAllowingStateLoss()
     }
 
@@ -70,6 +68,36 @@ class LoadingDialogFragment : DialogFragment() {
             "회원가입확인" -> "확인중입니다\n잠시만 기다려주세요"
             else -> "로딩중입니다"
         }
+
+        when (arg) {
+            "측정이력" -> {
+                binding.pbLD.visibility = View.GONE
+                binding.tvPercent.visibility = View.VISIBLE
+                binding.pvLD.visibility = View.VISIBLE
+                binding.pvLD.progressFromPrevious = true
+                mvm.progressInfoCount.observe(viewLifecycleOwner) { count ->
+                    val percent = ( count.toFloat()  / mvm.totalInfoCount.toFloat() ) * 100f
+                    if (percent < 100f) {
+                        binding.pvLD.progress = percent
+                        val percentText = "${percent.roundToInt()} %"
+                        binding.tvPercent.text = percentText
+                    } else if (percent == 100f ) {
+                        binding.pvLD.progress = 100f
+                        binding.pvLD.autoAnimate = false
+                        val percentText = "${percent.roundToInt()} %"
+                        binding.tvPercent.text = percentText
+                    } else {
+                        binding.pvLD.progress = 100f
+                    }
+                }
+            }
+            else -> {
+                binding.pbLD.visibility = View.VISIBLE
+                binding.tvPercent.visibility = View.GONE
+                binding.pvLD.visibility = View.GONE
+            }
+        }
+
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)

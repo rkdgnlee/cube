@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.tangoplus.tangoq.vo.ExerciseVO
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.json.JSONArray
 
 class PlayViewModel : ViewModel() {

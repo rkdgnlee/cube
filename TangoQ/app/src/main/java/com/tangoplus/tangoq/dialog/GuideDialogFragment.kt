@@ -115,7 +115,7 @@ class GuideDialogFragment : DialogFragment() {
         } else {
             // 거부된 권한 확인
             val deniedPermissions = permissions.filter { !it.value }.keys
-            Log.v("Guide권한거부목록", "거부된 권한: ${deniedPermissions.joinToString()}")
+//            Log.v("Guide권한거부목록", "거부된 권한: ${deniedPermissions.joinToString()}")
 
             if (deniedPermissions.any { shouldShowRequestPermissionRationale(it) }) {
                 context.let { Toast.makeText(it, "앱의 특정 기능 이용에 제한이 있을 수 있습니다", Toast.LENGTH_LONG).show() }

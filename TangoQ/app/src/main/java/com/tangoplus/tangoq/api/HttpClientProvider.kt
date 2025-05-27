@@ -4,17 +4,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.tangoplus.tangoq.MyApplication
 import com.tangoplus.tangoq.R
-import com.tangoplus.tangoq.dialog.AlertDialogFragment
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedAccessJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.getEncryptedRefreshJwt
 import com.tangoplus.tangoq.function.SecurePreferencesManager.saveEncryptedJwtToken
@@ -40,18 +31,18 @@ object HttpClientProvider {
                 .addInterceptor { chain ->
                     val networkType = WifiManager(context).checkNetworkType()
                     if (networkType == "none") {
-                        Log.v("networkType", networkType)
+//                        Log.v("networkType", networkType)
                         throw IOException("네트워크 연결이 없습니다")
                     }
                     var request = chain.request()
                     val accessToken = getEncryptedAccessJwt(context)
-                    Log.v("액세스토큰", "$accessToken")
+//                    Log.v("액세스토큰", "$accessToken")
                     request = request.newBuilder()
                         .header("Authorization", "Bearer $accessToken")
                         .build()
                     val response = chain.proceed(request)
                     // 토큰 만료 시 처리
-                    Log.v("inGetClient", "access expired?: ${response.code}")
+//                    Log.v("inGetClient", "access expired?: ${response.code}")
                     if (response.code in listOf(400, 401, 404, 500)) {
                         response.close() // 기존 응답 닫기
 
@@ -140,7 +131,7 @@ object HttpClientProvider {
                     code
                 } else if (response.isSuccessful) {
                     val responseBody = response.body?.string()
-                    Log.v("토큰갱신", "$responseBody")
+//                    Log.v("토큰갱신", "$responseBody")
                     val newToken = responseBody?.let { JSONObject(it) }
                     saveEncryptedJwtToken(context, newToken)
                     200
