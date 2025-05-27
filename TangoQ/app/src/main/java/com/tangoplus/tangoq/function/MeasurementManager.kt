@@ -540,7 +540,7 @@ object MeasurementManager {
             // Case 2: danger가 warning과 normal의 합보다 큰 경우
             if (dangerCount > warningCount + normalCount) results.add(Pair(part, Status.DANGER))
 
-            // Case 3: 동률 처리 (수정된 규칙)
+            // Case 3: 동률 처리
             when {
                 // danger와 warning이 같은 경우 -> DANGER
                 dangerCount == warningCount && dangerCount > normalCount -> results.add(Pair(part, Status.DANGER))

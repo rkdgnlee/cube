@@ -310,6 +310,7 @@ class AnalyzeFragment : Fragment() {
         when {
             avm.existedMonthProgresses.value.contains(day.date.toString()) -> {
                 if (day.date == pvm.selectedDate) {
+                    Log.v("isSelectedDate", "existed And isSelectedDate, ${pvm.selectedDate}")
                     container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                     container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
                     container.removeBadge()
@@ -319,6 +320,7 @@ class AnalyzeFragment : Fragment() {
                 }
             }
             day.date == pvm.selectedDate -> {
+                Log.v("isSelectedDate", "isSelectedDate, ${pvm.selectedDate}")
                 container.date.setTextColor(ContextCompat.getColor(container.date.context, R.color.whiteText))
                 container.date.background = ResourcesCompat.getDrawable(resources, R.drawable.bckgnd_oval, null)
             }
@@ -534,7 +536,7 @@ class AnalyzeFragment : Fragment() {
         if (index != null) {
             pvm.selectedDate = LocalDate.now().minusDays((6 - index).toLong())
         }
-
+        Log.v("선택 날짜", "${pvm.selectedDate}, ${LocalDate.now().dayOfMonth}")
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
@@ -556,7 +558,7 @@ class AnalyzeFragment : Fragment() {
             }
             withContext(Dispatchers.Main) {
                 // 이곳에서 오늘 날짜 초기화
-                pvm.selectedDate = LocalDate.now()
+//                pvm.selectedDate = LocalDate.now()
 //                Log.v("날짜선택됨", "7 ${pvm.selectedDate}")
                 binding.cvACalendar.notifyCalendarChanged()
             }

@@ -111,6 +111,7 @@
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
+                        android:lineSpacingExtra="-5dp"
                         android:text="2024.08.07 13:55"
                         android:textColor="@color/subColor800"
                         android:textSize="14dp"
